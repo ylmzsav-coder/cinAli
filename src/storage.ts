@@ -25,7 +25,7 @@ export interface Settings {
 }
 
 /** Çipli masalarda sabit hamle süresi. */
-export const TABLE_TURN_SECONDS = 30;
+export const TABLE_TURN_SECONDS = 60;
 
 function deviceLang(): LangCode {
   try {
@@ -37,7 +37,7 @@ function deviceLang(): LangCode {
 
 export function defaultSettings(): Settings {
   const ui = deviceLang();
-  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 30, sound: true, vibration: true, chat: true, music: true };
+  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 60, sound: true, vibration: true, chat: true, music: true };
 }
 
 const KEY_SETTINGS = "cinali.settings";
@@ -67,6 +67,11 @@ export const loadSettings = (): Settings => {
   if (!LANGS[s.gameLang]?.playable) s.gameLang = "en";
   // Eski sürümlerin varsayılan adı
   if (s.name === "Sen") s.name = "";
+  // Eski varsayılan hamle süresi (30 sn) yeni varsayılana (60 sn) taşınır
+  if (s.turnSeconds === 30 && !(read<{ v?: number }>(KEY_SETTINGS + ".v")?.v)) {
+    s.turnSeconds = 60;
+    write(KEY_SETTINGS + ".v", { v: 2 });
+  }
   return s;
 };
 export const saveSettings = (s: Settings) => write(KEY_SETTINGS, s);

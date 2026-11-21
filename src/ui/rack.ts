@@ -90,3 +90,45 @@ export function groupsOf(slots: Slots): RackGroup[] {
 export function packSlots(ids: number[]): Slots {
   return initialSlots(ids);
 }
+
+/**
+ * Kelimeleri ıstakaya dizer: her kelime ayrı grup, aralarında boşluk
+ * (sığarsa 2 yuva, sığmazsa 1); kelime bir sıraya sığmazsa alt sıraya geçer.
+ * Kelimeye girmeyen taşlar alt sıranın sağ ucuna, ayrı dizilir.
+ */
+export function arrangeWords(words: number[][], rest: number[]): Slots {
+  const s = emptySlots();
+  for (const gap of [2, 1]) {
+    s.fill(null);
+    let row = 0;
+    let col = 0;
+    let ok = true;
+    for (const w of words) {
+      if (col > 0 && col + gap + w.length > RACK_COLS) {
+        row++;
+        col = 0;
+      }
+      if (col > 0) col += gap;
+      if (row >= RACK_ROWS || col + w.length > RACK_COLS) {
+        ok = false;
+        break;
+      }
+      w.forEach((id, k) => (s[row * RACK_COLS + col + k] = id));
+      col += w.length;
+    }
+    if (!ok) continue;
+    // Kalan taşlar: alt sıranın sağından sola, kelimelerden en az bir yuva uzakta
+    let i = RACK_SLOTS - 1;
+    for (const id of rest.slice().reverse()) {
+      while (i >= 0 && (s[i] !== null || (i > 0 && s[i - 1] !== null && !rest.includes(s[i - 1]!)))) i--;
+      if (i < 0) {
+        ok = false;
+        break;
+      }
+      s[i--] = id;
+    }
+    if (ok) return s;
+  }
+  // Çok sıkışık: kelimeler peş peşe (bir boşlukla) yerleşemediyse sırayla diz
+  return initialSlots([...words.flat(), ...rest]);
+}

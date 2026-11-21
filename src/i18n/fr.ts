@@ -93,6 +93,9 @@ const fr: Messages = {
   noValidGroups: "Aucun mot valide sur le chevalet. Placez les tuiles de chaque mot côte à côte, avec des espaces entre les mots.",
   dropToDiscard: "Lâchez pour défausser",
   groupsTotal: "Chevalet : {total}/{need}",
+  autoArrange: "Ranger auto",
+  autoDone: "Rangement auto : {words} (total {total})",
+  autoNone: "Aucun mot possible avec ces tuiles.",
   start: "Jouer",
 
   tablesDesc: "La mise est prélevée quand vous vous asseyez. Le premier remporte 90 % du pot. Une Finition couleur rapporte en plus un bonus égal à la mise !",

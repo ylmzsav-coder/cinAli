@@ -93,6 +93,9 @@ const it: Messages = {
   noValidGroups: "Nessuna parola valida sul leggio. Metti vicine le tessere di ogni parola, con spazi tra le parole.",
   dropToDiscard: "Rilascia per scartare",
   groupsTotal: "Leggio: {total}/{need}",
+  autoArrange: "Ordina auto",
+  autoDone: "Ordine auto: {words} (totale {total})",
+  autoNone: "Nessuna parola possibile con queste tessere.",
   start: "Inizia",
 
   tablesDesc: "La quota d'ingresso viene addebitata quando ti siedi. Il primo vince il 90% del piatto. Con una Chiusura a colore ricevi un bonus pari alla quota!",

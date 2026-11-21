@@ -8,7 +8,7 @@ import { call, currentUser, firestore } from "../online/cloud";
 import { loadDictionary } from "../online/dicts";
 import type { ChatEvent, SendTextResult } from "../online/chat";
 import { rotatedState, type Action, type PublicView, type SeatInfo } from "../online/view";
-import type { Settings } from "../storage";
+import { TABLE_TURN_SECONDS, type Settings } from "../storage";
 import { Game, type ChatChannel, type PlayerMenu, type RemoteControl } from "./Game";
 
 /** Susturulan oyuncular cihazda hatırlanır (tüm masalarda geçerli). */
@@ -263,7 +263,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       state={state}
       level={cfg.level}
       speed={settings.speed}
-      turnSeconds={30}
+      turnSeconds={TABLE_TURN_SECONDS}
       sound={settings.sound}
       vibration={settings.vibration}
       onChange={() => {}}

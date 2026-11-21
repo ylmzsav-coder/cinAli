@@ -93,6 +93,9 @@ const de: Messages = {
   noValidGroups: "Keine gültigen Wörter auf der Ablage. Lege die Steine eines Wortes nebeneinander, mit Lücken zwischen den Wörtern.",
   dropToDiscard: "Zum Abwerfen loslassen",
   groupsTotal: "Ablage: {total}/{need}",
+  autoArrange: "Auto-Ordnen",
+  autoDone: "Auto-Ordnen: {words} (gesamt {total})",
+  autoNone: "Mit diesen Steinen lässt sich kein Wort bilden.",
   start: "Los",
 
   tablesDesc: "Der Einsatz wird beim Hinsetzen abgezogen. Der Erste gewinnt 90 % des Pots. Für ein Farbfinish gibt es zusätzlich einen Bonus in Höhe des Einsatzes!",

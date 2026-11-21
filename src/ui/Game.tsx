@@ -1,5 +1,5 @@
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
-import { BotLevel, botStep } from "../game/bot";
+import { BotLevel, bestArrangement, botStep } from "../game/bot";
 import { Dictionary } from "../game/dictionary";
 import {
   GameError,
@@ -26,7 +26,7 @@ import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TE
 import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
-import { Slots, groupsOf, initialSlots, moveTile, packSlots, syncSlots } from "./rack";
+import { Slots, arrangeWords, groupsOf, initialSlots, moveTile, packSlots, syncSlots } from "./rack";
 
 const ME = 0;
 const SPEED_MS = { yavas: 1100, normal: 650, hizli: 250 } as const;
@@ -495,6 +495,29 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     play("open");
   };
 
+  /** Otomatik per: en değerli kelimeleri bulup ıstakaya kelime kelime dizer. */
+  const autoArrange = () => {
+    const res = bestArrangement(dict, me.rack);
+    if (!res.length) {
+      setMessage({ text: t("autoNone"), error: true });
+      return;
+    }
+    const used = new Set(res.flatMap((r) => r.spec.tileIds));
+    const rest = slots.filter((id): id is number => id !== null && !used.has(id));
+    setSlots(arrangeWords(res.map((r) => r.spec.tileIds), rest));
+    // Jokerin seçilen harfini hatırla (ıstakada ve el açarken kullanılsın)
+    const picks: Record<number, Letter[]> = {};
+    for (const r of res) {
+      const jokerId = r.spec.tileIds.find((id) => tileById.get(id)?.letter === null);
+      if (jokerId !== undefined && r.spec.jokerLetters?.length) picks[jokerId] = r.spec.jokerLetters;
+    }
+    setJokerPick((p) => ({ ...p, ...picks }));
+    setSelected([]);
+    const total = res.reduce((s, r) => s + [...r.word].reduce((a, ch) => a + letterValue(ch), 0), 0);
+    setMessage({ text: t("autoDone", { words: res.map((r) => r.word).join(", "), total }) });
+    play("open");
+  };
+
   /** Grup etiketine dokununca: jokerli grupta harf seçtir. */
   const chooseGroupJoker = (g: GroupInfo) => {
     if (g.options.length < 2) return;
@@ -828,8 +851,13 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
               </button>
             )}
             <button type="button" className="danger" disabled={!canPlay || selected.length !== 1} onClick={discard}>{t("discard")}</button>
-            <button type="button" onClick={() => sortBy("harf")}>{t("sortLetter")}</button>
-            <button type="button" onClick={() => sortBy("renk")}>{t("sortColor")}</button>
+            <button type="button" className="auto-btn" onClick={autoArrange}>✨ {t("autoArrange")}</button>
+            <div className="sort-row">
+              <button type="button" onClick={() => sortBy("harf")} title={t("sortLetter")}>A–Z</button>
+              <button type="button" onClick={() => sortBy("renk")} title={t("sortColor")} aria-label={t("sortColor")}>
+                <span className="color-dots" aria-hidden><i /><i /><i /><i /></span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

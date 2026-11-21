@@ -10,6 +10,8 @@ web tarayıcısında, Android ve iOS'ta oynanır.
 - **Okey ıstakası:** 2 raf × 16 yuva. Taşlar parmakla istenen yuvaya sürüklenir; yan yana duran
   taşlar bir kelimedir, kelimeler arasında boşluk bırakılır. Istakanın üstünde her kelimenin değeri
   ve toplam (101'e göre) canlı görünür; "Eli Aç" geçerli kelimelerin hepsini açar.
+- **Otomatik Per:** Istakadaki taşlarla kurulabilecek, toplam değeri en yüksek kelimeleri (tüm
+  sözlükten) bulur ve ıstakaya kelime kelime, aralarında boşlukla dizer; jokerin harfini de seçer.
 - **Sürükle-bırak:** desteden/soldan çekilen taşı istenen yuvaya bırakma, taşı atma alanına
   sürükleyerek atma, rakibin kelimesinin başına/sonuna sürükleyerek işleme (seçili taşlar birlikte).
 - **Taş sesleri:** tutma, bırakma, atma ve kelime açmada gerçekçi taş sesleri (kod içinde üretilir).
@@ -44,7 +46,7 @@ anahtarların ve yer tutucuların bulunduğunu doğrular.
 - **Joker:** Her harfin yerine geçer, o harfin değerini alır.
 - **Bitirme:** Son taşı atan biter. Çift bitirme yoktur.
 - **Puan:** Bitiren **-100**; diğerleri elde kalan harflerin toplamı (joker 30); açamayan **200**.
-- **Hamle süresi:** Çipli masalarda 30 sn (pratikte 15/30/45/60 sn veya kapalı). Süre çerçevede
+- **Hamle süresi:** Çipli ve çevrimiçi masalarda 60 sn (pratikte 30/45/60/90 sn veya kapalı). Süre çerçevede
   yeşil → sarı → kırmızı gösterilir; son 5 saniyede tık sesi ve titreşim (menüden kapatılabilir);
   bitince gerekirse desteden çekilir ve bir taş otomatik atılır.
 - **Renk Bitirme:** Bitirenin yere koyduğu taşların hepsi aynı renkse **-200**.

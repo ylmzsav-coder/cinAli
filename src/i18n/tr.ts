@@ -94,6 +94,9 @@ const tr = {
   noValidGroups: "Istakada geçerli kelime yok. Kelimeleri yan yana dizin; kelimeler arasında boşluk bırakın.",
   dropToDiscard: "Atmak için bırakın",
   groupsTotal: "Istaka: {total}/{need}",
+  autoArrange: "Otomatik Per",
+  autoDone: "Otomatik per: {words} (toplam {total})",
+  autoNone: "Bu taşlarla kelime bulunamadı.",
   start: "Başla",
 
   // Masalar

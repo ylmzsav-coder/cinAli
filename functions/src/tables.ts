@@ -40,7 +40,7 @@ import { publicView, type Action, type PublicView, type SeatInfo } from "../../s
 /** Masanın başlamadan önce oyuncu beklediği süre. */
 export const WAIT_MS = 8_000;
 /** Hamle süresi (sunucu tarafı; istemcideki çerçeveyle aynı). */
-export const TURN_MS = 30_000;
+export const TURN_MS = 60_000;
 /** Ağ gecikmesi için ek süre. */
 const GRACE_MS = 1_500;
 /** El bittikten sonra sonraki ele geçmeden önce sonuç ekranı süresi. */

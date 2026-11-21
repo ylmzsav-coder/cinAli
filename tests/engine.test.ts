@@ -220,3 +220,16 @@ describe("hamle süresi", () => {
     expect(o.discards[s.current].at(-1)!.letter).toBe("A");
   });
 });
+
+import { bestArrangement } from "../src/game/bot";
+describe("otomatik per", () => {
+  it("ıstakadan çakışmayan en değerli kelimeleri bulur", () => {
+    const rack = [...tiles("KALEMÇAYTUZ"), t("B")];
+    const res = bestArrangement(dict, rack);
+    const used = res.flatMap((r) => r.spec.tileIds);
+    expect(new Set(used).size).toBe(used.length); // taş iki kelimede yok
+    for (const r of res) expect(dict.has(r.word)).toBe(true);
+    const total = res.reduce((s, r) => s + wordValue(r.word), 0);
+    expect(total).toBeGreaterThanOrEqual(163); // en az KALEM+ÇAY+TUZ kadar
+  });
+});

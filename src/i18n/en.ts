@@ -93,6 +93,9 @@ const en: Messages = {
   noValidGroups: "No valid words on your rack. Place each word's tiles side by side with gaps between words.",
   dropToDiscard: "Drop to discard",
   groupsTotal: "Rack: {total}/{need}",
+  autoArrange: "Auto Arrange",
+  autoDone: "Auto arrange: {words} (total {total})",
+  autoNone: "No words can be made with these tiles.",
   start: "Start",
 
   tablesDesc: "The entry fee is taken when you sit down. First place wins 90% of the pot. Finish all in one colour for a bonus equal to the entry fee!",

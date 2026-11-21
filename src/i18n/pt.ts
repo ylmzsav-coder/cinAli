@@ -93,6 +93,9 @@ const pt: Messages = {
   noValidGroups: "Não há palavras válidas no suporte. Coloque as peças de cada palavra lado a lado, com espaços entre as palavras.",
   dropToDiscard: "Solte para descartar",
   groupsTotal: "Suporte: {total}/{need}",
+  autoArrange: "Organizar auto",
+  autoDone: "Organização auto: {words} (total {total})",
+  autoNone: "Nenhuma palavra possível com estas peças.",
   start: "Começar",
 
   tablesDesc: "A entrada é cobrada quando você se senta. O primeiro lugar leva 90% do pote. Termine tudo em uma cor e ganhe um bônus igual à entrada!",

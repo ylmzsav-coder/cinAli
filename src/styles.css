@@ -598,3 +598,43 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .okey .color-hint { position: absolute; left: 8px; bottom: 6px; z-index: 3; }
 .okey .felt-bottom .color-hint { position: static; }
 .brand-sub { letter-spacing: 0.18em; padding-left: 0.18em; }
+
+/* Otomatik per ve dizme düğmeleri */
+.rack-actions .auto-btn { background: linear-gradient(#7c4dff, #5e35b1); color: #fff; }
+.sort-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.sort-row button { padding: 6px 4px; font-weight: 800; }
+.color-dots { display: inline-grid; grid-template-columns: repeat(2, 7px); gap: 2px; vertical-align: middle; }
+.color-dots i { width: 7px; height: 7px; border-radius: 50%; display: block; }
+.color-dots i:nth-child(1) { background: var(--c-kirmizi); }
+.color-dots i:nth-child(2) { background: var(--c-mavi); }
+.color-dots i:nth-child(3) { background: var(--c-sari); }
+.color-dots i:nth-child(4) { background: var(--c-siyah); }
+
+/* ---- Yatay telefon: masa ve ıstaka dengesi ---- */
+.game.okey {
+  --actions-w: 132px;
+  --slot-w: min(calc((100vw - 16px - var(--actions-w) - 6px - 16px) / 16), calc(100dvh * 0.125), 62px);
+  --tile-sm: clamp(20px, 5.2vh, 30px);
+}
+.okey .felt, .okey .side { overflow: hidden; }
+.okey .felt .table { padding-bottom: calc(var(--slot-w) * 1.1); }
+.okey .opp-compact { padding: 1px 8px !important; }
+.okey .opp-compact .opp-name { font-size: 0.78rem; }
+.okey .opp-compact .tile { --tile-sm: 20px; }
+.okey .rack-actions {
+  display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap: 5px; align-content: stretch;
+}
+.okey .rack-actions > .primary { grid-column: 1 / -1; }
+.okey .rack-actions > .sort-row { grid-column: 1 / -1; }
+.okey .rack-actions button { padding: 4px 4px; font-size: 0.74rem; line-height: 1.1; }
+.okey .rack-actions > .primary { font-size: 0.82rem; }
+.okey .take .tile, .okey .discard-zone .tile { --tile-w: calc(var(--slot-w) * 0.8); }
+.okey .slot-lg { width: calc(var(--slot-w) * 0.8); height: calc(var(--slot-w) * 1.02); }
+.okey .side .small { font-size: 0.72rem; }
+/* Kelimeler köşedeki desteyle çakışmasın */
+.okey .felt .table { padding-bottom: 4px; padding-right: calc(var(--slot-w) * 1.1 + 22px); }
+.okey .felt-bottom { right: 6px; bottom: 6px; }
+@media (max-height: 560px) {
+  .okey .deck { flex-direction: column; gap: 1px; padding: 3px 5px; }
+  .okey .deck .small { display: none; }
+}

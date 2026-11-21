@@ -93,6 +93,9 @@ const es: Messages = {
   noValidGroups: "No hay palabras válidas en el atril. Pon las fichas de cada palabra juntas, con huecos entre palabras.",
   dropToDiscard: "Suelta para descartar",
   groupsTotal: "Atril: {total}/{need}",
+  autoArrange: "Ordenar auto",
+  autoDone: "Orden auto: {words} (total {total})",
+  autoNone: "No se puede formar ninguna palabra con estas fichas.",
   start: "Empezar",
 
   tablesDesc: "La entrada se cobra al sentarte. El primero gana el 90 % del bote. ¡Si terminas todo de un color, ganas un extra igual a la entrada!",

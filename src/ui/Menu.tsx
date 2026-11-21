@@ -147,7 +147,7 @@ export function Practice({ settings, onStart, onBack }: PracticeProps) {
         <label>
           {t("turnTime")}
           <select value={s.turnSeconds} onChange={(e) => setS({ ...s, turnSeconds: Number(e.target.value) })}>
-            {[15, 30, 45, 60].map((n) => <option key={n} value={n}>{t("secondsN", { n })}</option>)}
+            {[30, 45, 60, 90].map((n) => <option key={n} value={n}>{t("secondsN", { n })}</option>)}
             <option value={0}>{t("timerOff")}</option>
           </select>
         </label>

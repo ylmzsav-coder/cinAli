@@ -271,3 +271,51 @@ function knows(vocab: DictWord[], w: string): boolean {
   if (!set) knownSets.set(vocab, (set = new Set(vocab.map((v) => v.word))));
   return set.has(w);
 }
+
+/**
+ * Otomatik per: ıstakadaki taşlarla kurulabilecek, birbiriyle çakışmayan ve
+ * toplam değeri en yüksek kelime setini bulur (tüm sözlük). Eşit değerde daha
+ * çok taş kullanan tercih edilir. Kelimeler ve joker harfleri döner.
+ */
+export function bestArrangement(
+  dict: Dictionary,
+  rack: Tile[],
+  maxWords = 5,
+): { word: string; spec: WordSpec }[] {
+  const list = candidateWords(dict.entries, rack)
+    .slice()
+    .sort((a, b) => b.value - a.value || b.len - a.len)
+    .slice(0, 400);
+  const pool = poolOf(rack);
+  let best: { words: DictWord[]; value: number; used: number } = { words: [], value: 0, used: 0 };
+  let budget = 30000;
+  const chosen: DictWord[] = [];
+  const rec = (start: number, counts: Uint8Array, jokers: number, used: number, value: number) => {
+    if (--budget < 0) return;
+    if (value > best.value || (value === best.value && used > best.used)) best = { words: chosen.slice(), value, used };
+    if (chosen.length >= maxWords) return;
+    for (let i = start; i < list.length; i++) {
+      const w = list[i];
+      if (used + w.len > pool.size) continue;
+      const need = jokersNeeded(w, counts, jokers);
+      if (need < 0) continue;
+      const next = counts.slice();
+      for (let k = 0; k < next.length; k++) next[k] = Math.max(0, next[k] - w.counts[k]);
+      chosen.push(w);
+      rec(i + 1, next, jokers - need, used + w.len, value + w.value);
+      chosen.pop();
+      if (budget < 0) return;
+    }
+  };
+  rec(0, pool.counts, pool.jokers, 0, 0);
+  // Kelimeleri somut taşlara eşle
+  const out: { word: string; spec: WordSpec }[] = [];
+  let remaining = rack;
+  for (const w of best.words) {
+    const spec = specFor(w.word, remaining);
+    if (!spec) break;
+    out.push({ word: w.word, spec });
+    remaining = remaining.filter((t) => !spec.tileIds.includes(t.id));
+  }
+  return out;
+}
