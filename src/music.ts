@@ -3,7 +3,8 @@
  * (telif sorunu yok, ses dosyası gerekmez).
  * Piyano sesi: her nota için hafif kaymalı üst sesler (gerçek tel gibi),
  * çekiç vuruşu, notaya göre sönümlenme ve oda yankısı. Sol el akorları
- * arpej hâlinde, sağ el neşeli bir melodi çalar; 8 ölçülük döngü, 100 vuruş/dakika.
+ * arpej hâlinde, sağ el neşeli bir melodi çalar. 8 ölçü bir kez çalınır (18 sn),
+ * ardından son akor çınlar ve müzik tam 19. saniyede susar.
  */
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -12,8 +13,10 @@ let timer: ReturnType<typeof setInterval> | null = null;
 let nextTime = 0;
 let step = 0;
 
-const BPM = 100;
-const STEP = 60 / BPM / 2; // sekizlik
+/** Müziğin toplam süresi (saniye). */
+export const MUSIC_SECONDS = 19;
+/** 64 sekizlik 18 saniyede biter; son 1 saniye kapanış akoru. */
+const STEP = (MUSIC_SECONDS - 1) / 64; // sekizlik
 /** Ana ses seviyesi (yüksek); sınırlayıcı patlamayı önler. */
 const VOLUME = 0.9;
 
@@ -124,11 +127,38 @@ function piano(a: AudioContext, out: AudioNode, midi: number, t: number, hold: n
   src.start(t);
 }
 
+let ended = false;
+
+/** Kapanış: Do majör akor çınlar ve müzik 19. saniyede susar. */
+function finale(a: AudioContext, out: GainNode, t: number) {
+  ["C3", "G3", "C4", "E4", "G4", "C5", "E5"].forEach((n, k) => piano(a, out, NOTE[n], t + k * 0.012, 0.9, k < 2 ? 0.24 : 0.2));
+  const m = master;
+  if (m) {
+    m.gain.setValueAtTime(VOLUME, t + 0.25);
+    m.gain.linearRampToValueAtTime(0.0001, t + 1);
+  }
+  const ms = Math.max(0, (t + 1.05 - a.currentTime) * 1000);
+  setTimeout(() => {
+    if (master === m) {
+      if (timer) clearInterval(timer);
+      timer = null;
+      m?.disconnect();
+      master = null;
+      bus = null;
+    }
+  }, ms);
+}
+
 function schedule() {
   const a = ctx;
   if (!a || !bus) return;
-  while (nextTime < a.currentTime + 0.3) {
-    const i = step % MELODY.length;
+  while (!ended && nextTime < a.currentTime + 0.3) {
+    if (step >= MELODY.length) {
+      ended = true;
+      finale(a, bus, nextTime);
+      break;
+    }
+    const i = step;
     const bar = Math.floor(i / 8);
     const beat = i % 8;
     // Sağ el
@@ -175,6 +205,7 @@ export function startMusic() {
   bus.connect(verb).connect(wet).connect(master);
   nextTime = a.currentTime + 0.05;
   step = 0;
+  ended = false;
   timer = setInterval(schedule, 60);
   schedule();
 }
