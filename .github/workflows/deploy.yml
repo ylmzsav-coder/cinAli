@@ -16,6 +16,9 @@ concurrency:
 
 jobs:
   build:
+    # GitHub Pages ücretsiz planda yalnızca herkese açık depolarda çalışır.
+    # Depo gizlendiğinde bu iş atlanır; web sürümü Firebase Hosting'den yayınlanır (firebase.yml).
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

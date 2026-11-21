@@ -85,6 +85,7 @@ const en: Messages = {
   reportConfirm: "Report {name} for inappropriate behaviour?",
   reported: "Thanks, your report was received.",
   mutedTag: "muted",
+  copyright: "© {year} Cinali. All rights reserved.",
   start: "Start",
 
   tablesDesc: "The entry fee is taken when you sit down. First place wins 90% of the pot. Finish all in one colour for a bonus equal to the entry fee!",

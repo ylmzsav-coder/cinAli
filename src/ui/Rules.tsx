@@ -3,6 +3,7 @@ import { LangCode, gameLang } from "../game/lang";
 import { JOKER_COUNT, JOKER_PENALTY, letterTileTotal, letterValue } from "../game/tiles";
 import { t } from "../i18n";
 import { TABLE_TURN_SECONDS } from "../storage";
+import { COPYRIGHT_YEAR } from "./Menu";
 
 /** Kural sayfasındaki örnek kelime (oyun dilinde). */
 const EXAMPLE: Record<LangCode, string> = {
@@ -55,6 +56,7 @@ export function Rules({ onBack }: { onBack: () => void }) {
         ))}
       </div>
       <p className="muted small">{t("dictSource")}</p>
+      <p className="muted small">{t("copyright", { year: COPYRIGHT_YEAR })}</p>
     </div>
   );
 }

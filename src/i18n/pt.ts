@@ -85,6 +85,7 @@ const pt: Messages = {
   reportConfirm: "Denunciar {name} por comportamento inadequado?",
   reported: "Obrigado, sua denúncia foi recebida.",
   mutedTag: "silenciado",
+  copyright: "© {year} Cinali. Todos os direitos reservados.",
   start: "Começar",
 
   tablesDesc: "A entrada é cobrada quando você se senta. O primeiro lugar leva 90% do pote. Termine tudo em uma cor e ganhe um bônus igual à entrada!",

@@ -85,6 +85,7 @@ const it: Messages = {
   reportConfirm: "Segnalare {name} per comportamento inappropriato?",
   reported: "Grazie, la segnalazione è stata ricevuta.",
   mutedTag: "silenziato",
+  copyright: "© {year} Cinali. Tutti i diritti riservati.",
   start: "Inizia",
 
   tablesDesc: "La quota d'ingresso viene addebitata quando ti siedi. Il primo vince il 90% del piatto. Con una Chiusura a colore ricevi un bonus pari alla quota!",

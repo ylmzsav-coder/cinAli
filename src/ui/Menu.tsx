@@ -86,9 +86,13 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
       <button type="button" className="big" onClick={onShop}>{t("shop")}</button>
       <button type="button" className="link" onClick={onRules}>{t("rules")}</button>
       <p className="muted small legal">{t("legal")}</p>
+      <p className="muted small copyright">{t("copyright", { year: COPYRIGHT_YEAR })}</p>
     </div>
   );
 }
+
+/** Telif yılı (sayı biçimlendirmesi uygulanmasın diye metin). */
+export const COPYRIGHT_YEAR = "2026";
 
 export function Logo() {
   return (

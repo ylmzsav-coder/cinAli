@@ -85,6 +85,7 @@ const es: Messages = {
   reportConfirm: "¿Denunciar a {name} por comportamiento inapropiado?",
   reported: "Gracias, recibimos tu denuncia.",
   mutedTag: "silenciado",
+  copyright: "© {year} Cinali. Todos los derechos reservados.",
   start: "Empezar",
 
   tablesDesc: "La entrada se cobra al sentarte. El primero gana el 90 % del bote. ¡Si terminas todo de un color, ganas un extra igual a la entrada!",

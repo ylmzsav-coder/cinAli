@@ -86,6 +86,7 @@ const tr = {
   reportConfirm: "{name} adlı oyuncuyu uygunsuz davranış nedeniyle şikâyet etmek istiyor musunuz?",
   reported: "Şikâyetiniz alındı. Teşekkürler.",
   mutedTag: "susturuldu",
+  copyright: "© {year} Cinali. Tüm hakları saklıdır.",
   start: "Başla",
 
   // Masalar

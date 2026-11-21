@@ -19,7 +19,14 @@ jobs:
           distribution: temurin
           java-version: 21
       - run: npm ci
+      # Firebase yapılandırması depo değişkenlerinden (Settings > Secrets and variables > Actions > Variables).
+      # Tanımlı değilse uygulama çevrimdışı modda (cihazda) derlenir.
       - run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
       - run: npx cap sync android
       - name: Debug APK derle
         working-directory: android

@@ -1,0 +1,61 @@
+name: Firebase'e yayınla
+
+# Web sürümü (Hosting), sunucu fonksiyonları (Functions) ve güvenlik kuralları (Firestore).
+# Çalışması için depoda şunlar tanımlı olmalı (Settings > Secrets and variables > Actions):
+#   Secret:    FIREBASE_SERVICE_ACCOUNT  (Firebase hizmet hesabı JSON anahtarı)
+#   Variables: VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_APP_ID
+# Tanımlı değilse iş atlanır (hata vermez).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: firebase
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HAS_FIREBASE: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' && vars.VITE_FIREBASE_PROJECT_ID != '' }}
+    steps:
+      - name: Yapılandırma var mı?
+        run: |
+          if [ "$HAS_FIREBASE" != "true" ]; then
+            echo "::notice::Firebase henüz yapılandırılmadı; yayın atlandı."
+          fi
+      - uses: actions/checkout@v4
+        if: env.HAS_FIREBASE == 'true'
+      - uses: actions/setup-node@v4
+        if: env.HAS_FIREBASE == 'true'
+        with:
+          node-version: 22
+          cache: npm
+      - name: Bağımlılıklar
+        if: env.HAS_FIREBASE == 'true'
+        run: |
+          npm ci
+          npm --prefix functions ci
+      - name: Testler
+        if: env.HAS_FIREBASE == 'true'
+        run: npm test
+      - name: Web sürümünü derle
+        if: env.HAS_FIREBASE == 'true'
+        run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+      - name: Yayınla
+        if: env.HAS_FIREBASE == 'true'
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+        run: |
+          printf '%s' "$SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          npx firebase deploy --project "$PROJECT_ID" --only hosting,functions,firestore --non-interactive --force
+          rm -f "$RUNNER_TEMP/sa.json"

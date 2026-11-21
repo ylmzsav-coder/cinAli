@@ -85,6 +85,7 @@ const fr: Messages = {
   reportConfirm: "Signaler {name} pour comportement inapproprié ?",
   reported: "Merci, votre signalement a été reçu.",
   mutedTag: "masqué",
+  copyright: "© {year} Cinali. Tous droits réservés.",
   start: "Jouer",
 
   tablesDesc: "La mise est prélevée quand vous vous asseyez. Le premier remporte 90 % du pot. Une Finition couleur rapporte en plus un bonus égal à la mise !",

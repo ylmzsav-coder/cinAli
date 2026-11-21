@@ -85,6 +85,7 @@ const de: Messages = {
   reportConfirm: "{name} wegen unangemessenen Verhaltens melden?",
   reported: "Danke, deine Meldung ist eingegangen.",
   mutedTag: "stumm",
+  copyright: "© {year} Cinali. Alle Rechte vorbehalten.",
   start: "Los",
 
   tablesDesc: "Der Einsatz wird beim Hinsetzen abgezogen. Der Erste gewinnt 90 % des Pots. Für ein Farbfinish gibt es zusätzlich einen Bonus in Höhe des Einsatzes!",

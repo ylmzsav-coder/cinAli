@@ -86,9 +86,27 @@ node tests/emulator/tables.mjs     # iki oyunculu masa testi
 node tests/emulator/chat.mjs       # sohbet güvenlik kuralları testi
 ```
 
-Gerçek projeye yayın: `.env.example` dosyasını `.env.production.local` olarak doldurun,
-`.firebaserc` içindeki proje kimliğini değiştirin, ardından `npx firebase deploy`.
+### Yayın (Firebase Hosting + Functions)
+
+Otomatik: `main` dalına her gönderimde `.github/workflows/firebase.yml` web sürümünü, sunucu
+fonksiyonlarını ve güvenlik kurallarını yayınlar. Bunun için GitHub'da
+**Settings → Secrets and variables → Actions** altında:
+
+- **Secret** `FIREBASE_SERVICE_ACCOUNT`: Firebase konsolu → Proje ayarları → Hizmet hesapları →
+  "Yeni özel anahtar oluştur" ile indirilen JSON dosyasının içeriği
+- **Variables** `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`,
+  `VITE_FIREBASE_APP_ID`: Firebase web uygulaması yapılandırması
+
+Tanımlı değilse iş hata vermeden atlanır. Android APK derlemesi de aynı değişkenleri kullanır.
+Elle yayın: `.env.example` → `.env.production.local`, ardından `npx firebase deploy --project <proje>`.
 Cloud Functions için Firebase projesinin **Blaze** (kullandıkça öde) planında olması gerekir.
+
+GitHub Pages yayını yalnızca depo herkese açıkken çalışır; depo gizlendiğinde otomatik atlanır.
+
+## Lisans
+
+Tescilli yazılım, tüm hakları saklıdır (`LICENSE`). Üçüncü taraf bileşenler ve sözlük
+kaynakları için `THIRD_PARTY_NOTICES.md`.
 
 ## Proje yapısı
 
