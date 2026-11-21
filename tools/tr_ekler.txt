@@ -17886,3 +17886,5 @@ ZÜHAL
 ZÜHRE
 ZÜLFİKAR
 ZÜMRÜDÜANKA
+# Kullanıcının bildirdiği eksik kelimeler
+ZIR
