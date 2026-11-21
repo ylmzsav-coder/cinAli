@@ -294,7 +294,7 @@ describe("çifte gitme", () => {
 
 describe("Türkçe sözlük", () => {
   it("fiil kökleri (emir kipi) geçerli kelimedir: TUT, GİT, OKU", () => {
-    for (const w of ["TUT", "GİT", "OKU", "GEL", "TUTMAK", "PER", "ÖĞE", "ABİ", "OTO", "ISTAKA", "YAZBOZ", "KOALA", "SUDOKU"]) expect(dict.has(w), w).toBe(true);
+    for (const w of ["TUT", "GİT", "OKU", "GEL", "TUTMAK", "PER", "ÖĞE", "ABİ", "OTO", "ISTAKA", "YAZBOZ", "KOALA", "SUDOKU", "YAPMAZ", "OKUMAZ", "MAZOT"]) expect(dict.has(w), w).toBe(true);
   });
 });
 
