@@ -568,7 +568,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   };
 
   /** Otomatik per: en değerli kelimeleri bulup ıstakaya kelime kelime dizer. */
-  // ---- Kelimeye harf eklenince toplamın artışı "+N" olarak bir süre gösterilir ----
+  // ---- Kelimeye harf eklenince genel toplam kısa bir süre parlar (yeni değer yerinde yazılır) ----
   const prevTotalsRef = useRef<Map<number, number> | null>(null);
   const [wordGain, setWordGain] = useState<Record<number, { n: number; key: number }>>({});
   useEffect(() => {
@@ -946,7 +946,6 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                     <span className="word-owner">{state.players[w.owner].name} {w.pair ? <span className="word-info">{t("pairChip")}</span> : <span className="word-info" aria-hidden>📖</span>}</span>
                     <span className={`word-total ${wordGain[w.id] ? "gained" : ""}`} key={wordGain[w.id]?.key ?? 0}>
                       {t("wordTotal", { n: placedValue(w.tiles) })}
-                      {wordGain[w.id] && <span className="word-gain"> +{wordGain[w.id].n}</span>}
                     </span>
                   </div>
                 </div>

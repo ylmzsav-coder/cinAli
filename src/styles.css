@@ -710,7 +710,6 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 
 /* Harf eklenince toplamın artışı */
 .word-total.gained { animation: total-pop 0.9s ease-out; }
-.word-gain { color: #7CFC9A; font-weight: 900; }
 @keyframes total-pop {
   0% { transform: scale(1); text-shadow: none; }
   25% { transform: scale(1.35); text-shadow: 0 0 10px rgba(255, 213, 79, 0.9); }
