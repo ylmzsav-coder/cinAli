@@ -1,6 +1,6 @@
 # Üçüncü Taraf Bileşenler / Third-Party Notices
 
-AlFaBe 101'in kendi kodu ve içeriği tescilli lisans altındadır (bkz. `LICENSE`).
+Word Okey'in kendi kodu ve içeriği tescilli lisans altındadır (bkz. `LICENSE`).
 Aşağıdaki bileşenler kendi lisanslarıyla dağıtılır.
 
 ## Sözlükler (`public/dict/*.txt`)
@@ -24,7 +24,7 @@ kalanını kapsamaz.
 ## Küfür filtresi listeleri (`functions/src/profanity_lists.json`)
 
 [LDNOOBW — List of Dirty, Naughty, Obscene, and Otherwise Bad Words](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words),
-**CC BY 4.0**; AlFaBe 101 tarafından eklenen kelime ve köklerle genişletilmiştir.
+**CC BY 4.0**; Word Okey tarafından eklenen kelime ve köklerle genişletilmiştir.
 
 ## Açık kaynak kütüphaneler
 

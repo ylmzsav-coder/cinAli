@@ -1,5 +1,5 @@
 /**
- * AlFaBe 101 giriş müziği: tamamen bu uygulama için, kod içinde üretilen
+ * Word Okey giriş müziği: tamamen bu uygulama için, kod içinde üretilen
  * özgün bir döngü (telif sorunu yok, ses dosyası gerekmez).
  * Hicaz makamında (Re hicaz: Re Mi♭ Fa♯ Sol La Si♭ Do Re), mızrap benzeri tel
  * sesi ve darbuka (maksum) ritmi; 108 vuruş/dakika, 4 ölçülük döngü.

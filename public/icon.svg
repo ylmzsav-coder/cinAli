@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="96" fill="#0f5132"/>
   <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#f0a500"/></linearGradient></defs>
-  <rect x="146" y="40" width="220" height="270" rx="28" fill="#fbf3df" stroke="#c9b98f" stroke-width="8"/>
-  <rect x="146" y="296" width="220" height="14" rx="6" fill="#8c7b52"/>
-  <text x="256" y="250" font-family="Arial Rounded MT Bold, Arial, Helvetica, sans-serif" font-size="230" font-weight="900" text-anchor="middle" fill="#c62828">A</text>
-  <text x="256" y="462" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="150" font-weight="900" text-anchor="middle" fill="url(#g)" stroke="#7a4b00" stroke-width="6" paint-order="stroke">101</text>
+  <rect x="136" y="40" width="240" height="280" rx="28" fill="#fbf3df" stroke="#c9b98f" stroke-width="8"/>
+  <rect x="136" y="306" width="240" height="14" rx="6" fill="#8c7b52"/>
+  <text x="256" y="258" font-family="Arial Rounded MT Bold, Arial, Helvetica, sans-serif" font-size="230" font-weight="900" text-anchor="middle" fill="#c62828">W</text>
+  <text x="262" y="455" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="112" font-weight="900" letter-spacing="10" text-anchor="middle" fill="url(#g)" stroke="#7a4b00" stroke-width="5" paint-order="stroke">OKEY</text>
 </svg>

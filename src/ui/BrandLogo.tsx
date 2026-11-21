@@ -1,17 +1,14 @@
 /**
- * AlFaBe 101 logosu: harfler sırayla büyük/küçük (A l F a B e), her biri farklı
- * renkte, taş üzerinde; altında "101".
+ * Word Okey logosu: üstte renkli taşlar üzerinde "Word", altında altın sarısı "OKEY".
  */
 const LETTERS: [string, string][] = [
-  ["A", "#c62828"],
-  ["l", "#1565c0"],
-  ["F", "#e09100"],
-  ["a", "#2e7d32"],
-  ["B", "#6a1b9a"],
-  ["e", "#1d1d1d"],
+  ["W", "#c62828"],
+  ["o", "#1565c0"],
+  ["r", "#e09100"],
+  ["d", "#2e7d32"],
 ];
 
-export const BRAND = "AlFaBe 101";
+export const BRAND = "Word Okey";
 
 export function BrandLogo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   return (
@@ -23,7 +20,7 @@ export function BrandLogo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
           </span>
         ))}
       </div>
-      <div className="brand-101">101</div>
+      <div className="brand-sub">OKEY</div>
     </div>
   );
 }

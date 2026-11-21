@@ -285,7 +285,7 @@ function PrivateLobby({ code, isHost, onStart }: { code: string; isHost: boolean
     const text = t("inviteText", { code });
     try {
       if (navigator.share) {
-        await navigator.share({ title: "AlFaBe 101", text, url: link });
+        await navigator.share({ title: "Word Okey", text, url: link });
         return;
       }
       await navigator.clipboard.writeText(`${text}\n${link}`);

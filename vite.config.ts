@@ -24,8 +24,8 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: "AlFaBe 101",
-        short_name: "AlFaBe 101",
+        name: "Word Okey",
+        short_name: "Word Okey",
         description: "Harflerle oynanan okey tarzı kelime oyunu / The rummy tile game played with letters",
         theme_color: "#0f5132",
         background_color: "#0f5132",
