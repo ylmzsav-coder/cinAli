@@ -68,7 +68,7 @@ const fr: Messages = {
   joinWithCode: "Rejoindre avec un code",
   tableCode: "Code de la table",
   invite: "Inviter",
-  inviteText: "Joue à Cinali avec moi ! Code de la table : {code}",
+  inviteText: "Joue à AlFaBe 101 avec moi ! Code de la table : {code}",
   copied: "Copié !",
   startNow: "Lancer maintenant",
   hostWillStart: "L'hôte lancera la partie.",
@@ -85,7 +85,7 @@ const fr: Messages = {
   reportConfirm: "Signaler {name} pour comportement inapproprié ?",
   reported: "Merci, votre signalement a été reçu.",
   mutedTag: "masqué",
-  copyright: "© {year} Cinali. Tous droits réservés.",
+  copyright: "© {year} AlFaBe 101. Tous droits réservés.",
   drawBeforeLay: "Piochez d'abord une tuile (dans la pioche ou à gauche), puis posez votre mot. Votre sélection est conservée.",
   start: "Jouer",
 
@@ -120,7 +120,7 @@ const fr: Messages = {
   dailyDesc: "+{n} jetons chaque jour",
   claim: "Récupérer",
   tomorrow: "Demain",
-  legalLong: "Les jetons sont une monnaie virtuelle utilisable uniquement dans Cinali. Ils ne peuvent être échangés contre de l'argent réel ou des prix, ni transférés à d'autres utilisateurs.",
+  legalLong: "Les jetons sont une monnaie virtuelle utilisable uniquement dans AlFaBe 101. Ils ne peuvent être échangés contre de l'argent réel ou des prix, ni transférés à d'autres utilisateurs.",
   storeSoon: "La boutique ouvre bientôt.",
   adsSoon: "Publicités bientôt disponibles.",
 
@@ -237,7 +237,7 @@ const fr: Messages = {
   "log.finished": "{name} a terminé la manche.",
   "log.colorFinished": "{name} a terminé la manche : FINITION COULEUR !",
 
-  rulesTitle: "Règles de Cinali",
+  rulesTitle: "Règles de AlFaBe 101",
   rule_tiles: "Tuiles : {letters} tuiles-lettres et {jokers} joker ; les lettres sont en 4 couleurs (rouge, bleu, jaune, noir). Les couleurs sont purement visuelles ; aucune règle de couleur pour former des mots.",
   rule_values: "Valeur des lettres : chaque lettre vaut sa position dans l'alphabet ({first}). Exemple : {example}.",
   rule_deal: "Distribution : 4 joueurs. Chacun reçoit {hand} tuiles ; le premier joueur en reçoit {hand1} et joue sans piocher.",

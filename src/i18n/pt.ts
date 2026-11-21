@@ -68,7 +68,7 @@ const pt: Messages = {
   joinWithCode: "Entrar com código",
   tableCode: "Código da mesa",
   invite: "Convidar",
-  inviteText: "Jogue Cinali comigo! Código da mesa: {code}",
+  inviteText: "Jogue AlFaBe 101 comigo! Código da mesa: {code}",
   copied: "Copiado!",
   startNow: "Começar agora",
   hostWillStart: "O anfitrião vai iniciar a partida.",
@@ -85,7 +85,7 @@ const pt: Messages = {
   reportConfirm: "Denunciar {name} por comportamento inadequado?",
   reported: "Obrigado, sua denúncia foi recebida.",
   mutedTag: "silenciado",
-  copyright: "© {year} Cinali. Todos os direitos reservados.",
+  copyright: "© {year} AlFaBe 101. Todos os direitos reservados.",
   drawBeforeLay: "Primeiro compre uma peça (do monte ou da esquerda) e depois baixe sua palavra. Sua seleção continua marcada.",
   start: "Começar",
 
@@ -120,7 +120,7 @@ const pt: Messages = {
   dailyDesc: "+{n} fichas todo dia",
   claim: "Pegar",
   tomorrow: "Amanhã",
-  legalLong: "As fichas são moeda virtual usada apenas no Cinali. Não podem ser trocadas por dinheiro real ou prêmios, nem transferidas para outros usuários.",
+  legalLong: "As fichas são moeda virtual usada apenas no AlFaBe 101. Não podem ser trocadas por dinheiro real ou prêmios, nem transferidas para outros usuários.",
   storeSoon: "A loja abre em breve.",
   adsSoon: "Anúncios em breve.",
 
@@ -237,7 +237,7 @@ const pt: Messages = {
   "log.finished": "{name} bateu.",
   "log.colorFinished": "{name} bateu: BATIDA DE COR!",
 
-  rulesTitle: "Regras do Cinali",
+  rulesTitle: "Regras do AlFaBe 101",
   rule_tiles: "Peças: {letters} peças de letras e {jokers} curinga; as letras vêm em 4 cores (vermelho, azul, amarelo, preto). As cores são apenas visuais; não há regra de cor para formar palavras.",
   rule_values: "Valor das letras: cada letra vale sua posição no alfabeto ({first}). Exemplo: {example}.",
   rule_deal: "Distribuição: 4 jogadores. Cada um recebe {hand} peças; quem começa recebe {hand1} e joga sem comprar.",

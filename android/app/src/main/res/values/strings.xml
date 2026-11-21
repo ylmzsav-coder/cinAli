@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Cinali</string>
-    <string name="title_activity_main">Cinali</string>
-    <string name="package_name">com.cinali.okey</string>
-    <string name="custom_url_scheme">com.cinali.okey</string>
+    <string name="app_name">AlFaBe 101</string>
+    <string name="title_activity_main">AlFaBe 101</string>
+    <string name="package_name">com.alfabe101.oyun</string>
+    <string name="custom_url_scheme">com.alfabe101.oyun</string>
 </resources>

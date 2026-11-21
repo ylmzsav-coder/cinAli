@@ -68,7 +68,7 @@ const de: Messages = {
   joinWithCode: "Mit Code beitreten",
   tableCode: "Tischcode",
   invite: "Einladen",
-  inviteText: "Spiel Cinali mit mir! Tischcode: {code}",
+  inviteText: "Spiel AlFaBe 101 mit mir! Tischcode: {code}",
   copied: "Kopiert!",
   startNow: "Jetzt starten",
   hostWillStart: "Der Gastgeber startet das Spiel.",
@@ -85,7 +85,7 @@ const de: Messages = {
   reportConfirm: "{name} wegen unangemessenen Verhaltens melden?",
   reported: "Danke, deine Meldung ist eingegangen.",
   mutedTag: "stumm",
-  copyright: "© {year} Cinali. Alle Rechte vorbehalten.",
+  copyright: "© {year} AlFaBe 101. Alle Rechte vorbehalten.",
   drawBeforeLay: "Ziehe zuerst einen Stein (vom Stapel oder von links), dann lege dein Wort aus. Deine Auswahl bleibt erhalten.",
   start: "Los",
 
@@ -120,7 +120,7 @@ const de: Messages = {
   dailyDesc: "Jeden Tag +{n} Chips",
   claim: "Abholen",
   tomorrow: "Morgen",
-  legalLong: "Chips sind virtuelles Spielgeld, das nur in Cinali verwendet wird. Sie können nicht in echtes Geld oder Preise umgetauscht und nicht an andere Nutzer übertragen werden.",
+  legalLong: "Chips sind virtuelles Spielgeld, das nur in AlFaBe 101 verwendet wird. Sie können nicht in echtes Geld oder Preise umgetauscht und nicht an andere Nutzer übertragen werden.",
   storeSoon: "Der Shop öffnet bald.",
   adsSoon: "Werbung kommt bald.",
 
@@ -237,7 +237,7 @@ const de: Messages = {
   "log.finished": "{name} hat die Runde beendet.",
   "log.colorFinished": "{name} hat die Runde beendet: FARBFINISH!",
 
-  rulesTitle: "Cinali-Regeln",
+  rulesTitle: "AlFaBe 101-Regeln",
   rule_tiles: "Steine: {letters} Buchstabensteine und {jokers} Joker; die Buchstaben gibt es in 4 Farben (Rot, Blau, Gelb, Schwarz). Die Farben sind nur optisch; beim Wortbilden gibt es keine Farbregel.",
   rule_values: "Buchstabenwert: Jeder Buchstabe zählt so viel wie seine Position im Alphabet ({first}). Beispiel: {example}.",
   rule_deal: "Verteilen: 4 Spieler. Jeder erhält {hand} Steine, der Startspieler {hand1} und spielt ohne zu ziehen.",

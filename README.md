@@ -1,4 +1,4 @@
-# Cinali
+# AlFaBe 101
 
 Harflerle oynanan, okey tarzı kelime oyunu. Taşlarla anlamlı kelimeler kurulur;
 web tarayıcısında, Android ve iOS'ta oynanır.

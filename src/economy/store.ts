@@ -20,10 +20,10 @@ export interface ChipPack {
 }
 
 export const CHIP_PACKS: ChipPack[] = [
-  { productId: "cinali_cip_10k", chips: 10_000, testPrice: "₺ 29,99" },
-  { productId: "cinali_cip_50k", chips: 50_000, testPrice: "₺ 119,99", badge: "badge_popular" },
-  { productId: "cinali_cip_150k", chips: 150_000, testPrice: "₺ 299,99", badge: "badge_bonus" },
-  { productId: "cinali_cip_500k", chips: 500_000, testPrice: "₺ 799,99", badge: "badge_best" },
+  { productId: "alfabe101_cip_10k", chips: 10_000, testPrice: "₺ 29,99" },
+  { productId: "alfabe101_cip_50k", chips: 50_000, testPrice: "₺ 119,99", badge: "badge_popular" },
+  { productId: "alfabe101_cip_150k", chips: 150_000, testPrice: "₺ 299,99", badge: "badge_bonus" },
+  { productId: "alfabe101_cip_500k", chips: 500_000, testPrice: "₺ 799,99", badge: "badge_best" },
 ];
 
 export const TEST_MODE = import.meta.env.DEV;

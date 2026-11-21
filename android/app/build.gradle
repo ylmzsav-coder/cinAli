@@ -4,7 +4,7 @@ android {
     namespace = "com.cinali.okey"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.cinali.okey"
+        applicationId "com.alfabe101.oyun"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

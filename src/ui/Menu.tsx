@@ -5,6 +5,7 @@ import type { BotLevel } from "../game/bot";
 import { LANGS, LANG_ORDER, LangCode, PLAYABLE_LANGS } from "../game/lang";
 import { errorText, t } from "../i18n";
 import { Settings } from "../storage";
+import { BrandLogo } from "./BrandLogo";
 import { Chips } from "./Chips";
 
 interface HubProps {
@@ -95,15 +96,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
 export const COPYRIGHT_YEAR = "2026";
 
 export function Logo() {
-  return (
-    <div className="logo" aria-hidden>
-      {[..."CİNALİ"].map((l, i) => (
-        <span key={i} className={`tile tile-md c-${["kirmizi", "mavi", "sari", "siyah"][i % 4]}`}>
-          <span className="tile-letter">{l}</span>
-        </span>
-      ))}
-    </div>
-  );
+  return <BrandLogo size="lg" />;
 }
 
 interface PracticeProps {

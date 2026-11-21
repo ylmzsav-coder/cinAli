@@ -68,7 +68,7 @@ const it: Messages = {
   joinWithCode: "Entra con codice",
   tableCode: "Codice tavolo",
   invite: "Invita",
-  inviteText: "Gioca a Cinali con me! Codice tavolo: {code}",
+  inviteText: "Gioca a AlFaBe 101 con me! Codice tavolo: {code}",
   copied: "Copiato!",
   startNow: "Inizia ora",
   hostWillStart: "L'host avvierà la partita.",
@@ -85,7 +85,7 @@ const it: Messages = {
   reportConfirm: "Segnalare {name} per comportamento inappropriato?",
   reported: "Grazie, la segnalazione è stata ricevuta.",
   mutedTag: "silenziato",
-  copyright: "© {year} Cinali. Tutti i diritti riservati.",
+  copyright: "© {year} AlFaBe 101. Tutti i diritti riservati.",
   drawBeforeLay: "Prima pesca una tessera (dal mazzo o da sinistra), poi cala la parola. La selezione resta.",
   start: "Inizia",
 
@@ -120,7 +120,7 @@ const it: Messages = {
   dailyDesc: "+{n} fiches ogni giorno",
   claim: "Ritira",
   tomorrow: "Domani",
-  legalLong: "Le fiches sono valuta virtuale utilizzabile solo in Cinali. Non sono convertibili in denaro reale o premi e non possono essere trasferite ad altri utenti.",
+  legalLong: "Le fiches sono valuta virtuale utilizzabile solo in AlFaBe 101. Non sono convertibili in denaro reale o premi e non possono essere trasferite ad altri utenti.",
   storeSoon: "Il negozio aprirà presto.",
   adsSoon: "Pubblicità in arrivo.",
 
@@ -237,7 +237,7 @@ const it: Messages = {
   "log.finished": "{name} ha chiuso la mano.",
   "log.colorFinished": "{name} ha chiuso la mano: CHIUSURA A COLORE!",
 
-  rulesTitle: "Regole di Cinali",
+  rulesTitle: "Regole di AlFaBe 101",
   rule_tiles: "Tessere: {letters} tessere-lettera e {jokers} jolly; le lettere sono in 4 colori (rosso, blu, giallo, nero). I colori sono solo estetici; non ci sono regole di colore per formare parole.",
   rule_values: "Valore delle lettere: ogni lettera vale la sua posizione nell'alfabeto ({first}). Esempio: {example}.",
   rule_deal: "Distribuzione: 4 giocatori. Ognuno riceve {hand} tessere; chi inizia ne riceve {hand1} e gioca senza pescare.",

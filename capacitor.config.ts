@@ -2,8 +2,8 @@ import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   // Mağazada yayınlandıktan sonra değiştirilemez.
-  appId: "com.cinali.okey",
-  appName: "Cinali",
+  appId: "com.alfabe101.oyun",
+  appName: "AlFaBe 101",
   webDir: "dist",
   backgroundColor: "#0f5132",
   plugins: {

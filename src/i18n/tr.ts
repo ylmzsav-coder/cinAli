@@ -69,7 +69,7 @@ const tr = {
   joinWithCode: "Kodla katıl",
   tableCode: "Masa kodu",
   invite: "Davet et",
-  inviteText: "Cinali'de benimle oyna! Masa kodu: {code}",
+  inviteText: "AlFaBe 101'de benimle oyna! Masa kodu: {code}",
   copied: "Kopyalandı!",
   startNow: "Şimdi başlat",
   hostWillStart: "Masayı kuran kişi başlatacak.",
@@ -86,7 +86,7 @@ const tr = {
   reportConfirm: "{name} adlı oyuncuyu uygunsuz davranış nedeniyle şikâyet etmek istiyor musunuz?",
   reported: "Şikâyetiniz alındı. Teşekkürler.",
   mutedTag: "susturuldu",
-  copyright: "© {year} Cinali. Tüm hakları saklıdır.",
+  copyright: "© {year} AlFaBe 101. Tüm hakları saklıdır.",
   drawBeforeLay: "Önce taş çekin: desteden ya da soldan bir taş alın, sonra kelimeyi yere koyun. Seçtiğiniz taşlar seçili duruyor.",
   start: "Başla",
 
@@ -123,7 +123,7 @@ const tr = {
   dailyDesc: "Her gün +{n} çip",
   claim: "Al",
   tomorrow: "Yarın",
-  legalLong: "Çipler yalnızca Cinali içinde kullanılan sanal oyun parasıdır. Gerçek paraya veya ödüle çevrilemez, başka kullanıcılara devredilemez.",
+  legalLong: "Çipler yalnızca AlFaBe 101 içinde kullanılan sanal oyun parasıdır. Gerçek paraya veya ödüle çevrilemez, başka kullanıcılara devredilemez.",
   storeSoon: "Mağaza yakında açılacak.",
   adsSoon: "Reklamlar yakında.",
 
@@ -244,7 +244,7 @@ const tr = {
   "log.colorFinished": "{name} eli bitirdi: RENK BİTİRME!",
 
   // Kurallar sayfası
-  rulesTitle: "Cinali Kuralları",
+  rulesTitle: "AlFaBe 101 Kuralları",
   rule_tiles: "Taşlar: {letters} harf taşı ve {jokers} joker. Harfler 4 renktedir (kırmızı, mavi, sarı, siyah). Renkler görseldir, kelime kurarken renk şartı yoktur.",
   rule_values: "Harf değeri: Her harfin değeri alfabedeki sırasıdır ({first}). Örnek: {example}.",
   rule_deal: "Dağıtım: 4 oyuncu. Herkese {hand} taş, başlayan oyuncuya {hand1} taş verilir. Başlayan çekmeden oynar.",

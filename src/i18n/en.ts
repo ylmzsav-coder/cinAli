@@ -68,7 +68,7 @@ const en: Messages = {
   joinWithCode: "Join with code",
   tableCode: "Table code",
   invite: "Invite",
-  inviteText: "Play Cinali with me! Table code: {code}",
+  inviteText: "Play AlFaBe 101 with me! Table code: {code}",
   copied: "Copied!",
   startNow: "Start now",
   hostWillStart: "The host will start the game.",
@@ -85,7 +85,7 @@ const en: Messages = {
   reportConfirm: "Report {name} for inappropriate behaviour?",
   reported: "Thanks, your report was received.",
   mutedTag: "muted",
-  copyright: "© {year} Cinali. All rights reserved.",
+  copyright: "© {year} AlFaBe 101. All rights reserved.",
   drawBeforeLay: "Draw a tile first (from the deck or from the left), then lay your word. Your selected tiles stay selected.",
   start: "Start",
 
@@ -120,7 +120,7 @@ const en: Messages = {
   dailyDesc: "+{n} chips every day",
   claim: "Claim",
   tomorrow: "Tomorrow",
-  legalLong: "Chips are virtual currency used only inside Cinali. They cannot be exchanged for real money or prizes and cannot be transferred to other users.",
+  legalLong: "Chips are virtual currency used only inside AlFaBe 101. They cannot be exchanged for real money or prizes and cannot be transferred to other users.",
   storeSoon: "The shop will open soon.",
   adsSoon: "Ads coming soon.",
 
@@ -237,7 +237,7 @@ const en: Messages = {
   "log.finished": "{name} finished the hand.",
   "log.colorFinished": "{name} finished the hand: COLOUR FINISH!",
 
-  rulesTitle: "How to play Cinali",
+  rulesTitle: "How to play AlFaBe 101",
   rule_tiles: "Tiles: {letters} letter tiles and {jokers} joker; letters come in 4 colours (red, blue, yellow, black). Colours are only visual; there is no colour rule when forming words.",
   rule_values: "Letter values: each letter is worth its position in the alphabet ({first}). Example: {example}.",
   rule_deal: "Deal: 4 players. Everyone gets {hand} tiles; the starting player gets {hand1} and plays without drawing.",

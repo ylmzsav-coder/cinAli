@@ -24,8 +24,8 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: "Cinali",
-        short_name: "Cinali",
+        name: "AlFaBe 101",
+        short_name: "AlFaBe 101",
         description: "Harflerle oynanan okey tarzı kelime oyunu / The rummy tile game played with letters",
         theme_color: "#0f5132",
         background_color: "#0f5132",

@@ -68,7 +68,7 @@ const es: Messages = {
   joinWithCode: "Unirse con código",
   tableCode: "Código de mesa",
   invite: "Invitar",
-  inviteText: "¡Juega a Cinali conmigo! Código de mesa: {code}",
+  inviteText: "¡Juega a AlFaBe 101 conmigo! Código de mesa: {code}",
   copied: "¡Copiado!",
   startNow: "Empezar ahora",
   hostWillStart: "El anfitrión iniciará la partida.",
@@ -85,7 +85,7 @@ const es: Messages = {
   reportConfirm: "¿Denunciar a {name} por comportamiento inapropiado?",
   reported: "Gracias, recibimos tu denuncia.",
   mutedTag: "silenciado",
-  copyright: "© {year} Cinali. Todos los derechos reservados.",
+  copyright: "© {year} AlFaBe 101. Todos los derechos reservados.",
   drawBeforeLay: "Primero roba una ficha (del mazo o de la izquierda) y luego coloca tu palabra. Tu selección se mantiene.",
   start: "Empezar",
 
@@ -120,7 +120,7 @@ const es: Messages = {
   dailyDesc: "+{n} fichas cada día",
   claim: "Recoger",
   tomorrow: "Mañana",
-  legalLong: "Las fichas son dinero virtual que solo se usa dentro de Cinali. No se pueden canjear por dinero real ni premios, ni transferir a otros usuarios.",
+  legalLong: "Las fichas son dinero virtual que solo se usa dentro de AlFaBe 101. No se pueden canjear por dinero real ni premios, ni transferir a otros usuarios.",
   storeSoon: "La tienda abrirá pronto.",
   adsSoon: "Anuncios próximamente.",
 
@@ -237,7 +237,7 @@ const es: Messages = {
   "log.finished": "{name} terminó la mano.",
   "log.colorFinished": "{name} terminó la mano: ¡FINAL DE COLOR!",
 
-  rulesTitle: "Reglas de Cinali",
+  rulesTitle: "Reglas de AlFaBe 101",
   rule_tiles: "Fichas: {letters} fichas de letras y {jokers} comodín; las letras vienen en 4 colores (rojo, azul, amarillo, negro). Los colores son solo visuales; no hay regla de color al formar palabras.",
   rule_values: "Valor de las letras: cada letra vale su posición en el alfabeto ({first}). Ejemplo: {example}.",
   rule_deal: "Reparto: 4 jugadores. Cada uno recibe {hand} fichas; quien empieza recibe {hand1} y juega sin robar.",
