@@ -102,6 +102,7 @@ const es: Messages = {
   meaningError: "No se pudo cargar el significado. Revisa tu conexión.",
   meaningSource: "Fuente: Wikcionario",
   tapForMeaning: "Toca para ver el significado",
+  wordTotal: "Total {n}",
   autoDone: "Orden auto: {words} (total {total})",
   autoNone: "No se puede formar ninguna palabra con estas fichas.",
   start: "Empezar",

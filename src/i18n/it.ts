@@ -102,6 +102,7 @@ const it: Messages = {
   meaningError: "Impossibile caricare il significato. Controlla la connessione.",
   meaningSource: "Fonte: Wikizionario",
   tapForMeaning: "Tocca per il significato",
+  wordTotal: "Totale {n}",
   autoDone: "Ordine auto: {words} (totale {total})",
   autoNone: "Nessuna parola possibile con queste tessere.",
   start: "Inizia",

@@ -102,6 +102,7 @@ const fr: Messages = {
   meaningError: "Impossible de charger la définition. Vérifiez votre connexion.",
   meaningSource: "Source : Wiktionnaire",
   tapForMeaning: "Touchez pour le sens",
+  wordTotal: "Total {n}",
   autoDone: "Rangement auto : {words} (total {total})",
   autoNone: "Aucun mot possible avec ces tuiles.",
   start: "Jouer",

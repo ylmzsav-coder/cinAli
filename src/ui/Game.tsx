@@ -19,6 +19,7 @@ import {
   prevIndex,
   timeoutMove,
   totals,
+  placedValue,
   layPair,
   openPairs,
   wordString,
@@ -883,6 +884,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
               const canExtend = canPlay && me.opened && !me.pairs && !w.pair && selected.length > 0 && !draggingTile;
               return (
                 <div key={w.id} className={`word owner-${w.owner} ${w.pair ? "pair" : ""}`}>
+                  <div className="word-row">
                   {showExtendZones && !w.pair && (
                     <span className={`word-drop ${drag?.target === `extend:${w.id}:start` ? "over" : ""}`} data-drop={`extend:${w.id}:start`}>+</span>
                   )}
@@ -902,7 +904,11 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                   {showExtendZones && !w.pair && (
                     <span className={`word-drop ${drag?.target === `extend:${w.id}:end` ? "over" : ""}`} data-drop={`extend:${w.id}:end`}>+</span>
                   )}
-                  <span className="word-owner">{state.players[w.owner].name} {w.pair ? <span className="word-info">{t("pairChip")}</span> : <span className="word-info" aria-hidden>📖</span>}</span>
+                  </div>
+                  <div className="word-foot">
+                    <span className="word-owner">{state.players[w.owner].name} {w.pair ? <span className="word-info">{t("pairChip")}</span> : <span className="word-info" aria-hidden>📖</span>}</span>
+                    <span className="word-total">{t("wordTotal", { n: placedValue(w.tiles) })}</span>
+                  </div>
                 </div>
               );
             })}

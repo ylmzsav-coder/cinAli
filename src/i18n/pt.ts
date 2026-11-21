@@ -102,6 +102,7 @@ const pt: Messages = {
   meaningError: "Não foi possível carregar o significado. Verifique sua conexão.",
   meaningSource: "Fonte: Wikcionário",
   tapForMeaning: "Toque para ver o significado",
+  wordTotal: "Total {n}",
   autoDone: "Organização auto: {words} (total {total})",
   autoNone: "Nenhuma palavra possível com estas peças.",
   start: "Começar",

@@ -103,6 +103,7 @@ const tr = {
   meaningError: "Anlam getirilemedi. İnternet bağlantınızı kontrol edin.",
   meaningSource: "Kaynak: Vikisözlük",
   tapForMeaning: "Anlamı için dokunun",
+  wordTotal: "Toplam {n}",
   autoDone: "Otomatik per: {words} (toplam {total})",
   autoNone: "Bu taşlarla kelime bulunamadı.",
   start: "Başla",

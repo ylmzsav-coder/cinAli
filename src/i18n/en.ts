@@ -102,6 +102,7 @@ const en: Messages = {
   meaningError: "Couldn't load the meaning. Check your internet connection.",
   meaningSource: "Source: Wiktionary",
   tapForMeaning: "Tap for meaning",
+  wordTotal: "Total {n}",
   autoDone: "Auto arrange: {words} (total {total})",
   autoNone: "No words can be made with these tiles.",
   start: "Start",

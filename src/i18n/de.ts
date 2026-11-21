@@ -102,6 +102,7 @@ const de: Messages = {
   meaningError: "Bedeutung konnte nicht geladen werden. Prüfe deine Internetverbindung.",
   meaningSource: "Quelle: Wiktionary",
   tapForMeaning: "Für Bedeutung tippen",
+  wordTotal: "Summe {n}",
   autoDone: "Auto-Ordnen: {words} (gesamt {total})",
   autoNone: "Mit diesen Steinen lässt sich kein Wort bilden.",
   start: "Los",
