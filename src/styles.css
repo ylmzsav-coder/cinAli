@@ -375,3 +375,13 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 }
 .player-menu button { text-align: left; font-size: 0.85rem; padding: 7px 10px; }
 .copyright { margin-top: 0; opacity: 0.8; }
+
+/* Taş çekme düğmelerine dikkat çekme */
+.nudge { animation: nudge 0.45s ease-in-out 2; border-color: var(--accent) !important; }
+@keyframes nudge {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}

@@ -86,6 +86,7 @@ const en: Messages = {
   reported: "Thanks, your report was received.",
   mutedTag: "muted",
   copyright: "© {year} Cinali. All rights reserved.",
+  drawBeforeLay: "Draw a tile first (from the deck or from the left), then lay your word. Your selected tiles stay selected.",
   start: "Start",
 
   tablesDesc: "The entry fee is taken when you sit down. First place wins 90% of the pot. Finish all in one colour for a bonus equal to the entry fee!",

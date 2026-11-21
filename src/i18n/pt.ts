@@ -86,6 +86,7 @@ const pt: Messages = {
   reported: "Obrigado, sua denúncia foi recebida.",
   mutedTag: "silenciado",
   copyright: "© {year} Cinali. Todos os direitos reservados.",
+  drawBeforeLay: "Primeiro compre uma peça (do monte ou da esquerda) e depois baixe sua palavra. Sua seleção continua marcada.",
   start: "Começar",
 
   tablesDesc: "A entrada é cobrada quando você se senta. O primeiro lugar leva 90% do pote. Termine tudo em uma cor e ganhe um bônus igual à entrada!",

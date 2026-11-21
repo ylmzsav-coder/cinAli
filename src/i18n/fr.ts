@@ -86,6 +86,7 @@ const fr: Messages = {
   reported: "Merci, votre signalement a été reçu.",
   mutedTag: "masqué",
   copyright: "© {year} Cinali. Tous droits réservés.",
+  drawBeforeLay: "Piochez d'abord une tuile (dans la pioche ou à gauche), puis posez votre mot. Votre sélection est conservée.",
   start: "Jouer",
 
   tablesDesc: "La mise est prélevée quand vous vous asseyez. Le premier remporte 90 % du pot. Une Finition couleur rapporte en plus un bonus égal à la mise !",

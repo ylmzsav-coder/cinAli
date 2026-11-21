@@ -253,12 +253,14 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
    */
   const [busy, setBusy] = useState(false);
   const act = async (fn: () => GameState, action: Action, okMsg?: string): Promise<boolean> => {
+    // Taş çekmek seçimi bozmaz: oyuncu çekmeden önce kelimesini seçmiş olabilir.
+    const keepSelection = action.type === "drawDeck" || action.type === "drawDiscard";
     if (remote) {
       if (busy) return false;
       setBusy(true);
       try {
         await remote.send(action);
-        setSelected([]);
+        if (!keepSelection) setSelected([]);
         setMessage(okMsg ? { text: okMsg } : null);
         return true;
       } catch (e) {
@@ -270,7 +272,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     }
     try {
       onChange(fn());
-      setSelected([]);
+      if (!keepSelection) setSelected([]);
       setMessage(okMsg ? { text: okMsg } : null);
       return true;
     } catch (e) {
@@ -345,9 +347,25 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     setJokerPrompt({ title, words, options, onPick: then });
   };
 
+  // Taş çekme düğmelerine kısa süre dikkat çek
+  const [nudgeDraw, setNudgeDraw] = useState(0);
+  useEffect(() => {
+    if (!nudgeDraw) return;
+    const id = setTimeout(() => setNudgeDraw(0), 900);
+    return () => clearTimeout(id);
+  }, [nudgeDraw]);
+
   const makeWord = () => {
     if (selectedTiles.length < 3) {
       setMessage({ text: t("selectMin3"), error: true });
+      return;
+    }
+    // Eli açmış oyuncu yalnızca kendi sırasında ve taş çektikten sonra kelime koyabilir.
+    // Joker seçeneği sormadan önce söyle; seçim korunur, taş çekince tekrar dokunmak yeterli.
+    if (me.opened && !canPlay) {
+      const drawFirst = state.current === ME && state.phase === "draw";
+      setMessage({ text: drawFirst ? t("drawBeforeLay") : t("playAfterDraw"), error: true });
+      if (drawFirst) setNudgeDraw(Date.now());
       return;
     }
     const pattern = selectedTiles.map((t) => t.letter);
@@ -511,12 +529,12 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       </section>
 
       <section className="center">
-        <button type="button" className="deck" disabled={!(myTurn && state.phase === "draw")}
+        <button type="button" className={`deck ${nudgeDraw ? "nudge" : ""}`} disabled={!(myTurn && state.phase === "draw")}
           onClick={() => void act(() => drawFromDeck(state), { type: "drawDeck" })}>
           <span className="deck-count">{state.deck.length}</span>
           <span>{t("drawDeck")}</span>
         </button>
-        <button type="button" className="take" disabled={!(myTurn && state.phase === "draw" && discardTop)}
+        <button type="button" className={`take ${nudgeDraw && discardTop ? "nudge" : ""}`} disabled={!(myTurn && state.phase === "draw" && discardTop)}
           onClick={() => void act(() => drawFromDiscard(state), { type: "drawDiscard" })}>
           {discardTop ? <TileView tile={discardTop} size="sm" /> : <span className="slot" />}
           <span>{t("takeLeft")}</span>

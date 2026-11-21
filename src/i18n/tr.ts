@@ -87,6 +87,7 @@ const tr = {
   reported: "Şikâyetiniz alındı. Teşekkürler.",
   mutedTag: "susturuldu",
   copyright: "© {year} Cinali. Tüm hakları saklıdır.",
+  drawBeforeLay: "Önce taş çekin: desteden ya da soldan bir taş alın, sonra kelimeyi yere koyun. Seçtiğiniz taşlar seçili duruyor.",
   start: "Başla",
 
   // Masalar

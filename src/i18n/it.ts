@@ -86,6 +86,7 @@ const it: Messages = {
   reported: "Grazie, la segnalazione è stata ricevuta.",
   mutedTag: "silenziato",
   copyright: "© {year} Cinali. Tutti i diritti riservati.",
+  drawBeforeLay: "Prima pesca una tessera (dal mazzo o da sinistra), poi cala la parola. La selezione resta.",
   start: "Inizia",
 
   tablesDesc: "La quota d'ingresso viene addebitata quando ti siedi. Il primo vince il 90% del piatto. Con una Chiusura a colore ricevi un bonus pari alla quota!",

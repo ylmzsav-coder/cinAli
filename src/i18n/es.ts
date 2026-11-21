@@ -86,6 +86,7 @@ const es: Messages = {
   reported: "Gracias, recibimos tu denuncia.",
   mutedTag: "silenciado",
   copyright: "© {year} Cinali. Todos los derechos reservados.",
+  drawBeforeLay: "Primero roba una ficha (del mazo o de la izquierda) y luego coloca tu palabra. Tu selección se mantiene.",
   start: "Empezar",
 
   tablesDesc: "La entrada se cobra al sentarte. El primero gana el 90 % del bote. ¡Si terminas todo de un color, ganas un extra igual a la entrada!",

@@ -86,6 +86,7 @@ const de: Messages = {
   reported: "Danke, deine Meldung ist eingegangen.",
   mutedTag: "stumm",
   copyright: "© {year} Cinali. Alle Rechte vorbehalten.",
+  drawBeforeLay: "Ziehe zuerst einen Stein (vom Stapel oder von links), dann lege dein Wort aus. Deine Auswahl bleibt erhalten.",
   start: "Los",
 
   tablesDesc: "Der Einsatz wird beim Hinsetzen abgezogen. Der Erste gewinnt 90 % des Pots. Für ein Farbfinish gibt es zusätzlich einen Bonus in Höhe des Einsatzes!",
