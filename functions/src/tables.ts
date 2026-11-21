@@ -20,7 +20,6 @@ import {
   GameError,
   GameState,
   RULES,
-  WordSpec,
   dealHand,
   discardTile,
   drawFromDeck,
@@ -35,7 +34,7 @@ import {
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { TABLES, TableConfig, payout } from "../../src/economy/tables";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
-import { publicView, type PublicView, type SeatInfo } from "../../src/online/view";
+import { publicView, type Action, type PublicView, type SeatInfo } from "../../src/online/view";
 
 /** Masanın başlamadan önce oyuncu beklediği süre. */
 export const WAIT_MS = 8_000;
@@ -257,13 +256,6 @@ export const startTable = onCall(async (req) => {
   });
 });
 
-type Action =
-  | { type: "drawDeck" }
-  | { type: "drawDiscard" }
-  | { type: "open"; specs: WordSpec[] }
-  | { type: "lay"; spec: WordSpec }
-  | { type: "extend"; wordId: number; side: "start" | "end"; spec: WordSpec }
-  | { type: "discard"; tileId: number };
 
 /** Oyuncu hamlesi: sunucu doğrular, uygular, botları oynatır. */
 export const act = onCall(async (req) => {

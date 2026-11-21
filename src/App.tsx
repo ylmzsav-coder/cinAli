@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import { TableConfig, payout, tableById } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
 import { GameState, RULES, newGame, totals } from "./game/engine";
-import { LANGS, LangCode, setGameLang } from "./game/lang";
+import { LangCode, setGameLang } from "./game/lang";
+import { CLOUD, currentUser, firestore } from "./online/cloud";
+import { loadDictionary } from "./online/dicts";
 import { botNames, setUiLang, t } from "./i18n";
 import { SavedGame, Settings, TABLE_TURN_SECONDS, loadGame, loadSettings, saveGame, saveSettings } from "./storage";
 import { Game } from "./ui/Game";
 import { Hub, Practice } from "./ui/Menu";
+import { OnlineTable } from "./ui/OnlineTable";
 import { Rules } from "./ui/Rules";
 import { Shop } from "./ui/Shop";
 import { Tables } from "./ui/Tables";
 
-type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game";
+type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online";
 
 const paidGames = new Set<number>();
 
@@ -37,19 +41,6 @@ function settle(saved: SavedGame): SavedGame {
   return next;
 }
 
-/** Sözlükler dil başına bir kez indirilir. */
-const dictCache = new Map<LangCode, Promise<Dictionary>>();
-function loadDictionary(code: LangCode): Promise<Dictionary> {
-  let p = dictCache.get(code);
-  if (!p) {
-    p = fetch(`./dict/${code}.txt`)
-      .then((r) => (r.ok ? r.text() : Promise.reject(r.status)))
-      .then((text) => Dictionary.fromText(text, LANGS[code]));
-    p.catch(() => dictCache.delete(code));
-    dictCache.set(code, p);
-  }
-  return p;
-}
 
 export function App() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
@@ -62,6 +53,22 @@ export function App() {
   });
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [loadError, setLoadError] = useState(false);
+  /** Çevrimiçi modda oturulan masa (menüden dönülebilir). */
+  const [online, setOnline] = useState<TableConfig | null>(null);
+
+  // Sunucu modu: oturum aç, cüzdanı başlat, yarım kalan masa varsa hatırla
+  useEffect(() => {
+    if (!CLOUD) return;
+    wallet.start?.(settings.name);
+    currentUser()
+      .then(async (u) => {
+        const active = (await getDoc(doc(firestore(), "users", u.uid))).data()?.activeTable as string | undefined;
+        if (!active) return;
+        const tb = (await getDoc(doc(firestore(), "tables", active))).data();
+        if (tb && (tb.status === "waiting" || tb.status === "playing")) setOnline(tableById(tb.type) ?? null);
+      })
+      .catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Oyun dili: süren bir oyun varsa onun dili, yoksa ayardaki kelime dili.
   const activeLang: LangCode = saved?.state.lang ?? settings.gameLang;
@@ -109,6 +116,12 @@ export function App() {
   };
 
   const sitAt = (tb: TableConfig) => {
+    if (CLOUD) {
+      // Giriş ücretini ve masayı sunucu yönetir
+      setOnline(tb);
+      setScreen("online");
+      return;
+    }
     if (!wallet.spend(tb.entry, "masa-giris", tb.id)) {
       setScreen("shop");
       return;
@@ -126,6 +139,20 @@ export function App() {
   const inProgress = !!saved && saved.state.phase !== "gameOver";
 
   switch (screen) {
+    case "online":
+      if (online)
+        return (
+          <OnlineTable
+            table={online}
+            settings={settings}
+            onExit={() => setScreen("hub")}
+            onDone={() => {
+              setOnline(null);
+              setScreen("hub");
+            }}
+          />
+        );
+      break;
     case "rules":
       return <Rules onBack={() => setScreen("hub")} />;
     case "shop":
@@ -169,15 +196,17 @@ export function App() {
     <Hub
       settings={settings}
       onSettings={changeSettings}
-      canResume={!!saved}
+      canResume={!!saved || !!online}
       resumeLabel={
-        inProgress
+        online
+          ? t("resumeTable", { name: t(`table_${online.id}` as "table_vip") })
+          : inProgress
           ? activeTable
             ? t("resumeTable", { name: t(`table_${activeTable.id}` as "table_vip") })
             : t("resumeGame")
           : t("seeResult")
       }
-      onResume={() => setScreen("game")}
+      onResume={() => setScreen(online ? "online" : "game")}
       onTables={() => setScreen("tables")}
       onPractice={() => setScreen("practice")}
       onShop={() => setScreen("shop")}

@@ -35,14 +35,14 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Satın alma; başarılıysa verilecek çip miktarını döndürür. */
 export async function buyPack(pack: ChipPack): Promise<number> {
-  if (!TEST_MODE) throw new Error("storeSoon");
+  if (!TEST_MODE) throw Object.assign(new Error("storeSoon"), { code: "storeSoon" });
   await wait(600);
   return pack.chips;
 }
 
 /** Ödüllü reklam gösterir; sonuna kadar izlendiyse true. */
 export async function showRewardedAd(): Promise<boolean> {
-  if (!TEST_MODE) throw new Error("adsSoon");
+  if (!TEST_MODE) throw Object.assign(new Error("adsSoon"), { code: "adsSoon" });
   await wait(1500);
   return true;
 }

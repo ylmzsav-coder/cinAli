@@ -3,7 +3,7 @@ import { useWallet } from "../economy/useWallet";
 import { DAILY_BONUS, wallet } from "../economy/wallet";
 import type { BotLevel } from "../game/bot";
 import { LANGS, LANG_ORDER, LangCode, PLAYABLE_LANGS } from "../game/lang";
-import { t } from "../i18n";
+import { errorText, t } from "../i18n";
 import { Settings } from "../storage";
 import { Chips } from "./Chips";
 
@@ -64,8 +64,13 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
         <span className="plus-chip">+</span>
       </button>
       {wallet.canClaimDaily() && (
-        <button type="button" className="gift big" onClick={() => {
-          if (wallet.claimDaily()) setToast(t("dailyToast", { n: DAILY_BONUS }));
+        <button type="button" className="gift big" onClick={async () => {
+          try {
+            await wallet.claimDaily();
+            setToast(t("dailyToast", { n: DAILY_BONUS }));
+          } catch (e) {
+            setToast(errorText(e));
+          }
         }}>
           {t("dailyClaim")}
         </button>

@@ -3,8 +3,17 @@
  * (ıstakalar ve deste gizli) ve istemcide oyuncunun kendi koltuğunu 0'a
  * döndüren görünüm. Hem sunucu (functions/) hem istemci kullanır.
  */
-import type { GameState, Player } from "../game/engine";
+import type { GameState, Player, WordSpec } from "../game/engine";
 import type { Tile } from "../game/tiles";
+
+/** Oyuncunun sunucuya gönderdiği hamle. */
+export type Action =
+  | { type: "drawDeck" }
+  | { type: "drawDiscard" }
+  | { type: "open"; specs: WordSpec[] }
+  | { type: "lay"; spec: WordSpec }
+  | { type: "extend"; wordId: number; side: "start" | "end"; spec: WordSpec }
+  | { type: "discard"; tileId: number };
 
 export interface SeatInfo {
   uid: string | null;

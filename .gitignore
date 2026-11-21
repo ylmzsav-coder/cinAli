@@ -7,3 +7,4 @@ functions/lib
 functions/node_modules
 *-debug.log
 .firebase
+*.local

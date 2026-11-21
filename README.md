@@ -50,6 +50,33 @@ npm test         # kural motoru testleri
 npm run build    # dist/ klasörüne üretim derlemesi
 ```
 
+## Sunucu (Firebase)
+
+Firebase yapılandırılmışsa çipler ve çipli masalar sunucuda yönetilir; yapılandırılmamışsa
+(ör. şu anki GitHub Pages sürümü) çipler cihazda tutulur ve masalar botlarla cihazda oynanır.
+
+- **Cüzdan:** `functions/src/wallet.ts`: hoş geldin çipi, günlük ödül, reklam ödülü, satın alma.
+  Bakiye yalnızca sunucuda değişir; her değişiklik `wallets/{uid}/tx` altında kayıtlıdır.
+- **Çevrimiçi masalar:** `functions/src/tables.ts`. Aynı dil ve seviyedeki oyuncular aynı
+  masaya oturur; 8 sn içinde dolmayan koltuklara sunucudaki botlar oturur. Her hamle sunucuda
+  oyun motoruyla doğrulanır; hamle süresini sunucu tutar; ödüller oyun sonunda sunucuda ödenir.
+- **Gizlilik:** `firestore.rules`. Herkes yalnızca kendi ıstakasını ve cüzdanını okur;
+  deste ve tam oyun durumu istemciye kapalıdır. Hiçbir şey istemciden yazılamaz.
+
+Yerel geliştirme (emülatör, gerçek proje gerekmez):
+
+```bash
+(cd functions && npm install && npm run build)
+npx firebase emulators:start --project demo-cinali
+VITE_FIREBASE_EMULATOR=1 npm run dev
+node tests/emulator/wallet.mjs     # cüzdan testi
+node tests/emulator/tables.mjs     # iki oyunculu masa testi
+```
+
+Gerçek projeye yayın: `.env.example` dosyasını `.env.production.local` olarak doldurun,
+`.firebaserc` içindeki proje kimliğini değiştirin, ardından `npx firebase deploy`.
+Cloud Functions için Firebase projesinin **Blaze** (kullandıkça öde) planında olması gerekir.
+
 ## Proje yapısı
 
 - `src/game/tiles.ts` – harfler, değerler, taş seti
@@ -60,6 +87,8 @@ npm run build    # dist/ klasörüne üretim derlemesi
 - `src/i18n/` – arayüz çevirileri
 - `public/dict/<dil>.txt` – sözlükler (yaygın kelimeler önce)
 - `tools/build_dict.py` – sözlükleri üreten betik
+- `src/online/` – Firebase bağlantısı, çevrimiçi masa görünümü
+- `functions/` – Cloud Functions (cüzdan, çevrimiçi masalar)
 
 ## Sözlük kaynakları ve lisanslar
 

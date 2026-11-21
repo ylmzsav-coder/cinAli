@@ -310,3 +310,13 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .toggle.on { color: var(--text); border-color: var(--accent); }
 .timer-badge.urgent { animation: urgent 1s infinite; }
 @keyframes urgent { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.25); } }
+
+/* ---- Çevrimiçi masa ---- */
+.waiting-seats { display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 10px; width: 100%; max-width: 360px; }
+.waiting-seat {
+  border: 1px dashed rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 16px 8px;
+  color: var(--muted); text-align: center;
+}
+.waiting-seat.taken { border-style: solid; border-color: var(--accent); color: var(--text); font-weight: 700; background: rgba(0, 0, 0, 0.2); }
+.error-toast { background: var(--danger); }
+.leave-link { align-self: flex-start; font-size: 0.85rem; color: var(--muted); }

@@ -22,7 +22,8 @@ import {
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, wordValue } from "../game/tiles";
 import { buzz, tick } from "../feedback";
-import { formatNumber, t, tk } from "../i18n";
+import type { Action } from "../online/view";
+import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
 
 const ME = 0;
@@ -44,7 +45,19 @@ interface JokerPrompt {
   onPick: (letters: Letter[]) => void;
 }
 
+/** Çevrimiçi masa: hamleler sunucuya gider, süreyi sunucu tutar. */
+export interface RemoteControl {
+  send(action: Action): Promise<unknown>;
+  /** Süre dolduğunda (hamle süresi ya da el arası) sunucudan otomatik ilerletmesini ister. */
+  timeout(): Promise<unknown>;
+  nextHand(): Promise<unknown>;
+  /** Sunucunun belirlediği son an (ms) ya da null. */
+  deadline: number | null;
+}
+
 interface Props {
+  /** Verilirse çevrimiçi mod. */
+  remote?: RemoteControl;
   dict: Dictionary;
   state: GameState;
   level: BotLevel;
@@ -57,13 +70,15 @@ interface Props {
   onChange: (s: GameState) => void;
   onExit: () => void;
   onNewGame: () => void;
+  /** Çevrimiçi masada "Masadan kalk". */
+  onLeave?: () => void;
   /** Çipli masa adı (pratikte boş). */
   tableName?: string;
   /** Oyun sonunda kazanılan çip. */
   payout?: number;
 }
 
-export function Game({ dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, tableName, payout }: Props) {
+export function Game({ remote, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, tableName, payout }: Props) {
   const me = state.players[ME];
   const [order, setOrder] = useState<number[]>(() => me.rack.map((t) => t.id));
   const [selected, setSelected] = useState<number[]>([]);
@@ -96,13 +111,14 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
     setStaged((prev) => prev.filter((s) => s.tileIds.every((id) => ids.has(id))));
   }, [me.rack]);
 
-  // Bilgisayar oyuncuları
+  // Bilgisayar oyuncuları (çevrimiçi modda botları sunucu oynatır)
   useEffect(() => {
+    if (remote) return;
     if (state.phase !== "draw" && state.phase !== "play") return;
     if (!state.players[state.current].isBot) return;
     const timer = setTimeout(() => onChange(botStep(dict, state, level)), SPEED_MS[speed]);
     return () => clearTimeout(timer);
-  }, [state, dict, level, speed, onChange]);
+  }, [remote, state, dict, level, speed, onChange]);
 
   // ---- Hamle süresi ----
   const active = state.phase === "draw" || state.phase === "play";
@@ -117,12 +133,13 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
     setTimer({ key: turnKey, at: Date.now() + turnSeconds * 1000 });
     setNow(Date.now());
   }, [turnKey, turnSeconds]);
-  const deadline = timer.key === turnKey ? timer.at : 0;
+  const deadline = remote ? remote.deadline ?? 0 : timer.key === turnKey ? timer.at : 0;
+  const ticking = timerOn || (!!remote && state.phase === "handOver");
   useEffect(() => {
-    if (!timerOn) return;
+    if (!ticking) return;
     const id = setInterval(() => setNow(Date.now()), 200);
     return () => clearInterval(id);
-  }, [timerOn]);
+  }, [ticking]);
   const remainingMs = timerOn ? (deadline ? Math.max(0, deadline - now) : turnSeconds * 1000) : 0;
   const fraction = timerOn ? Math.min(1, remainingMs / (turnSeconds * 1000)) : 0;
   const timerColor = fraction > 0.5 ? "var(--timer-green)" : fraction > 0.2 ? "var(--timer-yellow)" : "var(--timer-red)";
@@ -139,7 +156,27 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
   const leftPile = state.discards[prevIndex(state, ME)];
   const discardTop = leftPile.length ? leftPile[leftPile.length - 1] : null;
 
-  const act = (fn: () => GameState, okMsg?: string) => {
+  /**
+   * Hamle yapar: yerel modda motoru doğrudan çalıştırır, çevrimiçi modda
+   * hamleyi sunucuya gönderir. Başarılıysa true döner.
+   */
+  const [busy, setBusy] = useState(false);
+  const act = async (fn: () => GameState, action: Action, okMsg?: string): Promise<boolean> => {
+    if (remote) {
+      if (busy) return false;
+      setBusy(true);
+      try {
+        await remote.send(action);
+        setSelected([]);
+        setMessage(okMsg ? { text: okMsg } : null);
+        return true;
+      } catch (e) {
+        setMessage({ text: errorText(e), error: true });
+        return false;
+      } finally {
+        setBusy(false);
+      }
+    }
     try {
       onChange(fn());
       setSelected([]);
@@ -165,9 +202,24 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
     if (vibration) buzz(final);
   });
 
-  // Süre dolunca: sizin sıranızdaysa otomatik çek/at (her tur için bir kez)
+  // Süre dolunca: sizin sıranızdaysa otomatik çek/at (her tur için bir kez).
+  // Çevrimiçi modda süreyi sunucu denetler: herhangi bir oyuncunun süresi ya da
+  // el arası dolunca (küçük bir payla) sunucudan ilerletmesi istenir.
   const firedRef = useRef("");
   useEffect(() => {
+    if (!remote) return;
+    if (!deadline || now < deadline + 1800) return;
+    if (state.phase !== "handOver" && !active) return;
+    const key = `r:${deadline}`;
+    if (firedRef.current === key) return;
+    firedRef.current = key;
+    setJokerPrompt(null);
+    remote.timeout().catch(() => {
+      firedRef.current = ""; // bağlantı hatasında bir sonraki saniyede tekrar dene
+    });
+  });
+  useEffect(() => {
+    if (remote) return;
     if (!timerOn || state.current !== ME || remainingMs > 0 || !deadline) return;
     if (firedRef.current === turnKey) return;
     firedRef.current = turnKey;
@@ -221,7 +273,7 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
           setMessage({ text: t("playAfterDraw"), error: true });
           return;
         }
-        act(() => layWord(dict, state, spec), t("wordLaid", { word }));
+        void act(() => layWord(dict, state, spec), { type: "lay", spec }, t("wordLaid", { word }));
       } else {
         const value = wordValue(word);
         setStaged((prev) => [...prev, { ...spec, jokerLetters, word, value }]);
@@ -231,18 +283,20 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
     });
   };
 
-  const open = () =>
-    act(
-      () => openHand(dict, state, staged.map(({ tileIds, jokerLetters }) => ({ tileIds, jokerLetters }))),
-      t("openedOk"),
-    ) && setStaged([]);
+  const open = async () => {
+    const specs = staged.map(({ tileIds, jokerLetters }) => ({ tileIds, jokerLetters }));
+    if (await act(() => openHand(dict, state, specs), { type: "open", specs }, t("openedOk"))) setStaged([]);
+  };
 
   const extend = (w: TableWord, side: "start" | "end") => {
     const added = selectedTiles.map((t) => t.letter);
     const base = w.tiles.map((t) => t.letter);
     const pattern = side === "start" ? [...added, ...base] : [...base, ...added];
     resolveJokers(pattern, t("jokerWhich"), (jokerLetters) =>
-      act(() => extendWord(dict, state, w.id, side, { tileIds: selected.slice(), jokerLetters })),
+      void act(
+        () => extendWord(dict, state, w.id, side, { tileIds: selected.slice(), jokerLetters }),
+        { type: "extend", wordId: w.id, side, spec: { tileIds: selected.slice(), jokerLetters } },
+      ),
     );
   };
 
@@ -251,7 +305,7 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
       setMessage({ text: t("oneToDiscard"), error: true });
       return;
     }
-    act(() => discardTile(state, selected[0]));
+    void act(() => discardTile(state, selected[0]), { type: "discard", tileId: selected[0] });
   };
 
   const sortBy = (mode: "harf" | "renk") => {
@@ -348,12 +402,12 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
 
       <section className="center">
         <button type="button" className="deck" disabled={!(myTurn && state.phase === "draw")}
-          onClick={() => act(() => drawFromDeck(state))}>
+          onClick={() => void act(() => drawFromDeck(state), { type: "drawDeck" })}>
           <span className="deck-count">{state.deck.length}</span>
           <span>{t("drawDeck")}</span>
         </button>
         <button type="button" className="take" disabled={!(myTurn && state.phase === "draw" && discardTop)}
-          onClick={() => act(() => drawFromDiscard(state))}>
+          onClick={() => void act(() => drawFromDiscard(state), { type: "drawDiscard" })}>
           {discardTop ? <TileView tile={discardTop} size="sm" /> : <span className="slot" />}
           <span>{t("takeLeft")}</span>
         </button>
@@ -367,6 +421,9 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
         </div>
       </section>
 
+      {onLeave && (
+        <button type="button" className="link leave-link" onClick={onLeave}>{t("leaveTable")}</button>
+      )}
       <ul className="log">
         {state.log.slice(-3).reverse().map((l, i) => (
           <li key={state.log.length - i}>{tk(`log.${l.k}`, l.p)}</li>
@@ -479,8 +536,13 @@ export function Game({ dict, state, level, speed, turnSeconds, sound, vibration,
                 <button type="button" className="primary" onClick={onNewGame}>{t("backToMenu")}</button>
               </>
             ) : handOver ? (
-              <button type="button" className="primary" onClick={() => { setShowScores(false); onChange(dealHand(state)); }}>
+              <button type="button" className="primary" onClick={() => {
+                setShowScores(false);
+                if (remote) void remote.nextHand().catch(() => {});
+                else onChange(dealHand(state));
+              }}>
                 {t("nextHand")}
+                {remote && deadline > now ? ` · ${t("nextHandIn", { n: Math.ceil((deadline - now) / 1000) })}` : ""}
               </button>
             ) : (
               <button type="button" className="primary" onClick={() => setShowScores(false)}>{t("close")}</button>

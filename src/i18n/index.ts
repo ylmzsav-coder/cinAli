@@ -49,6 +49,16 @@ export function tk(key: string, params?: Params): string {
 
 export const botNames = (): string[] => CATALOGS[ui].botNames;
 
+/** Motor/sunucu hatasını (code + params) kullanıcının dilinde metne çevirir. */
+export function errorText(e: unknown): string {
+  const err = e as { code?: string; params?: Params };
+  if (err?.code) {
+    const text = tk(`err.${err.code}`, err.params);
+    if (text !== `err.${err.code}`) return text;
+  }
+  return tk("err.network");
+}
+
 export function formatNumber(n: number): string {
   return n.toLocaleString(uiLocale());
 }

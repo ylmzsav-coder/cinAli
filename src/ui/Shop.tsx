@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CHIP_PACKS, TEST_MODE, adsAvailable, buyPack, purchasesAvailable, showRewardedAd } from "../economy/store";
 import { useWallet } from "../economy/useWallet";
 import { AD_REWARD, DAILY_BONUS, wallet } from "../economy/wallet";
-import { t, tk } from "../i18n";
+import { errorText, t } from "../i18n";
 import { Chips } from "./Chips";
 
 export function Shop({ onBack }: { onBack: () => void }) {
@@ -17,10 +17,10 @@ export function Shop({ onBack }: { onBack: () => void }) {
     setMsg(null);
     try {
       const chips = await buyPack(pack);
-      wallet.add(chips, "satin-alma", productId);
+      await wallet.purchase(chips, productId);
       setMsg(t("purchased", { n: chips }));
     } catch (e) {
-      setMsg(tk((e as Error).message));
+      setMsg(errorText(e));
     } finally {
       setBusy(null);
     }
@@ -30,9 +30,12 @@ export function Shop({ onBack }: { onBack: () => void }) {
     setBusy("ad");
     setMsg(null);
     try {
-      if ((await showRewardedAd()) && wallet.rewardAd()) setMsg(t("adRewarded", { n: AD_REWARD }));
+      if (await showRewardedAd()) {
+        await wallet.rewardAd();
+        setMsg(t("adRewarded", { n: AD_REWARD }));
+      }
     } catch (e) {
-      setMsg(tk((e as Error).message));
+      setMsg(errorText(e));
     } finally {
       setBusy(null);
     }
@@ -78,7 +81,7 @@ export function Shop({ onBack }: { onBack: () => void }) {
             <div className="muted small">{t("dailyDesc", { n: DAILY_BONUS })}</div>
           </div>
           <button type="button" disabled={!wallet.canClaimDaily()}
-            onClick={() => wallet.claimDaily() && setMsg(t("dailyToast", { n: DAILY_BONUS }))}>
+            onClick={() => wallet.claimDaily().then(() => setMsg(t("dailyToast", { n: DAILY_BONUS })), (e) => setMsg(errorText(e)))}>
             {wallet.canClaimDaily() ? t("claim") : t("tomorrow")}
           </button>
         </div>
