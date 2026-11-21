@@ -120,7 +120,8 @@ def add_tr_verb_stems(words: list[str]) -> list[str]:
     out = []
     for w in words:
         out.append(w)
-        if w.endswith(("MAK", "MEK")) and len(w) - 3 >= 3:
+        # -ebilmek / -ivermek gibi yardımcı fiillerin kökleri (DÖNEBİL) doğal değil: atlanır
+        if w.endswith(("MAK", "MEK")) and len(w) - 3 >= 3 and not w.endswith(("ABİLMEK", "EBİLMEK", "IVERMEK", "İVERMEK", "UVERMEK", "ÜVERMEK", "ADURMAK", "EDURMAK")):
             stem = w[:-3]
             if stem not in have:
                 have.add(stem)

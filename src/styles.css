@@ -694,3 +694,12 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .tile-sm .tile-joker-j { font-size: calc(var(--tile-sm) * 0.3); }
 .tile-joker-j.top { left: 3px; top: 2px; }
 .tile-joker-j.bottom { right: 3px; bottom: 2px; transform: rotate(180deg); }
+
+/* Tek dokunuşla seçilen per: çerçeve */
+.rack-slot.grp-sel::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -4px; bottom: 2px; pointer-events: none;
+  border-top: 3px solid #ffd54f; border-bottom: 3px solid #ffd54f; background: rgba(255, 213, 79, 0.22);
+}
+.rack-slot.grp-start::before { left: 1px; border-left: 3px solid #ffd54f; border-radius: 10px 0 0 10px; }
+.rack-slot.grp-end::before { right: 1px; border-right: 3px solid #ffd54f; border-radius: 0 10px 10px 0; }
+.rack-slot.grp-start.grp-end::before { border-radius: 10px; }

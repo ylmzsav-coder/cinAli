@@ -32,7 +32,7 @@ import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TE
 import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
-import { Slots, arrangeWords, groupsOf, initialSlots, moveTile, packSlots, syncSlots } from "./rack";
+import { Slots, arrangeWords, groupsOf, initialSlots, moveGroup, moveTile, packSlots, syncSlots } from "./rack";
 
 const ME = 0;
 const SPEED_MS = { yavas: 1100, normal: 650, hizli: 250 } as const;
@@ -57,6 +57,8 @@ interface GroupInfo {
 interface DragState {
   kind: "tile" | "deck" | "take";
   ids: number[];
+  /** Parmakla tutulan taş (seçimle birlikte sürüklenirken). */
+  origin?: number;
   x: number;
   y: number;
   sx: number;
@@ -417,8 +419,16 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
 
   const toggle = (id: number) => {
     play("pick");
+    // Bir per'in (yan yana duran taşların) herhangi bir taşına dokunmak bütün per'i seçer
+    const g = groups.find((x) => x.ids.includes(id));
+    if (g && g.ids.length >= 2) {
+      setSelected((prev) => (g.ids.every((x) => prev.includes(x)) && prev.length === g.ids.length ? [] : g.ids.slice()));
+      return;
+    }
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
+  /** Seçili per (çerçeve çizmek için): seçim tam olarak bir grubun taşlarıysa. */
+  const selectedGroup = groups.find((g) => g.ids.length >= 2 && g.ids.length === selected.length && g.ids.every((x) => selected.includes(x)));
 
   /** Jokerli desen için harf seçtirir; tek seçenek varsa doğrudan uygular. */
   const resolveJokers = (pattern: (Letter | null)[], title: string, then: (letters: Letter[]) => void) => {
@@ -707,6 +717,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     if (!d.active) {
       d.active = true;
       // Seçili bir taş sürükleniyorsa tüm seçim birlikte taşınır (işleme için)
+      d.origin = d.ids[0];
       if (d.kind === "tile" && selectedRef.current.includes(d.ids[0]) && selectedRef.current.length > 1) d.ids = selectedRef.current.slice();
       play("pick");
     }
@@ -732,10 +743,20 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     }
     // Istakadan taş
     if (target.startsWith("slot:")) {
+      const to = Number(target.slice(5));
       if (d.ids.length === 1) {
-        setSlots((sl) => moveTile(sl, d.ids[0], Number(target.slice(5))));
+        setSlots((sl) => moveTile(sl, d.ids[0], to));
         play("drop");
+        return;
       }
+      // Seçili per bütün olarak taşınır (ıstakadaki sırasıyla); sığmazsa yalnızca tutulan taş
+      setSlots((sl) => {
+        const ordered = sl.filter((x): x is number => x !== null && d.ids.includes(x));
+        const grabbed = d.origin ?? d.ids[0];
+        const start = to - Math.max(0, ordered.indexOf(grabbed));
+        return moveGroup(sl, ordered, start) ?? moveTile(sl, grabbed, to);
+      });
+      play("drop");
       return;
     }
     dropActionRef.current(target, d.ids);
@@ -977,11 +998,15 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
               const idx = id !== null ? selected.indexOf(id) : -1;
               const isDragged = !!drag?.active && drag.kind === "tile" && id !== null && drag.ids.includes(id);
               const jokerAs = tile && tile.letter === null ? groups.find((g) => g.ids.includes(tile.id))?.jokerLetters[0] : undefined;
+              const inSel = !!selectedGroup && selectedGroup.slots.includes(i);
+              const frame = inSel
+                ? `grp-sel ${selectedGroup!.slots[0] === i ? "grp-start" : ""} ${selectedGroup!.slots[selectedGroup!.slots.length - 1] === i ? "grp-end" : ""}`
+                : "";
               return (
-                <div key={i} className={`rack-slot ${drag?.target === `slot:${i}` ? "over" : ""}`} data-drop={`slot:${i}`}>
+                <div key={i} className={`rack-slot ${frame} ${drag?.target === `slot:${i}` ? "over" : ""}`} data-drop={`slot:${i}`}>
                   {tile && (
                     <div className={`rack-tile ${isDragged ? "ghosted" : ""}`} {...tileHandlers(tile.id)}>
-                      <TileView tile={tile} as={jokerAs} selected={idx >= 0} order={idx >= 0 && selected.length > 1 ? idx + 1 : undefined}
+                      <TileView tile={tile} as={jokerAs} selected={idx >= 0} order={idx >= 0 && selected.length > 1 && !selectedGroup ? idx + 1 : undefined}
                         onClick={() => !suppressClickRef.current && toggle(tile.id)} />
                     </div>
                   )}

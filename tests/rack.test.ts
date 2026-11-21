@@ -54,3 +54,17 @@ describe("otomatik per dizimi", () => {
     expect(groupsOf(s).map((g) => g.ids)).toEqual([a, b]);
   });
 });
+
+import { moveGroup } from "../src/ui/rack";
+describe("per taşıma", () => {
+  it("seçili per hedefe yan yana taşınır; sığmazsa null", () => {
+    let s = initialSlots([1, 2, 3, 4]);
+    const m = moveGroup(s, [1, 2, 3], 20)!;
+    expect(m.slice(20, 23)).toEqual([1, 2, 3]);
+    expect(m[0]).toBe(null);
+    expect(moveGroup(s, [1, 2, 3], RACK_COLS - 2)).toBe(null); // sıra sonunu aşar
+    expect(moveGroup(s, [1, 2], 3)).toBe(null); // 4 dolu
+    s = moveGroup(s, [2, 3], 1)!; // kendi yerine (kayma)
+    expect(s.slice(0, 4)).toEqual([1, 2, 3, 4]);
+  });
+});

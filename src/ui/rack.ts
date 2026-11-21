@@ -57,6 +57,20 @@ export function moveTile(slots: Slots, id: number, to: number): Slots {
   return next;
 }
 
+/**
+ * Birden çok taşı (seçili per) hedef yuvadan başlayarak yan yana taşır.
+ * Hedef aralık aynı sırada ve (taşınan taşlar dışında) boş değilse null döner.
+ */
+export function moveGroup(slots: Slots, ids: number[], to: number): Slots | null {
+  const n = ids.length;
+  const row = Math.floor(to / RACK_COLS);
+  if (to < 0 || (to % RACK_COLS) + n > RACK_COLS || row >= RACK_ROWS) return null;
+  const next = slots.map((id) => (id !== null && ids.includes(id) ? null : id));
+  for (let k = 0; k < n; k++) if (next[to + k] !== null) return null;
+  ids.forEach((id, k) => (next[to + k] = id));
+  return next;
+}
+
 export interface RackGroup {
   /** Gruptaki taşların yuva numaraları (soldan sağa). */
   slots: number[];

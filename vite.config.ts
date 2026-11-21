@@ -1,10 +1,20 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { createHash } from "node:crypto";
+import { readFileSync, readdirSync } from "node:fs";
+
+/** Sözlük sürümleri: dosya değişince adres (?v=) değişir, telefonlar eski sözlükte kalmaz. */
+const DICT_VERSIONS = Object.fromEntries(
+  readdirSync("public/dict")
+    .filter((f) => f.endsWith(".txt"))
+    .map((f) => [f.slice(0, -4), createHash("sha256").update(readFileSync(`public/dict/${f}`)).digest("hex").slice(0, 10)]),
+);
 
 export default defineConfig({
   // Göreli yol: GitHub Pages alt klasöründe ve yerelde aynı şekilde çalışır.
   base: "./",
+  define: { __DICT_VERSIONS__: JSON.stringify(DICT_VERSIONS) },
   plugins: [
     react(),
     VitePWA({
@@ -17,7 +27,7 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,png}"],
         runtimeCaching: [
           {
-            urlPattern: /\/dict\/[a-z]{2}\.txt$/,
+            urlPattern: /\/dict\/[a-z]{2}\.txt(\?.*)?$/,
             handler: "CacheFirst",
             options: { cacheName: "cinali-dict", expiration: { maxEntries: 10 } },
           },
