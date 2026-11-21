@@ -44,6 +44,16 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </select>
         </label>
       </div>
+      <div className="toggles">
+        <button type="button" className={`toggle ${settings.sound ? "on" : ""}`} aria-pressed={settings.sound}
+          onClick={() => onSettings({ ...settings, sound: !settings.sound })}>
+          {settings.sound ? "🔊" : "🔇"} {t("sound")}
+        </button>
+        <button type="button" className={`toggle ${settings.vibration ? "on" : ""}`} aria-pressed={settings.vibration}
+          onClick={() => onSettings({ ...settings, vibration: !settings.vibration })}>
+          📳 {t("vibration")}
+        </button>
+      </div>
       {!LANGS[settings.uiLang].playable && (
         <p className="muted small">{t("wordLangSoon", { lang: LANGS[settings.uiLang].name })}</p>
       )}

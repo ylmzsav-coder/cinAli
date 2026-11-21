@@ -40,6 +40,8 @@ const tr = {
   timerOff: "Kapalı",
   secondsN: "{n} sn",
   timeLeft: "Kalan süre: {n} saniye",
+  sound: "Ses",
+  vibration: "Titreşim",
   start: "Başla",
 
   // Masalar

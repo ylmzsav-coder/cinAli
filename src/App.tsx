@@ -154,6 +154,8 @@ export function App() {
             level={saved.settings.level}
             speed={settings.speed}
             turnSeconds={saved.settings.turnSeconds ?? TABLE_TURN_SECONDS}
+            sound={settings.sound}
+            vibration={settings.vibration}
             onChange={update}
             onExit={() => setScreen("hub")}
             onNewGame={finishGame}

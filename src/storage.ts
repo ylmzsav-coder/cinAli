@@ -14,6 +14,10 @@ export interface Settings {
   gameLang: LangCode;
   /** Hamle süresi (saniye); 0 = kapalı. */
   turnSeconds: number;
+  /** Son saniyelerde tık sesi. */
+  sound: boolean;
+  /** Son saniyelerde titreşim. */
+  vibration: boolean;
 }
 
 /** Çipli masalarda sabit hamle süresi. */
@@ -29,7 +33,7 @@ function deviceLang(): LangCode {
 
 export function defaultSettings(): Settings {
   const ui = deviceLang();
-  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 30 };
+  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 30, sound: true, vibration: true };
 }
 
 const KEY_SETTINGS = "cinali.settings";

@@ -39,6 +39,8 @@ const it: Messages = {
   timerOff: "Disattivato",
   secondsN: "{n} s",
   timeLeft: "Tempo rimasto: {n} secondi",
+  sound: "Suono",
+  vibration: "Vibrazione",
   start: "Inizia",
 
   tablesDesc: "La quota d'ingresso viene addebitata quando ti siedi. Il primo vince il 90% del piatto. Con una Chiusura a colore ricevi un bonus pari alla quota!",

@@ -39,6 +39,8 @@ const fr: Messages = {
   timerOff: "Désactivé",
   secondsN: "{n} s",
   timeLeft: "Temps restant : {n} secondes",
+  sound: "Son",
+  vibration: "Vibration",
   start: "Jouer",
 
   tablesDesc: "La mise est prélevée quand vous vous asseyez. Le premier remporte 90 % du pot. Une Finition couleur rapporte en plus un bonus égal à la mise !",

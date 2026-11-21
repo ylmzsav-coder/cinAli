@@ -39,6 +39,8 @@ const es: Messages = {
   timerOff: "Desactivado",
   secondsN: "{n} s",
   timeLeft: "Tiempo restante: {n} segundos",
+  sound: "Sonido",
+  vibration: "Vibración",
   start: "Empezar",
 
   tablesDesc: "La entrada se cobra al sentarte. El primero gana el 90 % del bote. ¡Si terminas todo de un color, ganas un extra igual a la entrada!",

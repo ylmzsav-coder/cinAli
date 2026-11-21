@@ -39,6 +39,8 @@ const pt: Messages = {
   timerOff: "Desligado",
   secondsN: "{n} s",
   timeLeft: "Tempo restante: {n} segundos",
+  sound: "Som",
+  vibration: "Vibração",
   start: "Começar",
 
   tablesDesc: "A entrada é cobrada quando você se senta. O primeiro lugar leva 90% do pote. Termine tudo em uma cor e ganhe um bônus igual à entrada!",

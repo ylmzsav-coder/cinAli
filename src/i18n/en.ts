@@ -39,6 +39,8 @@ const en: Messages = {
   timerOff: "Off",
   secondsN: "{n} s",
   timeLeft: "Time left: {n} seconds",
+  sound: "Sound",
+  vibration: "Vibration",
   start: "Start",
 
   tablesDesc: "The entry fee is taken when you sit down. First place wins 90% of the pot. Finish all in one colour for a bonus equal to the entry fee!",

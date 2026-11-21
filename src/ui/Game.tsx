@@ -21,11 +21,14 @@ import {
   totals,
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, wordValue } from "../game/tiles";
+import { buzz, tick } from "../feedback";
 import { formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
 
 const ME = 0;
 const SPEED_MS = { yavas: 1100, normal: 650, hizli: 250 } as const;
+/** Son kaç saniyede ses/titreşim uyarısı verilir. */
+const WARN_SECONDS = 5;
 
 interface Staged {
   tileIds: number[];
@@ -48,6 +51,9 @@ interface Props {
   speed: keyof typeof SPEED_MS;
   /** Hamle süresi (saniye); 0 = kapalı. */
   turnSeconds: number;
+  /** Son 5 saniyede ses / titreşim. */
+  sound: boolean;
+  vibration: boolean;
   onChange: (s: GameState) => void;
   onExit: () => void;
   onNewGame: () => void;
@@ -57,7 +63,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ dict, state, level, speed, turnSeconds, onChange, onExit, onNewGame, tableName, payout }: Props) {
+export function Game({ dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, tableName, payout }: Props) {
   const me = state.players[ME];
   const [order, setOrder] = useState<number[]>(() => me.rack.map((t) => t.id));
   const [selected, setSelected] = useState<number[]>([]);
@@ -145,6 +151,19 @@ export function Game({ dict, state, level, speed, turnSeconds, onChange, onExit,
       return false;
     }
   };
+
+  // Son 5 saniye: sizin sıranızda her saniye tık sesi ve titreşim (saniye başına bir kez)
+  const warnedRef = useRef("");
+  useEffect(() => {
+    if (!timerOn || state.current !== ME || !deadline) return;
+    if (secondsLeft < 1 || secondsLeft > WARN_SECONDS) return;
+    const key = `${turnKey}:${secondsLeft}`;
+    if (warnedRef.current === key) return;
+    warnedRef.current = key;
+    const final = secondsLeft === 1;
+    if (sound) tick(final);
+    if (vibration) buzz(final);
+  });
 
   // Süre dolunca: sizin sıranızdaysa otomatik çek/at (her tur için bir kez)
   const firedRef = useRef("");
@@ -386,7 +405,7 @@ export function Game({ dict, state, level, speed, turnSeconds, onChange, onExit,
       <section className={`rack ${myTurn ? "my-turn" : ""} ${timerStyle(ME) ? "timed" : ""}`} aria-label={t("rackAria")}
         style={timerStyle(ME)}>
         {timerStyle(ME) && (
-          <span className="timer-badge" style={{ background: timerColor }} role="timer" aria-label={t("timeLeft", { n: secondsLeft })}>
+          <span className={`timer-badge ${secondsLeft <= WARN_SECONDS ? "urgent" : ""}`} style={{ background: timerColor }} role="timer" aria-label={t("timeLeft", { n: secondsLeft })}>
             ⏱ {secondsLeft}
           </span>
         )}

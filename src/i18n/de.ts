@@ -39,6 +39,8 @@ const de: Messages = {
   timerOff: "Aus",
   secondsN: "{n} s",
   timeLeft: "Verbleibende Zeit: {n} Sekunden",
+  sound: "Ton",
+  vibration: "Vibration",
   start: "Los",
 
   tablesDesc: "Der Einsatz wird beim Hinsetzen abgezogen. Der Erste gewinnt 90 % des Pots. Für ein Farbfinish gibt es zusätzlich einen Bonus in Höhe des Einsatzes!",
