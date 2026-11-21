@@ -67,10 +67,10 @@ export const loadSettings = (): Settings => {
   if (!LANGS[s.gameLang]?.playable) s.gameLang = "en";
   // Eski sürümlerin varsayılan adı
   if (s.name === "Sen") s.name = "";
-  // Eski varsayılan hamle süresi (30 sn) yeni varsayılana (60 sn) taşınır
-  if (s.turnSeconds === 30 && !(read<{ v?: number }>(KEY_SETTINGS + ".v")?.v)) {
+  // Eski 30 sn hamle süresi kaldırıldı: 60 sn'ye taşınır ve kalıcı kaydedilir
+  if (!(s.turnSeconds >= 45 || s.turnSeconds === 0)) {
     s.turnSeconds = 60;
-    write(KEY_SETTINGS + ".v", { v: 2 });
+    write(KEY_SETTINGS, s);
   }
   return s;
 };

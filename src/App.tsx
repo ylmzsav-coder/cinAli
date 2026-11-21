@@ -238,7 +238,7 @@ export function App() {
             state={saved.state}
             level={saved.settings.level}
             speed={settings.speed}
-            turnSeconds={saved.settings.turnSeconds ?? TABLE_TURN_SECONDS}
+            turnSeconds={saved.tableId ? TABLE_TURN_SECONDS : settings.turnSeconds}
             sound={settings.sound}
             vibration={settings.vibration}
             chatEnabled={settings.chat}
