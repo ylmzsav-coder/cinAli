@@ -297,3 +297,10 @@ describe("Türkçe sözlük", () => {
     for (const w of ["TUT", "GİT", "OKU", "GEL", "TUTMAK", "PER", "ÖĞE", "ABİ", "OTO", "ISTAKA", "YAZBOZ", "KOALA", "SUDOKU"]) expect(dict.has(w), w).toBe(true);
   });
 });
+
+describe("Türkçe sözlükte küfür yok", () => {
+  it("küfür listesindeki kelimeler oynanamaz, masum benzerleri oynanır", () => {
+    for (const w of ["OROSPU", "SİKMEK", "PİÇ", "GÖT", "KAHPE", "ŞEREFSİZ"]) expect(dict.has(w), w).toBe(false);
+    for (const w of ["GÖTÜRMEK", "SİKKE", "MUSİKİ", "PSİKİYATRİ"]) expect(dict.has(w), w).toBe(true);
+  });
+});

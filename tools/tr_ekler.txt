@@ -12069,3 +12069,10 @@ ZORLAYABİLMEK
 ZURNAZENLİK
 ZÜCCACİYECİLİK
 ZÜRRİYETSİZLİK
+# Önceki küfür süzgecinin yanlışlıkla elediği masum kelimeler (götürmek, musiki, psikiyatri…).
+GÖTÜREBİLME
+GÖTÜREBİLMEK
+GÖTÜRÜLÜŞ
+LAMİNANT
+MUSİKİŞİNASLIK
+NAMINA

@@ -172,5 +172,23 @@ if __name__ == "__main__":
         with open(path, "w", encoding="utf-8") as f:
             f.write("\n".join(ws + new) + "\n")
         print(f"tr: +{len(new)} elle eklenen kelime: {' '.join(new)}")
+    elif sys.argv[1:2] == ["tr-kufur"]:
+        # Küfür listesindeki kelimeleri (tam eşleşme ya da küfür kökleriyle başlayan) sözlükten çıkarır
+        lists = json.load(open("functions/src/profanity_lists.json", encoding="utf-8"))["tr"]
+        low = str.maketrans("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ", "abcçdefgğhıijklmnoöprsştuüvyz")
+        words = {w for w in lists["words"] if " " not in w}
+        stems, allow = lists["stems"], set(lists["allow"])
+
+        def profane(w: str) -> bool:
+            w = w.translate(low)
+            return w not in allow and (w in words or any(w.startswith(s) for s in stems))
+
+        path = "public/dict/tr.txt"
+        with open(path, encoding="utf-8") as f:
+            ws = [w for w in f.read().split("\n") if w]
+        out = [w for w in ws if not profane(w)]
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("\n".join(out) + "\n")
+        print(f"tr: -{len(ws) - len(out)} küfür: {' '.join(w for w in ws if profane(w))}")
     else:
         main(*sys.argv[1:4])
