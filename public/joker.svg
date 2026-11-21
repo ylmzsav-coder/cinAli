@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="44 6 120 206">
+  <!-- Word Okey okey taşı karakteri: mavi şapkalı, kırmızı bağcıklı ayakkabılı çöp adam -->
+  <g fill="none" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <!-- gövde -->
+    <path d="M104 78 Q100 110 98 142"/>
+    <!-- sol kol (aşağıda, hafif dirsekli) -->
+    <path d="M102 92 L76 112 L58 136"/>
+    <path d="M58 136 l-7 4 M58 136 l-3 8 M58 136 l3 7" stroke-width="4"/>
+    <!-- sağ kol (aşağıda, öne uzanan) -->
+    <path d="M102 92 L130 110 L150 130"/>
+    <path d="M150 130 l8 2 M150 130 l6 6 M150 130 l1 8" stroke-width="4"/>
+    <!-- bacaklar (dans adımı) -->
+    <path d="M98 142 L78 172 L72 200"/>
+    <path d="M98 142 L120 168 L132 198"/>
+  </g>
+  <!-- kafa -->
+  <path d="M90 50 Q88 30 108 28 Q126 28 128 44 L134 52 L128 55 Q129 66 120 72 Q108 78 98 72 Q90 64 90 50 Z"
+        fill="#f8d9b4" stroke="#1a1a1a" stroke-width="4" stroke-linejoin="round"/>
+  <!-- göz, gülümseme -->
+  <circle cx="119" cy="47" r="3.2" fill="#1a1a1a"/>
+  <path d="M112 62 Q119 66 125 60" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+  <!-- mavi şapka (siperlik öne) -->
+  <path d="M86 44 Q86 16 112 14 Q134 14 136 36 Z" fill="#1e63c8" stroke="#0d3c80" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M120 34 Q142 30 156 38 Q144 44 124 42 Z" fill="#1e63c8" stroke="#0d3c80" stroke-width="3.5" stroke-linejoin="round"/>
+  <circle cx="110" cy="14" r="4.5" fill="#0d3c80"/>
+  <path d="M96 22 Q108 18 120 22" fill="none" stroke="#5c9cff" stroke-width="3" stroke-linecap="round"/>
+  <!-- kırmızı bağcıklı ayakkabılar -->
+  <g stroke="#7a0b0b" stroke-width="3" stroke-linejoin="round">
+    <path d="M58 196 Q58 188 68 188 L78 190 Q86 194 86 202 L86 206 L56 206 Q52 206 54 200 Z" fill="#e02424"/>
+    <path d="M122 194 Q124 188 132 188 L140 190 Q154 194 156 202 L156 206 L124 206 Q120 206 121 200 Z" fill="#e02424"/>
+  </g>
+  <!-- bağcıklar: çapraz geçişler ve fiyonk -->
+  <g fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round">
+    <path d="M64 196 L72 191 M64 191 L72 196 M66 200 L74 195"/>
+    <path d="M128 196 L136 191 M128 191 L136 196 M130 200 L138 195"/>
+    <path d="M70 190 q-7 -7 -9 -1 q3 4 9 1 q7 -7 9 -1 q-3 4 -9 1 M70 190 l-4 6 M70 190 l5 6"/>
+    <path d="M134 190 q-7 -7 -9 -1 q3 4 9 1 q7 -7 9 -1 q-3 4 -9 1 M134 190 l-4 6 M134 190 l5 6"/>
+  </g>
+  <path d="M54 206 L86 206 M120 206 L156 206" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- ayakkabı tabanı -->
+  <path d="M54 208 L87 208 M120 208 L157 208" stroke="#1a1a1a" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

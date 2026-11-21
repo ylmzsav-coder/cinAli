@@ -13,7 +13,7 @@ interface Props {
 }
 
 /** Okey (joker) taşının resmi. */
-const JOKER_IMG = `${import.meta.env.BASE_URL}joker.png`;
+const JOKER_IMG = `${import.meta.env.BASE_URL}joker.svg`;
 
 export function TileView({ tile, as, size = "md", selected, order, onClick, dim }: Props) {
   const isJoker = tile.letter === null;

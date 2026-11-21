@@ -688,7 +688,7 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .table .word.pair .word-tiles { cursor: default; }
 
 /* Okey taşı resmi */
-.tile-joker-img { width: 74%; height: 60%; object-fit: contain; pointer-events: none; user-select: none; }
+.tile-joker-img { width: 58%; height: 66%; margin-bottom: 8%; object-fit: contain; pointer-events: none; user-select: none; }
 .tile-joker-mini { position: absolute; left: 1px; top: 1px; width: 38%; height: 38%; object-fit: contain; pointer-events: none; }
 .tile-joker-j { position: absolute; font-weight: 900; color: #3a3a3a; line-height: 1; font-size: calc(var(--tile-w) * 0.3); pointer-events: none; }
 .tile-sm .tile-joker-j { font-size: calc(var(--tile-sm) * 0.3); }
