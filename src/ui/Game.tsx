@@ -428,6 +428,8 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     }
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
+  const toggleRef = useRef(toggle);
+  toggleRef.current = toggle;
   /** Seçili per (çerçeve çizmek için): seçim tam olarak bir grubun taşlarıysa. */
   const selectedGroup = groups.find((g) => g.ids.length >= 2 && g.ids.length === selected.length && g.ids.every((x) => selected.includes(x)));
 
@@ -566,6 +568,30 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   };
 
   /** Otomatik per: en değerli kelimeleri bulup ıstakaya kelime kelime dizer. */
+  // ---- Kelimeye harf eklenince toplamın artışı "+N" olarak bir süre gösterilir ----
+  const prevTotalsRef = useRef<Map<number, number> | null>(null);
+  const [wordGain, setWordGain] = useState<Record<number, { n: number; key: number }>>({});
+  useEffect(() => {
+    const now = new Map(state.table.map((w) => [w.id, placedValue(w.tiles)]));
+    const prev = prevTotalsRef.current;
+    prevTotalsRef.current = now;
+    if (!prev) return;
+    const gains: Record<number, { n: number; key: number }> = {};
+    now.forEach((v, id) => {
+      const before = prev.get(id);
+      if (before !== undefined && v > before) gains[id] = { n: v - before, key: Date.now() };
+    });
+    if (!Object.keys(gains).length) return;
+    setWordGain((g) => ({ ...g, ...gains }));
+    const ids = Object.keys(gains).map(Number);
+    const timer = setTimeout(() => setWordGain((g) => {
+      const next = { ...g };
+      ids.forEach((id) => { if (next[id]?.key === gains[id].key) delete next[id]; });
+      return next;
+    }), 3500);
+    return () => clearTimeout(timer);
+  }, [state.table]);
+
   // ---- Kelime anlamı: yerdeki kelimeye dokununca Vikisözlük'ten ----
   const [meaning, setMeaning] = useState<{ word: string; status: "loading" | "ok" | "none" | "error"; data?: Meaning } | null>(null);
   const meaningReq = useRef(0);
@@ -696,6 +722,17 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
       window.removeEventListener("pointercancel", cancel);
+      // Dokunma (sürüklemeden): taşı seç. Tarayıcının "click" olayına güvenilmez;
+      // bir sürüklemeden sonraki ilk dokunuşta bazı tarayıcılar click üretmiyor.
+      const d = dragRef.current;
+      if (d && !d.active) {
+        dragRef.current = null;
+        suppressClickRef.current = true;
+        setTimeout(() => (suppressClickRef.current = false), 450);
+        if (d.kind === "tile") toggleRef.current(d.ids[0]);
+        else if (canDrawRef.current) (d.kind === "deck" ? drawDeckRef.current : drawTakeRef.current)();
+        return;
+      }
       endDrag();
     };
     const cancel = () => {
@@ -907,7 +944,10 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                   </div>
                   <div className="word-foot">
                     <span className="word-owner">{state.players[w.owner].name} {w.pair ? <span className="word-info">{t("pairChip")}</span> : <span className="word-info" aria-hidden>📖</span>}</span>
-                    <span className="word-total">{t("wordTotal", { n: placedValue(w.tiles) })}</span>
+                    <span className={`word-total ${wordGain[w.id] ? "gained" : ""}`} key={wordGain[w.id]?.key ?? 0}>
+                      {t("wordTotal", { n: placedValue(w.tiles) })}
+                      {wordGain[w.id] && <span className="word-gain"> +{wordGain[w.id].n}</span>}
+                    </span>
                   </div>
                 </div>
               );
