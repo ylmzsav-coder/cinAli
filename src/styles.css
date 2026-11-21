@@ -728,3 +728,8 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .close-game { background: #3b1f1c; color: #ffd9d4; border: 1px solid #b3261e; }
 .closed-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 100dvh; text-align: center; }
 .closed-title { font-size: 1.6rem; font-weight: 800; }
+
+/* Hoş geldin hediyesi */
+.welcome-modal { max-width: 460px; text-align: center; }
+.welcome-gift { font-size: 3rem; margin: 0; line-height: 1; animation: total-pop 1.2s ease-out; }
+.welcome-modal .modal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }

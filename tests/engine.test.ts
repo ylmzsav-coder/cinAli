@@ -311,3 +311,11 @@ describe("Türkçe sözlükte küfür yok", () => {
     for (const w of ["GÖTÜRMEK", "SİKKE", "MUSİKİ", "PSİKİYATRİ"]) expect(dict.has(w), w).toBe(true);
   });
 });
+
+import { WELCOME_CHIPS, WELCOME_GAMES } from "../src/economy/config";
+describe("hoş geldin hediyesi", () => {
+  it("en ucuz masada 3 oyunluk çip", () => {
+    expect(WELCOME_GAMES).toBe(3);
+    expect(WELCOME_CHIPS).toBe(WELCOME_GAMES * TABLES[0].entry);
+  });
+});

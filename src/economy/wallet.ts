@@ -7,9 +7,9 @@
  */
 import { doc, onSnapshot } from "firebase/firestore";
 import { CLOUD, call, currentUser, firestore } from "../online/cloud";
-import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, TxReason, WELCOME_CHIPS, dayKey } from "./config";
+import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, TxReason, WELCOME_CHIPS, WELCOME_GAMES, dayKey } from "./config";
 
-export { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, WELCOME_CHIPS };
+export { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, WELCOME_CHIPS, WELCOME_GAMES };
 export type { TxReason };
 
 export interface WalletData {
@@ -19,6 +19,8 @@ export interface WalletData {
   adsToday: number;
   /** Sunucu modunda ilk veri geldi mi. */
   ready: boolean;
+  /** Cüzdan bu açılışta yeni oluşturuldu (hoş geldin hediyesi verildi). */
+  welcome?: boolean;
 }
 
 type Listener = (d: WalletData) => void;
@@ -85,7 +87,17 @@ class LocalWallet extends Base implements WalletApi {
       adsDay: stored?.adsDay ?? null,
       adsToday: stored?.adsToday ?? 0,
       ready: true,
+      welcome: !stored,
     };
+    // Yeni cüzdan hemen kaydedilir (hediye bir kez verilir)
+    if (!stored) {
+      try {
+        const { balance, lastDaily, adsDay, adsToday } = this.data;
+        localStorage.setItem(KEY, JSON.stringify({ balance, lastDaily, adsDay, adsToday }));
+      } catch {
+        /* depolama yoksa oturum boyunca bellekte kalır */
+      }
+    }
   }
 
   private commit(amount: number, patch: Partial<WalletData> = {}) {
@@ -134,11 +146,12 @@ class CloudWallet extends Base implements WalletApi {
     this.started = true;
     currentUser()
       .then(async (user) => {
-        await call("bootstrap", { name });
+        const res = (await call("bootstrap", { name })) as { welcome?: boolean } | undefined;
+        const welcome = !!res?.welcome;
         onSnapshot(doc(firestore(), "wallets", user.uid), (snap) => {
           const d = snap.data();
           if (!d) return;
-          this.emit({ balance: d.balance, lastDaily: d.lastDaily ?? null, adsDay: d.adsDay ?? null, adsToday: d.adsToday ?? 0, ready: true });
+          this.emit({ balance: d.balance, lastDaily: d.lastDaily ?? null, adsDay: d.adsDay ?? null, adsToday: d.adsToday ?? 0, ready: true, welcome });
         });
       })
       .catch(() => {

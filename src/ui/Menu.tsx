@@ -2,10 +2,10 @@ import { canCloseGame, closeGame } from "../exit";
 import { stopMusic } from "../music";
 import { useState } from "react";
 import { useWallet } from "../economy/useWallet";
-import { DAILY_BONUS, wallet } from "../economy/wallet";
+import { DAILY_BONUS, WELCOME_CHIPS, WELCOME_GAMES, wallet } from "../economy/wallet";
 import type { BotLevel } from "../game/bot";
 import { LANGS, LANG_ORDER, LangCode, PLAYABLE_LANGS } from "../game/lang";
-import { errorText, t } from "../i18n";
+import { errorText, formatNumber, t } from "../i18n";
 import { Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { Chips } from "./Chips";
@@ -26,6 +26,22 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   const [closeAsk, setCloseAsk] = useState(false);
+  // Yeni oyuncuya hoş geldin hediyesi (bir kez gösterilir)
+  const [welcomeSeen, setWelcomeSeen] = useState(() => {
+    try {
+      return localStorage.getItem("wordokey.welcomeSeen") === "1";
+    } catch {
+      return false;
+    }
+  });
+  const closeWelcome = () => {
+    setWelcomeSeen(true);
+    try {
+      localStorage.setItem("wordokey.welcomeSeen", "1");
+    } catch {
+      /* yok say */
+    }
+  };
   const [closed, setClosed] = useState(false);
   const doClose = async () => {
     setCloseAsk(false);
@@ -121,6 +137,19 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
       </div>
       {!LANGS[settings.uiLang].playable && (
         <p className="muted small">{t("wordLangSoon", { lang: LANGS[settings.uiLang].name })}</p>
+      )}
+      {w.welcome && !welcomeSeen && (
+        <div className="modal-bg" onClick={closeWelcome}>
+          <div className="modal welcome-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t("welcomeTitle")}>
+            <p className="welcome-gift" aria-hidden>🎁</p>
+            <h3>{t("welcomeTitle")}</h3>
+            <p>{t("welcomeText", { games: WELCOME_GAMES, chips: formatNumber(WELCOME_CHIPS) })}</p>
+            <div className="modal-actions">
+              <button type="button" className="primary" onClick={() => { closeWelcome(); onTables(); }}>{t("welcomePlay")}</button>
+              <button type="button" onClick={closeWelcome}>{t("welcomeOk")}</button>
+            </div>
+          </div>
+        </div>
       )}
       {closeAsk && (
         <div className="modal-bg" onClick={() => setCloseAsk(false)}>

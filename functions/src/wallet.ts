@@ -20,12 +20,13 @@ export const bootstrap = onCall(async (req) => {
   return db.runTransaction(async (t) => {
     const snap = await t.get(walletRef(uid));
     let w = snap.data() as WalletDoc | undefined;
+    const created = !w;
     if (!w) {
       const empty: WalletDoc = { balance: 0, lastDaily: null, adsDay: null, adsToday: 0, createdAt: Date.now() };
       w = applyTx(t, uid, empty, WELCOME_CHIPS, "hosgeldin");
       t.set(db.collection("users").doc(uid), { name, createdAt: Date.now() });
     }
-    return view(w);
+    return { ...view(w), welcome: created };
   });
 });
 
