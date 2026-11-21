@@ -686,3 +686,7 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .rack-actions .primary.pair-mode { background: linear-gradient(#ffb74d, #f57c00); color: #2b1600; }
 .pair-chip { border-color: #ffb74d !important; color: #ffe0b2 !important; }
 .table .word.pair .word-tiles { cursor: default; }
+
+/* Okey taşı resmi */
+.tile-joker-img { width: 92%; height: 82%; object-fit: contain; pointer-events: none; user-select: none; }
+.tile-joker-mini { position: absolute; left: 1px; top: 1px; width: 38%; height: 38%; object-fit: contain; pointer-events: none; }

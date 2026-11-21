@@ -12,6 +12,9 @@ interface Props {
   dim?: boolean;
 }
 
+/** Okey (joker) taşının resmi. */
+const JOKER_IMG = `${import.meta.env.BASE_URL}joker.png`;
+
 export function TileView({ tile, as, size = "md", selected, order, onClick, dim }: Props) {
   const isJoker = tile.letter === null;
   const letter = tile.letter ?? as;
@@ -25,9 +28,9 @@ export function TileView({ tile, as, size = "md", selected, order, onClick, dim 
   ].join(" ");
   const content = (
     <>
-      <span className="tile-letter">{letter ?? "★"}</span>
+      {letter ? <span className="tile-letter">{letter}</span> : <img className="tile-joker-img" src={JOKER_IMG} alt="" draggable={false} />}
       {letter && <span className="tile-value">{letterValue(letter)}</span>}
-      {isJoker && <span className="tile-star">★</span>}
+      {isJoker && letter && <img className="tile-joker-mini" src={JOKER_IMG} alt="" draggable={false} />}
       {order !== undefined && <span className="tile-order">{order}</span>}
     </>
   );
