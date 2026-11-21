@@ -1,0 +1,32 @@
+# Sözlüğe elle eklenen Türkçe kelimeler (kaynak listede eksik olanlar).
+# Her satıra bir kelime; büyük harf. "python3 tools/build_dict.py tr-ekler" ile tr.txt'ye eklenir.
+# 3 harfliler: Vikisözlük Türkçe maddelerinden seçildi (yöresel ağız, çekimli hâl, yazım hatası ve kısaltmalar hariç).
+ABİ
+BAM
+BİP
+BİS
+DUO
+FÖY
+GAG
+İDE
+KAF
+KİÇ
+LEV
+MOD
+NAH
+ONU
+OTO
+ÖĞE
+ÖNE
+PED
+PER
+PİT
+PLİ
+RİA
+RİK
+RİT
+RUA
+RUT
+RÜN
+SUŞ
+UFO

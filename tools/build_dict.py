@@ -159,5 +159,17 @@ if __name__ == "__main__":
         with open(path, "w", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
         print(f"tr: {len(ws)} -> {len(out)} kelime (+{len(out) - len(ws)} fiil kökü)")
+    elif sys.argv[1:2] == ["tr-ekler"]:
+        # tools/tr_ekler.txt'deki elle eklenen kelimeleri tr.txt'ye ekler
+        path = "public/dict/tr.txt"
+        with open(path, encoding="utf-8") as f:
+            ws = [w for w in f.read().split("\n") if w]
+        have = set(ws)
+        with open("tools/tr_ekler.txt", encoding="utf-8") as f:
+            extra = [w.strip() for w in f if w.strip() and not w.startswith("#")]
+        new = [w for w in extra if w not in have]
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("\n".join(ws + new) + "\n")
+        print(f"tr: +{len(new)} elle eklenen kelime: {' '.join(new)}")
     else:
         main(*sys.argv[1:4])
