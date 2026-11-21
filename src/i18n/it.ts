@@ -264,7 +264,7 @@ const it: Messages = {
   how_1: "Trascina le tessere col dito in qualsiasi posto del leggio. Le tessere vicine formano una parola; lascia spazi tra le parole.",
   how_2: "Sopra il leggio compare il valore di ogni parola. Arrivato a {need}, premi Apri.",
   how_3: "Dopo l'apertura trascina una tessera all'inizio o alla fine di una parola sul tavolo; per pescare, trascina dal mazzo o da sinistra al leggio.",
-  how_4: "Per finire il turno, trascina una tessera nella zona scarti a destra (o selezionala e premi Scarta).",
+  how_4: "Per finire il turno, trascina una tessera nella zona scarti a destra.",
   distTitle: "Distribuzione delle tessere ({lang})",
   dictSource: "Fonti dei dizionari: Wikizionario (CC BY-SA), dizionari Hunspell (MIT/BSD, MPL), FrequencyWords (CC BY-SA).",
 };

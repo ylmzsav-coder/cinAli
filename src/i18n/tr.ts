@@ -271,7 +271,7 @@ const tr = {
   how_1: "Taşları parmağınızla sürükleyip ıstakada istediğiniz yuvaya koyun. Yan yana duran taşlar bir kelimedir; kelimeler arasında boşluk bırakın.",
   how_2: "Istakanın üstünde her kelimenin değeri görünür. Toplam {need}'e ulaşınca Eli Aç'a basın.",
   how_3: "Açtıktan sonra taşı yerdeki bir kelimenin başına ya da sonuna sürükleyerek işleyin; çekmek için desteden ya da soldan taşı ıstakaya sürükleyin.",
-  how_4: "Turu bitirmek için bir taşı sağdaki atma alanına sürükleyin (ya da seçip Taş At'a basın).",
+  how_4: "Turu bitirmek için bir taşı sağdaki atma alanına sürükleyin.",
   distTitle: "Taş dağılımı ({lang})",
   dictSource: "Sözlük kaynakları: Vikisözlük (CC BY-SA), Hunspell sözlükleri (MIT/BSD, MPL), FrequencyWords (CC BY-SA).",
 };

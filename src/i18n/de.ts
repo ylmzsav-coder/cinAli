@@ -264,7 +264,7 @@ const de: Messages = {
   how_1: "Ziehe Steine mit dem Finger auf einen beliebigen Platz der Ablage. Nebeneinander liegende Steine bilden ein Wort; lass Lücken zwischen Wörtern.",
   how_2: "Über der Ablage steht der Wert jedes Wortes. Erreicht die Summe {need}, tippe auf Auslegen.",
   how_3: "Nach dem Auslegen ziehe einen Stein an den Anfang oder das Ende eines Wortes auf dem Tisch; zum Ziehen den Stein vom Stapel oder von links auf die Ablage ziehen.",
-  how_4: "Zum Beenden des Zugs einen Stein in den Abwurfbereich rechts ziehen (oder auswählen und Abwerfen tippen).",
+  how_4: "Zum Beenden des Zugs einen Stein in den Abwurfbereich rechts ziehen.",
   distTitle: "Steinverteilung ({lang})",
   dictSource: "Wörterbuchquellen: Wiktionary (CC BY-SA), Hunspell-Wörterbücher (MIT/BSD, MPL), FrequencyWords (CC BY-SA).",
 };

@@ -264,7 +264,7 @@ const es: Messages = {
   how_1: "Arrastra las fichas con el dedo a cualquier hueco del atril. Las fichas juntas forman una palabra; deja huecos entre palabras.",
   how_2: "Encima del atril se ve el valor de cada palabra. Al llegar a {need}, pulsa Abrir.",
   how_3: "Después de abrir, arrastra una ficha al principio o al final de una palabra de la mesa; para robar, arrastra desde el mazo o la izquierda al atril.",
-  how_4: "Para terminar el turno, arrastra una ficha a la zona de descarte de la derecha (o selecciónala y pulsa Descartar).",
+  how_4: "Para terminar el turno, arrastra una ficha a la zona de descarte de la derecha.",
   distTitle: "Reparto de fichas ({lang})",
   dictSource: "Fuentes de los diccionarios: Wikcionario (CC BY-SA), diccionarios Hunspell (MIT/BSD, MPL), FrequencyWords (CC BY-SA).",
 };

@@ -264,7 +264,7 @@ const en: Messages = {
   how_1: "Drag tiles with your finger to any slot on the rack. Tiles side by side form a word; leave gaps between words.",
   how_2: "Each word's value is shown above the rack. When the total reaches {need}, press Open.",
   how_3: "After opening, drag a tile to the start or end of a word on the table to add it; to draw, drag from the deck or the left pile onto your rack.",
-  how_4: "To end your turn, drag a tile to the discard area on the right (or select it and press Discard).",
+  how_4: "To end your turn, drag a tile to the discard area on the right.",
   distTitle: "Tile distribution ({lang})",
   dictSource: "Dictionary sources: Wiktionary (CC BY-SA), Hunspell dictionaries (MIT/BSD, MPL), FrequencyWords (CC BY-SA).",
 };

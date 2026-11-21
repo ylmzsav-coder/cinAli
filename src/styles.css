@@ -626,6 +626,10 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 }
 .okey .rack-actions > .primary { grid-column: 1 / -1; }
 .okey .rack-actions > .sort-row { grid-column: 1 / -1; }
+.okey .rack-actions > .auto-btn { grid-column: 1 / -1; }
+.okey .rack-actions > .primary { grid-row: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; overflow: hidden; }
+.open-title { font-weight: 800; }
+.open-words { font-size: 0.7rem; font-weight: 700; line-height: 1.15; opacity: 0.95; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .okey .rack-actions button { padding: 4px 4px; font-size: 0.74rem; line-height: 1.1; }
 .okey .rack-actions > .primary { font-size: 0.82rem; }
 .okey .take .tile, .okey .discard-zone .tile { --tile-w: calc(var(--slot-w) * 0.8); }

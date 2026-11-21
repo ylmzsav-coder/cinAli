@@ -844,13 +844,13 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
           </section>
           {/* Istakanın sağında atma yuvası: taşı sağa sürükleyip bırak */}
           <div className={`rack-discard ${draggingTile && canPlay ? "ready" : ""} ${drag?.target === "discard" ? "over" : ""}`} data-drop="discard"
-            aria-label={t("yourDiscard")}>
+            aria-label={t("yourDiscard")} onClick={() => canPlay && selected.length === 1 && discard()}>
             {state.discards[ME].length ? (
               <TileView tile={state.discards[ME][state.discards[ME].length - 1]} />
             ) : (
               <span className="rack-discard-arrow" aria-hidden>➜</span>
             )}
-            <span className="rack-discard-label">{draggingTile && canPlay ? t("dropToDiscard") : t("discard")}</span>
+            {draggingTile && canPlay && <span className="rack-discard-label">{t("dropToDiscard")}</span>}
           </div>
           <div className="rack-actions">
             {me.opened && selected.length >= 3 ? (
@@ -858,10 +858,12 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
             ) : (
               <button type="button" className="primary" disabled={me.opened ? !validGroups.length : groupTotal < RULES.openThreshold}
                 onClick={() => void layGroups()}>
-                {me.opened ? t("layWord") : t("openHand", { total: groupTotal, need: RULES.openThreshold })}
+                <span className="open-title">{me.opened ? t("layWord") : t("openHand", { total: groupTotal, need: RULES.openThreshold })}</span>
+                {validGroups.length > 0 && (
+                  <span className="open-words">{validGroups.map((g) => `${g.word} ${g.value}`).join(" · ")}</span>
+                )}
               </button>
             )}
-            <button type="button" className="danger" disabled={!canPlay || selected.length !== 1} onClick={discard}>{t("discard")}</button>
             <button type="button" className="auto-btn" onClick={autoArrange}>✨ {t("autoArrange")}</button>
             <div className="sort-row">
               <button type="button" onClick={() => sortBy("harf")} title={t("sortLetter")}>A–Z</button>

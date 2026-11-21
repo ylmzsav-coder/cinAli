@@ -264,7 +264,7 @@ const fr: Messages = {
   how_1: "Faites glisser les tuiles du doigt vers n'importe quelle case du chevalet. Des tuiles côte à côte forment un mot ; laissez des espaces entre les mots.",
   how_2: "La valeur de chaque mot s'affiche au-dessus du chevalet. À {need}, appuyez sur Ouvrir.",
   how_3: "Après l'ouverture, glissez une tuile au début ou à la fin d'un mot de la table ; pour piocher, glissez depuis la pioche ou la gauche vers le chevalet.",
-  how_4: "Pour finir votre tour, glissez une tuile vers la zone de défausse à droite (ou sélectionnez-la et appuyez sur Défausser).",
+  how_4: "Pour finir votre tour, glissez une tuile vers la zone de défausse à droite.",
   distTitle: "Répartition des tuiles ({lang})",
   dictSource: "Sources des dictionnaires : Wiktionnaire (CC BY-SA), dictionnaires Hunspell (MIT/BSD, MPL), FrequencyWords (CC BY-SA).",
 };

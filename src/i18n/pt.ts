@@ -264,7 +264,7 @@ const pt: Messages = {
   how_1: "Arraste as peças com o dedo para qualquer espaço do suporte. Peças lado a lado formam uma palavra; deixe espaços entre as palavras.",
   how_2: "O valor de cada palavra aparece acima do suporte. Ao chegar a {need}, toque em Abrir.",
   how_3: "Depois de abrir, arraste uma peça para o início ou o fim de uma palavra da mesa; para comprar, arraste do monte ou da esquerda para o suporte.",
-  how_4: "Para encerrar a vez, arraste uma peça para a área de descarte à direita (ou selecione e toque em Descartar).",
+  how_4: "Para encerrar a vez, arraste uma peça para a área de descarte à direita.",
   distTitle: "Distribuição das peças ({lang})",
   dictSource: "Fontes dos dicionários: Wikcionário (CC BY-SA), dicionários Hunspell (MIT/BSD, MPL), FrequencyWords (CC BY-SA).",
 };
