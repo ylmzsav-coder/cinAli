@@ -1,16 +1,23 @@
+import { useState } from "react";
 import { TABLES, TableConfig, winnerPrize } from "../economy/tables";
+import { CLOUD } from "../online/cloud";
 import { useWallet } from "../economy/useWallet";
 import { t } from "../i18n";
 import { Chips } from "./Chips";
 
 interface Props {
   onPick: (t: TableConfig) => void;
+  onCreatePrivate: (t: TableConfig) => void;
+  onJoinCode: (code: string) => void;
   onShop: () => void;
   onBack: () => void;
 }
 
-export function Tables({ onPick, onShop, onBack }: Props) {
+export function Tables({ onPick, onCreatePrivate, onJoinCode, onShop, onBack }: Props) {
   const w = useWallet();
+  const [level, setLevel] = useState(TABLES[0].id);
+  const [code, setCode] = useState("");
+  const chosen = TABLES.find((x) => x.id === level)!;
   return (
     <div className="page">
       <div className="page-head">
@@ -41,6 +48,34 @@ export function Tables({ onPick, onShop, onBack }: Props) {
           );
         })}
       </div>
+
+      <h2>{t("playFriends")}</h2>
+      {CLOUD ? (
+        <div className="friends">
+          <p className="muted small">{t("friendsDesc")}</p>
+          <div className="friends-row">
+            <select value={level} onChange={(e) => setLevel(e.target.value)} aria-label={t("entry")}>
+              {TABLES.map((tb) => (
+                <option key={tb.id} value={tb.id}>
+                  {t(`table_${tb.id}` as "table_vip")} · {tb.entry.toLocaleString()}
+                </option>
+              ))}
+            </select>
+            <button type="button" className="primary" disabled={!w.ready || w.balance < chosen.entry}
+              onClick={() => onCreatePrivate(chosen)}>{t("createPrivate")}</button>
+          </div>
+          <form className="friends-row" onSubmit={(e) => {
+            e.preventDefault();
+            if (code.trim().length >= 6) onJoinCode(code.trim().toUpperCase());
+          }}>
+            <input value={code} onChange={(e) => setCode(e.target.value.toUpperCase().slice(0, 6))}
+              placeholder={t("tableCode")} aria-label={t("tableCode")} autoCapitalize="characters" className="code-input" />
+            <button type="submit" disabled={code.trim().length < 6}>{t("joinWithCode")}</button>
+          </form>
+        </div>
+      ) : (
+        <p className="muted small">{t("needsOnline")}</p>
+      )}
     </div>
   );
 }

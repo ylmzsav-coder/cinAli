@@ -1,6 +1,6 @@
 import { addDoc, collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { TableConfig } from "../economy/tables";
+import { tableById, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
 import { setGameLang, type LangCode } from "../game/lang";
 import { errorText, t } from "../i18n";
@@ -13,6 +13,8 @@ import { Game, type ChatChannel, type RemoteControl } from "./Game";
 
 interface TableDoc {
   type: string;
+  private?: boolean;
+  code?: string | null;
   lang: LangCode;
   status: "waiting" | "playing" | "finished" | "abandoned";
   seats: SeatInfo[];
@@ -23,8 +25,14 @@ interface TableDoc {
   payouts?: Record<string, number>;
 }
 
+/** Masaya nasıl girildiği. */
+export type OnlineEntry =
+  | { kind: "public"; table: TableConfig }
+  | { kind: "create"; table: TableConfig }
+  | { kind: "join"; code: string };
+
 interface Props {
-  table: TableConfig;
+  entry: OnlineEntry;
   settings: Settings;
   /** Menüye dön (masa sürmeye devam eder; tekrar girince kaldığı yerden). */
   onExit: () => void;
@@ -32,7 +40,7 @@ interface Props {
   onDone: () => void;
 }
 
-export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
+export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
   const [uid, setUid] = useState<string | null>(null);
   const [tableId, setTableId] = useState<string | null>(null);
   const [doc_, setDoc] = useState<TableDoc | null>(null);
@@ -50,12 +58,16 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
         const user = await currentUser();
         if (!alive) return;
         setUid(user.uid);
-        const res = await call<{ tableId: string }>("joinTable", {
-          type: cfg.id,
-          lang: settings.gameLang,
-          // Çevrimiçi masada "Sen" yerine ayırt edilebilir bir ad
-          name: settings.name || t("guestName", { n: String(parseInt(user.uid.slice(0, 6), 36) % 10000).padStart(4, "0") }),
-        });
+        // Çevrimiçi masada "Sen" yerine ayırt edilebilir bir ad
+        const name = settings.name || t("guestName", { n: String(parseInt(user.uid.slice(0, 6), 36) % 10000).padStart(4, "0") });
+        const res =
+          entry.kind === "join"
+            ? await call<{ tableId: string }>("joinPrivateTable", { code: entry.code, name })
+            : await call<{ tableId: string }>(entry.kind === "create" ? "createPrivateTable" : "joinTable", {
+                type: entry.table.id,
+                lang: settings.gameLang,
+                name,
+              });
         if (alive) setTableId(res.tableId);
       } catch (e) {
         if (alive) setError(errorText(e));
@@ -64,7 +76,7 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
     return () => {
       alive = false;
     };
-  }, [cfg.id, settings.gameLang, settings.name]);
+  }, [entry, settings.gameLang, settings.name]);
 
   // Masayı ve kendi ıstakanı canlı dinle
   useEffect(() => {
@@ -105,7 +117,7 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
     return () => clearInterval(id);
   }, [doc_?.status]);
   useEffect(() => {
-    if (!tableId || doc_?.status !== "waiting" || now < doc_.startAt || startedRef.current) return;
+    if (!tableId || doc_?.status !== "waiting" || doc_.private || now < doc_.startAt || startedRef.current) return;
     startedRef.current = true;
     call("startTable", { tableId }).catch(() => {
       startedRef.current = false;
@@ -159,6 +171,8 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
     );
 
   if (!doc_ || !uid) return <div className="page"><p className="muted">{t("connecting")}</p></div>;
+  const cfg = tableById(doc_.type) ?? (entry.kind !== "join" ? entry.table : undefined);
+  if (!cfg) return <div className="page"><p className="muted">{t("connecting")}</p></div>;
 
   if (doc_.status === "waiting") {
     const left = Math.max(0, Math.ceil((doc_.startAt - now) / 1000));
@@ -172,7 +186,11 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
             <div key={i} className={`waiting-seat ${s ? "taken" : ""}`}>{s ? s.name : t("emptySeat")}</div>
           ))}
         </div>
-        <p className="muted">{t("waitingDesc", { n: left })}</p>
+        {doc_.private ? (
+          <PrivateLobby code={doc_.code ?? ""} isHost={doc_.seats[0]?.uid === uid} onStart={() => call("startTable", { tableId })} />
+        ) : (
+          <p className="muted">{t("waitingDesc", { n: left })}</p>
+        )}
         <button type="button" className="big" onClick={leave}>{t("leaveTable")}</button>
       </div>
     );
@@ -207,5 +225,44 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
       tableName={t("tableTitle", { name: t(`table_${cfg.id}` as "table_vip") })}
       payout={doc_.payouts?.[uid]}
     />
+  );
+}
+
+/** Özel masa bekleme alanı: davet kodu, paylaş, (kurucu için) başlat. */
+function PrivateLobby({ code, isHost, onStart }: { code: string; isHost: boolean; onStart: () => Promise<unknown> }) {
+  const [msg, setMsg] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
+  const link = `${location.origin}${location.pathname}#join=${code}`;
+  const share = async () => {
+    const text = t("inviteText", { code });
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Cinali", text, url: link });
+        return;
+      }
+      await navigator.clipboard.writeText(`${text}\n${link}`);
+      setMsg(t("copied"));
+    } catch {
+      /* paylaşım iptal edildi */
+    }
+  };
+  return (
+    <div className="private-lobby">
+      <div className="muted small">{t("tableCode")}</div>
+      <div className="invite-code" aria-label={t("tableCode")}>{code}</div>
+      <button type="button" className="primary big" onClick={share}>📨 {t("invite")}</button>
+      {msg && <div className="toast">{msg}</div>}
+      {isHost ? (
+        <button type="button" className="big" disabled={starting} onClick={() => {
+          setStarting(true);
+          onStart().catch((e) => {
+            setStarting(false);
+            setMsg(errorText(e));
+          });
+        }}>{t("startNow")}</button>
+      ) : (
+        <p className="muted">{t("hostWillStart")}</p>
+      )}
+    </div>
   );
 }

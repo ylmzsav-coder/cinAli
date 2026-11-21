@@ -60,6 +60,9 @@ Firebase yapılandırılmışsa çipler ve çipli masalar sunucuda yönetilir; y
 - **Çevrimiçi masalar:** `functions/src/tables.ts`. Aynı dil ve seviyedeki oyuncular aynı
   masaya oturur; 8 sn içinde dolmayan koltuklara sunucudaki botlar oturur. Her hamle sunucuda
   oyun motoruyla doğrulanır; hamle süresini sunucu tutar; ödüller oyun sonunda sunucuda ödenir.
+- **Arkadaşla özel masa:** Kurucu masa seviyesini seçip 6 haneli kod alır, "Davet et" ile linki
+  paylaşır (`…#join=KOD`). Özel masalar rastgele eşleşmeye karışmaz; kurucu istediği an başlatır,
+  boş koltuklara bot oturur.
 - **Sohbet:** 10 hazır mesaj ve 8 emoji (`src/online/chat.ts`). Masaya yalnızca kimlik gider,
   her oyuncu mesajı kendi dilinde görür; serbest metin yoktur. Kurallar yalnızca masadaki
   oyuncuların, yalnızca izinli kimliklerle yazmasına izin verir. Pratikte botlar cevap verir.

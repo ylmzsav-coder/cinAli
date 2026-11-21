@@ -11,7 +11,7 @@ import { botNames, setUiLang, t } from "./i18n";
 import { SavedGame, Settings, TABLE_TURN_SECONDS, loadGame, loadSettings, saveGame, saveSettings } from "./storage";
 import { Game } from "./ui/Game";
 import { Hub, Practice } from "./ui/Menu";
-import { OnlineTable } from "./ui/OnlineTable";
+import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Rules } from "./ui/Rules";
 import { Shop } from "./ui/Shop";
 import { Tables } from "./ui/Tables";
@@ -54,7 +54,17 @@ export function App() {
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [loadError, setLoadError] = useState(false);
   /** Çevrimiçi modda oturulan masa (menüden dönülebilir). */
-  const [online, setOnline] = useState<TableConfig | null>(null);
+  const [online, setOnline] = useState<OnlineEntry | null>(null);
+
+  // Davet linki: ...#join=KOD
+  useEffect(() => {
+    if (!CLOUD) return;
+    const m = location.hash.match(/join=([A-Za-z0-9]{6})/);
+    if (!m) return;
+    history.replaceState(null, "", location.pathname + location.search);
+    setOnline({ kind: "join", code: m[1].toUpperCase() });
+    setScreen("online");
+  }, []);
 
   // Sunucu modu: oturum aç, cüzdanı başlat, yarım kalan masa varsa hatırla
   useEffect(() => {
@@ -65,7 +75,8 @@ export function App() {
         const active = (await getDoc(doc(firestore(), "users", u.uid))).data()?.activeTable as string | undefined;
         if (!active) return;
         const tb = (await getDoc(doc(firestore(), "tables", active))).data();
-        if (tb && (tb.status === "waiting" || tb.status === "playing")) setOnline(tableById(tb.type) ?? null);
+        const cfg = tb && (tb.status === "waiting" || tb.status === "playing") ? tableById(tb.type) : undefined;
+        if (cfg) setOnline((prev) => prev ?? { kind: "public", table: cfg });
       })
       .catch(() => {});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -118,7 +129,7 @@ export function App() {
   const sitAt = (tb: TableConfig) => {
     if (CLOUD) {
       // Giriş ücretini ve masayı sunucu yönetir
-      setOnline(tb);
+      setOnline({ kind: "public", table: tb });
       setScreen("online");
       return;
     }
@@ -143,7 +154,7 @@ export function App() {
       if (online)
         return (
           <OnlineTable
-            table={online}
+            entry={online}
             settings={settings}
             onExit={() => setScreen("hub")}
             onDone={() => {
@@ -158,7 +169,21 @@ export function App() {
     case "shop":
       return <Shop onBack={() => setScreen("hub")} />;
     case "tables":
-      return <Tables onPick={sitAt} onShop={() => setScreen("shop")} onBack={() => setScreen("hub")} />;
+      return (
+        <Tables
+          onPick={sitAt}
+          onCreatePrivate={(tb) => {
+            setOnline({ kind: "create", table: tb });
+            setScreen("online");
+          }}
+          onJoinCode={(code) => {
+            setOnline({ kind: "join", code });
+            setScreen("online");
+          }}
+          onShop={() => setScreen("shop")}
+          onBack={() => setScreen("hub")}
+        />
+      );
     case "practice":
       return (
         <Practice
@@ -200,7 +225,9 @@ export function App() {
       canResume={!!saved || !!online}
       resumeLabel={
         online
-          ? t("resumeTable", { name: t(`table_${online.id}` as "table_vip") })
+          ? online.kind === "join"
+            ? t("privateTable")
+            : t("resumeTable", { name: t(`table_${online.table.id}` as "table_vip") })
           : inProgress
           ? activeTable
             ? t("resumeTable", { name: t(`table_${activeTable.id}` as "table_vip") })

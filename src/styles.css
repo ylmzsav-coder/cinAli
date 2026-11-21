@@ -347,3 +347,16 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .chat-emojis button { background: none; font-size: 1.5rem; padding: 2px 4px; }
 .chat-msgs { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .chat-msgs button { font-size: 0.82rem; padding: 7px 10px; background: #f4f1e8; }
+
+/* ---- Özel masa ---- */
+.friends { display: grid; gap: 10px; }
+.friends-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.friends-row select, .code-input {
+  flex: 1; min-width: 140px; padding: 10px; border-radius: 10px; border: 0; background: #f4f1e8; color: #222; font-weight: 600;
+}
+.code-input { letter-spacing: 0.2em; text-transform: uppercase; font-family: ui-monospace, monospace; }
+.private-lobby { display: grid; gap: 10px; justify-items: center; width: 100%; max-width: 360px; }
+.invite-code {
+  font-family: ui-monospace, monospace; font-size: 2.2rem; font-weight: 800; letter-spacing: 0.25em;
+  background: var(--tile-bg); color: #222; padding: 8px 18px 8px calc(18px + 0.25em); border-radius: 12px; box-shadow: 0 3px 0 var(--tile-shadow);
+}

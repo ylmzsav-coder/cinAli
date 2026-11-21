@@ -61,6 +61,10 @@ function dictFor(code: LangCode): Dictionary {
 // ---- Veri tipleri -------------------------------------------------------
 export interface TableDoc {
   type: string;
+  /** Özel (arkadaş) masası: rastgele eşleşmeye kapalı, kurucu başlatır. */
+  private: boolean;
+  /** Özel masanın davet kodu. */
+  code: string | null;
   lang: LangCode;
   status: "waiting" | "playing" | "finished" | "abandoned";
   seats: SeatInfo[];
@@ -185,6 +189,87 @@ function startGame(table: TableDoc, seed: number): { table: TableDoc; state: Gam
 }
 
 // ---- Çağrılabilir fonksiyonlar -----------------------------------------
+/** Karışmayan, okunaklı davet kodu (0/O, 1/I yok). */
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function newCode(): string {
+  let s = "";
+  for (let i = 0; i < 6; i++) s += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
+  return s;
+}
+
+/** Oyuncu zaten bir masadaysa o masanın kimliği. */
+async function activeTableOf(t: Transaction, uid: string): Promise<string | null> {
+  const user = (await t.get(userRef(uid))).data() ?? {};
+  if (!user.activeTable) return null;
+  const st = (await t.get(tableRef(user.activeTable))).data()?.status;
+  return st === "waiting" || st === "playing" ? user.activeTable : null;
+}
+
+/** Arkadaşlarla oynamak için özel masa kurar; giriş ücretini alır, davet kodu döndürür. */
+export const createPrivateTable = onCall(async (req) => {
+  const uid = uidOf(req);
+  const cfg = configFor(req.data?.type);
+  const lang = langOf(req.data?.lang);
+  const name = String(req.data?.name ?? "").trim().slice(0, 12) || "Oyuncu";
+  // Kod çakışmasını önlemek için birkaç deneme
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = newCode();
+    const taken = await db.collection("tables").where("code", "==", code).where("status", "==", "waiting").limit(1).get();
+    if (!taken.empty) continue;
+    return db.runTransaction(async (t) => {
+      const active = await activeTableOf(t, uid);
+      if (active) return { tableId: active, resumed: true, code: null };
+      const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
+      if (!w) return fail("noWallet");
+      if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
+      applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
+      const id = db.collection("tables").doc().id;
+      const now = Date.now();
+      const table: TableDoc = {
+        type: cfg.id, private: true, code, lang, status: "waiting",
+        seats: [{ uid, name, bot: false }], uids: [uid],
+        createdAt: now, startAt: now + 24 * 3600_000, deadline: null, version: 0, view: null,
+      };
+      t.set(tableRef(id), table);
+      t.set(userRef(uid), { activeTable: id }, { merge: true });
+      return { tableId: id, resumed: false, code };
+    });
+  }
+  return fail("network");
+});
+
+/** Davet koduyla özel masaya oturur. */
+export const joinPrivateTable = onCall(async (req) => {
+  const uid = uidOf(req);
+  const code = String(req.data?.code ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+  const name = String(req.data?.name ?? "").trim().slice(0, 12) || "Oyuncu";
+  if (code.length !== 6) fail("codeNotFound", {}, "not-found");
+  return db.runTransaction(async (t) => {
+    const active = await activeTableOf(t, uid);
+    const found = await t.get(
+      db.collection("tables").where("code", "==", code).where("status", "==", "waiting").limit(1),
+    );
+    if (active) return { tableId: active, resumed: true };
+    const snap = found.docs[0];
+    if (!snap) return fail("codeNotFound", {}, "not-found");
+    const table = snap.data() as TableDoc;
+    if (table.seats.length >= 4) fail("tableFull");
+    const cfg = configFor(table.type);
+    const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
+    if (!w) return fail("noWallet");
+    if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
+    applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
+    t.set(tableRef(snap.id), {
+      ...table,
+      seats: [...table.seats, { uid, name, bot: false }],
+      uids: [...table.uids, uid],
+      version: table.version + 1,
+    });
+    t.set(userRef(uid), { activeTable: snap.id }, { merge: true });
+    return { tableId: snap.id, resumed: false };
+  });
+});
+
 /** Masaya otur: giriş ücretini alır; uygun bekleyen masa yoksa yenisini açar. */
 export const joinTable = onCall(async (req) => {
   const uid = uidOf(req);
@@ -207,6 +292,7 @@ export const joinTable = onCall(async (req) => {
     const open = await t.get(
       db.collection("tables")
         .where("status", "==", "waiting")
+        .where("private", "==", false)
         .where("type", "==", cfg.id)
         .where("lang", "==", lang)
         .where("startAt", ">", now + 500)
@@ -230,7 +316,7 @@ export const joinTable = onCall(async (req) => {
     } else {
       id = db.collection("tables").doc().id;
       const table: TableDoc = {
-        type: cfg.id, lang, status: "waiting",
+        type: cfg.id, private: false, code: null, lang, status: "waiting",
         seats: [{ uid, name, bot: false }], uids: [uid],
         createdAt: now, startAt: now + WAIT_MS, deadline: null, version: 0, view: null,
       };
@@ -249,7 +335,10 @@ export const startTable = onCall(async (req) => {
     const { table } = await load(t, id);
     if (!table.uids.includes(uid)) fail("notAtTable", {}, "permission-denied");
     if (table.status !== "waiting") return { ok: true };
-    if (Date.now() < table.startAt) fail("notYet");
+    if (table.private) {
+      // Özel masayı yalnızca kuran kişi başlatır
+      if (table.seats[0]?.uid !== uid) fail("hostOnly", {}, "permission-denied");
+    } else if (Date.now() < table.startAt) fail("notYet");
     const started = startGame(table, Date.now() % 1_000_000);
     await persist(t, id, started.table, started.state, new Map());
     return { ok: true };
