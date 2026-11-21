@@ -9,6 +9,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
+      // Kayıt main.tsx'te yapılır: mobil uygulama içinde servis worker gerekmez.
+      injectRegister: null,
       includeAssets: ["icon.svg", "kelimeler.txt"],
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,txt}"],
