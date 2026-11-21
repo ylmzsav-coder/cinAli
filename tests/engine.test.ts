@@ -30,12 +30,15 @@ const t = (letter: Tile["letter"], color: Tile["color"] = "siyah"): Tile => ({ i
 const tiles = (word: string, color: Tile["color"] = "siyah") => [...word].map((l) => t(l as Tile["letter"], color));
 
 describe("taş seti", () => {
-  it("104 harf + 2 joker, her renkte 26 harf", () => {
+  it("94 harf + 2 joker; A ve E her renkten birer tane; renkler dengeli", () => {
     const set = createTileSet();
-    expect(set.length).toBe(106);
-    for (const c of ["kirmizi", "mavi", "sari", "siyah"]) {
-      expect(set.filter((x) => x.letter && x.color === c).length).toBe(26);
+    expect(set.length).toBe(96);
+    for (const l of ["A", "E"]) {
+      const colors = set.filter((x) => x.letter === l).map((x) => x.color).sort();
+      expect(colors).toEqual(["kirmizi", "mavi", "sari", "siyah"]);
     }
+    const perColor = ["kirmizi", "mavi", "sari", "siyah"].map((c) => set.filter((x) => x.letter && x.color === c).length);
+    expect(Math.max(...perColor) - Math.min(...perColor)).toBeLessThanOrEqual(1);
   });
   it("harf değerleri alfabe sırası", () => {
     expect(wordValue("KALEM")).toBe(52);
@@ -48,7 +51,7 @@ describe("kurallar", () => {
 
   it("başlayan 15, diğerleri 14 taş alır", () => {
     expect(base.players.map((p) => p.rack.length).sort()).toEqual([14, 14, 14, 15]);
-    expect(base.deck.length).toBe(106 - 57);
+    expect(base.deck.length).toBe(96 - 57);
   });
 
   it("76 altında açılmaz", () => {

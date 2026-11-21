@@ -32,15 +32,18 @@ export interface Tile {
 }
 
 /**
- * Her harften kaç taş olduğu (tüm renkler toplamı). Toplam 104 taş;
- * sık kullanılan harflerden daha fazla vardır. Renkler sırayla dağıtılır,
- * böylece her renkte tam 26 taş olur.
+ * Her harften kaç taş olduğu (tüm renkler toplamı). Toplam 94 harf taşı.
+ * A ve E her renkten birer tane (4 adet) olacak şekilde sınırlandı; çok
+ * fazla sesli harf kelime kurmayı fazla kolaylaştırıyordu.
+ * Renkler sırayla dağıtılır, böylece renkler dengeli olur.
  */
 export const LETTER_COUNTS: Record<Letter, number> = {
-  A: 9, B: 3, C: 2, Ç: 2, D: 4, E: 9, F: 1, G: 2, Ğ: 1, H: 2, I: 4, İ: 6,
+  A: 4, B: 3, C: 2, Ç: 2, D: 4, E: 4, F: 1, G: 2, Ğ: 1, H: 2, I: 4, İ: 6,
   J: 1, K: 6, L: 6, M: 4, N: 6, O: 3, Ö: 1, P: 2, R: 6, S: 4, Ş: 2, T: 4,
   U: 4, Ü: 2, V: 2, Y: 4, Z: 2,
 };
+
+export const LETTER_TILE_TOTAL = Object.values(LETTER_COUNTS).reduce((a, b) => a + b, 0);
 
 export const JOKER_COUNT = 2;
 /** Oyun sonunda elde kalan jokerin ceza değeri. */

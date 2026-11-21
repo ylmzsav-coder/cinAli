@@ -5,7 +5,8 @@ web tarayıcısında ve telefonda (PWA olarak "Ana ekrana ekle") oynanır.
 
 ## Kurallar (özet)
 
-- **Taşlar:** 104 harf taşı + 2 joker, 4 renk (kırmızı, mavi, sarı, siyah). Renkler görseldir.
+- **Taşlar:** 94 harf taşı + 2 joker, 4 renk (kırmızı, mavi, sarı, siyah). Renkler görseldir.
+  A ve E her renkten birer tane (4'er adet). Dağılım `src/game/tiles.ts` içindeki `LETTER_COUNTS`'tadır.
 - **Harf değeri:** Alfabedeki sıra: A=1, B=2, C=3, Ç=4 … Z=29.
 - **Dağıtım:** 4 oyuncu, 14'er taş; başlayan 15 taş alır.
 - **Sıra:** Desteden ya da soldakinin attığı taştan çek → oyna → bir taş at.

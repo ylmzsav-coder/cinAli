@@ -1,5 +1,5 @@
 import { RULES } from "../game/engine";
-import { ALPHABET, LETTER_COUNTS } from "../game/tiles";
+import { ALPHABET, JOKER_COUNT, LETTER_COUNTS, LETTER_TILE_TOTAL } from "../game/tiles";
 
 export function Rules({ onBack }: { onBack: () => void }) {
   return (
@@ -7,7 +7,7 @@ export function Rules({ onBack }: { onBack: () => void }) {
       <button type="button" className="link" onClick={onBack}>‹ Geri</button>
       <h1>Cinali Kuralları</h1>
       <ol className="rules">
-        <li><b>Taşlar:</b> 104 harf taşı ve 2 joker. Harfler 4 renktedir (kırmızı, mavi, sarı, siyah). Renkler görseldir, kelime kurarken renk şartı yoktur.</li>
+        <li><b>Taşlar:</b> {LETTER_TILE_TOTAL} harf taşı ve {JOKER_COUNT} joker. A ve E her renkten birer tanedir. Harfler 4 renktedir (kırmızı, mavi, sarı, siyah). Renkler görseldir, kelime kurarken renk şartı yoktur.</li>
         <li><b>Harf değeri:</b> Her harfin değeri alfabedeki sırasıdır: A=1, B=2, C=3, Ç=4 … Z=29. Örnek: KALEM = 14+1+15+6+16 = 52.</li>
         <li><b>Dağıtım:</b> 4 oyuncu. Herkese {RULES.handSize} taş, başlayan oyuncuya 15 taş verilir. Başlayan çekmeden oynar.</li>
         <li><b>Sıra:</b> Sıra gelen oyuncu desteden ya da solundaki oyuncunun attığı taştan bir taş çeker, oynar ve bir taş atar.</li>
