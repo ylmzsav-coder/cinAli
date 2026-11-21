@@ -1,8 +1,8 @@
 /**
  * Word Okey giriş müziği: kod içinde üretilen özgün, çocuk şarkısı tadında
  * bir piyano parçası (telif sorunu yok, ses dosyası gerekmez).
- * Piyano sesi: hafif kaymalı üst sesler, çekiç vuruşu ve oda yankısı; melodiyi
- * müzik kutusu gibi çınlayan bir zil sesi ikiler. Sol el "pam-pa" eşlik eder.
+ * Piyano sesi: hafif kaymalı üst sesler, çekiç vuruşu ve oda yankısı; melodi
+ * oktav katlamalı, kalın ve dolgun bir tınıyla çalınır. Sol el "pam-pa" eşlik eder.
  * Toplam 19 saniye: 8 ölçü bir kez çalar (18 sn), kapanış akoruyla biter;
  * son 5 saniyede ses kademeli olarak azalır.
  */
@@ -123,30 +123,9 @@ function piano(a: AudioContext, out: AudioNode, midi: number, t: number, hold: n
   src.start(t);
 }
 
-/** Müzik kutusu / zil sesi: melodiyi bir oktav yukarıdan parlak bir çınlamayla ikiler. */
-function bell(a: AudioContext, out: AudioNode, midi: number, t: number, vel: number) {
-  const f0 = hz(midi);
-  const g = a.createGain();
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.linearRampToValueAtTime(vel, t + 0.003);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
-  g.connect(out);
-  [[1, 1], [2.76, 0.35], [5.4, 0.12]].forEach(([r, amp]) => {
-    const o = a.createOscillator();
-    o.type = "sine";
-    o.frequency.value = f0 * r;
-    const pg = a.createGain();
-    pg.gain.value = amp;
-    o.connect(pg).connect(g);
-    o.start(t);
-    o.stop(t + 0.75);
-  });
-}
-
 /** Kapanış: Do majör akor ve zil; müzik 19. saniyede susar. */
 function finale(a: AudioContext, out: GainNode, t: number) {
-  ["C3", "G3", "C4", "E4", "G4", "C5", "E5"].forEach((n, k) => piano(a, out, NOTE[n], t + k * 0.012, 0.9, 0.2));
-  bell(a, out, NOTE.C6 + 12, t, 0.08);
+  ["C2", "C3", "G3", "C4", "E4", "G4"].forEach((n, k) => piano(a, out, NOTE[n], t + k * 0.012, 0.9, 0.22));
   const m = master;
   const ms = Math.max(0, (t + 1.05 - a.currentTime) * 1000);
   setTimeout(() => {
@@ -178,13 +157,15 @@ function schedule() {
       let len = 1;
       while (MELODY[i + len] === "-") len++;
       const accent = beat === 0 || beat === 4 ? 1 : 0.8;
-      piano(a, bus, NOTE[note], nextTime, len > 1 ? STEP * len * 0.85 : STEP * 0.55, 0.3 * accent);
-      bell(a, bus, NOTE[note] + 12, nextTime, 0.05 * accent);
+      // Kalın, dolgun ses: melodi bir oktav aşağıda, oktav katlamalı
+      const m = NOTE[note] - 12;
+      piano(a, bus, m, nextTime, len > 1 ? STEP * len * 0.9 : STEP * 0.7, 0.32 * accent);
+      piano(a, bus, m - 12, nextTime, len > 1 ? STEP * len * 0.9 : STEP * 0.7, 0.14 * accent);
     }
     // Sol el: "pam-pa" (vuruşta bas, ara vuruşta akor)
     const [r, third, fifth] = CHORDS[bar].map((n) => NOTE[n]);
     if (beat === 0 || beat === 4) piano(a, bus, beat === 0 ? r - 12 : r - 5, nextTime, STEP * 1.5, 0.22);
-    if (beat === 2 || beat === 6) [r + 12, third + 12, fifth + 12].forEach((m) => piano(a, bus!, m, nextTime, STEP * 0.6, 0.1));
+    if (beat === 2 || beat === 6) [r, third, fifth].forEach((m) => piano(a, bus!, m, nextTime, STEP * 0.7, 0.11));
     nextTime += STEP;
     step++;
   }
