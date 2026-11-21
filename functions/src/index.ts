@@ -10,3 +10,4 @@ export {
   nextHand,
   startTable,
 } from "./tables";
+export { reportPlayer, sendText } from "./chat";

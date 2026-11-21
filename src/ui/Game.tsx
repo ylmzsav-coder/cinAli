@@ -22,7 +22,7 @@ import {
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, wordValue } from "../game/tiles";
 import { buzz, pop, tick } from "../feedback";
-import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, type ChatEvent, type ChatMessageId } from "../online/chat";
+import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TEXT, type ChatEvent, type ChatMessageId, type SendTextResult } from "../online/chat";
 import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
@@ -60,6 +60,17 @@ export interface RemoteControl {
 export interface ChatChannel {
   events: ChatEvent[];
   send(kind: "msg" | "emoji", id: string): Promise<unknown>;
+  /** Serbest yazışma (yalnızca arkadaş masalarında verilir). */
+  sendText?: (text: string) => Promise<SendTextResult>;
+}
+
+/** Oyuncu kartına dokununca: sustur / şikâyet et (yalnızca gerçek oyuncular). */
+export interface PlayerMenu {
+  /** Görünümdeki koltuk için menü açılabilir mi (bot ve siz hariç). */
+  available(seat: number): boolean;
+  isMuted(seat: number): boolean;
+  toggleMute(seat: number): void;
+  report(seat: number): Promise<unknown>;
 }
 
 interface Props {
@@ -69,6 +80,7 @@ interface Props {
   chat?: ChatChannel;
   /** Diğer oyuncuların mesajlarını göster. */
   chatEnabled?: boolean;
+  playerMenu?: PlayerMenu;
   dict: Dictionary;
   state: GameState;
   level: BotLevel;
@@ -89,7 +101,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, tableName, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, tableName, payout }: Props) {
   const me = state.players[ME];
   const [order, setOrder] = useState<number[]>(() => me.rack.map((t) => t.id));
   const [selected, setSelected] = useState<number[]>([]);
@@ -156,11 +168,30 @@ export function Game({ remote, chat, chatEnabled = true, dict, state, level, spe
     const e = liveBubbles.filter((x) => x.seat === seat).sort((a, b) => b.at - a.at)[0];
     if (!e) return null;
     return (
-      <span key={e.at} className={`bubble ${e.kind === "emoji" ? "bubble-emoji" : ""}`} role="status">
-        {e.kind === "emoji" ? e.id : t(`chat_${e.id}` as "chat_hello")}
+      <span key={e.at} className={`bubble ${e.kind === "emoji" ? "bubble-emoji" : ""} ${e.kind === "text" ? "bubble-text" : ""}`} role="status">
+        {e.kind === "emoji" ? e.id : e.kind === "text" ? e.text : t(`chat_${e.id}` as "chat_hello")}
       </span>
     );
   };
+  const [draft, setDraft] = useState("");
+  const [chatNote, setChatNote] = useState<string | null>(null);
+  const sendText = async () => {
+    const text = draft.trim();
+    if (!text || !chat?.sendText) return;
+    try {
+      const res = await chat.sendText(text);
+      if (res.ok) {
+        setDraft("");
+        setChatNote(null);
+      } else if (res.muted) setChatNote(t("chatMutedNow"));
+      else if (res.blocked) setChatNote(t("profanityBlocked", { n: res.strikesLeft ?? 0 }));
+    } catch (e) {
+      setChatNote(errorText(e));
+    }
+  };
+  const [menuSeat, setMenuSeat] = useState<number | null>(null);
+  const textHistory = chatEvents.filter((e) => e.kind === "text").sort((a, b) => a.at - b.at).slice(-8);
+
   const sendChat = (kind: "msg" | "emoji", id: string) => {
     if (Date.now() - lastSentRef.current < CHAT_COOLDOWN_MS) return;
     lastSentRef.current = Date.now();
@@ -423,8 +454,26 @@ export function Game({ remote, chat, chatEnabled = true, dict, state, level, spe
               style={timerStyle(i)}>
               {bubbleFor(i)}
               <div className="opp-name">
-                {p.name} <span className="muted">({label})</span>
+                {playerMenu?.available(i) ? (
+                  <button type="button" className="name-btn" onClick={() => setMenuSeat(menuSeat === i ? null : i)}
+                    aria-haspopup="menu" aria-expanded={menuSeat === i}>
+                    {p.name} {playerMenu.isMuted(i) && <span aria-label={t("mutedTag")}>🔇</span>}
+                  </button>
+                ) : p.name}{" "}
+                <span className="muted">({label})</span>
               </div>
+              {menuSeat === i && playerMenu && (
+                <div className="player-menu" role="menu">
+                  <button type="button" role="menuitem" onClick={() => { playerMenu.toggleMute(i); setMenuSeat(null); }}>
+                    {playerMenu.isMuted(i) ? `🔈 ${t("unmute")}` : `🔇 ${t("mute")}`}
+                  </button>
+                  <button type="button" role="menuitem" onClick={() => {
+                    setMenuSeat(null);
+                    if (!confirm(t("reportConfirm", { name: p.name }))) return;
+                    playerMenu.report(i).then(() => setMessage({ text: t("reported") }), (e) => setMessage({ text: errorText(e), error: true }));
+                  }}>⚠️ {t("report")}</button>
+                </div>
+              )}
               <div className="opp-info">
                 <span className="badge">{t("tilesN", { n: p.rack.length })}</span>
                 {p.opened && <span className="badge ok">{t("openedBadge")}</span>}
@@ -564,6 +613,23 @@ export function Game({ remote, chat, chatEnabled = true, dict, state, level, spe
               <button type="button" key={m} onClick={() => sendChat("msg", m)}>{t(`chat_${m}`)}</button>
             ))}
           </div>
+          {chat?.sendText && (
+            <>
+              {textHistory.length > 0 && (
+                <ul className="chat-history">
+                  {textHistory.map((e) => (
+                    <li key={`${e.at}-${e.seat}`}><b>{state.players[e.seat]?.name}:</b> {e.text}</li>
+                  ))}
+                </ul>
+              )}
+              <form className="chat-input" onSubmit={(e) => { e.preventDefault(); void sendText(); }}>
+                <input value={draft} maxLength={MAX_TEXT} onChange={(e) => setDraft(e.target.value)}
+                  placeholder={t("textPlaceholder")} aria-label={t("textPlaceholder")} enterKeyHint="send" />
+                <button type="submit" className="primary" disabled={!draft.trim()}>{t("send")}</button>
+              </form>
+              {chatNote && <div className="chat-note" role="alert">{chatNote}</div>}
+            </>
+          )}
         </section>
       )}
       {colorNow && <div className="color-hint">{t("colorPath", { color: t(`color_${colorNow}`) })}</div>}

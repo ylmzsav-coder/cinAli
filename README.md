@@ -66,6 +66,12 @@ Firebase yapılandırılmışsa çipler ve çipli masalar sunucuda yönetilir; y
 - **Sohbet:** 10 hazır mesaj ve 8 emoji (`src/online/chat.ts`). Masaya yalnızca kimlik gider,
   her oyuncu mesajı kendi dilinde görür; serbest metin yoktur. Kurallar yalnızca masadaki
   oyuncuların, yalnızca izinli kimliklerle yazmasına izin verir. Pratikte botlar cevap verir.
+- **Yazılı sohbet (yalnızca arkadaş masaları):** `functions/src/chat.ts`. Her mesaj sunucuda
+  7 dilde küfür filtresinden geçer (`functions/src/profanity.ts`; "s1k", "a.m.k", "siiik" gibi
+  kandırmalar dahil, "sıkıldım/şikayet" gibi masum kelimeler hariç). Küfürlü mesaj masaya hiç
+  gitmez ve kaydedilmez; 3 denemede 10 dk sohbet kapanır. En fazla 120 karakter, bağlantı yok,
+  hız sınırı var. Her oyuncunun adına dokununca **Sustur** ve **Şikâyet et** (şikâyetler son
+  mesajlarla `reports` koleksiyonuna denetim için kaydedilir).
 - **Gizlilik:** `firestore.rules`. Herkes yalnızca kendi ıstakasını ve cüzdanını okur;
   deste ve tam oyun durumu istemciye kapalıdır. Hiçbir şey istemciden yazılamaz.
 
@@ -108,6 +114,9 @@ Cloud Functions için Firebase projesinin **Blaze** (kullandıkça öde) planın
 | pt | Hunspell `dictionary-pt` (MPL-2.0 seçeneği) | FrequencyWords (CC BY-SA 4.0) |
 | de | [Vikisözlük](https://de.wiktionary.org/) veri dosyası (CC BY-SA), `tools/wiktionary_lemmas.py` | FrequencyWords (CC BY-SA 4.0) |
 | it | [Vikisözlük](https://it.wiktionary.org/) veri dosyası (CC BY-SA), `tools/wiktionary_lemmas.py` | FrequencyWords (CC BY-SA 4.0) |
+
+Küfür listeleri: [LDNOOBW](https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words)
+(CC BY 4.0) + ekler (`tools/build_profanity.py`).
 
 Hunspell sözlüklerinden yalnızca kök kelimeler alınır; özel adlar çıkarılır. Almanca ve İtalyanca
 Hunspell sözlükleri yalnızca GPL lisanslı olduğu için (App Store dağıtımıyla uyumsuz) kullanılmadı;

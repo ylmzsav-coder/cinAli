@@ -3,13 +3,32 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { tableById, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
 import { setGameLang, type LangCode } from "../game/lang";
-import { errorText, t } from "../i18n";
+import { errorText, t, uiLang } from "../i18n";
 import { call, currentUser, firestore } from "../online/cloud";
 import { loadDictionary } from "../online/dicts";
-import type { ChatEvent } from "../online/chat";
+import type { ChatEvent, SendTextResult } from "../online/chat";
 import { rotatedState, type Action, type PublicView, type SeatInfo } from "../online/view";
 import type { Settings } from "../storage";
-import { Game, type ChatChannel, type RemoteControl } from "./Game";
+import { Game, type ChatChannel, type PlayerMenu, type RemoteControl } from "./Game";
+
+/** Susturulan oyuncular cihazda hatırlanır (tüm masalarda geçerli). */
+const MUTED_KEY = "cinali.muted";
+function loadMuted(): Set<string> {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(MUTED_KEY) ?? "[]") as string[]);
+  } catch {
+    return new Set();
+  }
+}
+function saveMuted(s: Set<string>) {
+  try {
+    localStorage.setItem(MUTED_KEY, JSON.stringify([...s].slice(-500)));
+  } catch {
+    /* depolama yok */
+  }
+}
+
+type RawChat = { uid: string; kind: "msg" | "emoji" | "text"; id: string; text?: string; at: number };
 
 interface TableDoc {
   type: string;
@@ -48,7 +67,8 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
-  const [chatRaw, setChatRaw] = useState<{ uid: string; kind: "msg" | "emoji"; id: string; at: number }[]>([]);
+  const [chatRaw, setChatRaw] = useState<RawChat[]>([]);
+  const [muted, setMuted] = useState<Set<string>>(loadMuted);
 
   // Masaya otur (oturduğu masa varsa ona döner)
   useEffect(() => {
@@ -60,6 +80,9 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
         setUid(user.uid);
         // Çevrimiçi masada "Sen" yerine ayırt edilebilir bir ad
         const name = settings.name || t("guestName", { n: String(parseInt(user.uid.slice(0, 6), 36) % 10000).padStart(4, "0") });
+        // Davet linkiyle ilk kez gelen oyuncunun cüzdanı henüz oluşmamış olabilir:
+        // masaya katılmadan önce hesabın hazır olduğundan emin ol (tekrar çağrılabilir).
+        await call("bootstrap", { name: settings.name });
         const res =
           entry.kind === "join"
             ? await call<{ tableId: string }>("joinPrivateTable", { code: entry.code, name })
@@ -85,15 +108,15 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
     const off1 = onSnapshot(doc(db, "tables", tableId), (s) => setDoc((s.data() as TableDoc) ?? null), (e) => setError(errorText(e)));
     const off2 = onSnapshot(doc(db, "tables", tableId, "hands", uid), (s) => setRack((s.data() as { seat: number; rack: unknown[] }) ?? null));
     const off3 = onSnapshot(
-      query(collection(db, "tables", tableId, "chat"), orderBy("at", "desc"), limit(12)),
+      query(collection(db, "tables", tableId, "chat"), orderBy("at", "desc"), limit(30)),
       (s) =>
         setChatRaw(
           s.docs.map((d) => {
             const x = d.data({ serverTimestamps: "estimate" });
-            return { uid: x.uid, kind: x.kind, id: x.id, at: x.at?.toMillis?.() ?? Date.now() };
+            return { uid: x.uid, kind: x.kind, id: x.id ?? "", text: x.text, at: x.at?.toMillis?.() ?? Date.now() };
           }),
         ),
-      () => {},
+      (e) => console.warn("chat listener", e.code, e.message),
     );
     return () => {
       off1();
@@ -140,17 +163,41 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
   // Sohbet: gönderenin koltuğunu bizim görünümümüze çevir (0 = biz)
   const chat: ChatChannel | undefined = useMemo(() => {
     if (!tableId || !uid || !doc_ || !rack) return undefined;
-    const events: ChatEvent[] = chatRaw
-      .map((m) => {
-        const abs = doc_.seats.findIndex((s) => s.uid === m.uid);
-        return abs < 0 ? null : { seat: (abs - rack.seat + 4) % 4, kind: m.kind, id: m.id, at: m.at };
-      })
-      .filter((e): e is ChatEvent => !!e);
+    const events: ChatEvent[] = [];
+    for (const m of chatRaw) {
+      if (muted.has(m.uid)) continue; // susturulan oyuncunun mesajları görünmez
+      const abs = doc_.seats.findIndex((s) => s.uid === m.uid);
+      if (abs >= 0) events.push({ seat: (abs - rack.seat + 4) % 4, kind: m.kind, id: m.id, text: m.text, at: m.at });
+    }
     return {
       events,
       send: (kind, id) => addDoc(collection(firestore(), "tables", tableId, "chat"), { uid, kind, id, at: serverTimestamp() }),
+      // Serbest yazışma yalnızca arkadaş masalarında
+      sendText: doc_.private
+        ? (text: string) => call<SendTextResult>("sendText", { tableId, text, uiLang: uiLang() })
+        : undefined,
     };
-  }, [chatRaw, tableId, uid, doc_, rack]);
+  }, [chatRaw, tableId, uid, doc_, rack, muted]);
+
+  // Oyuncu menüsü: görünümdeki koltuğu gerçek koltuğa çevirip uid bul
+  const playerMenu: PlayerMenu | undefined = useMemo(() => {
+    if (!doc_ || !rack || !tableId) return undefined;
+    const uidAt = (seat: number) => doc_.seats[(seat + rack.seat) % 4]?.uid ?? null;
+    return {
+      available: (seat) => seat !== 0 && !!uidAt(seat),
+      isMuted: (seat) => muted.has(uidAt(seat) ?? ""),
+      toggleMute: (seat) => {
+        const u = uidAt(seat);
+        if (!u) return;
+        const next = new Set(muted);
+        if (next.has(u)) next.delete(u);
+        else next.add(u);
+        saveMuted(next);
+        setMuted(next);
+      },
+      report: (seat) => call("reportPlayer", { tableId, targetUid: uidAt(seat), reason: "chat" }),
+    };
+  }, [doc_, rack, tableId, muted]);
 
   const leave = async () => {
     if (doc_?.status === "playing" && !confirm(t("leaveConfirm"))) return;
@@ -211,6 +258,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       remote={remote}
       chat={chat}
       chatEnabled={settings.chat}
+      playerMenu={playerMenu}
       dict={dict}
       state={state}
       level={cfg.level}

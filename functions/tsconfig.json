@@ -6,8 +6,20 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "lib": ["ES2022", "DOM"],
-    "types": ["node"]
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "types": [
+      "node"
+    ],
+    "resolveJsonModule": true
   },
-  "include": ["src", "../src/game", "../src/economy/config.ts", "../src/economy/tables.ts", "../src/online/view.ts"]
+  "include": [
+    "src",
+    "../src/game",
+    "../src/economy/config.ts",
+    "../src/economy/tables.ts",
+    "../src/online/view.ts"
+  ]
 }

@@ -14,9 +14,21 @@ export const EMOJIS = ["👍", "👏", "😂", "😮", "😅", "😢", "😡", "
 export interface ChatEvent {
   /** Görünümdeki oyuncu sırası (0 = siz). */
   seat: number;
-  kind: "msg" | "emoji";
+  kind: "msg" | "emoji" | "text";
   id: string;
+  /** Serbest yazışma (yalnızca arkadaş masaları; sunucuda süzülmüş). */
+  text?: string;
   at: number;
+}
+
+/** Serbest mesajın en fazla uzunluğu (sunucuyla aynı). */
+export const MAX_TEXT = 120;
+
+export interface SendTextResult {
+  ok: boolean;
+  blocked?: boolean;
+  muted?: boolean;
+  strikesLeft?: number;
 }
 
 /** Balonun ekranda kalma süresi. */
