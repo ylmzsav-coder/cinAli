@@ -87,6 +87,9 @@ const de: Messages = {
   mutedTag: "stumm",
   copyright: "© {year} AlFaBe 101. Alle Rechte vorbehalten.",
   drawBeforeLay: "Ziehe zuerst einen Stein (vom Stapel oder von links), dann lege dein Wort aus. Deine Auswahl bleibt erhalten.",
+  tapToStart: "Zum Starten tippen",
+  rotateDevice: "Für das beste Erlebnis dreh dein Handy quer",
+  music: "Musik",
   start: "Los",
 
   tablesDesc: "Der Einsatz wird beim Hinsetzen abgezogen. Der Erste gewinnt 90 % des Pots. Für ein Farbfinish gibt es zusätzlich einen Bonus in Höhe des Einsatzes!",

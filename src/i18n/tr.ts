@@ -88,6 +88,9 @@ const tr = {
   mutedTag: "susturuldu",
   copyright: "© {year} AlFaBe 101. Tüm hakları saklıdır.",
   drawBeforeLay: "Önce taş çekin: desteden ya da soldan bir taş alın, sonra kelimeyi yere koyun. Seçtiğiniz taşlar seçili duruyor.",
+  tapToStart: "Başlamak için dokunun",
+  rotateDevice: "En iyi deneyim için telefonunuzu yatay çevirin",
+  music: "Müzik",
   start: "Başla",
 
   // Masalar

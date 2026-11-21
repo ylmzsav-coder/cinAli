@@ -87,6 +87,9 @@ const en: Messages = {
   mutedTag: "muted",
   copyright: "© {year} AlFaBe 101. All rights reserved.",
   drawBeforeLay: "Draw a tile first (from the deck or from the left), then lay your word. Your selected tiles stay selected.",
+  tapToStart: "Tap to start",
+  rotateDevice: "For the best experience, turn your phone sideways",
+  music: "Music",
   start: "Start",
 
   tablesDesc: "The entry fee is taken when you sit down. First place wins 90% of the pot. Finish all in one colour for a bonus equal to the entry fee!",

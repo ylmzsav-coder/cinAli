@@ -11,6 +11,9 @@ import { botNames, setUiLang, t } from "./i18n";
 import { SavedGame, Settings, TABLE_TURN_SECONDS, loadGame, loadSettings, saveGame, saveSettings } from "./storage";
 import { Game } from "./ui/Game";
 import { Hub, Practice } from "./ui/Menu";
+import { RotateHint, Splash } from "./ui/Splash";
+import { enterFullscreenLandscape } from "./display";
+import { startMusic, stopMusic } from "./music";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Rules } from "./ui/Rules";
 import { Shop } from "./ui/Shop";
@@ -47,6 +50,8 @@ export function App() {
   setUiLang(settings.uiLang);
 
   const [screen, setScreen] = useState<Screen>("hub");
+  // Açılış ekranı (dokunmadan tam ekran/müzik başlatılamaz)
+  const [started, setStarted] = useState(false);
   const [saved, setSaved] = useState<SavedGame | null>(() => {
     const g = loadGame();
     return g ? settle(g) : null;
@@ -149,6 +154,34 @@ export function App() {
   const activeTable = tableById(saved?.tableId);
   const inProgress = !!saved && saved.state.phase !== "gameOver";
 
+  // Müzik: menülerde çalar, oyunda susar
+  const inGame = screen === "game" || screen === "online";
+  useEffect(() => {
+    if (!started) return;
+    if (settings.music && !inGame) startMusic();
+    else stopMusic();
+  }, [started, settings.music, inGame]);
+
+  if (!started)
+    return (
+      <Splash
+        onStart={() => {
+          void enterFullscreenLandscape();
+          if (settings.music) startMusic();
+          setStarted(true);
+        }}
+      />
+    );
+
+  const page = renderScreen();
+  return (
+    <>
+      {page}
+      <RotateHint />
+    </>
+  );
+
+  function renderScreen() {
   switch (screen) {
     case "online":
       if (online)
@@ -241,4 +274,5 @@ export function App() {
       onRules={() => setScreen("rules")}
     />
   );
+  }
 }

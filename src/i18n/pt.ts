@@ -87,6 +87,9 @@ const pt: Messages = {
   mutedTag: "silenciado",
   copyright: "© {year} AlFaBe 101. Todos os direitos reservados.",
   drawBeforeLay: "Primeiro compre uma peça (do monte ou da esquerda) e depois baixe sua palavra. Sua seleção continua marcada.",
+  tapToStart: "Toque para começar",
+  rotateDevice: "Para a melhor experiência, vire o celular na horizontal",
+  music: "Música",
   start: "Começar",
 
   tablesDesc: "A entrada é cobrada quando você se senta. O primeiro lugar leva 90% do pote. Termine tudo em uma cor e ganhe um bônus igual à entrada!",

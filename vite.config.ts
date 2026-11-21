@@ -29,8 +29,8 @@ export default defineConfig({
         description: "Harflerle oynanan okey tarzı kelime oyunu / The rummy tile game played with letters",
         theme_color: "#0f5132",
         background_color: "#0f5132",
-        display: "standalone",
-        orientation: "any",
+        display: "fullscreen",
+        orientation: "landscape",
         start_url: "./",
         icons: [
           { src: "icon-192.png", sizes: "192x192", type: "image/png" },

@@ -87,6 +87,9 @@ const it: Messages = {
   mutedTag: "silenziato",
   copyright: "© {year} AlFaBe 101. Tutti i diritti riservati.",
   drawBeforeLay: "Prima pesca una tessera (dal mazzo o da sinistra), poi cala la parola. La selezione resta.",
+  tapToStart: "Tocca per iniziare",
+  rotateDevice: "Per un'esperienza migliore, ruota il telefono in orizzontale",
+  music: "Musica",
   start: "Inizia",
 
   tablesDesc: "La quota d'ingresso viene addebitata quando ti siedi. Il primo vince il 90% del piatto. Con una Chiusura a colore ricevi un bonus pari alla quota!",

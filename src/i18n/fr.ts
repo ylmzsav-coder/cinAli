@@ -87,6 +87,9 @@ const fr: Messages = {
   mutedTag: "masqué",
   copyright: "© {year} AlFaBe 101. Tous droits réservés.",
   drawBeforeLay: "Piochez d'abord une tuile (dans la pioche ou à gauche), puis posez votre mot. Votre sélection est conservée.",
+  tapToStart: "Touchez pour commencer",
+  rotateDevice: "Pour une meilleure expérience, tournez votre téléphone",
+  music: "Musique",
   start: "Jouer",
 
   tablesDesc: "La mise est prélevée quand vous vous asseyez. Le premier remporte 90 % du pot. Une Finition couleur rapporte en plus un bonus égal à la mise !",

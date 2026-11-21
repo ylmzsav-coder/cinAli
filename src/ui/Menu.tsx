@@ -28,66 +28,79 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
     onSettings({ ...settings, uiLang: code, gameLang: LANGS[code].playable ? code : settings.gameLang });
 
   return (
-    <div className="page menu">
-      <div className="lang-bar">
-        <label>
-          <span aria-hidden>🌐</span>
-          <span className="sr-only">{t("language")}</span>
-          <select value={settings.uiLang} onChange={(e) => changeUi(e.target.value as LangCode)} aria-label={t("language")}>
-            {LANG_ORDER.map((c) => <option key={c} value={c}>{LANGS[c].name}</option>)}
-          </select>
-        </label>
-        <label>
-          <span className="muted small">{t("wordLanguage")}</span>
-          <select value={settings.gameLang} aria-label={t("wordLanguage")}
-            onChange={(e) => onSettings({ ...settings, gameLang: e.target.value as LangCode })}>
-            {PLAYABLE_LANGS.map((c) => <option key={c} value={c}>{LANGS[c].name}</option>)}
-          </select>
-        </label>
+    <div className="page hub">
+      <div className="hub-top">
+        <div className="lang-bar">
+          <label>
+            <span aria-hidden>🌐</span>
+            <span className="sr-only">{t("language")}</span>
+            <select value={settings.uiLang} onChange={(e) => changeUi(e.target.value as LangCode)} aria-label={t("language")}>
+              {LANG_ORDER.map((c) => <option key={c} value={c}>{LANGS[c].name}</option>)}
+            </select>
+          </label>
+          <label>
+            <span className="muted small">{t("wordLanguage")}</span>
+            <select value={settings.gameLang} aria-label={t("wordLanguage")}
+              onChange={(e) => onSettings({ ...settings, gameLang: e.target.value as LangCode })}>
+              {PLAYABLE_LANGS.map((c) => <option key={c} value={c}>{LANGS[c].name}</option>)}
+            </select>
+          </label>
+        </div>
+        <div className="toggles">
+          <button type="button" className={`toggle ${settings.music ? "on" : ""}`} aria-pressed={settings.music}
+            onClick={() => onSettings({ ...settings, music: !settings.music })} title={t("music")}>
+            🎵<span className="toggle-label"> {t("music")}</span>
+          </button>
+          <button type="button" className={`toggle ${settings.sound ? "on" : ""}`} aria-pressed={settings.sound}
+            onClick={() => onSettings({ ...settings, sound: !settings.sound })} title={t("sound")}>
+            {settings.sound ? "🔊" : "🔇"}<span className="toggle-label"> {t("sound")}</span>
+          </button>
+          <button type="button" className={`toggle ${settings.vibration ? "on" : ""}`} aria-pressed={settings.vibration}
+            onClick={() => onSettings({ ...settings, vibration: !settings.vibration })} title={t("vibration")}>
+            📳<span className="toggle-label"> {t("vibration")}</span>
+          </button>
+          <button type="button" className={`toggle ${settings.chat ? "on" : ""}`} aria-pressed={settings.chat}
+            onClick={() => onSettings({ ...settings, chat: !settings.chat })} title={t("chat")}>
+            💬<span className="toggle-label"> {t("chat")}</span>
+          </button>
+        </div>
       </div>
-      <div className="toggles">
-        <button type="button" className={`toggle ${settings.sound ? "on" : ""}`} aria-pressed={settings.sound}
-          onClick={() => onSettings({ ...settings, sound: !settings.sound })}>
-          {settings.sound ? "🔊" : "🔇"} {t("sound")}
-        </button>
-        <button type="button" className={`toggle ${settings.vibration ? "on" : ""}`} aria-pressed={settings.vibration}
-          onClick={() => onSettings({ ...settings, vibration: !settings.vibration })}>
-          📳 {t("vibration")}
-        </button>
-        <button type="button" className={`toggle ${settings.chat ? "on" : ""}`} aria-pressed={settings.chat}
-          onClick={() => onSettings({ ...settings, chat: !settings.chat })}>
-          💬 {t("chat")}
-        </button>
+      <div className="hub-main">
+        <div className="hub-left">
+          <Logo />
+          <p className="muted tagline">{t("tagline")}</p>
+          <button type="button" className="balance" onClick={onShop} aria-label={t("balanceAria")}>
+            <Chips amount={w.balance} big loading={!w.ready} />
+            <span className="plus-chip">+</span>
+          </button>
+        </div>
+        <div className="hub-right">
+          {wallet.canClaimDaily() && (
+            <button type="button" className="gift big" onClick={async () => {
+              try {
+                await wallet.claimDaily();
+                setToast(t("dailyToast", { n: DAILY_BONUS }));
+              } catch (e) {
+                setToast(errorText(e));
+              }
+            }}>
+              {t("dailyClaim")}
+            </button>
+          )}
+          {toast && <div className="toast">{toast}</div>}
+          {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
+          <button type="button" className={canResume ? "big" : "primary big"} onClick={onTables}>{t("chipTables")}</button>
+          <button type="button" className="big" onClick={onPractice}>{t("practice")}</button>
+          <div className="hub-row">
+            <button type="button" className="big" onClick={onShop}>{t("shop")}</button>
+            <button type="button" className="big" onClick={onRules}>{t("rules")}</button>
+          </div>
+        </div>
       </div>
       {!LANGS[settings.uiLang].playable && (
         <p className="muted small">{t("wordLangSoon", { lang: LANGS[settings.uiLang].name })}</p>
       )}
-      <Logo />
-      <p className="muted">{t("tagline")}</p>
-      <button type="button" className="balance" onClick={onShop} aria-label={t("balanceAria")}>
-        <Chips amount={w.balance} big loading={!w.ready} />
-        <span className="plus-chip">+</span>
-      </button>
-      {wallet.canClaimDaily() && (
-        <button type="button" className="gift big" onClick={async () => {
-          try {
-            await wallet.claimDaily();
-            setToast(t("dailyToast", { n: DAILY_BONUS }));
-          } catch (e) {
-            setToast(errorText(e));
-          }
-        }}>
-          {t("dailyClaim")}
-        </button>
-      )}
-      {toast && <div className="toast">{toast}</div>}
-      {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
-      <button type="button" className={canResume ? "big" : "primary big"} onClick={onTables}>{t("chipTables")}</button>
-      <button type="button" className="big" onClick={onPractice}>{t("practice")}</button>
-      <button type="button" className="big" onClick={onShop}>{t("shop")}</button>
-      <button type="button" className="link" onClick={onRules}>{t("rules")}</button>
-      <p className="muted small legal">{t("legal")}</p>
-      <p className="muted small copyright">{t("copyright", { year: COPYRIGHT_YEAR })}</p>
+      <p className="muted small legal">{t("legal")} {t("copyright", { year: COPYRIGHT_YEAR })}</p>
     </div>
   );
 }

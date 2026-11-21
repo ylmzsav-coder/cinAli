@@ -87,6 +87,9 @@ const es: Messages = {
   mutedTag: "silenciado",
   copyright: "© {year} AlFaBe 101. Todos los derechos reservados.",
   drawBeforeLay: "Primero roba una ficha (del mazo o de la izquierda) y luego coloca tu palabra. Tu selección se mantiene.",
+  tapToStart: "Toca para empezar",
+  rotateDevice: "Para una mejor experiencia, gira tu teléfono en horizontal",
+  music: "Música",
   start: "Empezar",
 
   tablesDesc: "La entrada se cobra al sentarte. El primero gana el 90 % del bote. ¡Si terminas todo de un color, ganas un extra igual a la entrada!",
