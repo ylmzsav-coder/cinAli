@@ -28,7 +28,15 @@ export function TileView({ tile, as, size = "md", selected, order, onClick, dim 
   ].join(" ");
   const content = (
     <>
-      {letter ? <span className="tile-letter">{letter}</span> : <img className="tile-joker-img" src={JOKER_IMG} alt="" draggable={false} />}
+      {letter ? (
+        <span className="tile-letter">{letter}</span>
+      ) : (
+        <>
+          <span className="tile-joker-j top" aria-hidden>J</span>
+          <img className="tile-joker-img" src={JOKER_IMG} alt="" draggable={false} />
+          <span className="tile-joker-j bottom" aria-hidden>J</span>
+        </>
+      )}
       {letter && <span className="tile-value">{letterValue(letter)}</span>}
       {isJoker && letter && <img className="tile-joker-mini" src={JOKER_IMG} alt="" draggable={false} />}
       {order !== undefined && <span className="tile-order">{order}</span>}
