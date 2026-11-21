@@ -22,7 +22,7 @@ EXTRA = {
                   # kısaltmalar ve sesli harfsiz yazımlar
                   "sktr", "siktr", "sktir", "sktrgt", "siktirgit", "sg", "skym", "skrm", "skerim", "sikiyim",
                   "amq", "amcik", "orspu", "orosbu", "oruspu", "yrk", "yarram"],
-        "stems": ["orospu", "amcık", "yarak", "yarrak", "taşak", "kaltak", "götveren", "siktir", "sikerim",
+        "stems": ["orospu", "porno", "amcık", "yarak", "yarrak", "taşak", "kaltak", "götveren", "siktir", "sikerim",
                   "sikeyim", "sikiş", "sikis", "sikti", "sikmek", "siker", "sikik", "amına", "pezeven", "yavşa",
                   "gavat", "ibne", "kahpe", "puşt", "dalyara", "piç", "fahişe", "kevaşe", "sürtük", "şerefsiz"],
         "allow": ["sikke", "sikkeler"],
