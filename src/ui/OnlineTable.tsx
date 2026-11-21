@@ -200,7 +200,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
   }, [doc_, rack, tableId, muted]);
 
   const leave = async () => {
-    if (doc_?.status === "playing" && !confirm(t("leaveConfirm"))) return;
+    // Onay, oyun ekranındaki "Oyundan çık" penceresinde alınır
     try {
       if (tableId) await call("leaveTable", { tableId });
     } catch {

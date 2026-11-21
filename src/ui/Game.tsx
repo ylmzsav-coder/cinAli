@@ -595,6 +595,9 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     return () => clearTimeout(timer);
   }, [state.table]);
 
+  // ---- Oyundan çıkış (onaylı) ----
+  const [quitAsk, setQuitAsk] = useState(false);
+
   // ---- Kelime anlamı: yerdeki kelimeye dokununca Vikisözlük'ten ----
   const [meaning, setMeaning] = useState<{ word: string; status: "loading" | "ok" | "none" | "error"; data?: Meaning } | null>(null);
   const meaningReq = useRef(0);
@@ -895,7 +898,9 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
           {tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
         </div>
         <div className="topbar-actions">
-          {onLeave && <button type="button" className="link leave-link" onClick={onLeave}>{t("leaveTable")}</button>}
+          {onLeave && !handOver && (
+            <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}>🚪 {t("quitGame")}</button>
+          )}
           <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
             aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬</button>
           <button type="button" className="link" onClick={() => setShowScores(true)}>{t("scores")}</button>
@@ -1121,6 +1126,19 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       {drag?.active && (
         <div className="drag-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden>
           {drag.kind === "tile" ? dragTiles.map((x) => <TileView key={x.id} tile={x} />) : <span className="tile tile-back" />}
+        </div>
+      )}
+
+      {quitAsk && onLeave && (
+        <div className="modal-bg" onClick={() => setQuitAsk(false)}>
+          <div className="modal quit-modal" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label={t("quitTitle")}>
+            <h3>🚪 {t("quitTitle")}</h3>
+            <p>{remote ? t("leaveConfirm") : tableName ? t("quitChip") : t("quitPractice")}</p>
+            <div className="modal-actions">
+              <button type="button" className="danger" onClick={() => { setQuitAsk(false); onLeave(); }}>{t("quitYes")}</button>
+              <button type="button" onClick={() => setQuitAsk(false)}>{t("cancel")}</button>
+            </div>
+          </div>
         </div>
       )}
 

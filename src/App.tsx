@@ -245,6 +245,7 @@ export function App() {
             onChange={update}
             onExit={() => setScreen("hub")}
             onNewGame={finishGame}
+            onLeave={finishGame}
             tableName={activeTable ? t("tableTitle", { name: t(`table_${activeTable.id}` as "table_vip") }) : undefined}
             payout={saved.payout}
           />
