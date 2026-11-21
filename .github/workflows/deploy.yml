@@ -1,8 +1,9 @@
 name: Yayınla (GitHub Pages)
 
+# Yalnızca elle çalıştırılır (Actions > Yayınla (GitHub Pages) > Run workflow).
+# Web sürümü Firebase Hosting'den yayınlanacak (firebase.yml); GitHub Pages
+# depo ayarlarında kapatıldığı için otomatik çalıştırma kaldırıldı.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
