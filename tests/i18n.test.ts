@@ -24,10 +24,10 @@ describe("çeviriler", () => {
       }
     });
   }
-  it("oynanabilir dillerde 94 harf taşı var", () => {
+  it("oynanabilir dillerde 117 harf taşı var", () => {
     for (const c of LANG_ORDER.filter((c) => LANGS[c].playable)) {
       const total = Object.values(LANGS[c].counts).reduce((a, b) => a + b, 0);
-      expect(total, c).toBe(94);
+      expect(total, c).toBe(117);
     }
   });
 });

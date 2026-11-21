@@ -1045,7 +1045,15 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
               const tile = id !== null ? tileById.get(id) : undefined;
               const idx = id !== null ? selected.indexOf(id) : -1;
               const isDragged = !!drag?.active && drag.kind === "tile" && id !== null && drag.ids.includes(id);
-              const jokerAs = tile && tile.letter === null ? groups.find((g) => g.ids.includes(tile.id))?.jokerLetters[0] : undefined;
+              // İki joker aynı grupta olabilir: her joker, gruptaki sırasına göre kendi harfini gösterir
+              let jokerAs: Letter | undefined;
+              if (tile && tile.letter === null) {
+                const g = groups.find((x) => x.ids.includes(tile.id));
+                if (g) {
+                  const jokersInGroup = g.ids.filter((x) => tileById.get(x)?.letter === null);
+                  jokerAs = g.jokerLetters[jokersInGroup.indexOf(tile.id)];
+                }
+              }
               const inSel = !!selectedGroup && selectedGroup.slots.includes(i);
               const frame = inSel
                 ? `grp-sel ${selectedGroup!.slots[0] === i ? "grp-start" : ""} ${selectedGroup!.slots[selectedGroup!.slots.length - 1] === i ? "grp-end" : ""}`
