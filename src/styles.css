@@ -148,8 +148,8 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .word-tiles { display: flex; gap: 2px; }
 /* Kelimenin altı: sahibi ve toplam değeri */
 .word-foot { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 0 2px; white-space: nowrap; line-height: 1.1; }
-.word-owner { font-size: 0.65rem; color: var(--muted); }
-.word-total { font-size: 0.72rem; font-weight: 800; color: var(--accent); }
+.word-owner { font-size: 0.58rem; color: var(--muted); }
+.word-total { font-size: 0.58rem; font-weight: 700; color: var(--accent); }
 .plus { padding: 2px 8px; background: var(--accent); color: #2a1f00; border-radius: 8px; font-size: 1.1rem; line-height: 1.2; }
 
 .center { display: flex; gap: 10px; align-items: stretch; }
@@ -712,7 +712,7 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .word-total.gained { animation: total-pop 0.9s ease-out; }
 @keyframes total-pop {
   0% { transform: scale(1); text-shadow: none; }
-  25% { transform: scale(1.35); text-shadow: 0 0 10px rgba(255, 213, 79, 0.9); }
+  25% { transform: scale(1.15); text-shadow: 0 0 10px rgba(255, 213, 79, 0.9); }
   100% { transform: scale(1); text-shadow: none; }
 }
 .word-total { display: inline-block; transform-origin: right center; }
