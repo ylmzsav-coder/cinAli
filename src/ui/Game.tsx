@@ -19,10 +19,12 @@ import {
   prevIndex,
   timeoutMove,
   totals,
+  wordString,
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, letterValue } from "../game/tiles";
 import { buzz, pop, tick, tileSound, type TileSound } from "../feedback";
 import { playLose, playWin, stopJingle } from "../jingles";
+import { lookupMeaning, type Meaning } from "../meaning";
 import { AUTO_PER_PRODUCT, TEST_MODE, buyAutoPer, ownsAutoPer, purchasesAvailable } from "../economy/store";
 import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TEXT, type ChatEvent, type ChatMessageId, type SendTextResult } from "../online/chat";
 import type { Action } from "../online/view";
@@ -518,6 +520,18 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   };
 
   /** Otomatik per: en değerli kelimeleri bulup ıstakaya kelime kelime dizer. */
+  // ---- Kelime anlamı: yerdeki kelimeye dokununca Vikisözlük'ten ----
+  const [meaning, setMeaning] = useState<{ word: string; status: "loading" | "ok" | "none" | "error"; data?: Meaning } | null>(null);
+  const meaningReq = useRef(0);
+  const showMeaning = (word: string) => {
+    if (suppressClickRef.current) return;
+    const req = ++meaningReq.current;
+    setMeaning({ word, status: "loading" });
+    lookupMeaning(word, state.lang)
+      .then((data) => req === meaningReq.current && setMeaning({ word, status: data ? "ok" : "none", data: data ?? undefined }))
+      .catch(() => req === meaningReq.current && setMeaning({ word, status: "error" }));
+  };
+
   // Otomatik Per uygulama içi satın almayla açılır (tek sefer, sınırsız kullanım)
   const [autoOwned, setAutoOwned] = useState(ownsAutoPer);
   const [autoOffer, setAutoOffer] = useState(false);
@@ -777,7 +791,9 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                   {canExtend && (
                     <button type="button" className="plus" onClick={() => extendWith(w, "start", selected.slice())} aria-label={t("addStart")}>+</button>
                   )}
-                  <div className="word-tiles">
+                  <div className="word-tiles" role="button" tabIndex={0} title={t("tapForMeaning")}
+                    onClick={() => showMeaning(wordString(w.tiles))}
+                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && showMeaning(wordString(w.tiles))}>
                     {w.tiles.map((pt) => (
                       <TileView key={pt.tile.id} tile={pt.tile} as={pt.letter} size="sm" />
                     ))}
@@ -788,7 +804,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                   {showExtendZones && (
                     <span className={`word-drop ${drag?.target === `extend:${w.id}:end` ? "over" : ""}`} data-drop={`extend:${w.id}:end`}>+</span>
                   )}
-                  <span className="word-owner">{state.players[w.owner].name}</span>
+                  <span className="word-owner">{state.players[w.owner].name} <span className="word-info" aria-hidden>📖</span></span>
                 </div>
               );
             })}
@@ -929,6 +945,28 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       {drag?.active && (
         <div className="drag-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden>
           {drag.kind === "tile" ? dragTiles.map((x) => <TileView key={x.id} tile={x} />) : <span className="tile tile-back" />}
+        </div>
+      )}
+
+      {meaning && (
+        <div className="modal-bg" onClick={() => setMeaning(null)}>
+          <div className="modal meaning" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={meaning.word}>
+            <h3>📖 {meaning.word}</h3>
+            {meaning.status === "loading" && <p className="muted">{t("meaningLoading")}</p>}
+            {meaning.status === "none" && <p className="muted">{t("meaningNone")}</p>}
+            {meaning.status === "error" && <p className="error">{t("meaningError")}</p>}
+            {meaning.status === "ok" && meaning.data && (
+              <>
+                <ol className="senses">
+                  {meaning.data.senses.map((x, i) => <li key={i}>{x}</li>)}
+                </ol>
+                <a className="meaning-src" href={meaning.data.url} target="_blank" rel="noopener noreferrer">{t("meaningSource")} ↗</a>
+              </>
+            )}
+            <div className="modal-actions">
+              <button type="button" onClick={() => setMeaning(null)}>{t("close")}</button>
+            </div>
+          </div>
         </div>
       )}
 

@@ -670,3 +670,14 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .auto-offer p { margin: 8px 0; line-height: 1.35; }
 .auto-offer .modal-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
 .auto-buy { background: linear-gradient(#7c4dff, #5e35b1); color: #fff; font-weight: 800; padding: 10px 16px; }
+
+/* Kelime anlamı */
+.table .word-tiles { cursor: pointer; border-radius: 6px; }
+.table .word-tiles:active { transform: scale(0.97); }
+.word-info { font-size: 0.8em; opacity: 0.8; }
+.modal.meaning { max-width: 520px; max-height: 86dvh; overflow-y: auto; text-align: left; }
+.modal.meaning h3 { text-align: center; letter-spacing: 0.06em; }
+.senses { margin: 6px 0 4px; padding-left: 1.3em; line-height: 1.4; }
+.senses li { margin: 4px 0; }
+.meaning-src { display: block; text-align: right; font-size: 0.8rem; opacity: 0.85; color: inherit; }
+.modal.meaning .modal-actions { display: flex; justify-content: center; margin-top: 8px; }
