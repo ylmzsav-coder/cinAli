@@ -22,6 +22,7 @@ import {
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, letterValue } from "../game/tiles";
 import { buzz, pop, tick, tileSound, type TileSound } from "../feedback";
+import { playLose, playWin, stopJingle } from "../jingles";
 import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TEXT, type ChatEvent, type ChatMessageId, type SendTextResult } from "../online/chat";
 import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
@@ -232,6 +233,26 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       setTimeout(() => setLocalChat((prev) => [...prev.slice(-20), { seat, kind: replyKind, id: reply, at: Date.now() }]), 900 + Math.random() * 1200);
     }
   };
+
+  // ---- El / oyun sonu müziği: kazanana alkışlı fanfar, kaybedene hüzünlü melodi ----
+  const prevPhaseRef = useRef(state.phase);
+  useEffect(() => {
+    const prev = prevPhaseRef.current;
+    prevPhaseRef.current = state.phase;
+    const ended = state.phase === "handOver" || state.phase === "gameOver";
+    const wasActive = prev === "draw" || prev === "play";
+    if (!ended && (prev === "handOver" || prev === "gameOver")) stopJingle(); // yeni el başladı
+    if (!ended || !wasActive || !sound) return;
+    let won: boolean;
+    if (state.phase === "gameOver") {
+      const sums = totals(state);
+      won = sums[ME] === Math.min(...sums);
+    } else won = state.lastResult?.winner === ME;
+    if (won) playWin();
+    else playLose();
+    if (vibration && won) navigator.vibrate?.([80, 60, 80, 60, 200]);
+  }, [state, sound, vibration]);
+  useEffect(() => () => stopJingle(), []);
 
   // ---- Hamle süresi ----
   const active = state.phase === "draw" || state.phase === "play";
