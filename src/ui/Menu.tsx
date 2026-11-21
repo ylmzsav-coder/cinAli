@@ -100,7 +100,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
       {!LANGS[settings.uiLang].playable && (
         <p className="muted small">{t("wordLangSoon", { lang: LANGS[settings.uiLang].name })}</p>
       )}
-      <p className="muted small legal">{t("legal")} {t("copyright", { year: COPYRIGHT_YEAR })}</p>
+      <p className="muted small legal">{t("legal")} {t("copyright", { year: COPYRIGHT_YEAR })}{typeof __APP_VERSION__ !== "undefined" && ` · v ${__APP_VERSION__}`}</p>
     </div>
   );
 }

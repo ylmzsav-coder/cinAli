@@ -1,2 +1,4 @@
 /** Derleme sırasında vite.config.ts tanımlar: dil kodu -> sözlük dosyasının özeti. */
 declare const __DICT_VERSIONS__: Record<string, string>;
+/** Derleme tarihi ve kayıt numarası (menüde gösterilir). */
+declare const __APP_VERSION__: string;

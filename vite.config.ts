@@ -3,6 +3,18 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { createHash } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
+import { execSync } from "node:child_process";
+
+/** Menüde görünen sürüm: derleme tarihi + kayıt numarası (telefonda güncel sürüm açık mı anlaşılır). */
+const APP_VERSION = (() => {
+  const d = new Date();
+  const date = `${String(d.getUTCDate()).padStart(2, "0")}.${String(d.getUTCMonth() + 1).padStart(2, "0")}.${d.getUTCFullYear()}`;
+  try {
+    return `${date} · ${execSync("git rev-parse --short HEAD").toString().trim()}`;
+  } catch {
+    return date;
+  }
+})();
 
 /** Sözlük sürümleri: dosya değişince adres (?v=) değişir, telefonlar eski sözlükte kalmaz. */
 const DICT_VERSIONS = Object.fromEntries(
@@ -14,7 +26,7 @@ const DICT_VERSIONS = Object.fromEntries(
 export default defineConfig({
   // Göreli yol: GitHub Pages alt klasöründe ve yerelde aynı şekilde çalışır.
   base: "./",
-  define: { __DICT_VERSIONS__: JSON.stringify(DICT_VERSIONS) },
+  define: { __DICT_VERSIONS__: JSON.stringify(DICT_VERSIONS), __APP_VERSION__: JSON.stringify(APP_VERSION) },
   plugins: [
     react(),
     VitePWA({

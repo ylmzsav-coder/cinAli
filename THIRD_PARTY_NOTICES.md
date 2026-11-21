@@ -13,6 +13,7 @@ kalanını kapsamaz.
 | Dosya | Kaynak | Lisans |
 |---|---|---|
 | `tr.txt` | Vikisözlük kelime listesi, [mertemin/turkish-word-list](https://github.com/mertemin/turkish-word-list) | CC BY-SA |
+| `tr.txt` (ek kelimeler) | [CanNuhlar/Turkce-Kelime-Listesi](https://github.com/CanNuhlar/Turkce-Kelime-Listesi) — depoda lisans belirtilmemiş | — |
 | `tr.txt` (sıklık sırası) | [an-array-of-turkish-words](https://www.npmjs.com/package/an-array-of-turkish-words) | MIT |
 | `de.txt`, `it.txt` | [Vikisözlük / Wiktionary](https://www.wiktionary.org/) veri dosyaları (dumps.wikimedia.org) | CC BY-SA 4.0 |
 | `en.txt` | Hunspell `dictionary-en` (SCOWL) | MIT ve BSD |
