@@ -91,6 +91,9 @@ const tr = {
   tapToStart: "Başlamak için dokunun",
   rotateDevice: "En iyi deneyim için telefonunuzu yatay çevirin",
   music: "Müzik",
+  noValidGroups: "Istakada geçerli kelime yok. Kelimeleri yan yana dizin; kelimeler arasında boşluk bırakın.",
+  dropToDiscard: "Atmak için bırakın",
+  groupsTotal: "Istaka: {total}/{need}",
   start: "Başla",
 
   // Masalar
@@ -150,7 +153,7 @@ const tr = {
   yourDiscard: "Attığınız",
   hintDraw: "Sıra sizde: desteden ya da soldan taş çekin.",
   hintPlayOpened: "Kelime koyun, yerdeki kelimelere harf ekleyin ya da bir taş atın.",
-  hintPlayClosed: "Kelimeleri hazırlayıp toplam {n}'e ulaşınca elinizi açın, sonra bir taş atın.",
+  hintPlayClosed: "Kelimeleri ıstakada yan yana dizin (aralarında boşluk bırakın); toplam {n}'e ulaşınca Eli Aç'a basın, sonra bir taş atın.",
   hintOther: "{name} oynuyor…",
   selectMin3: "Kelime için en az 3 taş seçin (seçim sırası harf sırasıdır).",
   wordPrepared: "{word} ({value}) hazırlandı.",
@@ -262,10 +265,10 @@ const tr = {
   rule_timer: "Hamle süresi: Her oyuncunun hamle süresi vardır (çipli masalarda {n} saniye). Süre çerçevede gösterilir: yeşil, sarı, kırmızı. Süre bitince taş çekilmediyse desteden çekilir ve ıstakadan bir taş otomatik atılır.",
   rule_winner: "Kazanan: Belirlenen el sayısı sonunda toplam puanı en düşük olan oyuncu kazanır.",
   howTitle: "Nasıl oynanır?",
-  how_1: "Istakadaki taşlara harf sırasıyla dokunun; seçim sırası kelimedeki harf sırasıdır.",
-  how_2: "Kelime Yap ile kelimeyi hazırlayın. Toplam {need}'e ulaşınca Eli Aç.",
-  how_3: "Açtıktan sonra taş seçip yerdeki kelimenin yanındaki + ile başına/sonuna ekleyin.",
-  how_4: "Tur sonunda tek taş seçip Taş At.",
+  how_1: "Taşları parmağınızla sürükleyip ıstakada istediğiniz yuvaya koyun. Yan yana duran taşlar bir kelimedir; kelimeler arasında boşluk bırakın.",
+  how_2: "Istakanın üstünde her kelimenin değeri görünür. Toplam {need}'e ulaşınca Eli Aç'a basın.",
+  how_3: "Açtıktan sonra taşı yerdeki bir kelimenin başına ya da sonuna sürükleyerek işleyin; çekmek için desteden ya da soldan taşı ıstakaya sürükleyin.",
+  how_4: "Turu bitirmek için bir taşı sağdaki atma alanına sürükleyin (ya da seçip Taş At'a basın).",
   distTitle: "Taş dağılımı ({lang})",
   dictSource: "Sözlük kaynakları: Vikisözlük (CC BY-SA), Hunspell sözlükleri (MIT/BSD, MPL), FrequencyWords (CC BY-SA).",
 };

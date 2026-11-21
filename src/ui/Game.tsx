@@ -20,23 +20,41 @@ import {
   timeoutMove,
   totals,
 } from "../game/engine";
-import { COLORS, Letter, Tile, letterIndex, wordValue } from "../game/tiles";
-import { buzz, pop, tick } from "../feedback";
+import { COLORS, Letter, Tile, letterIndex, letterValue } from "../game/tiles";
+import { buzz, pop, tick, tileSound, type TileSound } from "../feedback";
 import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TEXT, type ChatEvent, type ChatMessageId, type SendTextResult } from "../online/chat";
 import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
+import { Slots, groupsOf, initialSlots, moveTile, packSlots, syncSlots } from "./rack";
 
 const ME = 0;
 const SPEED_MS = { yavas: 1100, normal: 650, hizli: 250 } as const;
 /** Son kaç saniyede ses/titreşim uyarısı verilir. */
 const WARN_SECONDS = 5;
 
-interface Staged {
-  tileIds: number[];
-  jokerLetters: Letter[];
-  word: string;
+/** Istakadaki bir taş grubunun (yan yana taşlar) kelime değerlendirmesi. */
+interface GroupInfo {
+  ids: number[];
+  slots: number[];
+  word: string | null;
   value: number;
+  jokerLetters: Letter[];
+  /** Jokerin alabileceği harf seçenekleri (birden fazlaysa oyuncu seçebilir). */
+  options: Letter[][];
+  valid: boolean;
+}
+
+/** Sürükleme: ıstakadan taş(lar) ya da desteden/soldan çekilecek taş. */
+interface DragState {
+  kind: "tile" | "deck" | "take";
+  ids: number[];
+  x: number;
+  y: number;
+  sx: number;
+  sy: number;
+  active: boolean;
+  target: string | null;
 }
 
 interface JokerPrompt {
@@ -103,35 +121,39 @@ interface Props {
 
 export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, tableName, payout }: Props) {
   const me = state.players[ME];
-  const [order, setOrder] = useState<number[]>(() => me.rack.map((t) => t.id));
+  const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
-  const [staged, setStaged] = useState<Staged[]>([]);
+  const [jokerPick, setJokerPick] = useState<Record<number, Letter[]>>({});
   const [message, setMessage] = useState<{ text: string; error?: boolean } | null>(null);
   const [jokerPrompt, setJokerPrompt] = useState<JokerPrompt | null>(null);
   const [showScores, setShowScores] = useState(false);
   const handRef = useRef(state.handNo);
+  /** Desteden/soldan sürüklenip bırakılan taşın konacağı yuva. */
+  const preferredSlotRef = useRef<number | null>(null);
+  const play = (kind: TileSound) => sound && tileSound(kind);
 
-  // Yeni elde yerel seçimleri sıfırla
+  // Yeni elde ıstakayı baştan diz, seçimleri sıfırla
   useEffect(() => {
     if (handRef.current !== state.handNo) {
       handRef.current = state.handNo;
       setSelected([]);
-      setStaged([]);
+      setJokerPick({});
       setMessage(null);
-      setOrder(state.players[ME].rack.map((t) => t.id));
+      setSlots(initialSlots(state.players[ME].rack.map((t) => t.id)));
     }
   }, [state.handNo, state.players]);
 
-  // Istaka sırasını raf içeriğiyle eşitle (yeni taşlar sona eklenir)
+  // Istakayı oyun durumuyla eşitle: giden taşın yeri boş kalır, gelen taş
+  // bırakılan yuvaya ya da alt sıranın en sağına konur.
   useEffect(() => {
-    const ids = new Set(me.rack.map((t) => t.id));
-    setOrder((prev) => {
-      const kept = prev.filter((id) => ids.has(id));
-      const added = me.rack.filter((t) => !kept.includes(t.id)).map((t) => t.id);
-      return added.length || kept.length !== prev.length ? [...kept, ...added] : prev;
+    const ids = me.rack.map((t) => t.id);
+    setSlots((prev) => {
+      const next = syncSlots(prev, ids, preferredSlotRef.current);
+      preferredSlotRef.current = null;
+      return next.every((x, i) => x === prev[i]) ? prev : next;
     });
-    setSelected((prev) => prev.filter((id) => ids.has(id)));
-    setStaged((prev) => prev.filter((s) => s.tileIds.every((id) => ids.has(id))));
+    const set = new Set(ids);
+    setSelected((prev) => (prev.every((id) => set.has(id)) ? prev : prev.filter((id) => set.has(id))));
   }, [me.rack]);
 
   // Bilgisayar oyuncuları (çevrimiçi modda botları sunucu oynatır)
@@ -239,20 +261,46 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   const myTurn = state.current === ME && (state.phase === "draw" || state.phase === "play");
   const canPlay = myTurn && state.phase === "play";
   const tileById = useMemo(() => new Map(me.rack.map((t) => [t.id, t])), [me.rack]);
-  const stagedIds = new Set(staged.flatMap((s) => s.tileIds));
-  const rackTiles = order.map((id) => tileById.get(id)).filter((t): t is Tile => !!t && !stagedIds.has(t.id));
   const selectedTiles = selected.map((id) => tileById.get(id)!).filter(Boolean);
-  const stagedTotal = staged.reduce((s, w) => s + w.value, 0);
   // Sizin alabileceğiniz taş: soldaki oyuncunun attığı en üst taş
   const leftPile = state.discards[prevIndex(state, ME)];
   const discardTop = leftPile.length ? leftPile[leftPile.length - 1] : null;
+
+  // ---- Istakadaki gruplar: yan yana taşlar = kelime adayı ----
+  const groups: GroupInfo[] = useMemo(() => {
+    return groupsOf(slots).map((g) => {
+      const tiles = g.ids.map((id) => tileById.get(id)).filter((x): x is Tile => !!x);
+      const base: GroupInfo = { ids: g.ids, slots: g.slots, word: null, value: 0, jokerLetters: [], options: [], valid: false };
+      if (tiles.length < 3) return base;
+      const pattern = tiles.map((x) => x.letter);
+      if (!pattern.includes(null)) {
+        const word = pattern.join("");
+        const valid = dict.has(word);
+        return { ...base, word, valid, value: valid ? [...word].reduce((s, ch) => s + letterValue(ch), 0) : 0 };
+      }
+      const options = jokerOptions(dict, pattern);
+      if (!options.length) return { ...base, word: pattern.map((p) => p ?? "?").join("") };
+      // Oyuncunun seçtiği harf; yoksa en yüksek değerli seçenek
+      const jokerId = tiles.find((x) => x.letter === null)!.id;
+      const picked = jokerPick[jokerId];
+      const score = (o: Letter[]) => o.reduce((s, l) => s + letterValue(l), 0);
+      const choice = options.find((o) => picked && o.join() === picked.join()) ?? options.slice().sort((a, b) => score(b) - score(a))[0];
+      let j = 0;
+      const word = pattern.map((p) => p ?? choice[j++]).join("");
+      return { ...base, word, valid: true, jokerLetters: choice, options, value: [...word].reduce((s, ch) => s + letterValue(ch), 0) };
+    });
+  }, [slots, tileById, dict, jokerPick]);
+  const validGroups = groups.filter((g) => g.valid);
+  const groupTotal = validGroups.reduce((s, g) => s + g.value, 0);
+  /** Süre dolunca otomatik atılmaması gereken taşlar: geçerli kelime grupları. */
+  const groupKeepIds = new Set(validGroups.flatMap((g) => g.ids));
 
   /**
    * Hamle yapar: yerel modda motoru doğrudan çalıştırır, çevrimiçi modda
    * hamleyi sunucuya gönderir. Başarılıysa true döner.
    */
   const [busy, setBusy] = useState(false);
-  const act = async (fn: () => GameState, action: Action, okMsg?: string): Promise<boolean> => {
+  const act = async (fn: () => GameState, action: Action, okMsg?: string, okSound?: TileSound): Promise<boolean> => {
     // Taş çekmek seçimi bozmaz: oyuncu çekmeden önce kelimesini seçmiş olabilir.
     const keepSelection = action.type === "drawDeck" || action.type === "drawDiscard";
     if (remote) {
@@ -262,6 +310,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
         await remote.send(action);
         if (!keepSelection) setSelected([]);
         setMessage(okMsg ? { text: okMsg } : null);
+        if (okSound) play(okSound);
         return true;
       } catch (e) {
         setMessage({ text: errorText(e), error: true });
@@ -274,6 +323,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       onChange(fn());
       if (!keepSelection) setSelected([]);
       setMessage(okMsg ? { text: okMsg } : null);
+      if (okSound) play(okSound);
       return true;
     } catch (e) {
       if (e instanceof GameError) setMessage({ text: tk(`err.${e.code}`, e.params), error: true });
@@ -318,7 +368,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     firedRef.current = turnKey;
     setJokerPrompt(null);
     setSelected([]);
-    onChange(timeoutMove(state, stagedIds));
+    onChange(timeoutMove(state, groupKeepIds));
     setMessage(null);
   });
 
@@ -328,8 +378,10 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       ? ({ "--p": `${(fraction * 100).toFixed(1)}%`, "--tc": timerColor } as CSSProperties)
       : undefined;
 
-  const toggle = (id: number) =>
+  const toggle = (id: number) => {
+    play("pick");
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
 
   /** Jokerli desen için harf seçtirir; tek seçenek varsa doğrudan uygular. */
   const resolveJokers = (pattern: (Letter | null)[], title: string, then: (letters: Letter[]) => void) => {
@@ -355,20 +407,19 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     return () => clearTimeout(id);
   }, [nudgeDraw]);
 
-  const makeWord = () => {
-    if (selectedTiles.length < 3) {
-      setMessage({ text: t("selectMin3"), error: true });
-      return;
-    }
-    // Eli açmış oyuncu yalnızca kendi sırasında ve taş çektikten sonra kelime koyabilir.
-    // Joker seçeneği sormadan önce söyle; seçim korunur, taş çekince tekrar dokunmak yeterli.
-    if (me.opened && !canPlay) {
-      const drawFirst = state.current === ME && state.phase === "draw";
-      setMessage({ text: drawFirst ? t("drawBeforeLay") : t("playAfterDraw"), error: true });
-      if (drawFirst) setNudgeDraw(Date.now());
-      return;
-    }
-    const pattern = selectedTiles.map((t) => t.letter);
+  /** Eli açmış oyuncu yalnızca kendi sırasında, taş çektikten sonra koyabilir. */
+  const needDrawFirst = () => {
+    if (canPlay) return false;
+    const drawFirst = state.current === ME && state.phase === "draw";
+    setMessage({ text: drawFirst ? t("drawBeforeLay") : t("playAfterDraw"), error: true });
+    if (drawFirst) setNudgeDraw(Date.now());
+    return true;
+  };
+
+  /** Seçili taşlarla (seçim sırasıyla) kelime koy. */
+  const laySelected = () => {
+    if (needDrawFirst()) return;
+    const pattern = selectedTiles.map((x) => x.letter);
     resolveJokers(pattern, t("jokerWhich"), (jokerLetters) => {
       let j = 0;
       const word = pattern.map((p) => p ?? jokerLetters[j++]).join("");
@@ -377,36 +428,51 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
         return;
       }
       const spec: WordSpec = { tileIds: selected.slice(), jokerLetters };
-      if (me.opened) {
-        if (!canPlay) {
-          setMessage({ text: t("playAfterDraw"), error: true });
-          return;
-        }
-        void act(() => layWord(dict, state, spec), { type: "lay", spec }, t("wordLaid", { word }));
-      } else {
-        const value = wordValue(word);
-        setStaged((prev) => [...prev, { ...spec, jokerLetters, word, value }]);
-        setSelected([]);
-        setMessage({ text: t("wordPrepared", { word, value }) });
-      }
+      void act(() => layWord(dict, state, spec), { type: "lay", spec }, t("wordLaid", { word }), "open");
     });
   };
 
-  const open = async () => {
-    const specs = staged.map(({ tileIds, jokerLetters }) => ({ tileIds, jokerLetters }));
-    if (await act(() => openHand(dict, state, specs), { type: "open", specs }, t("openedOk"))) setStaged([]);
+  /** Istakadaki geçerli kelime gruplarını aç (ilk açılış) ya da yere koy (açtıktan sonra). */
+  const layGroups = async () => {
+    if (!me.opened && !canPlay) {
+      if (needDrawFirst()) return;
+    }
+    if (me.opened && needDrawFirst()) return;
+    if (!validGroups.length) {
+      setMessage({ text: t("noValidGroups"), error: true });
+      return;
+    }
+    const specs = validGroups.map((g) => ({ tileIds: g.ids, jokerLetters: g.jokerLetters }));
+    if (!me.opened) {
+      await act(() => openHand(dict, state, specs), { type: "open", specs }, t("openedOk"), "open");
+      return;
+    }
+    if (remote) {
+      for (const spec of specs) if (!(await act(() => state, { type: "lay", spec }, undefined, "open"))) break;
+      return;
+    }
+    await act(() => specs.reduce((s, spec) => layWord(dict, s, spec), state), { type: "lay", spec: specs[0] }, t("wordLaid", { word: validGroups.map((g) => g.word).join(", ") }), "open");
   };
 
-  const extend = (w: TableWord, side: "start" | "end") => {
-    const added = selectedTiles.map((t) => t.letter);
-    const base = w.tiles.map((t) => t.letter);
+  const extendWith = (w: TableWord, side: "start" | "end", ids: number[]) => {
+    if (needDrawFirst()) return;
+    const tiles = ids.map((id) => tileById.get(id)).filter((x): x is Tile => !!x);
+    const added = tiles.map((x) => x.letter);
+    const base = w.tiles.map((x) => x.letter);
     const pattern = side === "start" ? [...added, ...base] : [...base, ...added];
     resolveJokers(pattern, t("jokerWhich"), (jokerLetters) =>
       void act(
-        () => extendWord(dict, state, w.id, side, { tileIds: selected.slice(), jokerLetters }),
-        { type: "extend", wordId: w.id, side, spec: { tileIds: selected.slice(), jokerLetters } },
+        () => extendWord(dict, state, w.id, side, { tileIds: ids, jokerLetters }),
+        { type: "extend", wordId: w.id, side, spec: { tileIds: ids, jokerLetters } },
+        undefined,
+        "drop",
       ),
     );
+  };
+
+  const discardId = (id: number) => {
+    if (needDrawFirst()) return;
+    void act(() => discardTile(state, id), { type: "discard", tileId: id }, undefined, "discard");
   };
 
   const discard = () => {
@@ -414,34 +480,136 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       setMessage({ text: t("oneToDiscard"), error: true });
       return;
     }
-    void act(() => discardTile(state, selected[0]), { type: "discard", tileId: selected[0] });
+    discardId(selected[0]);
   };
+
+  const drawDeck = () => void act(() => drawFromDeck(state), { type: "drawDeck" }, undefined, "drop");
+  const drawTake = () => void act(() => drawFromDiscard(state), { type: "drawDiscard" }, undefined, "drop");
 
   const sortBy = (mode: "harf" | "renk") => {
-    const key = (t: Tile) =>
+    const key = (x: Tile) =>
       mode === "harf"
-        ? (t.letter ? letterIndex(t.letter) : 99) * 10 + COLORS.indexOf(t.color)
-        : COLORS.indexOf(t.color) * 100 + (t.letter ? letterIndex(t.letter) : 99);
-    setOrder(me.rack.slice().sort((a, b) => key(a) - key(b)).map((t) => t.id));
+        ? (x.letter ? letterIndex(x.letter) : 99) * 10 + COLORS.indexOf(x.color)
+        : COLORS.indexOf(x.color) * 100 + (x.letter ? letterIndex(x.letter) : 99);
+    setSlots(packSlots(me.rack.slice().sort((a, b) => key(a) - key(b)).map((x) => x.id)));
+    play("open");
   };
 
-  const moveSelected = (dir: -1 | 1) => {
-    if (selected.length !== 1) return;
-    setOrder((prev) => {
-      const visible = prev.filter((id) => !stagedIds.has(id));
-      const i = visible.indexOf(selected[0]);
-      const j = i + dir;
-      if (i < 0 || j < 0 || j >= visible.length) return prev;
-      const a = prev.indexOf(visible[i]);
-      const b = prev.indexOf(visible[j]);
-      const next = prev.slice();
-      [next[a], next[b]] = [next[b], next[a]];
-      return next;
-    });
+  /** Grup etiketine dokununca: jokerli grupta harf seçtir. */
+  const chooseGroupJoker = (g: GroupInfo) => {
+    if (g.options.length < 2) return;
+    const tiles = g.ids.map((id) => tileById.get(id)!);
+    const pattern = tiles.map((x) => x.letter);
+    const jokerId = tiles.find((x) => x.letter === null)!.id;
+    resolveJokers(pattern, t("jokerWhich"), (letters) => setJokerPick((p) => ({ ...p, [jokerId]: letters })));
   };
+
+  // ---- Parmakla sürükleme ----
+  const [drag, setDrag] = useState<DragState | null>(null);
+  const dragRef = useRef<DragState | null>(null);
+  const suppressClickRef = useRef(false);
+  const canDraw = myTurn && state.phase === "draw";
+
+  const targetAt = (x: number, y: number): string | null => {
+    const el = document.elementFromPoint(x, y)?.closest("[data-drop]") as HTMLElement | null;
+    return el?.dataset.drop ?? null;
+  };
+
+  // Sürükleme pencere düzeyinde izlenir (pointer capture kullanılmaz; böylece
+  // taşa normal dokunma/tıklama seçme olarak çalışmaya devam eder).
+  const startDrag = (e: React.PointerEvent, kind: DragState["kind"], ids: number[]) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    dragRef.current = { kind, ids, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, active: false, target: null };
+    const move = (ev: PointerEvent) => moveDrag(ev);
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
+      endDrag();
+    };
+    const cancel = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
+      dragRef.current = null;
+      setDrag(null);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cancel);
+  };
+
+  const moveDrag = (e: { clientX: number; clientY: number; preventDefault?: () => void }) => {
+    const d = dragRef.current;
+    if (!d) return;
+    const dist = Math.hypot(e.clientX - d.sx, e.clientY - d.sy);
+    if (!d.active && dist < 8) return;
+    if (!d.active) {
+      d.active = true;
+      // Seçili bir taş sürükleniyorsa tüm seçim birlikte taşınır (işleme için)
+      if (d.kind === "tile" && selectedRef.current.includes(d.ids[0]) && selectedRef.current.length > 1) d.ids = selectedRef.current.slice();
+      play("pick");
+    }
+    d.x = e.clientX;
+    d.y = e.clientY;
+    d.target = targetAt(e.clientX, e.clientY);
+    setDrag({ ...d });
+  };
+
+  const endDrag = () => {
+    const d = dragRef.current;
+    dragRef.current = null;
+    setDrag(null);
+    if (!d || !d.active) return;
+    suppressClickRef.current = true;
+    setTimeout(() => (suppressClickRef.current = false), 80);
+    const target = d.target ?? "";
+    if (d.kind === "deck" || d.kind === "take") {
+      if (!canDrawRef.current) return;
+      if (target.startsWith("slot:")) preferredSlotRef.current = Number(target.slice(5));
+      if (target.startsWith("slot:") || target === "rack") (d.kind === "deck" ? drawDeckRef.current : drawTakeRef.current)();
+      return;
+    }
+    // Istakadan taş
+    if (target.startsWith("slot:")) {
+      if (d.ids.length === 1) {
+        setSlots((sl) => moveTile(sl, d.ids[0], Number(target.slice(5))));
+        play("drop");
+      }
+      return;
+    }
+    dropActionRef.current(target, d.ids);
+  };
+
+  // Pencere dinleyicileri eski kapanışları tutmasın diye güncel değerler ref'te
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
+  const canDrawRef = useRef(canDraw);
+  canDrawRef.current = canDraw;
+  const drawDeckRef = useRef(drawDeck);
+  drawDeckRef.current = drawDeck;
+  const drawTakeRef = useRef(drawTake);
+  drawTakeRef.current = drawTake;
+  const dropActionRef = useRef((_target: string, _ids: number[]) => {});
+  dropActionRef.current = (target: string, ids: number[]) => {
+    if (target === "discard") {
+      if (ids.length === 1) discardId(ids[0]);
+      else setMessage({ text: t("oneToDiscard"), error: true });
+      return;
+    }
+    if (target.startsWith("extend:")) {
+      const [, wid, side] = target.split(":");
+      const w = state.table.find((x) => x.id === Number(wid));
+      if (w) extendWith(w, side as "start" | "end", ids);
+    }
+  };
+
+  const tileHandlers = (id: number) => ({
+    onPointerDown: (e: React.PointerEvent) => startDrag(e, "tile", [id]),
+  });
 
   // Rakipler: sol (taşını aldığınız), karşı, sağ
-  const seats = [3, 2, 1].map((i) => ({ i, label: t(i === 3 ? "seat_left" : i === 2 ? "seat_across" : "seat_right") }));
+  const seatLabel = (i: number) => t(i === 3 ? "seat_left" : i === 2 ? "seat_across" : "seat_right");
 
   let hint = "";
   if (state.phase === "draw" && state.current === ME) hint = t("hintDraw");
@@ -452,206 +620,226 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   const result = state.lastResult;
   const handOver = state.phase === "handOver" || state.phase === "gameOver";
   const colorNow = me.opened ? colorWinOf(me) : null;
+  const dragTiles = drag?.active ? (drag.kind === "tile" ? drag.ids.map((id) => tileById.get(id)).filter((x): x is Tile => !!x) : []) : [];
+  const draggingTile = !!drag?.active && drag.kind === "tile";
+  const showExtendZones = draggingTile && canPlay && me.opened;
+
+  const renderOpp = (i: number, compact = false) => {
+    const p = state.players[i];
+    const top = state.discards[i][state.discards[i].length - 1];
+    return (
+      <div key={i} className={`opp ${compact ? "opp-compact" : ""} ${state.current === i && !handOver ? "active" : ""} ${timerStyle(i) ? "timed" : ""}`}
+        style={timerStyle(i)}>
+        {bubbleFor(i)}
+        <div className="opp-name">
+          {playerMenu?.available(i) ? (
+            <button type="button" className="name-btn" onClick={() => setMenuSeat(menuSeat === i ? null : i)}
+              aria-haspopup="menu" aria-expanded={menuSeat === i}>
+              {p.name} {playerMenu.isMuted(i) && <span aria-label={t("mutedTag")}>🔇</span>}
+            </button>
+          ) : p.name}{" "}
+          <span className="muted">({seatLabel(i)})</span>
+        </div>
+        {menuSeat === i && playerMenu && (
+          <div className="player-menu" role="menu">
+            <button type="button" role="menuitem" onClick={() => { playerMenu.toggleMute(i); setMenuSeat(null); }}>
+              {playerMenu.isMuted(i) ? `🔈 ${t("unmute")}` : `🔇 ${t("mute")}`}
+            </button>
+            <button type="button" role="menuitem" onClick={() => {
+              setMenuSeat(null);
+              if (!confirm(t("reportConfirm", { name: p.name }))) return;
+              playerMenu.report(i).then(() => setMessage({ text: t("reported") }), (e) => setMessage({ text: errorText(e), error: true }));
+            }}>⚠️ {t("report")}</button>
+          </div>
+        )}
+        <div className="opp-info">
+          <span className="badge">{t("tilesN", { n: p.rack.length })}</span>
+          {p.opened && <span className="badge ok">{t("openedBadge")}</span>}
+          <span className="muted small">{t("pointsN", { n: myTotal[i] })}</span>
+          {compact && top && <TileView tile={top} size="sm" />}
+        </div>
+        {!compact && i !== 3 && (
+          <div className="opp-discard">{top ? <TileView tile={top} size="sm" /> : <span className="slot" />}</div>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <div className="game">
+    <div className={`game okey ${draggingTile ? "dragging" : ""}`}>
       <header className="topbar">
         <button type="button" className="link" onClick={onExit}>{t("menu")}</button>
         <div className="title">
           {tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
         </div>
-        <button type="button" className="link" onClick={() => setShowScores(true)}>{t("scores")}</button>
+        <div className="topbar-actions">
+          {onLeave && <button type="button" className="link leave-link" onClick={onLeave}>{t("leaveTable")}</button>}
+          <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
+            aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬</button>
+          <button type="button" className="link" onClick={() => setShowScores(true)}>{t("scores")}</button>
+        </div>
       </header>
 
-      <section className="opponents">
-        {seats.map(({ i, label }) => {
-          const p = state.players[i];
-          const top = state.discards[i][state.discards[i].length - 1];
-          return (
-            <div key={i} className={`opp ${state.current === i && !handOver ? "active" : ""} ${timerStyle(i) ? "timed" : ""}`}
-              style={timerStyle(i)}>
-              {bubbleFor(i)}
-              <div className="opp-name">
-                {playerMenu?.available(i) ? (
-                  <button type="button" className="name-btn" onClick={() => setMenuSeat(menuSeat === i ? null : i)}
-                    aria-haspopup="menu" aria-expanded={menuSeat === i}>
-                    {p.name} {playerMenu.isMuted(i) && <span aria-label={t("mutedTag")}>🔇</span>}
-                  </button>
-                ) : p.name}{" "}
-                <span className="muted">({label})</span>
-              </div>
-              {menuSeat === i && playerMenu && (
-                <div className="player-menu" role="menu">
-                  <button type="button" role="menuitem" onClick={() => { playerMenu.toggleMute(i); setMenuSeat(null); }}>
-                    {playerMenu.isMuted(i) ? `🔈 ${t("unmute")}` : `🔇 ${t("mute")}`}
-                  </button>
-                  <button type="button" role="menuitem" onClick={() => {
-                    setMenuSeat(null);
-                    if (!confirm(t("reportConfirm", { name: p.name }))) return;
-                    playerMenu.report(i).then(() => setMessage({ text: t("reported") }), (e) => setMessage({ text: errorText(e), error: true }));
-                  }}>⚠️ {t("report")}</button>
-                </div>
-              )}
-              <div className="opp-info">
-                <span className="badge">{t("tilesN", { n: p.rack.length })}</span>
-                {p.opened && <span className="badge ok">{t("openedBadge")}</span>}
-                <span className="muted small">{t("pointsN", { n: myTotal[i] })}</span>
-              </div>
-              <div className="opp-discard">
-                {top ? <TileView tile={top} size="sm" /> : <span className="slot" />}
-              </div>
-            </div>
-          );
-        })}
-      </section>
+      <div className="board">
+        <aside className="side side-left">
+          {renderOpp(3)}
+          {/* Soldaki oyuncunun attığı taş: dokun ya da ıstakaya sürükle */}
+          <button type="button" className={`take ${nudgeDraw && discardTop ? "nudge" : ""}`} disabled={!(canDraw && discardTop)}
+            onClick={() => !suppressClickRef.current && drawTake()}
+            onPointerDown={(e) => canDraw && discardTop && startDrag(e, "take", [])}
+            aria-label={t("takeLeft")}>
+            {discardTop ? <TileView tile={discardTop} /> : <span className="slot slot-lg" />}
+            <span className="small">{t("takeLeft")}</span>
+          </button>
+        </aside>
 
-      <section className="table" aria-label={t("tableAria")}>
-        {state.table.length === 0 && <div className="empty">{t("noWordsYet")}</div>}
-        {state.table.map((w) => {
-          const canExtend = canPlay && me.opened && selected.length > 0;
-          return (
-            <div key={w.id} className={`word owner-${w.owner}`}>
-              {canExtend && (
-                <button type="button" className="plus" onClick={() => extend(w, "start")} aria-label={t("addStart")}>+</button>
-              )}
-              <div className="word-tiles">
-                {w.tiles.map((pt) => (
-                  <TileView key={pt.tile.id} tile={pt.tile} as={pt.letter} size="sm" />
+        <main className="felt">
+          {renderOpp(2, true)}
+          <div className={`hint ${message?.error ? "error" : ""}`} role="status">{message?.text ?? hint}</div>
+          <section className="table" aria-label={t("tableAria")}>
+            {state.table.length === 0 && <div className="empty">{t("noWordsYet")}</div>}
+            {state.table.map((w) => {
+              const canExtend = canPlay && me.opened && selected.length > 0 && !draggingTile;
+              return (
+                <div key={w.id} className={`word owner-${w.owner}`}>
+                  {showExtendZones && (
+                    <span className={`word-drop ${drag?.target === `extend:${w.id}:start` ? "over" : ""}`} data-drop={`extend:${w.id}:start`}>+</span>
+                  )}
+                  {canExtend && (
+                    <button type="button" className="plus" onClick={() => extendWith(w, "start", selected.slice())} aria-label={t("addStart")}>+</button>
+                  )}
+                  <div className="word-tiles">
+                    {w.tiles.map((pt) => (
+                      <TileView key={pt.tile.id} tile={pt.tile} as={pt.letter} size="sm" />
+                    ))}
+                  </div>
+                  {canExtend && (
+                    <button type="button" className="plus" onClick={() => extendWith(w, "end", selected.slice())} aria-label={t("addEnd")}>+</button>
+                  )}
+                  {showExtendZones && (
+                    <span className={`word-drop ${drag?.target === `extend:${w.id}:end` ? "over" : ""}`} data-drop={`extend:${w.id}:end`}>+</span>
+                  )}
+                  <span className="word-owner">{state.players[w.owner].name}</span>
+                </div>
+              );
+            })}
+          </section>
+          <div className="felt-bottom">
+            <button type="button" className={`deck ${nudgeDraw ? "nudge" : ""}`} disabled={!canDraw}
+              onClick={() => !suppressClickRef.current && drawDeck()}
+              onPointerDown={(e) => canDraw && startDrag(e, "deck", [])}
+              aria-label={t("drawDeck")}>
+              <span className="deck-stack" aria-hidden><span className="deck-count">{state.deck.length}</span></span>
+              <span className="small">{t("drawDeck")}</span>
+            </button>
+            {colorNow && <div className="color-hint">{t("colorPath", { color: t(`color_${colorNow}`) })}</div>}
+          </div>
+          {chatOpen && (
+            <section className="chat-panel" aria-label={t("chat")}>
+              <div className="chat-emojis">
+                {EMOJIS.map((e) => (
+                  <button type="button" key={e} onClick={() => sendChat("emoji", e)}>{e}</button>
                 ))}
               </div>
-              {canExtend && (
-                <button type="button" className="plus" onClick={() => extend(w, "end")} aria-label={t("addEnd")}>+</button>
-              )}
-              <span className="word-owner">{state.players[w.owner].name}</span>
-            </div>
-          );
-        })}
-      </section>
-
-      <section className="center">
-        <button type="button" className={`deck ${nudgeDraw ? "nudge" : ""}`} disabled={!(myTurn && state.phase === "draw")}
-          onClick={() => void act(() => drawFromDeck(state), { type: "drawDeck" })}>
-          <span className="deck-count">{state.deck.length}</span>
-          <span>{t("drawDeck")}</span>
-        </button>
-        <button type="button" className={`take ${nudgeDraw && discardTop ? "nudge" : ""}`} disabled={!(myTurn && state.phase === "draw" && discardTop)}
-          onClick={() => void act(() => drawFromDiscard(state), { type: "drawDiscard" })}>
-          {discardTop ? <TileView tile={discardTop} size="sm" /> : <span className="slot" />}
-          <span>{t("takeLeft")}</span>
-        </button>
-        <div className="my-discard">
-          {state.discards[ME].length ? (
-            <TileView tile={state.discards[ME][state.discards[ME].length - 1]} size="sm" />
-          ) : (
-            <span className="slot" />
-          )}
-          <span className="muted small">{t("yourDiscard")}</span>
-        </div>
-      </section>
-
-      {onLeave && (
-        <button type="button" className="link leave-link" onClick={onLeave}>{t("leaveTable")}</button>
-      )}
-      <ul className="log">
-        {state.log.slice(-3).reverse().map((l, i) => (
-          <li key={state.log.length - i}>{tk(`log.${l.k}`, l.p)}</li>
-        ))}
-      </ul>
-
-      <div className="dock">
-      <div className={`hint ${message?.error ? "error" : ""}`} role="status">
-        {message?.text ?? hint}
-      </div>
-
-      {!me.opened && staged.length > 0 && (
-        <section className="staging">
-          <div className="staging-words">
-            {staged.map((s, k) => (
-              <div key={k} className="staged">
-                <div className="word-tiles">
-                  {s.tileIds.map((id, idx) => {
-                    const t = tileById.get(id)!;
-                    const jokerIdx = s.tileIds.slice(0, idx + 1).filter((x) => tileById.get(x)?.letter === null).length - 1;
-                    return <TileView key={id} tile={t} as={t.letter ?? s.jokerLetters[jokerIdx]} size="sm" />;
-                  })}
-                </div>
-                <span className="muted small">{s.value}</span>
-                <button type="button" className="x" aria-label={t("undo")}
-                  onClick={() => setStaged((prev) => prev.filter((_, i) => i !== k))}>×</button>
+              <div className="chat-msgs">
+                {CHAT_MESSAGES.map((m) => (
+                  <button type="button" key={m} onClick={() => sendChat("msg", m)}>{t(`chat_${m}`)}</button>
+                ))}
               </div>
-            ))}
-          </div>
-          <button type="button" className="primary" disabled={!canPlay || stagedTotal < RULES.openThreshold} onClick={open}>
-            {t("openHand", { total: stagedTotal, need: RULES.openThreshold })}
-          </button>
-        </section>
-      )}
-
-      <section className={`rack ${myTurn ? "my-turn" : ""} ${timerStyle(ME) ? "timed" : ""}`} aria-label={t("rackAria")}
-        style={timerStyle(ME)}>
-        {bubbleFor(ME)}
-        {timerStyle(ME) && (
-          <span className={`timer-badge ${secondsLeft <= WARN_SECONDS ? "urgent" : ""}`} style={{ background: timerColor }} role="timer" aria-label={t("timeLeft", { n: secondsLeft })}>
-            ⏱ {secondsLeft}
-          </span>
-        )}
-        {rackTiles.map((t) => {
-          const idx = selected.indexOf(t.id);
-          return (
-            <TileView key={t.id} tile={t} selected={idx >= 0} order={idx >= 0 ? idx + 1 : undefined}
-              onClick={() => toggle(t.id)} />
-          );
-        })}
-      </section>
-
-      <section className="actions">
-        <button type="button" className="primary" disabled={selected.length < 3} onClick={makeWord}>
-          {me.opened ? t("layWord") : t("makeWord")}
-        </button>
-        <button type="button" className="danger" disabled={!canPlay || selected.length !== 1} onClick={discard}>
-          {t("discard")}
-        </button>
-        <button type="button" disabled={!selected.length} onClick={() => setSelected([])}>{t("clearSelection")}</button>
-        <button type="button" onClick={() => sortBy("harf")}>{t("sortLetter")}</button>
-        <button type="button" onClick={() => sortBy("renk")}>{t("sortColor")}</button>
-        <button type="button" disabled={selected.length !== 1} onClick={() => moveSelected(-1)} aria-label={t("moveLeft")}>◀</button>
-        <button type="button" disabled={selected.length !== 1} onClick={() => moveSelected(1)} aria-label={t("moveRight")}>▶</button>
-        <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
-          aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬</button>
-      </section>
-      {chatOpen && (
-        <section className="chat-panel" aria-label={t("chat")}>
-          <div className="chat-emojis">
-            {EMOJIS.map((e) => (
-              <button type="button" key={e} onClick={() => sendChat("emoji", e)}>{e}</button>
-            ))}
-          </div>
-          <div className="chat-msgs">
-            {CHAT_MESSAGES.map((m) => (
-              <button type="button" key={m} onClick={() => sendChat("msg", m)}>{t(`chat_${m}`)}</button>
-            ))}
-          </div>
-          {chat?.sendText && (
-            <>
-              {textHistory.length > 0 && (
-                <ul className="chat-history">
-                  {textHistory.map((e) => (
-                    <li key={`${e.at}-${e.seat}`}><b>{state.players[e.seat]?.name}:</b> {e.text}</li>
-                  ))}
-                </ul>
+              {chat?.sendText && (
+                <>
+                  {textHistory.length > 0 && (
+                    <ul className="chat-history">
+                      {textHistory.map((e) => (
+                        <li key={`${e.at}-${e.seat}`}><b>{state.players[e.seat]?.name}:</b> {e.text}</li>
+                      ))}
+                    </ul>
+                  )}
+                  <form className="chat-input" onSubmit={(e) => { e.preventDefault(); void sendText(); }}>
+                    <input value={draft} maxLength={MAX_TEXT} onChange={(e) => setDraft(e.target.value)}
+                      placeholder={t("textPlaceholder")} aria-label={t("textPlaceholder")} enterKeyHint="send" />
+                    <button type="submit" className="primary" disabled={!draft.trim()}>{t("send")}</button>
+                  </form>
+                  {chatNote && <div className="chat-note" role="alert">{chatNote}</div>}
+                </>
               )}
-              <form className="chat-input" onSubmit={(e) => { e.preventDefault(); void sendText(); }}>
-                <input value={draft} maxLength={MAX_TEXT} onChange={(e) => setDraft(e.target.value)}
-                  placeholder={t("textPlaceholder")} aria-label={t("textPlaceholder")} enterKeyHint="send" />
-                <button type="submit" className="primary" disabled={!draft.trim()}>{t("send")}</button>
-              </form>
-              {chatNote && <div className="chat-note" role="alert">{chatNote}</div>}
-            </>
+            </section>
           )}
-        </section>
-      )}
-      {colorNow && <div className="color-hint">{t("colorPath", { color: t(`color_${colorNow}`) })}</div>}
+        </main>
+
+        <aside className="side side-right">
+          {renderOpp(1)}
+          {/* Atma alanı: taşı buraya sürükle */}
+          <div className={`discard-zone ${drag?.target === "discard" ? "over" : ""} ${draggingTile && canPlay ? "ready" : ""}`} data-drop="discard"
+            aria-label={t("yourDiscard")}>
+            {state.discards[ME].length ? (
+              <TileView tile={state.discards[ME][state.discards[ME].length - 1]} />
+            ) : (
+              <span className="slot slot-lg" />
+            )}
+            <span className="small">{draggingTile && canPlay ? t("dropToDiscard") : t("yourDiscard")}</span>
+          </div>
+        </aside>
       </div>
+
+      <div className="rack-area">
+        <div className="rack-groups" aria-live="polite">
+          {groups.filter((g) => g.ids.length >= 3 && (g.valid || g.ids.length <= 8)).map((g) => (
+            <button type="button" key={g.slots[0]} className={`group-chip ${g.valid ? "ok" : "bad"} ${g.options.length > 1 ? "has-joker" : ""}`}
+              onClick={() => chooseGroupJoker(g)} disabled={g.options.length < 2}>
+              {g.word ?? "…"} {g.valid ? `· ${g.value}` : "✗"}{g.options.length > 1 ? " ★" : ""}
+            </button>
+          ))}
+          {!me.opened && <span className="group-total">{t("groupsTotal", { total: groupTotal, need: RULES.openThreshold })}</span>}
+        </div>
+        <div className="rack-row">
+          <section className={`rack okey-rack ${myTurn ? "my-turn" : ""} ${timerStyle(ME) ? "timed" : ""}`} aria-label={t("rackAria")}
+            style={timerStyle(ME)} data-drop="rack">
+            {bubbleFor(ME)}
+            {timerStyle(ME) && (
+              <span className={`timer-badge ${secondsLeft <= WARN_SECONDS ? "urgent" : ""}`} style={{ background: timerColor }} role="timer" aria-label={t("timeLeft", { n: secondsLeft })}>
+                ⏱ {secondsLeft}
+              </span>
+            )}
+            {slots.map((id, i) => {
+              const tile = id !== null ? tileById.get(id) : undefined;
+              const idx = id !== null ? selected.indexOf(id) : -1;
+              const isDragged = !!drag?.active && drag.kind === "tile" && id !== null && drag.ids.includes(id);
+              const jokerAs = tile && tile.letter === null ? groups.find((g) => g.ids.includes(tile.id))?.jokerLetters[0] : undefined;
+              return (
+                <div key={i} className={`rack-slot ${drag?.target === `slot:${i}` ? "over" : ""}`} data-drop={`slot:${i}`}>
+                  {tile && (
+                    <div className={`rack-tile ${isDragged ? "ghosted" : ""}`} {...tileHandlers(tile.id)}>
+                      <TileView tile={tile} as={jokerAs} selected={idx >= 0} order={idx >= 0 && selected.length > 1 ? idx + 1 : undefined}
+                        onClick={() => !suppressClickRef.current && toggle(tile.id)} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </section>
+          <div className="rack-actions">
+            {me.opened && selected.length >= 3 ? (
+              <button type="button" className="primary" onClick={laySelected}>{t("layWord")}</button>
+            ) : (
+              <button type="button" className="primary" disabled={me.opened ? !validGroups.length : groupTotal < RULES.openThreshold}
+                onClick={() => void layGroups()}>
+                {me.opened ? t("layWord") : t("openHand", { total: groupTotal, need: RULES.openThreshold })}
+              </button>
+            )}
+            <button type="button" className="danger" disabled={!canPlay || selected.length !== 1} onClick={discard}>{t("discard")}</button>
+            <button type="button" onClick={() => sortBy("harf")}>{t("sortLetter")}</button>
+            <button type="button" onClick={() => sortBy("renk")}>{t("sortColor")}</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Sürüklenen taş parmağın hemen üstünde görünür */}
+      {drag?.active && (
+        <div className="drag-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden>
+          {drag.kind === "tile" ? dragTiles.map((x) => <TileView key={x.id} tile={x} />) : <span className="tile tile-back" />}
+        </div>
+      )}
 
       {jokerPrompt && (
         <div className="modal-bg" onClick={() => setJokerPrompt(null)}>

@@ -3,6 +3,17 @@
 Harflerle oynanan, okey tarzı kelime oyunu. Taşlarla anlamlı kelimeler kurulur;
 web tarayıcısında, Android ve iOS'ta oynanır.
 
+## Oynanış
+
+- **Yatay, tam ekran:** Uygulama yatay açılır; açılışta "Başlamak için dokunun" ile tam ekran ve
+  oyuna özel giriş müziği (hicaz makamı, darbuka ritmi; kod içinde üretilir) başlar.
+- **Okey ıstakası:** 2 raf × 16 yuva. Taşlar parmakla istenen yuvaya sürüklenir; yan yana duran
+  taşlar bir kelimedir, kelimeler arasında boşluk bırakılır. Istakanın üstünde her kelimenin değeri
+  ve toplam (101'e göre) canlı görünür; "Eli Aç" geçerli kelimelerin hepsini açar.
+- **Sürükle-bırak:** desteden/soldan çekilen taşı istenen yuvaya bırakma, taşı atma alanına
+  sürükleyerek atma, rakibin kelimesinin başına/sonuna sürükleyerek işleme (seçili taşlar birlikte).
+- **Taş sesleri:** tutma, bırakma, atma ve kelime açmada gerçekçi taş sesleri (kod içinde üretilir).
+
 ## Diller
 
 | Dil | Arayüz | Kelime oyunu | Alfabe | Sözlük |
