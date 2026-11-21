@@ -55,9 +55,9 @@ describe("taş seti", () => {
       expect(new Set(tilesOf.map((x) => x.color)).size).toBe(4);
     }
     const count = (l: string) => set.filter((x) => x.letter === l).length;
-    expect([count("İ"), count("K"), count("O"), count("T")]).toEqual([5, 8, 4, 6]);
+    expect([count("İ"), count("K"), count("O"), count("T")]).toEqual([5, 8, 6, 6]);
     const vowels = [..."AEIİOÖUÜ"].reduce((n, l) => n + count(l), 0);
-    expect(vowels).toBe(27);
+    expect(vowels).toBe(29); // alfabedeki harf sayısı kadar
     const perColor = ["kirmizi", "mavi", "sari", "siyah"].map((c) => set.filter((x) => x.letter && x.color === c).length);
     expect(Math.max(...perColor) - Math.min(...perColor)).toBeLessThanOrEqual(1);
   });
