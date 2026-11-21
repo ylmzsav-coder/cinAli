@@ -43,7 +43,9 @@ LANGS = {
                    "Interjektion", "Numerale", "Kardinalzahl", "Ordinalzahl", "Partikel", "Artikel",
                    "Modalpartikel", "Gradpartikel", "Fokuspartikel", "Negationspartikel", "Antwortpartikel",
                    "Lokaladverb", "Temporaladverb", "Modaladverb", "Pronominaladverb", "Konjunktionaladverb",
-                   "Hilfsverb", "Postposition", "Onomatopoetikum"}},
+                   "Hilfsverb", "Postposition", "Onomatopoetikum"},
+           # Aynı başlık yer/kişi adıysa alınmaz (Berlin, Anna). "Nachname" hariç tutulmaz: Koch, Bauer gerçek isim.
+           "exclude": {"Toponym", "Vorname", "Eigenname", "Göttername", "Bauwerksname", "Straßenname"}},
     # İtalyanca: 21 harflik İtalyan alfabesi (J K W X Y yabancı kelimelerde; alınmaz), aksanlar katlanır.
     "it": {"alphabet": "ABCDEFGHILMNOPQRSTUVZ", "strip_accents": True,
            "pos": {"sost", "agg", "verb", "avv", "agg num", "card", "ord", "inter", "cong", "prep",
@@ -85,12 +87,14 @@ def normalizer(cfg):
 
 def read_words(lang: str, src: str):
     pos = LANGS[lang].get("pos")
+    exclude = LANGS[lang].get("exclude", set())
     if pos:
         out = []
         with open(src, encoding="utf-8") as f:
             for line in f:
                 title, _, kinds = line.rstrip("\n").partition("\t")
-                if pos & set(kinds.split(",")):
+                k = set(kinds.split(","))
+                if pos & k and not exclude & k:
                     out.append(title)
         return out
     if lang == "tr":

@@ -59,11 +59,12 @@ export const LANGS: Record<LangCode, LangPack> = {
     alphabet: split(LATIN),
     counts: counts(LATIN, [7, 3, 5, 4, 7, 3, 3, 3, 5, 1, 1, 5, 4, 5, 6, 4, 1, 7, 5, 5, 3, 3, 1, 1, 1, 1]),
   },
-  // Almanca ve İtalyanca: arayüz çevrildi; ticari kullanıma uygun lisanslı
-  // sözlük hazır olunca kelime oyunu açılacak.
   de: {
-    code: "de", name: "Deutsch", locale: "de-DE", playable: false,
-    alphabet: split(LATIN), counts: counts(LATIN, Array(26).fill(1)),
+    code: "de", name: "Deutsch", locale: "de-DE", playable: true,
+    // 26 harf + Ä Ö Ü alfabenin sonunda (27-29); ß, SS olarak yazılır
+    alphabet: split("ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ"),
+    //                               A B C D E F G H I J K L M N O P Q R S T U V W X Y Z Ä Ö Ü
+    counts: counts("ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ", [4, 3, 4, 3, 8, 3, 4, 5, 4, 1, 3, 5, 3, 8, 2, 2, 1, 6, 6, 5, 3, 2, 2, 1, 1, 2, 1, 1, 1]),
   },
   it: {
     code: "it", name: "Italiano", locale: "it-IT", playable: true,
