@@ -244,6 +244,7 @@ export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "o
     // Yerdeki kelimelere tek harf işle
     if (p.rack.length > 1) {
       for (const tw of state.table) {
+        if (tw.pair) continue; // çiftler işlenmez
         const base = wordString(tw.tiles);
         for (const t of p.rack) {
           const letters = t.letter ? [t.letter] : alphabet().slice().sort((a, b) => letterValue(b) - letterValue(a));

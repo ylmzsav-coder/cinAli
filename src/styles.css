@@ -681,3 +681,8 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .senses li { margin: 4px 0; }
 .meaning-src { display: block; text-align: right; font-size: 0.8rem; opacity: 0.85; color: inherit; }
 .modal.meaning .modal-actions { display: flex; justify-content: center; margin-top: 8px; }
+
+/* Çifte gitme */
+.rack-actions .primary.pair-mode { background: linear-gradient(#ffb74d, #f57c00); color: #2b1600; }
+.pair-chip { border-color: #ffb74d !important; color: #ffe0b2 !important; }
+.table .word.pair .word-tiles { cursor: default; }

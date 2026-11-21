@@ -13,6 +13,12 @@ export const RULES = {
   colorWinScore: -200,
   /** El açamamış oyuncunun cezası. */
   unopenedPenalty: 200,
+  /** Çifte giden oyuncunun açmak için gereken çift sayısı (değer şartı yok). */
+  pairsToOpen: 5,
+  /** Çiftle (karışık renk) bitiren oyuncunun puanı. */
+  pairWinScore: -200,
+  /** Çiftle, tüm taşları tek renk bitiren oyuncunun puanı. */
+  pairColorWinScore: -400,
 };
 
 // ---- Tipler ------------------------------------------------------------
@@ -26,6 +32,8 @@ export interface TableWord {
   id: number;
   owner: number;
   tiles: PlacedTile[];
+  /** Çift (AA, SS…): kelime değildir, işlenemez. */
+  pair?: boolean;
 }
 
 export interface Player {
@@ -35,6 +43,8 @@ export interface Player {
   opened: boolean;
   /** Bu elde oyuncunun yere koyduğu taşlar (Renk Bitirme kontrolü için). */
   laid: Tile[];
+  /** Oyuncu bu elde çifte gitti (çiftle açtı): yalnızca çift koyabilir, işleyemez. */
+  pairs?: boolean;
 }
 
 export type Phase = "draw" | "play" | "handOver" | "gameOver";
@@ -42,6 +52,8 @@ export type Phase = "draw" | "play" | "handOver" | "gameOver";
 export interface HandResult {
   winner: number | null;
   colorWin: Color | null;
+  /** Kazanan çiftle mi bitirdi. */
+  pairWin?: boolean;
   scores: number[];
   reason: "finished" | "deckEmpty";
 }
@@ -209,6 +221,7 @@ export function dealHand(prev: GameState): GameState {
     p.rack = tiles.splice(0, n);
     p.opened = false;
     p.laid = [];
+    p.pairs = false;
   });
   state.deck = tiles;
   state.discards = state.players.map(() => []);
@@ -288,6 +301,7 @@ export function layWord(dict: Dictionary, prev: GameState, spec: WordSpec): Game
   const state = clone(prev);
   const p = state.players[state.current];
   if (!p.opened) throw new GameError("mustOpenFirst", { need: RULES.openThreshold });
+  if (p.pairs) throw new GameError("pairsOnly");
   const word = buildWord(dict, p.rack, spec);
   if (p.rack.length - word.length < 1) throw new GameError("keepOne");
   removeFromRack(p, new Set(spec.tileIds));
@@ -310,8 +324,10 @@ export function extendWord(
   const state = clone(prev);
   const p = state.players[state.current];
   if (!p.opened) throw new GameError("mustOpenFirst", { need: RULES.openThreshold });
+  if (p.pairs) throw new GameError("pairsNoExtend");
   const target = state.table.find((w) => w.id === wordId);
   if (!target) throw new GameError("wordNotFound");
+  if (target.pair) throw new GameError("cantExtendPair");
   if (!spec.tileIds.length) throw new GameError("chooseTileToAdd");
   const added = placeTiles(takeTilesFromRack(p.rack, spec.tileIds), spec.jokerLetters);
   const tiles = side === "start" ? [...added, ...target.tiles] : [...target.tiles, ...added];
@@ -324,6 +340,56 @@ export function extendWord(
   p.laid.push(...added.map((x) => x.tile));
   state.turnPlays++;
   state.log.push({ k: "extended", p: { name: p.name, from: before, to: w } });
+  return state;
+}
+
+// ---- Çifte gitme --------------------------------------------------------
+/** İki taş aynı harf mi (joker her harfin eşi olur)? Yerleştirilmiş çifti döndürür. */
+export function buildPair(rack: Tile[], spec: WordSpec): PlacedTile[] {
+  if (spec.tileIds.length !== 2) throw new GameError("pairTwo");
+  const [a, b] = takeTilesFromRack(rack, spec.tileIds);
+  if (a.letter === null && b.letter === null) throw new GameError("notAPair");
+  const letter = (a.letter ?? b.letter)!;
+  if (a.letter !== null && b.letter !== null && a.letter !== b.letter) throw new GameError("notAPair");
+  return [a, b].map((t) => ({ tile: t, letter }));
+}
+
+/** Çifte gitme: en az RULES.pairsToOpen çiftle açılır (değer şartı yok). */
+export function openPairs(prev: GameState, specs: WordSpec[]): GameState {
+  assertTurn(prev, "play");
+  const state = clone(prev);
+  const p = state.players[state.current];
+  if (p.opened) throw new GameError("alreadyOpened");
+  if (specs.length < RULES.pairsToOpen) throw new GameError("pairsNeed", { need: RULES.pairsToOpen, n: specs.length });
+  const allIds = specs.flatMap((s) => s.tileIds);
+  if (new Set(allIds).size !== allIds.length) throw new GameError("tileInTwoWords");
+  const pairs = specs.map((s) => buildPair(p.rack, s));
+  if (p.rack.length - allIds.length < 1) throw new GameError("keepOne");
+  removeFromRack(p, new Set(allIds));
+  for (const w of pairs) {
+    state.table.push({ id: state.nextWordId++, owner: state.current, tiles: w, pair: true });
+    p.laid.push(...w.map((x) => x.tile));
+  }
+  p.opened = true;
+  p.pairs = true;
+  state.turnPlays++;
+  state.log.push({ k: "openedPairs", p: { name: p.name, n: pairs.length, words: pairs.map(wordString).join(" ") } });
+  return state;
+}
+
+/** Çifte giden oyuncu yere yeni bir çift koyar. */
+export function layPair(prev: GameState, spec: WordSpec): GameState {
+  assertTurn(prev, "play");
+  const state = clone(prev);
+  const p = state.players[state.current];
+  if (!p.opened || !p.pairs) throw new GameError("notPairPlayer");
+  const pair = buildPair(p.rack, spec);
+  if (p.rack.length - 2 < 1) throw new GameError("keepOne");
+  removeFromRack(p, new Set(spec.tileIds));
+  state.table.push({ id: state.nextWordId++, owner: state.current, tiles: pair, pair: true });
+  p.laid.push(...pair.map((x) => x.tile));
+  state.turnPlays++;
+  state.log.push({ k: "laid", p: { name: p.name, word: wordString(pair) } });
   return state;
 }
 
@@ -387,15 +453,19 @@ export function penaltyFor(p: Player): number {
 
 function endHand(state: GameState, winner: number | null): GameState {
   const colorWin = winner !== null ? colorWinOf(state.players[winner]) : null;
+  const pairWin = winner !== null && !!state.players[winner].pairs;
   const scores = state.players.map((p, i) => {
-    if (i === winner) return colorWin ? RULES.colorWinScore : RULES.winScore;
+    if (i === winner) {
+      if (pairWin) return colorWin ? RULES.pairColorWinScore : RULES.pairWinScore;
+      return colorWin ? RULES.colorWinScore : RULES.winScore;
+    }
     return penaltyFor(p);
   });
   state.history.push(scores);
-  state.lastResult = { winner, colorWin, scores, reason: winner === null ? "deckEmpty" : "finished" };
+  state.lastResult = { winner, colorWin, pairWin, scores, reason: winner === null ? "deckEmpty" : "finished" };
   state.phase = state.handNo >= state.totalHands ? "gameOver" : "handOver";
   if (winner === null) state.log.push({ k: "deckEmpty" });
-  else state.log.push({ k: colorWin ? "colorFinished" : "finished", p: { name: state.players[winner].name } });
+  else state.log.push({ k: pairWin ? (colorWin ? "pairColorFinished" : "pairFinished") : colorWin ? "colorFinished" : "finished", p: { name: state.players[winner].name } });
   return state;
 }
 

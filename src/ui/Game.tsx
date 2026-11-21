@@ -19,6 +19,8 @@ import {
   prevIndex,
   timeoutMove,
   totals,
+  layPair,
+  openPairs,
   wordString,
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, letterValue } from "../game/tiles";
@@ -47,6 +49,8 @@ interface GroupInfo {
   /** Jokerin alabileceği harf seçenekleri (birden fazlaysa oyuncu seçebilir). */
   options: Letter[][];
   valid: boolean;
+  /** İki aynı harf (ya da harf + joker): çift. */
+  pair: boolean;
 }
 
 /** Sürükleme: ıstakadan taş(lar) ya da desteden/soldan çekilecek taş. */
@@ -294,7 +298,13 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   const groups: GroupInfo[] = useMemo(() => {
     return groupsOf(slots).map((g) => {
       const tiles = g.ids.map((id) => tileById.get(id)).filter((x): x is Tile => !!x);
-      const base: GroupInfo = { ids: g.ids, slots: g.slots, word: null, value: 0, jokerLetters: [], options: [], valid: false };
+      const base: GroupInfo = { ids: g.ids, slots: g.slots, word: null, value: 0, jokerLetters: [], options: [], valid: false, pair: false };
+      if (tiles.length === 2) {
+        const [a, b] = tiles;
+        const l = a.letter ?? b.letter;
+        if (l && (a.letter === null || b.letter === null || a.letter === b.letter)) return { ...base, pair: true, word: l + l, value: letterValue(l) * 2 };
+        return base;
+      }
       if (tiles.length < 3) return base;
       const pattern = tiles.map((x) => x.letter);
       if (!pattern.includes(null)) {
@@ -316,8 +326,11 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   }, [slots, tileById, dict, jokerPick]);
   const validGroups = groups.filter((g) => g.valid);
   const groupTotal = validGroups.reduce((s, g) => s + g.value, 0);
-  /** Süre dolunca otomatik atılmaması gereken taşlar: geçerli kelime grupları. */
-  const groupKeepIds = new Set(validGroups.flatMap((g) => g.ids));
+  const pairGroups = groups.filter((g) => g.pair);
+  /** Çifte gitme: açmadıysa 5 çift ve kelimeler 101'e yetmiyorsa; çifte gittiyse hep. */
+  const pairMode = me.pairs ? true : !me.opened && pairGroups.length >= RULES.pairsToOpen && groupTotal < RULES.openThreshold;
+  /** Süre dolunca otomatik atılmaması gereken taşlar: geçerli kelime grupları ve çiftler. */
+  const groupKeepIds = new Set([...validGroups, ...pairGroups].flatMap((g) => g.ids));
 
   /**
    * Hamle yapar: yerel modda motoru doğrudan çalıştırır, çevrimiçi modda
@@ -443,6 +456,11 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   /** Seçili taşlarla (seçim sırasıyla) kelime koy. */
   const laySelected = () => {
     if (needDrawFirst()) return;
+    if (me.pairs) {
+      const spec: WordSpec = { tileIds: selected.slice() };
+      void act(() => layPair(state, spec), { type: "layPair", spec }, undefined, "open");
+      return;
+    }
     const pattern = selectedTiles.map((x) => x.letter);
     resolveJokers(pattern, t("jokerWhich"), (jokerLetters) => {
       let j = 0;
@@ -462,6 +480,23 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       if (needDrawFirst()) return;
     }
     if (me.opened && needDrawFirst()) return;
+    if (pairMode) {
+      const pspecs = pairGroups.map((g) => ({ tileIds: g.ids }));
+      if (!me.opened) {
+        await act(() => openPairs(state, pspecs), { type: "openPairs", specs: pspecs }, t("openedPairsOk"), "open");
+        return;
+      }
+      if (!pspecs.length) {
+        setMessage({ text: t("noValidGroups"), error: true });
+        return;
+      }
+      if (remote) {
+        for (const spec of pspecs) if (!(await act(() => state, { type: "layPair", spec }, undefined, "open"))) break;
+        return;
+      }
+      await act(() => pspecs.reduce((s, spec) => layPair(s, spec), state), { type: "layPair", spec: pspecs[0] }, t("wordLaid", { word: pairGroups.map((g) => g.word).join(", ") }), "open");
+      return;
+    }
     if (!validGroups.length) {
       setMessage({ text: t("noValidGroups"), error: true });
       return;
@@ -747,7 +782,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   const colorNow = me.opened ? colorWinOf(me) : null;
   const dragTiles = drag?.active ? (drag.kind === "tile" ? drag.ids.map((id) => tileById.get(id)).filter((x): x is Tile => !!x) : []) : [];
   const draggingTile = !!drag?.active && drag.kind === "tile";
-  const showExtendZones = draggingTile && canPlay && me.opened;
+  const showExtendZones = draggingTile && canPlay && me.opened && !me.pairs;
 
   const renderOpp = (i: number, compact = false) => {
     const p = state.players[i];
@@ -824,18 +859,18 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
           <section className="table" aria-label={t("tableAria")}>
             {state.table.length === 0 && <div className="empty">{t("noWordsYet")}</div>}
             {state.table.map((w) => {
-              const canExtend = canPlay && me.opened && selected.length > 0 && !draggingTile;
+              const canExtend = canPlay && me.opened && !me.pairs && !w.pair && selected.length > 0 && !draggingTile;
               return (
-                <div key={w.id} className={`word owner-${w.owner}`}>
-                  {showExtendZones && (
+                <div key={w.id} className={`word owner-${w.owner} ${w.pair ? "pair" : ""}`}>
+                  {showExtendZones && !w.pair && (
                     <span className={`word-drop ${drag?.target === `extend:${w.id}:start` ? "over" : ""}`} data-drop={`extend:${w.id}:start`}>+</span>
                   )}
                   {canExtend && (
                     <button type="button" className="plus" onClick={() => extendWith(w, "start", selected.slice())} aria-label={t("addStart")}>+</button>
                   )}
-                  <div className="word-tiles" role="button" tabIndex={0} title={t("tapForMeaning")}
-                    onClick={() => showMeaning(wordString(w.tiles))}
-                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && showMeaning(wordString(w.tiles))}>
+                  <div className="word-tiles" role={w.pair ? undefined : "button"} tabIndex={w.pair ? undefined : 0} title={w.pair ? undefined : t("tapForMeaning")}
+                    onClick={() => !w.pair && showMeaning(wordString(w.tiles))}
+                    onKeyDown={(e) => !w.pair && (e.key === "Enter" || e.key === " ") && showMeaning(wordString(w.tiles))}>
                     {w.tiles.map((pt) => (
                       <TileView key={pt.tile.id} tile={pt.tile} as={pt.letter} size="sm" />
                     ))}
@@ -843,10 +878,10 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                   {canExtend && (
                     <button type="button" className="plus" onClick={() => extendWith(w, "end", selected.slice())} aria-label={t("addEnd")}>+</button>
                   )}
-                  {showExtendZones && (
+                  {showExtendZones && !w.pair && (
                     <span className={`word-drop ${drag?.target === `extend:${w.id}:end` ? "over" : ""}`} data-drop={`extend:${w.id}:end`}>+</span>
                   )}
-                  <span className="word-owner">{state.players[w.owner].name} <span className="word-info" aria-hidden>📖</span></span>
+                  <span className="word-owner">{state.players[w.owner].name} {w.pair ? <span className="word-info">{t("pairChip")}</span> : <span className="word-info" aria-hidden>📖</span>}</span>
                 </div>
               );
             })}
@@ -912,13 +947,21 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
 
       <div className="rack-area">
         <div className="rack-groups" aria-live="polite">
-          {groups.filter((g) => g.ids.length >= 3 && (g.valid || g.ids.length <= 8)).map((g) => (
+          {(!me.opened || me.pairs) && pairGroups.map((g) => (
+            <span key={`p${g.slots[0]}`} className="group-chip ok pair-chip">{g.word} · {t("pairChip")}</span>
+          ))}
+          {!me.pairs && groups.filter((g) => g.ids.length >= 3 && (g.valid || g.ids.length <= 8)).map((g) => (
             <button type="button" key={g.slots[0]} className={`group-chip ${g.valid ? "ok" : "bad"} ${g.options.length > 1 ? "has-joker" : ""}`}
               onClick={() => chooseGroupJoker(g)} disabled={g.options.length < 2}>
               {g.word ?? "…"} {g.valid ? `· ${g.value}` : "✗"}{g.options.length > 1 ? " ★" : ""}
             </button>
           ))}
-          {!me.opened && <span className="group-total">{t("groupsTotal", { total: groupTotal, need: RULES.openThreshold })}</span>}
+          {!me.opened && (
+            <span className="group-total">
+              {t("groupsTotal", { total: groupTotal, need: RULES.openThreshold })}
+              {pairGroups.length > 0 && <> · {t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
+            </span>
+          )}
         </div>
         <div className="rack-row">
           <section className={`rack okey-rack ${myTurn ? "my-turn" : ""} ${timerStyle(ME) ? "timed" : ""}`} aria-label={t("rackAria")}
@@ -957,8 +1000,18 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
             {draggingTile && canPlay && <span className="rack-discard-label">{t("dropToDiscard")}</span>}
           </div>
           <div className="rack-actions">
-            {me.opened && selected.length >= 3 ? (
-              <button type="button" className="primary" onClick={laySelected}>{t("layWord")}</button>
+            {me.opened && (me.pairs ? selected.length === 2 : selected.length >= 3) ? (
+              <button type="button" className="primary" onClick={laySelected}>{me.pairs ? t("layPairs") : t("layWord")}</button>
+            ) : pairMode ? (
+              <button type="button" className="primary pair-mode" disabled={me.opened ? !pairGroups.length : pairGroups.length < RULES.pairsToOpen}
+                onClick={() => void layGroups()}>
+                <span className="open-title">{me.opened ? t("layPairs") : t("openPairs", { n: pairGroups.length, need: RULES.pairsToOpen })}</span>
+                {pairGroups.length > 0 && (
+                  <span className="open-words">
+                    {pairGroups.map((g) => <span key={g.ids.join("-")} className="open-word">{g.word}</span>)}
+                  </span>
+                )}
+              </button>
             ) : (
               <button type="button" className="primary" disabled={me.opened ? !validGroups.length : groupTotal < RULES.openThreshold}
                 onClick={() => void layGroups()}>
@@ -1057,8 +1110,11 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                     ? t("deckEmptyTitle")
                     : t("finishedTitle", { name: state.players[result.winner].name })}
                 </h3>
+                {result.pairWin && (
+                  <div className="banner">{t("pairBanner", { score: result.colorWin ? RULES.pairColorWinScore : RULES.pairWinScore })}</div>
+                )}
                 {result.colorWin && (
-                  <div className="banner">{t("colorBanner", { color: t(`color_${result.colorWin}`), score: RULES.colorWinScore })}</div>
+                  <div className="banner">{t("colorBanner", { color: t(`color_${result.colorWin}`), score: result.pairWin ? RULES.pairColorWinScore : RULES.colorWinScore })}</div>
                 )}
               </>
             )}

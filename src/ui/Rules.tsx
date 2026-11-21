@@ -29,6 +29,7 @@ export function Rules({ onBack }: { onBack: () => void }) {
     t("rule_finish"),
     t("rule_score", { win: RULES.winScore, joker: JOKER_PENALTY, unopened: RULES.unopenedPenalty }),
     t("rule_color", { score: RULES.colorWinScore }),
+    t("rule_pairs", { need: RULES.pairsToOpen, pair: RULES.pairWinScore, pairColor: RULES.pairColorWinScore }),
     t("rule_timer", { n: TABLE_TURN_SECONDS }),
     t("rule_winner"),
   ];

@@ -26,6 +26,8 @@ import {
   drawFromDiscard,
   extendWord,
   layWord,
+  layPair,
+  openPairs,
   newGame,
   openHand,
   timeoutMove,
@@ -368,6 +370,8 @@ export const act = onCall(async (req) => {
         case "drawDiscard": return drawFromDiscard(state);
         case "open": return openHand(dict, state, action.specs);
         case "lay": return layWord(dict, state, action.spec);
+        case "openPairs": return openPairs(state, action.specs);
+        case "layPair": return layPair(state, action.spec);
         case "extend": return extendWord(dict, state, action.wordId, action.side, action.spec);
         case "discard": return discardTile(state, action.tileId);
         default: return fail("badRequest", {}, "invalid-argument");

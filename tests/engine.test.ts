@@ -233,3 +233,61 @@ describe("otomatik per", () => {
     expect(total).toBeGreaterThanOrEqual(163); // en az KALEM+ÇAY+TUZ kadar
   });
 });
+
+import { layPair, layWord, openPairs } from "../src/game/engine";
+describe("çifte gitme", () => {
+  const start = (() => {
+    const g = newGame(["A", "B", "C", "D"], [false, true, true, true], 1, 7);
+    return { ...g, phase: "play" as const };
+  })();
+  const pairIds = (ts: Tile[]) => [{ tileIds: [ts[0].id, ts[1].id] }];
+
+  it("5 çiftle (değer şartı olmadan) açılır; joker çift tamamlar", () => {
+    const ps = [tiles("AA"), tiles("SS", "mavi"), tiles("FF"), tiles("BB", "sari"), [t("K"), t(null)]];
+    const keep = t("E");
+    const s = rig(start, [...ps.flat(), keep]);
+    expectErr(() => openPairs(s, ps.slice(0, 4).flatMap(pairIds)), "pairsNeed", { need: 5, n: 4 });
+    const o = openPairs(s, ps.flatMap(pairIds));
+    expect(o.players[s.current].pairs).toBe(true);
+    expect(o.table.every((w) => w.pair)).toBe(true);
+    expect(o.table[4].tiles.map((x) => x.letter).join("")).toBe("KK");
+  });
+
+  it("farklı harfler çift değildir", () => {
+    const s = rig(start, [...tiles("AB"), ...tiles("CCDDEEFF"), t("Z")]);
+    const r = s.players[s.current].rack;
+    expectErr(() => openPairs(s, [0, 2, 4, 6, 8].map((i) => ({ tileIds: [r[i].id, r[i + 1].id] }))), "notAPair");
+  });
+
+  it("çifte giden kelime koyamaz, işleyemez; çifti kimse işleyemez", () => {
+    const ps = [tiles("AA"), tiles("SS"), tiles("FF"), tiles("BB"), tiles("KK")];
+    const more = tiles("ÇAY");
+    const pp = tiles("ZZ");
+    const s = rig(start, [...ps.flat(), ...more, ...pp, t("E")]);
+    let o = openPairs(s, ps.flatMap(pairIds));
+    expectErr(() => layWord(dict, o, { tileIds: more.map((x) => x.id) }), "pairsOnly");
+    expectErr(() => extendWord(dict, o, o.table[0].id, "end", { tileIds: [more[0].id] }), "pairsNoExtend");
+    o = layPair(o, { tileIds: pp.map((x) => x.id) });
+    expect(o.table.length).toBe(6);
+  });
+
+  it("çiftle bitiren -200, tek renk çiftle bitiren -400", () => {
+    for (const [mixed, score] of [[true, RULES.pairWinScore], [false, RULES.pairColorWinScore]] as const) {
+      const ps = [tiles("AA"), tiles("SS"), tiles("FF"), tiles("BB"), tiles("KK", mixed ? "mavi" : "siyah"), tiles("LL"), tiles("MM")];
+      const last = t("E", "kirmizi");
+      const s = rig(start, [...ps.flat(), last]);
+      let o = openPairs(s, ps.flatMap(pairIds));
+      o = discardTile(o, last.id);
+      expect(o.lastResult?.winner).toBe(s.current);
+      expect(o.lastResult?.pairWin).toBe(true);
+      expect(o.lastResult?.scores[s.current]).toBe(score);
+    }
+  });
+
+  it("kelimeyle açan çift koyamaz", () => {
+    const kalem = tiles("KALEM"), cay = tiles("ÇAY"), tuz = tiles("TUZ"), pp = tiles("ZZ");
+    const s = rig(start, [...kalem, ...cay, ...tuz, ...pp, t("B")]);
+    const o = openHand(dict, s, [kalem, cay, tuz].map((w) => ({ tileIds: w.map((x) => x.id) })));
+    expectErr(() => layPair(o, { tileIds: pp.map((x) => x.id) }), "notPairPlayer");
+  });
+});

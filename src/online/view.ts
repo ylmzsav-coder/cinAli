@@ -12,6 +12,8 @@ export type Action =
   | { type: "drawDiscard" }
   | { type: "open"; specs: WordSpec[] }
   | { type: "lay"; spec: WordSpec }
+  | { type: "openPairs"; specs: WordSpec[] }
+  | { type: "layPair"; spec: WordSpec }
   | { type: "extend"; wordId: number; side: "start" | "end"; spec: WordSpec }
   | { type: "discard"; tileId: number };
 
