@@ -1,0 +1,150 @@
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { botStep } from "../src/game/bot";
+import { Dictionary } from "../src/game/dictionary";
+import {
+  GameState,
+  RULES,
+  colorWinOf,
+  dealHand,
+  discardTile,
+  drawFromDeck,
+  extendWord,
+  jokerOptions,
+  newGame,
+  openHand,
+  totals,
+} from "../src/game/engine";
+import { Tile, createTileSet, wordValue } from "../src/game/tiles";
+
+const dict = Dictionary.fromText(readFileSync("public/kelimeler.txt", "utf-8"));
+
+function rig(state: GameState, rack: Tile[]): GameState {
+  const s = structuredClone(state);
+  s.players[s.current].rack = rack;
+  return s;
+}
+
+let nextId = 1000;
+const t = (letter: Tile["letter"], color: Tile["color"] = "siyah"): Tile => ({ id: nextId++, letter, color });
+const tiles = (word: string, color: Tile["color"] = "siyah") => [...word].map((l) => t(l as Tile["letter"], color));
+
+describe("taş seti", () => {
+  it("104 harf + 2 joker, her renkte 26 harf", () => {
+    const set = createTileSet();
+    expect(set.length).toBe(106);
+    for (const c of ["kirmizi", "mavi", "sari", "siyah"]) {
+      expect(set.filter((x) => x.letter && x.color === c).length).toBe(26);
+    }
+  });
+  it("harf değerleri alfabe sırası", () => {
+    expect(wordValue("KALEM")).toBe(52);
+    expect(wordValue("ÇAY")).toBe(33);
+  });
+});
+
+describe("kurallar", () => {
+  const base = newGame(["Sen", "B1", "B2", "B3"], [false, true, true, true], 3, 42);
+
+  it("başlayan 15, diğerleri 14 taş alır", () => {
+    expect(base.players.map((p) => p.rack.length).sort()).toEqual([14, 14, 14, 15]);
+    expect(base.deck.length).toBe(106 - 57);
+  });
+
+  it("76 altında açılmaz", () => {
+    const rack = [...tiles("KALEM"), t("A"), t("B")];
+    const s = rig(base, rack);
+    expect(() => openHand(dict, s, [{ tileIds: rack.slice(0, 5).map((x) => x.id) }])).toThrow(/76/);
+  });
+
+  it("76 ve üstü ile açılır, sözlükte olmayan reddedilir", () => {
+    const kalem = tiles("KALEM");
+    const cay = tiles("ÇAY");
+    const rest = [t("B")];
+    const s = rig(base, [...kalem, ...cay, ...rest]);
+    const opened = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    expect(opened.players[s.current].opened).toBe(true);
+    expect(opened.table.length).toBe(2);
+    const bad = tiles("KLAEM");
+    expect(() => openHand(dict, rig(base, [...bad, ...cay, t("B")]), [{ tileIds: bad.map((x) => x.id) }])).toThrow(/sözlükte/);
+  });
+
+  it("joker seçenekleri bulunur", () => {
+    const opts = jokerOptions(dict, ["K", "A", null, "E", "M"]);
+    expect(opts.map((o) => o.join(""))).toContain("L");
+  });
+
+  it("işleme: kelimenin sonuna harf eklenir", () => {
+    const kalem = tiles("KALEM");
+    const cay = tiles("ÇAY");
+    const ci = tiles("CI");
+    const s = rig(base, [...kalem, ...cay, ...ci, t("B")]);
+    let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    const cayWord = o.table[1];
+    expect(() => extendWord(dict, o, cayWord.id, "end", { tileIds: [ci[0].id] })).toThrow(/sözlükte/);
+    o = extendWord(dict, o, cayWord.id, "end", { tileIds: ci.map((x) => x.id) });
+    expect(o.table[1].tiles.map((x) => x.letter).join("")).toBe("ÇAYCI");
+  });
+
+  it("son taşı atan biter; tek renk ise Renk Bitirme -200", () => {
+    const kalem = tiles("KALEM");
+    const cay = tiles("ÇAY");
+    const last = t("B", "kirmizi");
+    const s = rig(base, [...kalem, ...cay, last]);
+    let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    expect(colorWinOf(o.players[o.current])).toBe("siyah");
+    o = discardTile(o, last.id);
+    expect(o.lastResult?.winner).toBe(s.current);
+    expect(o.lastResult?.colorWin).toBe("siyah");
+    expect(o.lastResult?.scores[s.current]).toBe(RULES.colorWinScore);
+    // diğerleri el açmadı -> 200
+    o.lastResult!.scores.forEach((sc, i) => i !== s.current && expect(sc).toBe(RULES.unopenedPenalty));
+  });
+
+  it("karışık renk normal bitiş -100", () => {
+    const kalem = [...tiles("KAL"), ...tiles("EM", "mavi")];
+    const cay = tiles("ÇAY");
+    const last = t("B");
+    const s = rig(base, [...kalem, ...cay, last]);
+    let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    o = discardTile(o, last.id);
+    expect(o.lastResult?.colorWin).toBe(null);
+    expect(o.lastResult?.scores[s.current]).toBe(RULES.winScore);
+  });
+
+  it("çekmeden atılamaz", () => {
+    let o = discardTile(base, base.players[base.current].rack[0].id);
+    expect(o.phase).toBe("draw");
+    expect(() => discardTile(o, o.players[o.current].rack[0].id)).toThrow();
+    o = drawFromDeck(o);
+    expect(o.phase).toBe("play");
+  });
+});
+
+describe("bot simülasyonu", () => {
+  it("4 bot oyunu tamamlar", () => {
+    let wins = 0, colorWins = 0, hands = 0, discards = 0;
+    for (let seed = 1; seed <= 6; seed++) {
+      let s = newGame(["A", "B", "C", "D"], [true, true, true, true], 3, seed);
+      let steps = 0;
+      while (s.phase !== "gameOver") {
+        if (s.phase === "handOver") {
+          hands++;
+          if (s.lastResult?.winner !== null) wins++;
+          if (s.lastResult?.colorWin) colorWins++;
+          s = dealHand(s);
+          continue;
+        }
+        const before = s.current;
+        s = botStep(dict, s);
+        if (s.current !== before) discards++;
+        if (++steps > 5000) throw new Error("sonsuz döngü");
+      }
+      hands++;
+      if (s.lastResult?.winner !== null) wins++;
+      expect(totals(s).length).toBe(4);
+    }
+    console.log(`eller: ${hands}, bitirilen: ${wins}, renk: ${colorWins}, el başına ortalama tur: ${(discards / hands / 4).toFixed(1)}`);
+    expect(wins).toBeGreaterThan(0);
+  }, 120000);
+});
