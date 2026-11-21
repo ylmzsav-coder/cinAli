@@ -54,20 +54,28 @@ describe("kurallar", () => {
     expect(base.deck.length).toBe(96 - 57);
   });
 
-  it("76 altında açılmaz", () => {
+  it("101 altında açılmaz", () => {
     const rack = [...tiles("KALEM"), t("A"), t("B")];
     const s = rig(base, rack);
-    expect(() => openHand(dict, s, [{ tileIds: rack.slice(0, 5).map((x) => x.id) }])).toThrow(/76/);
-  });
-
-  it("76 ve üstü ile açılır, sözlükte olmayan reddedilir", () => {
+    expect(() => openHand(dict, s, [{ tileIds: rack.slice(0, 5).map((x) => x.id) }])).toThrow(/101/);
+    // KALEM + ÇAY = 85: eskiden açardı, artık yetmez
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
+    const s2 = rig(base, [...kalem, ...cay, t("B")]);
+    expect(() =>
+      openHand(dict, s2, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]),
+    ).toThrow(/en az 101 gerekli, seçtikleriniz 85/);
+  });
+
+  it("101 ve üstü ile açılır, sözlükte olmayan reddedilir", () => {
+    const kalem = tiles("KALEM");
+    const cay = tiles("ÇAY");
+    const tuz = tiles("TUZ");
     const rest = [t("B")];
-    const s = rig(base, [...kalem, ...cay, ...rest]);
-    const opened = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    const s = rig(base, [...kalem, ...cay, ...tuz, ...rest]);
+    const opened = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }, { tileIds: tuz.map((x) => x.id) }]);
     expect(opened.players[s.current].opened).toBe(true);
-    expect(opened.table.length).toBe(2);
+    expect(opened.table.length).toBe(3);
     const bad = tiles("KLAEM");
     expect(() => openHand(dict, rig(base, [...bad, ...cay, t("B")]), [{ tileIds: bad.map((x) => x.id) }])).toThrow(/sözlükte/);
   });
@@ -80,9 +88,10 @@ describe("kurallar", () => {
   it("işleme: kelimenin sonuna harf eklenir", () => {
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
+    const tuz = tiles("TUZ");
     const ci = tiles("CI");
-    const s = rig(base, [...kalem, ...cay, ...ci, t("B")]);
-    let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    const s = rig(base, [...kalem, ...cay, ...tuz, ...ci, t("B")]);
+    let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }, { tileIds: tuz.map((x) => x.id) }]);
     const cayWord = o.table[1];
     expect(() => extendWord(dict, o, cayWord.id, "end", { tileIds: [ci[0].id] })).toThrow(/sözlükte/);
     o = extendWord(dict, o, cayWord.id, "end", { tileIds: ci.map((x) => x.id) });
@@ -92,9 +101,10 @@ describe("kurallar", () => {
   it("son taşı atan biter; tek renk ise Renk Bitirme -200", () => {
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
+    const tuz = tiles("TUZ");
     const last = t("B", "kirmizi");
-    const s = rig(base, [...kalem, ...cay, last]);
-    let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    const s = rig(base, [...kalem, ...cay, ...tuz, last]);
+    let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }, { tileIds: tuz.map((x) => x.id) }]);
     expect(colorWinOf(o.players[o.current])).toBe("siyah");
     o = discardTile(o, last.id);
     expect(o.lastResult?.winner).toBe(s.current);
@@ -107,9 +117,10 @@ describe("kurallar", () => {
   it("karışık renk normal bitiş -100", () => {
     const kalem = [...tiles("KAL"), ...tiles("EM", "mavi")];
     const cay = tiles("ÇAY");
+    const tuz = tiles("TUZ");
     const last = t("B");
-    const s = rig(base, [...kalem, ...cay, last]);
-    let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    const s = rig(base, [...kalem, ...cay, ...tuz, last]);
+    let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }, { tileIds: tuz.map((x) => x.id) }]);
     o = discardTile(o, last.id);
     expect(o.lastResult?.colorWin).toBe(null);
     expect(o.lastResult?.scores[s.current]).toBe(RULES.winScore);

@@ -23,7 +23,7 @@ export function Rules({ onBack }: { onBack: () => void }) {
       <h2>Nasıl oynanır?</h2>
       <ul className="rules">
         <li>Istakadaki taşlara harf sırasıyla dokunun; seçim sırası kelimedeki harf sırasıdır.</li>
-        <li><b>Kelime Yap</b> ile kelimeyi hazırlayın. Toplam {RULES.openThreshold}'ya ulaşınca <b>Eli Aç</b>.</li>
+        <li><b>Kelime Yap</b> ile kelimeyi hazırlayın. Toplam {RULES.openThreshold}'e ulaşınca <b>Eli Aç</b>.</li>
         <li>Açtıktan sonra taş seçip yerdeki kelimenin yanındaki <b>+</b> ile başına/sonuna ekleyin.</li>
         <li>Tur sonunda tek taş seçip <b>Taş At</b>.</li>
       </ul>

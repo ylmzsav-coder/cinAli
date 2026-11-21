@@ -15,7 +15,7 @@ import {
 export const RULES = {
   handSize: 14,
   /** Eli yere açmak için gereken en düşük toplam harf değeri. */
-  openThreshold: 76,
+  openThreshold: 101,
   /** Normal bitiren oyuncunun puan tablosuna yazılan değer. */
   winScore: -100,
   /** Tüm taşları tek renk bitiren oyuncunun puanı (Renk Bitirme). */

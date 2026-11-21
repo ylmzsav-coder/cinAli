@@ -11,7 +11,7 @@ web tarayıcısında ve telefonda (PWA olarak "Ana ekrana ekle") oynanır.
 - **Dağıtım:** 4 oyuncu, 14'er taş; başlayan 15 taş alır.
 - **Sıra:** Desteden ya da soldakinin attığı taştan çek → oyna → bir taş at.
 - **Kelime:** En az 3 harfli, sözlükte olan kelime. Kelimeler ıstakada gizlidir.
-- **El açma:** Yere açılan kelimelerin toplamı en az **76** olmalı.
+- **El açma:** Yere açılan kelimelerin toplamı en az **101** olmalı.
 - **Açtıktan sonra:** Yeni kelime koyulabilir; yerdeki kelimelerin başına/sonuna harf eklenebilir.
 - **Joker:** Her harfin yerine geçer, o harfin değerini alır.
 - **Bitirme:** Son taşı atan biter. Çift bitirme yoktur.

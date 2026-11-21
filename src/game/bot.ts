@@ -23,7 +23,7 @@ export interface BotProfile {
   maxOpenWords: number;
   /** Bir turda en fazla kaç açma/koyma/işleme yapar. */
   playsPerTurn: number;
-  /** "az": 76'ya en az taşla ulaşır; "cok": açılışta olabildiğince çok taş indirir. */
+  /** "az": açılış eşiğine en az taşla ulaşır; "cok": açılışta olabildiğince çok taş indirir. */
   openStyle: "az" | "cok";
 }
 

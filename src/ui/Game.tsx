@@ -220,7 +220,7 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
   else if (canPlay)
     hint = me.opened
       ? "Kelime koyun, yerdeki kelimelere harf ekleyin ya da bir taş atın."
-      : `Kelimeleri hazırlayıp toplam ${RULES.openThreshold}'ya ulaşınca elinizi açın, sonra bir taş atın.`;
+      : `Kelimeleri hazırlayıp toplam ${RULES.openThreshold}'e ulaşınca elinizi açın, sonra bir taş atın.`;
   else if (state.phase === "draw" || state.phase === "play") hint = `${state.players[state.current].name} oynuyor…`;
 
   const myTotal = totals(state);
