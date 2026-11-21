@@ -1,10 +1,10 @@
 /**
- * Word Okey giriş müziği: kod içinde üretilen özgün bir piyano parçası
- * (telif sorunu yok, ses dosyası gerekmez).
- * Piyano sesi: her nota için hafif kaymalı üst sesler (gerçek tel gibi),
- * çekiç vuruşu, notaya göre sönümlenme ve oda yankısı. Sol el akorları
- * arpej hâlinde, sağ el neşeli bir melodi çalar. 8 ölçü bir kez çalınır (18 sn),
- * ardından son akor çınlar ve müzik tam 19. saniyede susar.
+ * Word Okey giriş müziği: kod içinde üretilen özgün, çocuk şarkısı tadında
+ * bir piyano parçası (telif sorunu yok, ses dosyası gerekmez).
+ * Piyano sesi: hafif kaymalı üst sesler, çekiç vuruşu ve oda yankısı; melodiyi
+ * müzik kutusu gibi çınlayan bir zil sesi ikiler. Sol el "pam-pa" eşlik eder.
+ * Toplam 19 saniye: 8 ölçü bir kez çalar (18 sn), kapanış akoruyla biter;
+ * son 5 saniyede ses kademeli olarak azalır.
  */
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -12,41 +12,42 @@ let bus: GainNode | null = null;
 let timer: ReturnType<typeof setInterval> | null = null;
 let nextTime = 0;
 let step = 0;
+let ended = false;
 
 /** Müziğin toplam süresi (saniye). */
 export const MUSIC_SECONDS = 19;
+/** Son kaç saniyede ses kademeli azalır. */
+const FADE_SECONDS = 5;
 /** 64 sekizlik 18 saniyede biter; son 1 saniye kapanış akoru. */
-const STEP = (MUSIC_SECONDS - 1) / 64; // sekizlik
+const STEP = (MUSIC_SECONDS - 1) / 64;
 /** Ana ses seviyesi (yüksek); sınırlayıcı patlamayı önler. */
 const VOLUME = 0.9;
 
 const hz = (midi: number) => 440 * Math.pow(2, (midi - 69) / 12);
-// Nota adı → MIDI
 const NOTE: Record<string, number> = {
+  C2: 36, D2: 38, E2: 40, F2: 41, G2: 43, A2: 45, B2: 47,
   C3: 48, D3: 50, E3: 52, F3: 53, G3: 55, A3: 57, B3: 59,
   C4: 60, D4: 62, E4: 64, F4: 65, G4: 67, A4: 69, B4: 71,
   C5: 72, D5: 74, E5: 76, F5: 77, G5: 79, A5: 81, B5: 83,
-  C6: 84, D6: 86, E6: 88,
+  C6: 84, D6: 86, E6: 88, F6: 89,
 };
 
-// Sağ el: 8 ölçü × 8 sekizlik ("-" = önceki nota uzar, "." = sus)
+// Sağ el: 8 ölçü × 8 sekizlik ("-" = önceki nota uzar, "." = sus). Zıplayan, tekrarlı bir çocuk ezgisi.
 const MELODY = [
-  "E5", "-", "G5", "-", "C6", "-", "B5", "A5",
-  "G5", "-", "-", "D5", "G5", "-", "F5", "E5",
-  "E5", "-", "A5", "-", "C6", "-", "B5", "A5",
-  "A5", "-", "-", "G5", "F5", "E5", "D5", "C5",
-  "E5", "G5", "C6", "-", "E6", "-", "D6", "C6",
-  "B5", "-", "D6", "-", "G5", "-", "A5", "B5",
-  "C6", "-", "A5", "-", "F5", "-", "A5", "C6",
-  "D6", "-", "-", "-", "B5", "-", "G5", ".",
+  "G5", "E5", "G5", "E5", "C6", "-", "G5", ".",
+  "F5", "D5", "F5", "D5", "B5", "-", "G5", ".",
+  "E5", "G5", "C6", "E6", "D6", "C6", "G5", ".",
+  "A5", "G5", "F5", "D5", "G5", "-", "-", ".",
+  "A5", "F5", "A5", "C6", "F6", "-", "C6", ".",
+  "G5", "E5", "G5", "C6", "E6", "-", "C6", ".",
+  "D6", "B5", "G5", "B5", "D6", "-", "B5", "G5",
+  "C6", "-", "G5", "E5", "C5", ".", ".", ".",
 ];
-// Akorlar (ölçü başına): kök, üçlü, beşli (sol el arpeji)
+// Sol el akorları (ölçü başına): kök, üçlü, beşli
 const CHORDS: [string, string, string][] = [
-  ["C3", "E3", "G3"], ["G3", "B3", "D4"], ["A3", "C4", "E4"], ["F3", "A3", "C4"],
-  ["C3", "E3", "G3"], ["G3", "B3", "D4"], ["F3", "A3", "C4"], ["G3", "B3", "D4"],
+  ["C3", "E3", "G3"], ["G2", "B2", "D3"], ["C3", "E3", "G3"], ["G2", "B2", "D3"],
+  ["F2", "A2", "C3"], ["C3", "E3", "G3"], ["G2", "B2", "D3"], ["C3", "E3", "G3"],
 ];
-// Arpej deseni: akorun hangi sesi (0 kök, 1 üçlü, 2 beşli, 3 kökün oktavı)
-const ARP = [0, 2, 3, 1, 2, 3, 1, 2];
 
 function audio(): AudioContext | null {
   try {
@@ -63,12 +64,12 @@ function audio(): AudioContext | null {
 }
 
 /** Kısa oda yankısı için yapay dürtü yanıtı. */
-function reverbImpulse(a: AudioContext, seconds = 1.8): AudioBuffer {
+function reverbImpulse(a: AudioContext, seconds = 1.6): AudioBuffer {
   const len = Math.floor(a.sampleRate * seconds);
   const buf = a.createBuffer(2, len, a.sampleRate);
   for (let ch = 0; ch < 2; ch++) {
     const d = buf.getChannelData(ch);
-    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8);
   }
   return buf;
 }
@@ -86,24 +87,20 @@ function noise(a: AudioContext): AudioBuffer {
 /** Tek bir piyano notası. */
 function piano(a: AudioContext, out: AudioNode, midi: number, t: number, hold: number, vel: number) {
   const f0 = hz(midi);
-  // Pes notalar daha uzun çınlar
   const decay = 1.2 + Math.max(0, (84 - midi) / 24) * 2.2;
-  const end = t + Math.max(hold, 0.12) + 0.35; // tuş bırakılınca çabuk söner
+  const end = t + Math.max(hold, 0.1) + 0.3;
   const g = a.createGain();
   g.gain.setValueAtTime(0.0001, t);
-  g.gain.linearRampToValueAtTime(vel, t + 0.006);
-  g.gain.setTargetAtTime(vel * 0.45, t + 0.006, 0.08); // ilk parlak vuruş
-  g.gain.setTargetAtTime(0.0001, t + 0.1, decay / 3);
-  g.gain.setTargetAtTime(0.0001, t + Math.max(hold, 0.12), 0.09);
-  // Parlaklık zamanla azalır
+  g.gain.linearRampToValueAtTime(vel, t + 0.005);
+  g.gain.setTargetAtTime(vel * 0.45, t + 0.005, 0.07);
+  g.gain.setTargetAtTime(0.0001, t + 0.09, decay / 3);
+  g.gain.setTargetAtTime(0.0001, t + Math.max(hold, 0.1), 0.07);
   const lp = a.createBiquadFilter();
   lp.type = "lowpass";
   lp.frequency.setValueAtTime(Math.min(9000, f0 * 9), t);
   lp.frequency.exponentialRampToValueAtTime(Math.max(600, f0 * 2.5), t + decay);
   g.connect(lp).connect(out);
-  // Üst sesler: tel sertliği yüzünden hafifçe yukarı kayar
-  const partials = [1, 0.55, 0.32, 0.22, 0.12, 0.08, 0.05];
-  partials.forEach((amp, k) => {
+  [1, 0.55, 0.32, 0.22, 0.12, 0.08, 0.05].forEach((amp, k) => {
     const n = k + 1;
     const o = a.createOscillator();
     o.type = "sine";
@@ -114,7 +111,6 @@ function piano(a: AudioContext, out: AudioNode, midi: number, t: number, hold: n
     o.start(t);
     o.stop(end + 0.1);
   });
-  // Çekiç vuruşu
   const src = a.createBufferSource();
   src.buffer = noise(a);
   const bp = a.createBiquadFilter();
@@ -127,16 +123,31 @@ function piano(a: AudioContext, out: AudioNode, midi: number, t: number, hold: n
   src.start(t);
 }
 
-let ended = false;
+/** Müzik kutusu / zil sesi: melodiyi bir oktav yukarıdan parlak bir çınlamayla ikiler. */
+function bell(a: AudioContext, out: AudioNode, midi: number, t: number, vel: number) {
+  const f0 = hz(midi);
+  const g = a.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(vel, t + 0.003);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+  g.connect(out);
+  [[1, 1], [2.76, 0.35], [5.4, 0.12]].forEach(([r, amp]) => {
+    const o = a.createOscillator();
+    o.type = "sine";
+    o.frequency.value = f0 * r;
+    const pg = a.createGain();
+    pg.gain.value = amp;
+    o.connect(pg).connect(g);
+    o.start(t);
+    o.stop(t + 0.75);
+  });
+}
 
-/** Kapanış: Do majör akor çınlar ve müzik 19. saniyede susar. */
+/** Kapanış: Do majör akor ve zil; müzik 19. saniyede susar. */
 function finale(a: AudioContext, out: GainNode, t: number) {
-  ["C3", "G3", "C4", "E4", "G4", "C5", "E5"].forEach((n, k) => piano(a, out, NOTE[n], t + k * 0.012, 0.9, k < 2 ? 0.24 : 0.2));
+  ["C3", "G3", "C4", "E4", "G4", "C5", "E5"].forEach((n, k) => piano(a, out, NOTE[n], t + k * 0.012, 0.9, 0.2));
+  bell(a, out, NOTE.C6 + 12, t, 0.08);
   const m = master;
-  if (m) {
-    m.gain.setValueAtTime(VOLUME, t + 0.25);
-    m.gain.linearRampToValueAtTime(0.0001, t + 1);
-  }
   const ms = Math.max(0, (t + 1.05 - a.currentTime) * 1000);
   setTimeout(() => {
     if (master === m) {
@@ -161,19 +172,19 @@ function schedule() {
     const i = step;
     const bar = Math.floor(i / 8);
     const beat = i % 8;
-    // Sağ el
+    // Sağ el: kısa, zıplayan (staccato) notalar + müzik kutusu
     const note = MELODY[i];
     if (note !== "-" && note !== ".") {
       let len = 1;
-      while (MELODY[(i + len) % MELODY.length] === "-") len++;
-      const accent = beat === 0 || beat === 4 ? 1 : 0.85;
-      piano(a, bus, NOTE[note], nextTime, STEP * len * 0.95, 0.32 * accent);
+      while (MELODY[i + len] === "-") len++;
+      const accent = beat === 0 || beat === 4 ? 1 : 0.8;
+      piano(a, bus, NOTE[note], nextTime, len > 1 ? STEP * len * 0.85 : STEP * 0.55, 0.3 * accent);
+      bell(a, bus, NOTE[note] + 12, nextTime, 0.05 * accent);
     }
-    // Sol el: arpej, ölçü başında kök oktavla kalın bas
+    // Sol el: "pam-pa" (vuruşta bas, ara vuruşta akor)
     const [r, third, fifth] = CHORDS[bar].map((n) => NOTE[n]);
-    const pick = [r, third, fifth, r + 12][ARP[beat]];
-    piano(a, bus, pick, nextTime, STEP * 1.6, beat === 0 ? 0.2 : 0.14);
-    if (beat === 0) piano(a, bus, r - 12, nextTime, STEP * 7, 0.22);
+    if (beat === 0 || beat === 4) piano(a, bus, beat === 0 ? r - 12 : r - 5, nextTime, STEP * 1.5, 0.22);
+    if (beat === 2 || beat === 6) [r + 12, third + 12, fifth + 12].forEach((m) => piano(a, bus!, m, nextTime, STEP * 0.6, 0.1));
     nextTime += STEP;
     step++;
   }
@@ -183,27 +194,28 @@ function schedule() {
 export function startMusic() {
   const a = audio();
   if (!a || timer) return;
-  // Sınırlayıcı: yüksek seste patlama olmasın
   const comp = a.createDynamicsCompressor();
   comp.threshold.value = -8;
   comp.knee.value = 6;
   comp.ratio.value = 10;
   comp.attack.value = 0.003;
   comp.release.value = 0.25;
+  const t0 = a.currentTime;
   master = a.createGain();
-  master.gain.setValueAtTime(0.0001, a.currentTime);
-  master.gain.exponentialRampToValueAtTime(VOLUME, a.currentTime + 1);
+  master.gain.setValueAtTime(0.0001, t0);
+  master.gain.exponentialRampToValueAtTime(VOLUME, t0 + 0.6);
+  // Son 5 saniyede kademeli azalma
+  master.gain.setValueAtTime(VOLUME, t0 + 0.05 + MUSIC_SECONDS - FADE_SECONDS);
+  master.gain.linearRampToValueAtTime(0.0001, t0 + 0.05 + MUSIC_SECONDS);
   master.connect(comp).connect(a.destination);
-  // Kuru ses + yankı
   bus = a.createGain();
-  bus.gain.value = 1;
   const verb = a.createConvolver();
   verb.buffer = reverbImpulse(a);
   const wet = a.createGain();
-  wet.gain.value = 0.28;
+  wet.gain.value = 0.25;
   bus.connect(master);
   bus.connect(verb).connect(wet).connect(master);
-  nextTime = a.currentTime + 0.05;
+  nextTime = t0 + 0.05;
   step = 0;
   ended = false;
   timer = setInterval(schedule, 60);
