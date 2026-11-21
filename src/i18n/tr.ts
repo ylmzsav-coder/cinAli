@@ -278,7 +278,7 @@ const tr = {
   pairChip: "çift",
   openedPairsOk: "Çifte gittiniz! Artık yalnızca çift koyabilirsiniz; bütün taşları çiftle bitirmelisiniz.",
   pairBanner: "ÇİFTLE BİTİRDİ! ({score})",
-  rule_pairs: "Çifte gitme: Aynı iki harf (AA, SS…) bir çifttir; joker her harfin eşi olur. Elinde en az {need} çift olan oyuncu 101 şartı aranmadan çifte gidip açabilir. Çifte giden yalnızca çift koyar, kelime koyamaz ve yerdeki kelimelere harf ekleyemez; çiftler de işlenemez. Çiftle bitiren {pair} yazar, bütün taşları tek renk çiftle bitiren {pairColor} yazar.",
+  rule_pairs: "Çifte gitme: Aynı iki harf (AA, SS…) bir çifttir; joker her harfin eşi olur. Elinde en az {need} çift olan oyuncu {open} şartı aranmadan çifte gidip açabilir. Çifte giden yalnızca çift koyar, kelime koyamaz ve yerdeki kelimelere harf ekleyemez; çiftler de işlenemez. Çiftle bitiren {pair} yazar, bütün taşları tek renk çiftle bitiren {pairColor} yazar.",
   "err.pairsOnly": "Çifte gittiniz: yalnızca çift koyabilirsiniz.",
   "err.pairsNoExtend": "Çifte giden oyuncu yerdeki kelimelere harf ekleyemez.",
   "err.cantExtendPair": "Çiftlere harf eklenemez.",

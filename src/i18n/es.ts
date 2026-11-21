@@ -271,7 +271,7 @@ const es: Messages = {
   pairChip: "pareja",
   openedPairsOk: "¡Vas a parejas! Desde ahora solo puedes poner parejas y debes terminar con parejas.",
   pairBanner: "¡TERMINÓ CON PAREJAS! ({score})",
-  rule_pairs: "Ir a parejas: dos letras iguales (AA, SS…) forman una pareja; el comodín vale por cualquier letra. Quien tenga al menos {need} parejas puede abrir con parejas sin la regla de 101. Quien va a parejas solo pone parejas: ni palabras ni añadir letras a las de la mesa; las parejas tampoco se pueden ampliar. Terminar con parejas suma {pair}; con parejas de un solo color, {pairColor}.",
+  rule_pairs: "Ir a parejas: dos letras iguales (AA, SS…) forman una pareja; el comodín vale por cualquier letra. Quien tenga al menos {need} parejas puede abrir con parejas sin la regla de {open}. Quien va a parejas solo pone parejas: ni palabras ni añadir letras a las de la mesa; las parejas tampoco se pueden ampliar. Terminar con parejas suma {pair}; con parejas de un solo color, {pairColor}.",
   "err.pairsOnly": "Vas a parejas: solo puedes poner parejas.",
   "err.pairsNoExtend": "Quien va a parejas no puede añadir letras a las palabras.",
   "err.cantExtendPair": "No se pueden añadir letras a una pareja.",

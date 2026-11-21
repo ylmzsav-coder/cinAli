@@ -330,7 +330,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   const validGroups = groups.filter((g) => g.valid);
   const groupTotal = validGroups.reduce((s, g) => s + g.value, 0);
   const pairGroups = groups.filter((g) => g.pair);
-  /** Çifte gitme: açmadıysa 5 çift ve kelimeler 101'e yetmiyorsa; çifte gittiyse hep. */
+  /** Çifte gitme: açmadıysa 5 çift ve kelimeler açma eşiğine yetmiyorsa; çifte gittiyse hep. */
   const pairMode = me.pairs ? true : !me.opened && pairGroups.length >= RULES.pairsToOpen && groupTotal < RULES.openThreshold;
   /** Süre dolunca otomatik atılmaması gereken taşlar: geçerli kelime grupları ve çiftler. */
   const groupKeepIds = new Set([...validGroups, ...pairGroups].flatMap((g) => g.ids));

@@ -271,7 +271,7 @@ const fr: Messages = {
   pairChip: "paire",
   openedPairsOk: "Vous jouez les paires ! Vous ne pouvez plus poser que des paires et devez finir en paires.",
   pairBanner: "FINI EN PAIRES ! ({score})",
-  rule_pairs: "Jouer les paires : deux lettres identiques (AA, SS…) forment une paire ; le joker va avec toute lettre. Un joueur ayant au moins {need} paires peut ouvrir en paires sans la règle des 101. Il ne pose alors que des paires : pas de mots ni d'ajout aux mots de la table ; les paires ne peuvent pas être prolongées. Finir en paires vaut {pair}, en paires d'une seule couleur {pairColor}.",
+  rule_pairs: "Jouer les paires : deux lettres identiques (AA, SS…) forment une paire ; le joker va avec toute lettre. Un joueur ayant au moins {need} paires peut ouvrir en paires sans la règle des {open}. Il ne pose alors que des paires : pas de mots ni d'ajout aux mots de la table ; les paires ne peuvent pas être prolongées. Finir en paires vaut {pair}, en paires d'une seule couleur {pairColor}.",
   "err.pairsOnly": "Vous jouez les paires : seules les paires sont permises.",
   "err.pairsNoExtend": "Un joueur en paires ne peut pas ajouter de lettres aux mots.",
   "err.cantExtendPair": "On ne peut pas ajouter de lettres à une paire.",

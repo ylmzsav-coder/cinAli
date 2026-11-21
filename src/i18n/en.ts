@@ -271,7 +271,7 @@ const en: Messages = {
   pairChip: "pair",
   openedPairsOk: "You went for pairs! From now on you can only lay pairs and must finish with pairs.",
   pairBanner: "FINISHED WITH PAIRS! ({score})",
-  rule_pairs: "Going for pairs: two identical letters (AA, SS…) form a pair; the joker matches any letter. A player with at least {need} pairs can open with pairs without the 101 requirement. A pairs player can only lay pairs: no words and no adding letters to words on the table; pairs cannot be extended either. Finishing with pairs scores {pair}; finishing with pairs all in one colour scores {pairColor}.",
+  rule_pairs: "Going for pairs: two identical letters (AA, SS…) form a pair; the joker matches any letter. A player with at least {need} pairs can open with pairs without the {open} requirement. A pairs player can only lay pairs: no words and no adding letters to words on the table; pairs cannot be extended either. Finishing with pairs scores {pair}; finishing with pairs all in one colour scores {pairColor}.",
   "err.pairsOnly": "You went for pairs: you can only lay pairs.",
   "err.pairsNoExtend": "A pairs player can't add letters to words on the table.",
   "err.cantExtendPair": "Letters can't be added to pairs.",

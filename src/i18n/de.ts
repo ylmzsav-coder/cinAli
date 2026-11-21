@@ -271,7 +271,7 @@ const de: Messages = {
   pairChip: "Paar",
   openedPairsOk: "Du spielst auf Paare! Ab jetzt nur noch Paare legen und mit Paaren beenden.",
   pairBanner: "MIT PAAREN BEENDET! ({score})",
-  rule_pairs: "Auf Paare spielen: Zwei gleiche Buchstaben (AA, SS…) sind ein Paar; der Joker passt zu jedem Buchstaben. Wer mindestens {need} Paare hat, kann ohne die 101-Regel mit Paaren auslegen. Wer auf Paare spielt, legt nur Paare: keine Wörter und kein Anlegen an Wörter; Paare können nicht erweitert werden. Mit Paaren beenden zählt {pair}, mit Paaren in einer Farbe {pairColor}.",
+  rule_pairs: "Auf Paare spielen: Zwei gleiche Buchstaben (AA, SS…) sind ein Paar; der Joker passt zu jedem Buchstaben. Wer mindestens {need} Paare hat, kann ohne die {open}-Regel mit Paaren auslegen. Wer auf Paare spielt, legt nur Paare: keine Wörter und kein Anlegen an Wörter; Paare können nicht erweitert werden. Mit Paaren beenden zählt {pair}, mit Paaren in einer Farbe {pairColor}.",
   "err.pairsOnly": "Du spielst auf Paare: nur Paare legen.",
   "err.pairsNoExtend": "Wer auf Paare spielt, kann nicht an Wörter anlegen.",
   "err.cantExtendPair": "An Paare kann nicht angelegt werden.",

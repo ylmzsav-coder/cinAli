@@ -271,7 +271,7 @@ const pt: Messages = {
   pairChip: "par",
   openedPairsOk: "Você foi de pares! Agora só pode baixar pares e deve bater com pares.",
   pairBanner: "BATEU COM PARES! ({score})",
-  rule_pairs: "Ir de pares: duas letras iguais (AA, SS…) formam um par; o curinga vale qualquer letra. Quem tiver pelo menos {need} pares pode abrir de pares sem a regra dos 101. Quem vai de pares só baixa pares: nada de palavras nem de adicionar letras às palavras da mesa; os pares também não podem ser ampliados. Bater com pares vale {pair}; com pares de uma só cor, {pairColor}.",
+  rule_pairs: "Ir de pares: duas letras iguais (AA, SS…) formam um par; o curinga vale qualquer letra. Quem tiver pelo menos {need} pares pode abrir de pares sem a regra dos {open}. Quem vai de pares só baixa pares: nada de palavras nem de adicionar letras às palavras da mesa; os pares também não podem ser ampliados. Bater com pares vale {pair}; com pares de uma só cor, {pairColor}.",
   "err.pairsOnly": "Você foi de pares: só pode baixar pares.",
   "err.pairsNoExtend": "Quem vai de pares não pode adicionar letras às palavras.",
   "err.cantExtendPair": "Não é possível adicionar letras a um par.",

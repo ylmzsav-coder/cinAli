@@ -70,22 +70,19 @@ describe("kurallar", () => {
     expect(base.deck.length).toBe(95 - 57);
   });
 
-  it("101 altında açılmaz", () => {
+  it("76 altında açılmaz, 76 ve üstü açılır", () => {
     const rack = [...tiles("KALEM"), t("A"), t("B")];
     const s = rig(base, rack);
-    expectErr(() => openHand(dict, s, [{ tileIds: rack.slice(0, 5).map((x) => x.id) }]), "openNeeds", { need: 101, total: 52 });
-    // KALEM + ÇAY = 85: eskiden açardı, artık yetmez
+    expectErr(() => openHand(dict, s, [{ tileIds: rack.slice(0, 5).map((x) => x.id) }]), "openNeeds", { need: 76, total: 52 });
+    // KALEM + ÇAY = 85: 76 eşiğiyle açar
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
     const s2 = rig(base, [...kalem, ...cay, t("B")]);
-    expectErr(
-      () => openHand(dict, s2, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]),
-      "openNeeds",
-      { need: 101, total: 85 },
-    );
+    const o = openHand(dict, s2, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    expect(o.players[s2.current].opened).toBe(true);
   });
 
-  it("101 ve üstü ile açılır, sözlükte olmayan reddedilir", () => {
+  it("çok kelimeyle açılır, sözlükte olmayan reddedilir", () => {
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
     const tuz = tiles("TUZ");

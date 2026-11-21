@@ -271,7 +271,7 @@ const it: Messages = {
   pairChip: "coppia",
   openedPairsOk: "Giochi a coppie! Da ora puoi calare solo coppie e devi chiudere a coppie.",
   pairBanner: "CHIUSO A COPPIE! ({score})",
-  rule_pairs: "Giocare a coppie: due lettere uguali (AA, SS…) sono una coppia; il jolly vale come qualsiasi lettera. Chi ha almeno {need} coppie può aprire a coppie senza la regola del 101. Chi gioca a coppie cala solo coppie: niente parole né aggiunte alle parole sul tavolo; le coppie non si possono estendere. Chiudere a coppie vale {pair}, a coppie di un solo colore {pairColor}.",
+  rule_pairs: "Giocare a coppie: due lettere uguali (AA, SS…) sono una coppia; il jolly vale come qualsiasi lettera. Chi ha almeno {need} coppie può aprire a coppie senza la regola del {open}. Chi gioca a coppie cala solo coppie: niente parole né aggiunte alle parole sul tavolo; le coppie non si possono estendere. Chiudere a coppie vale {pair}, a coppie di un solo colore {pairColor}.",
   "err.pairsOnly": "Giochi a coppie: puoi calare solo coppie.",
   "err.pairsNoExtend": "Chi gioca a coppie non può aggiungere lettere alle parole.",
   "err.cantExtendPair": "Non si possono aggiungere lettere a una coppia.",
