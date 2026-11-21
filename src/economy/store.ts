@@ -26,7 +26,8 @@ export const CHIP_PACKS: ChipPack[] = [
   { productId: "wordokey_cip_500k", chips: 500_000, testPrice: "₺ 799,99", badge: "badge_best" },
 ];
 
-export const TEST_MODE = import.meta.env.DEV;
+/** Geliştirme sunucusu ve test yapıları (GitHub Pages, debug APK) taklit mağaza kullanır. */
+export const TEST_MODE = import.meta.env.DEV || import.meta.env.VITE_TEST_STORE === "1";
 
 export const purchasesAvailable = () => TEST_MODE;
 export const adsAvailable = () => TEST_MODE;
@@ -45,4 +46,31 @@ export async function showRewardedAd(): Promise<boolean> {
   if (!TEST_MODE) throw Object.assign(new Error("adsSoon"), { code: "adsSoon" });
   await wait(1500);
   return true;
+}
+
+/**
+ * Otomatik Per: tek seferlik satın alma (tüketilmeyen ürün), sınırsız kullanım.
+ * Play Console / App Store Connect'te "wordokey_otomatik_per" kimliğiyle,
+ * 1 $ fiyat kademesinde oluşturulacak.
+ */
+export const AUTO_PER_PRODUCT = { productId: "wordokey_otomatik_per", testPrice: "1\u00a0$" };
+const KEY_AUTO_PER = "wordokey.autoPer";
+
+export function ownsAutoPer(): boolean {
+  try {
+    return localStorage.getItem(KEY_AUTO_PER) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Otomatik Per'i satın alır; başarılıysa kalıcı olarak açılır. */
+export async function buyAutoPer(): Promise<void> {
+  if (!TEST_MODE) throw Object.assign(new Error("storeSoon"), { code: "storeSoon" });
+  await wait(600);
+  try {
+    localStorage.setItem(KEY_AUTO_PER, "1");
+  } catch {
+    /* depolama yoksa yalnızca bu oturumda açık kalır */
+  }
 }

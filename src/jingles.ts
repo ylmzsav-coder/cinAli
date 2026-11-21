@@ -1,6 +1,5 @@
 /**
- * El/oyun sonu müzikleri: kazanan için alkış ve "O-le!" tezahüratı eşliğinde
- * neşeli bir fanfar, kaybeden için hüzünlü, inen bir melodi. Tamamen kodla
+ * El/oyun sonu müzikleri: kazanan için alkış eşliğinde neşeli bir fanfar, kaybeden için hüzünlü, inen bir melodi. Tamamen kodla
  * üretilir (ses dosyası ve telif sorunu yok).
  */
 let ctx: AudioContext | null = null;
@@ -147,40 +146,6 @@ function applause(a: AudioContext, out: AudioNode, t: number, dur: number) {
   src.stop(t + dur + 0.1);
 }
 
-// Ünlü formantları (Hz): kalabalığın "O-le!" tezahüratı için
-const VOWEL: Record<string, [number, number, number]> = { o: [450, 800, 2830], e: [530, 1840, 2480], ey: [400, 2000, 2550] };
-
-/** Kalabalığın sesi: birkaç kaymalı ses, formant süzgecinden geçer. */
-function chant(a: AudioContext, out: AudioNode, t: number, dur: number, freq: number, vowel: string, vol: number, glideTo?: string) {
-  const voices = 7;
-  for (let v = 0; v < voices; v++) {
-    const o = a.createOscillator();
-    o.type = "sawtooth";
-    const f0 = freq * (v % 2 ? 0.5 : 1) * (1 + (Math.random() - 0.5) * 0.03);
-    o.frequency.setValueAtTime(f0 * 0.94, t);
-    o.frequency.linearRampToValueAtTime(f0, t + 0.06);
-    const g = a.createGain();
-    const st = t + Math.random() * 0.04;
-    g.gain.setValueAtTime(0.0001, st);
-    g.gain.linearRampToValueAtTime(vol / voices, st + 0.05);
-    g.gain.setValueAtTime(vol / voices, t + dur * 0.7);
-    g.gain.linearRampToValueAtTime(0.0001, t + dur);
-    o.connect(g);
-    VOWEL[vowel].forEach((fr, k) => {
-      const bp = a.createBiquadFilter();
-      bp.type = "bandpass";
-      bp.Q.value = 9;
-      bp.frequency.setValueAtTime(fr, t);
-      if (glideTo) bp.frequency.linearRampToValueAtTime(VOWEL[glideTo][k], t + dur * 0.6);
-      const kg = a.createGain();
-      kg.gain.value = [1, 0.6, 0.25][k] * 1.4;
-      g.connect(bp).connect(kg).connect(out);
-    });
-    o.start(t);
-    o.stop(t + dur + 0.05);
-  }
-}
-
 /** Basit davul vuruşu (fanfara tempo verir). */
 function boom(a: AudioContext, out: AudioNode, t: number, vol: number) {
   const o = a.createOscillator();
@@ -196,7 +161,7 @@ function boom(a: AudioContext, out: AudioNode, t: number, vol: number) {
 
 const hz = (midi: number) => 440 * Math.pow(2, (midi - 69) / 12);
 
-/** Kazanan: fanfar + alkış + "O-le, o-le!" tezahüratı (~6 sn). */
+/** Kazanan: fanfar + alkış (~5 sn). */
 export function playWin() {
   const s = begin(0.6);
   if (!s) return;
@@ -220,15 +185,6 @@ export function playWin() {
   [60, 64, 67, 72].forEach((m) => brass(a, out, hz(m), fanEnd - 6 * q, 6 * q + 0.6, 0.06, { vibrato: 0.006 }));
   // alkış fanfarın ortasından başlar
   applause(a, out, t0 + 0.9, 5.2);
-  // "O-le! O-le!" (iki kez)
-  let c = fanEnd + 0.15;
-  for (let r = 0; r < 2; r++) {
-    chant(a, out, c, 0.28, 330, "o", 0.5);
-    chant(a, out, c + 0.3, 0.55, 392, "e", 0.55, "ey");
-    boom(a, out, c, 0.4);
-    boom(a, out, c + 0.3, 0.4);
-    c += 1.0;
-  }
 }
 
 /** Kaybeden: hüzünlü, inen trombon "vah vah vah vaaah" ve minör kapanış (~4 sn). */

@@ -662,3 +662,11 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .okey .rack-actions > .primary { min-height: 0; }
 .okey .open-words { overflow: hidden; }
 .okey .open-word { font-size: 0.78rem; padding: 0 4px; }
+
+/* Otomatik Per satın alma */
+.auto-btn.locked { background: linear-gradient(#6a5a9e, #4a3c7a) !important; }
+.auto-price { white-space: nowrap; display: inline-block; margin-left: 4px; background: #ffd54f; color: #3b2a00; border-radius: 6px; padding: 0 5px; font-weight: 900; font-size: 0.85em; }
+.auto-offer { max-width: 420px; text-align: center; }
+.auto-offer p { margin: 8px 0; line-height: 1.35; }
+.auto-offer .modal-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+.auto-buy { background: linear-gradient(#7c4dff, #5e35b1); color: #fff; font-weight: 800; padding: 10px 16px; }
