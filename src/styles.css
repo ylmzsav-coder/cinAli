@@ -627,9 +627,11 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .okey .rack-actions > .primary { grid-column: 1 / -1; }
 .okey .rack-actions > .sort-row { grid-column: 1 / -1; }
 .okey .rack-actions > .auto-btn { grid-column: 1 / -1; }
-.okey .rack-actions > .primary { grid-row: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; overflow: hidden; }
-.open-title { font-weight: 800; }
-.open-words { font-size: 0.7rem; font-weight: 700; line-height: 1.15; opacity: 0.95; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.okey .rack-actions > .primary { grid-row: 1 / 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; overflow: hidden; }
+.open-title { font-weight: 800; font-size: 0.74rem; }
+.open-words { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; max-width: 100%; }
+.open-word { background: rgba(255,255,255,0.75); color: #1b1b1b; border-radius: 6px; padding: 1px 5px; font-size: 0.86rem; font-weight: 900; letter-spacing: 0.02em; line-height: 1.2; white-space: nowrap; }
+.open-word small { font-size: 0.6rem; font-weight: 700; margin-left: 3px; opacity: 0.7; }
 .okey .rack-actions button { padding: 4px 4px; font-size: 0.74rem; line-height: 1.1; }
 .okey .rack-actions > .primary { font-size: 0.82rem; }
 .okey .take .tile, .okey .discard-zone .tile { --tile-w: calc(var(--slot-w) * 0.8); }
@@ -655,3 +657,8 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .rack-discard.ready, .side-right.drop-ready { border: 2px dashed var(--accent); box-shadow: 0 0 0 3px rgba(255, 201, 77, 0.25); animation: pulse 1.2s infinite; border-radius: 12px; }
 .rack-discard.ready .rack-discard-label { color: var(--accent); }
 .rack-discard.over, .side-right.drop-over { background: rgba(226, 87, 76, 0.5); border-color: #fff; }
+/* Eylem sütunu ıstakadan uzun olamaz: kelime listesi büyüse de masa küçülmez */
+.okey .rack-row > .rack-actions { height: 0; min-height: 100%; overflow: hidden; grid-template-rows: 2fr 2fr 1fr 1fr; grid-auto-rows: auto; }
+.okey .rack-actions > .primary { min-height: 0; }
+.okey .open-words { overflow: hidden; }
+.okey .open-word { font-size: 0.78rem; padding: 0 4px; }

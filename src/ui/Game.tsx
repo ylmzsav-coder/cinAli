@@ -860,7 +860,9 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                 onClick={() => void layGroups()}>
                 <span className="open-title">{me.opened ? t("layWord") : t("openHand", { total: groupTotal, need: RULES.openThreshold })}</span>
                 {validGroups.length > 0 && (
-                  <span className="open-words">{validGroups.map((g) => `${g.word} ${g.value}`).join(" · ")}</span>
+                  <span className="open-words">
+                    {validGroups.map((g) => <span key={g.ids.join("-")} className="open-word">{g.word}<small>{g.value}</small></span>)}
+                  </span>
                 )}
               </button>
             )}
