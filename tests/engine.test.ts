@@ -75,15 +75,20 @@ describe("kurallar", () => {
     expect(base.deck.length).toBe(106 - 57);
   });
 
-  it("76 altında açılmaz, 76 ve üstü açılır", () => {
-    const rack = [...tiles("KALEM"), t("A"), t("B")];
-    const s = rig(base, rack);
-    expectErr(() => openHand(dict, s, [{ tileIds: rack.slice(0, 5).map((x) => x.id) }]), "openNeeds", { need: 76, total: 52 });
-    // KALEM + ÇAY = 85: 76 eşiğiyle açar
+  it("86 altında açılmaz, 86 ve üstü açılır", () => {
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
-    const s2 = rig(base, [...kalem, ...cay, t("B")]);
-    const o = openHand(dict, s2, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]);
+    // KALEM + ÇAY = 85: bir eksik
+    const s = rig(base, [...kalem, ...cay, t("B")]);
+    expectErr(
+      () => openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]),
+      "openNeeds",
+      { need: 86, total: 85 },
+    );
+    // KALEM + ÇAY + TUZ = 155: açar
+    const tuz = tiles("TUZ");
+    const s2 = rig(base, [...kalem, ...cay, ...tuz, t("B")]);
+    const o = openHand(dict, s2, [kalem, cay, tuz].map((w) => ({ tileIds: w.map((x) => x.id) })));
     expect(o.players[s2.current].opened).toBe(true);
   });
 
