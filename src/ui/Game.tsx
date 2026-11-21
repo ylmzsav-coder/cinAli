@@ -790,7 +790,8 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
           )}
         </main>
 
-        <aside className="side side-right">
+        {/* Sağdaki oyuncuya taş atılır: alanın tamamı atma hedefi */}
+        <aside className={`side side-right ${draggingTile && canPlay ? "drop-ready" : ""} ${drag?.target === "discard" ? "drop-over" : ""}`} data-drop="discard">
           {renderOpp(1)}
           {/* Atma alanı: taşı buraya sürükle */}
           <div className={`discard-zone ${drag?.target === "discard" ? "over" : ""} ${draggingTile && canPlay ? "ready" : ""}`} data-drop="discard"
@@ -841,6 +842,16 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
               );
             })}
           </section>
+          {/* Istakanın sağında atma yuvası: taşı sağa sürükleyip bırak */}
+          <div className={`rack-discard ${draggingTile && canPlay ? "ready" : ""} ${drag?.target === "discard" ? "over" : ""}`} data-drop="discard"
+            aria-label={t("yourDiscard")}>
+            {state.discards[ME].length ? (
+              <TileView tile={state.discards[ME][state.discards[ME].length - 1]} />
+            ) : (
+              <span className="rack-discard-arrow" aria-hidden>➜</span>
+            )}
+            <span className="rack-discard-label">{draggingTile && canPlay ? t("dropToDiscard") : t("discard")}</span>
+          </div>
           <div className="rack-actions">
             {me.opened && selected.length >= 3 ? (
               <button type="button" className="primary" onClick={laySelected}>{t("layWord")}</button>

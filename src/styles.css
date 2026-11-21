@@ -638,3 +638,16 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
   .okey .deck { flex-direction: column; gap: 1px; padding: 3px 5px; }
   .okey .deck .small { display: none; }
 }
+
+/* ---- Taşı sürükleyerek atma ---- */
+.game.okey { --discard-w: clamp(54px, 15vh, 78px); --slot-w: min(calc((100vw - 16px - var(--actions-w) - var(--discard-w) - 12px - 16px) / 16), calc(100dvh * 0.125), 62px); }
+.rack-discard {
+  width: var(--discard-w); flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  border: 2px dashed rgba(255, 255, 255, 0.25); border-radius: 12px; background: rgba(0, 0, 0, 0.22); padding: 4px 2px;
+}
+.rack-discard .tile { --tile-w: calc(var(--slot-w) * 0.95); }
+.rack-discard-arrow { font-size: calc(var(--slot-w) * 0.7); color: rgba(255, 255, 255, 0.35); }
+.rack-discard-label { font-size: 0.68rem; font-weight: 800; text-align: center; line-height: 1.1; color: var(--muted); }
+.rack-discard.ready, .side-right.drop-ready { border: 2px dashed var(--accent); box-shadow: 0 0 0 3px rgba(255, 201, 77, 0.25); animation: pulse 1.2s infinite; border-radius: 12px; }
+.rack-discard.ready .rack-discard-label { color: var(--accent); }
+.rack-discard.over, .side-right.drop-over { background: rgba(226, 87, 76, 0.5); border-color: #fff; }
