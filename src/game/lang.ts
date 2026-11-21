@@ -2,7 +2,8 @@
  * Oyun dilleri: alfabe (harf değeri = alfabedeki sıra), taş dağılımı ve
  * sözlük dosyası. Taş dağılımları her dilde toplam 117 harf taşıdır (+2 joker = 119 taş) ve harf
  * sıklığından türetilip bot simülasyonuyla dengelenmiştir. Türkçede A ve E 5'er
- * adettir; İ, K, O, T ile diğer sık harfler eser sahibinin isteğiyle artırılmıştır.
+ * adettir; oyun çok kolay bitmesin diye sesli harfler 31'de tutulmuştur (I, İ, O,
+ * U, Ü azaltıldı; yerine F, Ğ, H, J, P, V artırıldı).
  */
 
 export type LangCode = "tr" | "en" | "de" | "fr" | "es" | "it" | "pt";
@@ -34,7 +35,7 @@ export const LANGS: Record<LangCode, LangPack> = {
     code: "tr", name: "Türkçe", locale: "tr-TR", playable: true,
     alphabet: split("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ"),
     //               A B C Ç D E F G Ğ H I İ J K L M N O Ö P R S Ş T U Ü V Y Z
-    counts: counts("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ", [5, 4, 2, 2, 5, 5, 1, 3, 1, 2, 5, 8, 1, 8, 7, 5, 7, 5, 1, 2, 7, 5, 3, 6, 5, 3, 2, 5, 2]),
+    counts: counts("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ", [5, 4, 2, 2, 5, 5, 2, 3, 2, 3, 4, 6, 2, 8, 7, 5, 7, 4, 1, 3, 7, 5, 3, 6, 4, 2, 3, 5, 2]),
   },
   en: {
     code: "en", name: "English", locale: "en-US", playable: true,
