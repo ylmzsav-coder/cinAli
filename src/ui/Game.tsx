@@ -598,6 +598,48 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     return el?.dataset.drop ?? null;
   };
 
+  /**
+   * Bırakma hedefi, parmağın değil sürüklenen taşın (parmağın üstünde görünen)
+   * ortasına göre bulunur: oyuncu taşı nereye götürdüğünü görür, oraya düşer.
+   * Istakanın içinde ya da kenarındaysa en yakın yuvaya oturur (iki kat arası,
+   * raf dudağı gibi boşluklar da yuva sayılır).
+   */
+  const resolveTarget = (fx: number, fy: number): string | null => {
+    const ghost = document.querySelector(".drag-ghost .tile, .drag-ghost .tile-back");
+    let px = fx;
+    let py = fy;
+    if (ghost) {
+      const g = ghost.getBoundingClientRect();
+      // Taşın ortası parmağa göre sabit uzaklıkta durur (bir önceki konumdan ölçülür)
+      const prev = dragRef.current;
+      if (prev) {
+        px = fx + (g.left + g.width / 2 - prev.x);
+        py = fy + (g.top + g.height / 2 - prev.y);
+      }
+    }
+    let t = targetAt(px, py);
+    if (!t || t === "rack" || !t.startsWith("slot:")) {
+      const rack = document.querySelector(".okey-rack")?.getBoundingClientRect();
+      const pad = 24;
+      if (rack && px >= rack.left - pad && px <= rack.right + pad && py >= rack.top - pad && py <= rack.bottom + pad && (!t || t === "rack")) {
+        let best: string | null = null;
+        let bestD = Infinity;
+        document.querySelectorAll<HTMLElement>(".okey-rack .rack-slot").forEach((el) => {
+          const r = el.getBoundingClientRect();
+          const dx = Math.max(r.left - px, 0, px - r.right);
+          const dy = Math.max(r.top - py, 0, py - r.bottom);
+          const dist = dx * dx + dy * dy * 1.5;
+          if (dist < bestD) {
+            bestD = dist;
+            best = el.dataset.drop ?? null;
+          }
+        });
+        if (best) t = best;
+      }
+    }
+    return t ?? targetAt(fx, fy);
+  };
+
   // Sürükleme pencere düzeyinde izlenir (pointer capture kullanılmaz; böylece
   // taşa normal dokunma/tıklama seçme olarak çalışmaya devam eder).
   const startDrag = (e: React.PointerEvent, kind: DragState["kind"], ids: number[]) => {
@@ -633,9 +675,9 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       if (d.kind === "tile" && selectedRef.current.includes(d.ids[0]) && selectedRef.current.length > 1) d.ids = selectedRef.current.slice();
       play("pick");
     }
+    d.target = resolveTarget(e.clientX, e.clientY);
     d.x = e.clientX;
     d.y = e.clientY;
-    d.target = targetAt(e.clientX, e.clientY);
     setDrag({ ...d });
   };
 
