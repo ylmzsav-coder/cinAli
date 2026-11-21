@@ -3,3 +3,7 @@ dist
 dev-dist
 *.log
 *.tsbuildinfo
+functions/lib
+functions/node_modules
+*-debug.log
+.firebase

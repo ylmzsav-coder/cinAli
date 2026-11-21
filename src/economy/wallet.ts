@@ -7,12 +7,10 @@
  * değiştirilebilir. Arayüz bu yüzden tek bir modül üzerinden konuşur.
  */
 
-export const WELCOME_CHIPS = 5_000;
-export const DAILY_BONUS = 1_000;
-export const AD_REWARD = 300;
-export const AD_DAILY_LIMIT = 5;
+import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, TxReason, WELCOME_CHIPS, dayKey } from "./config";
 
-export type TxReason = "hosgeldin" | "gunluk" | "reklam" | "satin-alma" | "masa-giris" | "masa-odul" | "iade";
+export { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, WELCOME_CHIPS };
+export type { TxReason };
 
 export interface Tx {
   at: number;
@@ -30,7 +28,7 @@ export interface WalletData {
 }
 
 const KEY = "cinali.wallet";
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => dayKey();
 
 function load(): WalletData {
   try {

@@ -1,0 +1,33 @@
+rules_version = '2';
+// Çip bakiyesi, masalar ve el bilgileri YALNIZCA sunucu (Cloud Functions) tarafından yazılır.
+// İstemci sadece kendisine ait olanı okuyabilir.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+    match /wallets/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+      match /tx/{txId} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if false;
+      }
+    }
+    match /tables/{tableId} {
+      // Masanın herkese açık görünümü (ıstakalar hariç): masadaki oyunculara açık
+      allow read: if request.auth != null && request.auth.uid in resource.data.uids;
+      allow write: if false;
+      // Her oyuncunun ıstakası yalnızca kendisine açık
+      match /hands/{uid} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if false;
+      }
+      // Sunucunun tam oyun durumu (deste dahil): istemciye kapalı
+      match /server/{doc} {
+        allow read, write: if false;
+      }
+    }
+  }
+}
