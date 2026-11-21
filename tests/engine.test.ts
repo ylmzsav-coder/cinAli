@@ -291,3 +291,9 @@ describe("çifte gitme", () => {
     expectErr(() => layPair(o, { tileIds: pp.map((x) => x.id) }), "notPairPlayer");
   });
 });
+
+describe("Türkçe sözlük", () => {
+  it("fiil kökleri (emir kipi) geçerli kelimedir: TUT, GİT, OKU", () => {
+    for (const w of ["TUT", "GİT", "OKU", "GEL", "TUTMAK"]) expect(dict.has(w), w).toBe(true);
+  });
+});

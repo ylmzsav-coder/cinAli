@@ -113,6 +113,21 @@ def read_freq(lang: str, src: str):
         return [line.split(" ")[0] for line in f if line.strip()]
 
 
+def add_tr_verb_stems(words: list[str]) -> list[str]:
+    """Türkçe fiil kökleri (emir kipi: TUT, GİT, OKU…) sözlükte yalnızca mastar
+    hâliyle (TUTMAK) bulunur; kökü mastarın hemen arkasına ekler (en az 3 harf)."""
+    have = set(words)
+    out = []
+    for w in words:
+        out.append(w)
+        if w.endswith(("MAK", "MEK")) and len(w) - 3 >= 3:
+            stem = w[:-3]
+            if stem not in have:
+                have.add(stem)
+                out.append(stem)
+    return out
+
+
 def main(lang: str, words_src: str, freq_src: str) -> None:
     cfg = LANGS[lang]
     norm = normalizer(cfg)
@@ -126,6 +141,8 @@ def main(lang: str, words_src: str, freq_src: str) -> None:
     common = sorted((w for w in words if w in rank), key=lambda w: rank[w])
     rest = sorted((w for w in words if w not in rank), key=lambda w: [order[c] for c in w])
     out = common + rest
+    if lang == "tr":
+        out = add_tr_verb_stems(out)
     dst = f"public/dict/{lang}.txt"
     with open(dst, "w", encoding="utf-8") as f:
         f.write("\n".join(out) + "\n")
@@ -133,4 +150,14 @@ def main(lang: str, words_src: str, freq_src: str) -> None:
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:4])
+    if sys.argv[1:2] == ["tr-stems"]:
+        # Var olan public/dict/tr.txt dosyasına fiil köklerini ekler
+        path = "public/dict/tr.txt"
+        with open(path, encoding="utf-8") as f:
+            ws = [w for w in f.read().split("\n") if w]
+        out = add_tr_verb_stems(ws)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write("\n".join(out) + "\n")
+        print(f"tr: {len(ws)} -> {len(out)} kelime (+{len(out) - len(ws)} fiil kökü)")
+    else:
+        main(*sys.argv[1:4])
