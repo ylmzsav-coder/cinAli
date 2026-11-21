@@ -129,6 +129,25 @@ def add_tr_verb_stems(words: list[str]) -> list[str]:
     return out
 
 
+def remove_profane(ws: list[str]) -> tuple[list[str], list[str]]:
+    """Küfür listesindekileri (tam eşleşme ya da küfür kökleriyle başlayan) ve
+    tools/tr_cikar.txt'de elle listelenenleri çıkarır."""
+    lists = json.load(open("functions/src/profanity_lists.json", encoding="utf-8"))["tr"]
+    low = str.maketrans("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ", "abcçdefgğhıijklmnoöprsştuüvyz")
+    words = {w for w in lists["words"] if " " not in w}
+    stems, allow = lists["stems"], set(lists["allow"])
+    with open("tools/tr_cikar.txt", encoding="utf-8") as f:
+        extra = {w.strip() for w in f if w.strip() and not w.startswith("#")}
+
+    def bad(w: str) -> bool:
+        if w in extra:
+            return True
+        lw = w.translate(low)
+        return lw not in allow and (lw in words or any(lw.startswith(s) for s in stems))
+
+    return [w for w in ws if not bad(w)], [w for w in ws if bad(w)]
+
+
 def main(lang: str, words_src: str, freq_src: str) -> None:
     cfg = LANGS[lang]
     norm = normalizer(cfg)
@@ -168,31 +187,17 @@ if __name__ == "__main__":
         have = set(ws)
         with open("tools/tr_ekler.txt", encoding="utf-8") as f:
             extra = [w.strip() for w in f if w.strip() and not w.startswith("#")]
-        new = [w for w in extra if w not in have]
+        new, _ = remove_profane([w for w in dict.fromkeys(extra) if w not in have])
         with open(path, "w", encoding="utf-8") as f:
             f.write("\n".join(ws + new) + "\n")
         print(f"tr: +{len(new)} elle eklenen kelime: {' '.join(new)}")
     elif sys.argv[1:2] == ["tr-kufur"]:
-        # Küfür listesindeki kelimeleri (tam eşleşme ya da küfür kökleriyle başlayan) sözlükten çıkarır
-        lists = json.load(open("functions/src/profanity_lists.json", encoding="utf-8"))["tr"]
-        low = str.maketrans("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ", "abcçdefgğhıijklmnoöprsştuüvyz")
-        words = {w for w in lists["words"] if " " not in w}
-        stems, allow = lists["stems"], set(lists["allow"])
-
-        def profane(w: str) -> bool:
-            w = w.translate(low)
-            return w not in allow and (w in words or any(w.startswith(s) for s in stems))
-
         path = "public/dict/tr.txt"
         with open(path, encoding="utf-8") as f:
             ws = [w for w in f.read().split("\n") if w]
-        # Ayrıca tools/tr_cikar.txt'de elle listelenenler
-        with open("tools/tr_cikar.txt", encoding="utf-8") as f:
-            extra = {w.strip() for w in f if w.strip() and not w.startswith("#")}
-        profane_or_extra = lambda w: profane(w) or w in extra  # noqa: E731
-        out = [w for w in ws if not profane_or_extra(w)]
+        out, removed = remove_profane(ws)
         with open(path, "w", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
-        print(f"tr: -{len(ws) - len(out)} küfür: {' '.join(w for w in ws if profane_or_extra(w))}")
+        print(f"tr: -{len(removed)} küfür: {' '.join(removed)}")
     else:
         main(*sys.argv[1:4])
