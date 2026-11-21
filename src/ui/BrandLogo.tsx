@@ -1,11 +1,11 @@
 /**
- * Word Okey logosu: üstte renkli taşlar üzerinde "Word", altında altın sarısı "OKEY".
+ * Word Okey logosu: üstte renkli taşlar üzerinde "WORD", altında altın sarısı "OKEY".
  */
 const LETTERS: [string, string][] = [
   ["W", "#c62828"],
-  ["o", "#1565c0"],
-  ["r", "#e09100"],
-  ["d", "#2e7d32"],
+  ["O", "#1565c0"],
+  ["R", "#e09100"],
+  ["D", "#2e7d32"],
 ];
 
 export const BRAND = "Word Okey";
