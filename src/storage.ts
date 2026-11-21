@@ -38,6 +38,12 @@ export interface SavedGame {
   version: 1;
   state: GameState;
   settings: Settings;
+  /** Çipli masada oynanıyorsa masa kimliği. */
+  tableId?: string;
+  /** Masa ödülü ödendi mi (iki kez ödenmesin). */
+  settled?: boolean;
+  /** Ödenen çip (oyun sonu ekranı için). */
+  payout?: number;
 }
 
 export const loadGame = (): SavedGame | null => {

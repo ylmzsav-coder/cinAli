@@ -47,9 +47,13 @@ interface Props {
   onChange: (s: GameState) => void;
   onExit: () => void;
   onNewGame: () => void;
+  /** Çipli masa adı (pratikte boş). */
+  tableName?: string;
+  /** Oyun sonunda kazanılan çip. */
+  payout?: number;
 }
 
-export function Game({ dict, state, level, speed, onChange, onExit, onNewGame }: Props) {
+export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, tableName, payout }: Props) {
   const me = state.players[ME];
   const [order, setOrder] = useState<number[]>(() => me.rack.map((t) => t.id));
   const [selected, setSelected] = useState<number[]>([]);
@@ -229,7 +233,7 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame }:
       <header className="topbar">
         <button type="button" className="link" onClick={onExit}>‹ Menü</button>
         <div className="title">
-          Cinali <span className="muted">· El {state.handNo}/{state.totalHands}</span>
+          {tableName ?? "Pratik"} <span className="muted">· El {state.handNo}/{state.totalHands}</span>
         </div>
         <button type="button" className="link" onClick={() => setShowScores(true)}>Puanlar</button>
       </header>
@@ -398,7 +402,12 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame }:
             {state.phase === "gameOver" ? (
               <>
                 <p className="winner">Kazanan: {winnerName(state)}</p>
-                <button type="button" className="primary" onClick={onNewGame}>Yeni Oyun</button>
+                {tableName && (
+                  <div className={payout ? "banner" : "muted"}>
+                    {payout ? `+${payout.toLocaleString("tr-TR")} çip kazandınız!` : "Bu masada çip kazanamadınız."}
+                  </div>
+                )}
+                <button type="button" className="primary" onClick={onNewGame}>Menüye Dön</button>
               </>
             ) : handOver ? (
               <button type="button" className="primary" onClick={() => { setShowScores(false); onChange(dealHand(state)); }}>

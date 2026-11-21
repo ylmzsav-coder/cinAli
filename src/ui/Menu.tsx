@@ -1,32 +1,75 @@
 import { useState } from "react";
+import { DAILY_BONUS } from "../economy/wallet";
+import { useWallet } from "../economy/useWallet";
+import { wallet } from "../economy/wallet";
 import type { BotLevel } from "../game/bot";
 import { Settings } from "../storage";
+import { Chips } from "./Chips";
 
-interface Props {
-  settings: Settings;
+interface HubProps {
   canResume: boolean;
-  onStart: (s: Settings) => void;
+  resumeLabel: string;
   onResume: () => void;
+  onTables: () => void;
+  onPractice: () => void;
+  onShop: () => void;
   onRules: () => void;
 }
 
-export function Menu({ settings, canResume, onStart, onResume, onRules }: Props) {
+export function Hub({ canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules }: HubProps) {
+  const w = useWallet();
+  const [toast, setToast] = useState<string | null>(null);
+  return (
+    <div className="page menu">
+      <Logo />
+      <p className="muted">Harflerle oynanan okey</p>
+      <button type="button" className="balance" onClick={onShop} aria-label="Çip bakiyesi, mağazaya git">
+        <Chips amount={w.balance} big />
+        <span className="plus-chip">+</span>
+      </button>
+      {wallet.canClaimDaily() && (
+        <button type="button" className="gift big" onClick={() => {
+          if (wallet.claimDaily()) setToast(`Günlük ödül: +${DAILY_BONUS.toLocaleString("tr-TR")} çip!`);
+        }}>
+          🎁 Günlük ödülü al
+        </button>
+      )}
+      {toast && <div className="toast">{toast}</div>}
+      {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
+      <button type="button" className={canResume ? "big" : "primary big"} onClick={onTables}>Çipli Masalar</button>
+      <button type="button" className="big" onClick={onPractice}>Pratik (çipsiz)</button>
+      <button type="button" className="big" onClick={onShop}>Mağaza</button>
+      <button type="button" className="link" onClick={onRules}>Kurallar</button>
+      <p className="muted small legal">Çipler sanal oyun parasıdır; gerçek paraya çevrilemez, devredilemez.</p>
+    </div>
+  );
+}
+
+export function Logo() {
+  return (
+    <div className="logo" aria-hidden>
+      {[..."CİNALİ"].map((l, i) => (
+        <span key={i} className={`tile tile-md c-${["kirmizi", "mavi", "sari", "siyah"][i % 4]}`}>
+          <span className="tile-letter">{l}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+interface PracticeProps {
+  settings: Settings;
+  onStart: (s: Settings) => void;
+  onBack: () => void;
+}
+
+export function Practice({ settings, onStart, onBack }: PracticeProps) {
   const [s, setS] = useState(settings);
   return (
     <div className="page menu">
-      <div className="logo" aria-hidden>
-        {[..."CİNALİ"].map((l, i) => (
-          <span key={i} className={`tile tile-md c-${["kirmizi", "mavi", "sari", "siyah"][i % 4]}`}>
-            <span className="tile-letter">{l}</span>
-          </span>
-        ))}
-      </div>
-      <p className="muted">Harflerle oynanan okey</p>
-
-      {canResume && (
-        <button type="button" className="primary big" onClick={onResume}>Oyuna Devam Et</button>
-      )}
-
+      <button type="button" className="link back" onClick={onBack}>‹ Geri</button>
+      <h1>Pratik</h1>
+      <p className="muted">Çip harcamadan bilgisayara karşı oynayın.</p>
       <div className="form">
         <label>
           Adınız
@@ -55,10 +98,9 @@ export function Menu({ settings, canResume, onStart, onResume, onRules }: Props)
           </select>
         </label>
       </div>
-      <button type="button" className={canResume ? "big" : "primary big"} onClick={() => onStart({ ...s, name: s.name.trim() || "Sen" })}>
-        Yeni Oyun
+      <button type="button" className="primary big" onClick={() => onStart({ ...s, name: s.name.trim() || "Sen" })}>
+        Başla
       </button>
-      <button type="button" className="link" onClick={onRules}>Kurallar</button>
     </div>
   );
 }

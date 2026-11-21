@@ -151,3 +151,20 @@ describe("bot simülasyonu", () => {
     expect(wins).toBeGreaterThan(0);
   }, 120000);
 });
+
+import { TABLES, payout, winnerPrize } from "../src/economy/tables";
+describe("çip ödemesi", () => {
+  const t = TABLES[0]; // Çaylak, giriş 500
+  it("birinci potun %90'ını alır", () => {
+    expect(winnerPrize(t)).toBe(1800);
+    expect(payout(t, [-100, 50, 200, 30], 0, 0)).toBe(1800);
+  });
+  it("birinci değilse 0, eşitlikte paylaşılır", () => {
+    expect(payout(t, [10, -100, 200, 30], 0, 0)).toBe(0);
+    expect(payout(t, [-100, -100, 200, 30], 0, 0)).toBe(900);
+  });
+  it("Renk Bitirme ikramiyesi giriş ücreti kadar", () => {
+    expect(payout(t, [-200, 50, 200, 30], 0, 1)).toBe(1800 + 500);
+    expect(payout(t, [100, -200, 50, 30], 0, 0)).toBe(0);
+  });
+});
