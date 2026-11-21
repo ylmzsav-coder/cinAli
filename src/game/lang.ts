@@ -66,8 +66,11 @@ export const LANGS: Record<LangCode, LangPack> = {
     alphabet: split(LATIN), counts: counts(LATIN, Array(26).fill(1)),
   },
   it: {
-    code: "it", name: "Italiano", locale: "it-IT", playable: false,
-    alphabet: split(LATIN), counts: counts(LATIN, Array(26).fill(1)),
+    code: "it", name: "Italiano", locale: "it-IT", playable: true,
+    // 21 harflik İtalyan alfabesi (J K W X Y yalnızca yabancı kelimelerde)
+    alphabet: split("ABCDEFGHILMNOPQRSTUVZ"),
+    //                       A B C D E F G H I L M N O P Q R S T U V Z
+    counts: counts("ABCDEFGHILMNOPQRSTUVZ", [7, 2, 6, 3, 7, 2, 3, 1, 6, 5, 4, 7, 7, 4, 1, 8, 6, 8, 3, 2, 2]),
   },
 };
 

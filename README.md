@@ -13,7 +13,7 @@ web tarayıcısında, Android ve iOS'ta oynanır.
 | Español | ✅ | ✅ | 27 harf (Ñ ayrı harf) | 53.000 kelime |
 | Português (BR) | ✅ | ✅ | 26 harf (Ç→C, aksanlar katlanır) | 234.000 kelime |
 | Deutsch | ✅ | yakında | | uygun lisanslı sözlük bekleniyor |
-| Italiano | ✅ | yakında | | uygun lisanslı sözlük bekleniyor |
+| Italiano | ✅ | ✅ | 21 harflik İtalyan alfabesi (J K W X Y yok) | 52.000 kelime |
 
 Arayüz dili cihaz dilinden otomatik seçilir; ana menüden arayüz dili ve kelime dili ayrı ayrı
 değiştirilebilir. Her dilin taş dağılımı (toplam 94 harf + 2 joker) `src/game/lang.ts` içindedir ve
@@ -67,6 +67,8 @@ npm run build    # dist/ klasörüne üretim derlemesi
 | fr | Hunspell `dictionary-fr` (MPL-2.0) | FrequencyWords (CC BY-SA 4.0) |
 | es | Hunspell `dictionary-es` (MPL-1.1 seçeneği) | FrequencyWords (CC BY-SA 4.0) |
 | pt | Hunspell `dictionary-pt` (MPL-2.0 seçeneği) | FrequencyWords (CC BY-SA 4.0) |
+| it | [Vikisözlük](https://it.wiktionary.org/) veri dosyası (CC BY-SA), `tools/wiktionary_lemmas.py` | FrequencyWords (CC BY-SA 4.0) |
 
 Hunspell sözlüklerinden yalnızca kök kelimeler alınır; özel adlar çıkarılır. Almanca ve İtalyanca
-Hunspell sözlükleri yalnızca GPL lisanslı olduğu için (App Store dağıtımıyla uyumsuz) kullanılmadı.
+Hunspell sözlükleri yalnızca GPL lisanslı olduğu için (App Store dağıtımıyla uyumsuz) kullanılmadı;
+bu diller Vikisözlük'ten temel sözcük türleriyle (çekimli hâller, özel adlar, kısaltmalar hariç) üretilir.

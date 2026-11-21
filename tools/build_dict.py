@@ -8,6 +8,10 @@ oyuncuları zorluk seviyesine göre listenin başından belirli sayıda kelime
 Kaynaklar (lisanslar README'de):
 - tr: Vikisözlük kelime listesi (mertemin/turkish-word-list, CC BY-SA)
       + sıklık: an-array-of-turkish-words (MIT)
+- de/it: Vikisözlük (CC BY-SA) madde başlıkları; tools/wiktionary_lemmas.py
+      ile çıkarılır, yalnızca temel sözcük türleri (çekimli hâller, özel
+      adlar ve kısaltmalar hariç)
+      + sıklık: hermitdave/FrequencyWords (CC BY-SA 4.0)
 - en/fr/es/pt: Hunspell sözlükleri (npm dictionary-xx; en: MIT/BSD,
       fr: MPL-2.0, es: MPL-1.1 seçeneği, pt: MPL-2.0 seçeneği) - yalnızca
       kök kelimeler (ek/çekim türetilmez), özel adlar hariç
@@ -16,6 +20,7 @@ Kaynaklar (lisanslar README'de):
 Kullanım:
   python3 tools/build_dict.py tr words.txt words.json
   python3 tools/build_dict.py en index.dic en_50k.txt
+  python3 tools/build_dict.py de de_lemmas.tsv de_50k.txt
 """
 import json
 import re
@@ -29,6 +34,20 @@ LANGS = {
     "fr": {"alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "fold": {"æ": "ae", "œ": "oe"}, "strip_accents": True},
     "es": {"alphabet": "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ", "keep": "ñ", "strip_accents": True},
     "pt": {"alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "strip_accents": True},
+    # Almanca: 26 harf + Ä Ö Ü (alfabenin sonunda, 27-29); ß -> SS. İsimler büyük harfle yazıldığı için
+    # büyük harfle başlayan kelimeler kabul edilir, tamamı büyük harf olan kısaltmalar alınmaz.
+    "de": {"alphabet": "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ", "fold": {"ß": "ss"}, "capitalized": True,
+           "pos": {"Substantiv", "Verb", "Adjektiv", "Adverb", "Präposition", "Konjunktion", "Subjunktion",
+                   "Pronomen", "Personalpronomen", "Possessivpronomen", "Demonstrativpronomen",
+                   "Interrogativpronomen", "Relativpronomen", "Indefinitpronomen", "Reflexivpronomen",
+                   "Interjektion", "Numerale", "Kardinalzahl", "Ordinalzahl", "Partikel", "Artikel",
+                   "Modalpartikel", "Gradpartikel", "Fokuspartikel", "Negationspartikel", "Antwortpartikel",
+                   "Lokaladverb", "Temporaladverb", "Modaladverb", "Pronominaladverb", "Konjunktionaladverb",
+                   "Hilfsverb", "Postposition", "Onomatopoetikum"}},
+    # İtalyanca: 21 harflik İtalyan alfabesi (J K W X Y yabancı kelimelerde; alınmaz), aksanlar katlanır.
+    "it": {"alphabet": "ABCDEFGHILMNOPQRSTUVZ", "strip_accents": True,
+           "pos": {"sost", "agg", "verb", "avv", "agg num", "card", "ord", "inter", "cong", "prep",
+                   "pronome", "adj", "art"}},
 }
 
 MIN_LEN, MAX_LEN = 3, 15
@@ -43,7 +62,13 @@ def normalizer(cfg):
 
     def norm(w: str):
         w = w.strip()
-        if not w or w[0].isupper():  # özel adlar ve kısaltmalar
+        if not w:
+            return None
+        if cfg.get("capitalized"):
+            if len(w) > 1 and w.isupper():  # kısaltma
+                return None
+            w = w.lower()
+        elif w[0].isupper():  # özel adlar ve kısaltmalar
             return None
         w = "".join(fold.get(ch, ch) for ch in w)
         if cfg.get("strip_accents"):
@@ -59,6 +84,15 @@ def normalizer(cfg):
 
 
 def read_words(lang: str, src: str):
+    pos = LANGS[lang].get("pos")
+    if pos:
+        out = []
+        with open(src, encoding="utf-8") as f:
+            for line in f:
+                title, _, kinds = line.rstrip("\n").partition("\t")
+                if pos & set(kinds.split(",")):
+                    out.append(title)
+        return out
     if lang == "tr":
         with open(src, encoding="utf-8") as f:
             return [line for line in f if " " not in line.strip()]
