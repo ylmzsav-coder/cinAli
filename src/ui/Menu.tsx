@@ -1,3 +1,5 @@
+import { canCloseGame, closeGame } from "../exit";
+import { stopMusic } from "../music";
 import { useState } from "react";
 import { useWallet } from "../economy/useWallet";
 import { DAILY_BONUS, wallet } from "../economy/wallet";
@@ -23,6 +25,23 @@ interface HubProps {
 export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
+  const [closeAsk, setCloseAsk] = useState(false);
+  const [closed, setClosed] = useState(false);
+  const doClose = async () => {
+    setCloseAsk(false);
+    stopMusic(0.3);
+    if (!(await closeGame())) setClosed(true);
+  };
+
+  // Tarayıcı sekmeyi kapatmaya izin vermediyse: kapandı ekranı
+  if (closed)
+    return (
+      <div className="page closed-screen">
+        <p className="closed-title">👋 {t("closedTitle")}</p>
+        <p className="muted">{t("closedHint")}</p>
+        <button type="button" className="primary big" onClick={() => setClosed(false)}>{t("reopen")}</button>
+      </div>
+    );
 
   const changeUi = (code: LangCode) =>
     onSettings({ ...settings, uiLang: code, gameLang: LANGS[code].playable ? code : settings.gameLang });
@@ -95,10 +114,24 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             <button type="button" className="big" onClick={onShop}>{t("shop")}</button>
             <button type="button" className="big" onClick={onRules}>{t("rules")}</button>
           </div>
+          {canCloseGame() && (
+            <button type="button" className="big close-game" onClick={() => setCloseAsk(true)}>⏻ {t("closeGame")}</button>
+          )}
         </div>
       </div>
       {!LANGS[settings.uiLang].playable && (
         <p className="muted small">{t("wordLangSoon", { lang: LANGS[settings.uiLang].name })}</p>
+      )}
+      {closeAsk && (
+        <div className="modal-bg" onClick={() => setCloseAsk(false)}>
+          <div className="modal quit-modal" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label={t("closeAsk")}>
+            <h3>⏻ {t("closeAsk")}</h3>
+            <div className="modal-actions">
+              <button type="button" className="danger" onClick={() => void doClose()}>{t("closeYes")}</button>
+              <button type="button" onClick={() => setCloseAsk(false)}>{t("cancel")}</button>
+            </div>
+          </div>
+        </div>
       )}
       <p className="muted small legal">{t("legal")} {t("copyright", { year: COPYRIGHT_YEAR })}{typeof __APP_VERSION__ !== "undefined" && ` · v ${__APP_VERSION__}`}</p>
     </div>
