@@ -196,3 +196,26 @@ describe("çip ödemesi", () => {
     expect(payout(t, [100, -200, 50, 30], 0, 0)).toBe(0);
   });
 });
+
+import { timeoutMove } from "../src/game/engine";
+describe("hamle süresi", () => {
+  const base = newGame(["Sen", "B1", "B2", "B3"], [false, true, true, true], 3, 7);
+  it("çekme aşamasında süre dolarsa desteden çeker ve çektiği taşı atar", () => {
+    let s = discardTile(base, base.players[base.current].rack[0].id); // sıra sonraki oyuncuya geçer
+    const who = s.current;
+    const before = s.players[who].rack.length;
+    const top = s.deck[s.deck.length - 1];
+    s = timeoutMove(s);
+    expect(s.players[who].rack.length).toBe(before);
+    if (top.letter !== null) expect(s.discards[who].at(-1)!.id).toBe(top.id);
+    expect(s.current).not.toBe(who);
+    expect(s.log.some((l) => l.k === "timeout")).toBe(true);
+  });
+  it("korunan taşlara ve jokere dokunmaz", () => {
+    const rack = [...tiles("KAL"), t(null), t("M")];
+    const s = rig(base, rack);
+    // son taş (M) korunuyorsa ve joker sonda değilse ilk serbest harf atılır
+    const o = timeoutMove(s, [rack[4].id, rack[0].id]);
+    expect(o.discards[s.current].at(-1)!.letter).toBe("A");
+  });
+});

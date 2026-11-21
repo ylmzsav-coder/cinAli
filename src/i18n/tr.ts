@@ -36,6 +36,10 @@ const tr = {
   speed_yavas: "Yavaş",
   speed_normal: "Normal",
   speed_hizli: "Hızlı",
+  turnTime: "Hamle süresi",
+  timerOff: "Kapalı",
+  secondsN: "{n} sn",
+  timeLeft: "Kalan süre: {n} saniye",
   start: "Başla",
 
   // Masalar
@@ -165,6 +169,7 @@ const tr = {
   "log.laid": "{name} yere {word} koydu.",
   "log.extended": "{name}, {from} kelimesini {to} yaptı.",
   "log.discarded": "{name} {letter} attı.",
+  "log.timeout": "{name} süresi doldu, otomatik oynandı.",
   "log.deckEmpty": "Deste bitti, el kazanansız sona erdi.",
   "log.finished": "{name} eli bitirdi.",
   "log.colorFinished": "{name} eli bitirdi: RENK BİTİRME!",
@@ -182,6 +187,7 @@ const tr = {
   rule_finish: "Bitirme: Elindeki son taşı atan oyuncu eli bitirir. Çift bitirme yoktur.",
   rule_score: "Puanlama: Bitiren {win} yazar. Diğerleri elinde kalan harflerin değer toplamı kadar ceza alır (joker {joker}). El açamayan oyuncu {unopened} ceza alır. Deste biterse el kazanansız biter.",
   rule_color: "Renk Bitirme: Bitiren oyuncunun o elde yere koyduğu taşların hepsi aynı renkteyse (joker her renge uyar) puan tablosuna {score} yazılır.",
+  rule_timer: "Hamle süresi: Her oyuncunun hamle süresi vardır (çipli masalarda {n} saniye). Süre çerçevede gösterilir: yeşil, sarı, kırmızı. Süre bitince taş çekilmediyse desteden çekilir ve ıstakadan bir taş otomatik atılır.",
   rule_winner: "Kazanan: Belirlenen el sayısı sonunda toplam puanı en düşük olan oyuncu kazanır.",
   howTitle: "Nasıl oynanır?",
   how_1: "Istakadaki taşlara harf sırasıyla dokunun; seçim sırası kelimedeki harf sırasıdır.",

@@ -2,6 +2,7 @@ import { RULES } from "../game/engine";
 import { LangCode, gameLang } from "../game/lang";
 import { JOKER_COUNT, JOKER_PENALTY, letterTileTotal, letterValue } from "../game/tiles";
 import { t } from "../i18n";
+import { TABLE_TURN_SECONDS } from "../storage";
 
 /** Kural sayfasındaki örnek kelime (oyun dilinde). */
 const EXAMPLE: Record<LangCode, string> = {
@@ -27,6 +28,7 @@ export function Rules({ onBack }: { onBack: () => void }) {
     t("rule_finish"),
     t("rule_score", { win: RULES.winScore, joker: JOKER_PENALTY, unopened: RULES.unopenedPenalty }),
     t("rule_color", { score: RULES.colorWinScore }),
+    t("rule_timer", { n: TABLE_TURN_SECONDS }),
     t("rule_winner"),
   ];
   return (

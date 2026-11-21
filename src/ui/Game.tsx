@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { BotLevel, botStep } from "../game/bot";
 import { Dictionary } from "../game/dictionary";
 import {
@@ -17,6 +17,7 @@ import {
   layWord,
   openHand,
   prevIndex,
+  timeoutMove,
   totals,
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, wordValue } from "../game/tiles";
@@ -45,6 +46,8 @@ interface Props {
   state: GameState;
   level: BotLevel;
   speed: keyof typeof SPEED_MS;
+  /** Hamle süresi (saniye); 0 = kapalı. */
+  turnSeconds: number;
   onChange: (s: GameState) => void;
   onExit: () => void;
   onNewGame: () => void;
@@ -54,7 +57,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, tableName, payout }: Props) {
+export function Game({ dict, state, level, speed, turnSeconds, onChange, onExit, onNewGame, tableName, payout }: Props) {
   const me = state.players[ME];
   const [order, setOrder] = useState<number[]>(() => me.rack.map((t) => t.id));
   const [selected, setSelected] = useState<number[]>([]);
@@ -95,6 +98,30 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
     return () => clearTimeout(timer);
   }, [state, dict, level, speed, onChange]);
 
+  // ---- Hamle süresi ----
+  const active = state.phase === "draw" || state.phase === "play";
+  const timerOn = turnSeconds > 0 && active;
+  // Sıra her el ve her atılan taşla değişir
+  const turnKey = `${state.handNo}:${state.current}:${state.discards.reduce((n, d) => n + d.length, 0)}`;
+  // Son tarih, ait olduğu turla birlikte tutulur: tur değiştiği ilk anda
+  // eski (geçmiş) son tarih yüzünden yanlışlıkla süre dolmuş sayılmaz.
+  const [timer, setTimer] = useState<{ key: string; at: number }>({ key: "", at: 0 });
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    setTimer({ key: turnKey, at: Date.now() + turnSeconds * 1000 });
+    setNow(Date.now());
+  }, [turnKey, turnSeconds]);
+  const deadline = timer.key === turnKey ? timer.at : 0;
+  useEffect(() => {
+    if (!timerOn) return;
+    const id = setInterval(() => setNow(Date.now()), 200);
+    return () => clearInterval(id);
+  }, [timerOn]);
+  const remainingMs = timerOn ? (deadline ? Math.max(0, deadline - now) : turnSeconds * 1000) : 0;
+  const fraction = timerOn ? Math.min(1, remainingMs / (turnSeconds * 1000)) : 0;
+  const timerColor = fraction > 0.5 ? "var(--timer-green)" : fraction > 0.2 ? "var(--timer-yellow)" : "var(--timer-red)";
+  const secondsLeft = Math.ceil(remainingMs / 1000);
+
   const myTurn = state.current === ME && (state.phase === "draw" || state.phase === "play");
   const canPlay = myTurn && state.phase === "play";
   const tileById = useMemo(() => new Map(me.rack.map((t) => [t.id, t])), [me.rack]);
@@ -118,6 +145,24 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
       return false;
     }
   };
+
+  // Süre dolunca: sizin sıranızdaysa otomatik çek/at (her tur için bir kez)
+  const firedRef = useRef("");
+  useEffect(() => {
+    if (!timerOn || state.current !== ME || remainingMs > 0 || !deadline) return;
+    if (firedRef.current === turnKey) return;
+    firedRef.current = turnKey;
+    setJokerPrompt(null);
+    setSelected([]);
+    onChange(timeoutMove(state, stagedIds));
+    setMessage(null);
+  });
+
+  /** Sıradaki oyuncunun çerçevesine süre göstergesi. */
+  const timerStyle = (player: number) =>
+    timerOn && state.current === player
+      ? ({ "--p": `${(fraction * 100).toFixed(1)}%`, "--tc": timerColor } as CSSProperties)
+      : undefined;
 
   const toggle = (id: number) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -241,7 +286,8 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
           const p = state.players[i];
           const top = state.discards[i][state.discards[i].length - 1];
           return (
-            <div key={i} className={`opp ${state.current === i && !handOver ? "active" : ""}`}>
+            <div key={i} className={`opp ${state.current === i && !handOver ? "active" : ""} ${timerStyle(i) ? "timed" : ""}`}
+              style={timerStyle(i)}>
               <div className="opp-name">
                 {p.name} <span className="muted">({label})</span>
               </div>
@@ -337,7 +383,13 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
         </section>
       )}
 
-      <section className={`rack ${myTurn ? "my-turn" : ""}`} aria-label={t("rackAria")}>
+      <section className={`rack ${myTurn ? "my-turn" : ""} ${timerStyle(ME) ? "timed" : ""}`} aria-label={t("rackAria")}
+        style={timerStyle(ME)}>
+        {timerStyle(ME) && (
+          <span className="timer-badge" style={{ background: timerColor }} role="timer" aria-label={t("timeLeft", { n: secondsLeft })}>
+            ⏱ {secondsLeft}
+          </span>
+        )}
         {rackTiles.map((t) => {
           const idx = selected.indexOf(t.id);
           return (

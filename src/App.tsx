@@ -5,7 +5,7 @@ import { Dictionary } from "./game/dictionary";
 import { GameState, RULES, newGame, totals } from "./game/engine";
 import { LANGS, LangCode, setGameLang } from "./game/lang";
 import { botNames, setUiLang, t } from "./i18n";
-import { SavedGame, Settings, loadGame, loadSettings, saveGame, saveSettings } from "./storage";
+import { SavedGame, Settings, TABLE_TURN_SECONDS, loadGame, loadSettings, saveGame, saveSettings } from "./storage";
 import { Game } from "./ui/Game";
 import { Hub, Practice } from "./ui/Menu";
 import { Rules } from "./ui/Rules";
@@ -97,7 +97,12 @@ export function App() {
     const names = [s.name || t("defaultName"), ...botNames()];
     const hands = table?.hands ?? s.hands;
     const g = newGame(names, [false, true, true, true], hands, Date.now() % 1_000_000);
-    const next: SavedGame = { version: 2, state: g, settings: { ...s, level: table?.level ?? s.level }, tableId: table?.id };
+    const next: SavedGame = {
+      version: 2,
+      state: g,
+      settings: { ...s, level: table?.level ?? s.level, turnSeconds: table ? TABLE_TURN_SECONDS : s.turnSeconds },
+      tableId: table?.id,
+    };
     setSaved(next);
     saveGame(next);
     setScreen("game");
@@ -148,6 +153,7 @@ export function App() {
             state={saved.state}
             level={saved.settings.level}
             speed={settings.speed}
+            turnSeconds={saved.settings.turnSeconds ?? TABLE_TURN_SECONDS}
             onChange={update}
             onExit={() => setScreen("hub")}
             onNewGame={finishGame}

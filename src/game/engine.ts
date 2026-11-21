@@ -345,6 +345,32 @@ export function discardTile(prev: GameState, tileId: number): GameState {
   return state;
 }
 
+/**
+ * Hamle süresi dolduğunda otomatik hamle: taş çekilmediyse desteden çeker,
+ * sonra bir taş atar. Atılacak taş: en son çekilen taş (joker değilse);
+ * yoksa korunmayan (keep) ilk joker olmayan taş; o da yoksa herhangi bir taş.
+ */
+export function timeoutMove(prev: GameState, keep: Iterable<number> = []): GameState {
+  if (prev.phase !== "draw" && prev.phase !== "play") return prev;
+  const name = prev.players[prev.current].name;
+  let state = clone(prev);
+  state.log.push({ k: "timeout", p: { name } });
+  if (state.phase === "draw") {
+    state = drawFromDeck(state);
+    if (state.phase !== "play") return state; // deste bitti, el sona erdi
+  }
+  const kept = new Set(keep);
+  const rack = state.players[state.current].rack;
+  const free = rack.filter((t) => !kept.has(t.id));
+  const last = rack[rack.length - 1];
+  const pick =
+    (last && last.letter !== null && !kept.has(last.id) ? last : undefined) ??
+    free.find((t) => t.letter !== null) ??
+    rack.find((t) => t.letter !== null) ??
+    rack[0];
+  return discardTile(state, pick.id);
+}
+
 // ---- Puanlama ----------------------------------------------------------
 /** Kazananın yere koyduğu taşların hepsi aynı renkteyse o rengi döndürür. Joker her renge uyar. */
 export function colorWinOf(p: Player): Color | null {

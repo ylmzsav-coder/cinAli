@@ -277,3 +277,29 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .lang-bar select {
   border: 0; border-radius: 999px; padding: 6px 10px; background: #f4f1e8; color: #222; font-weight: 600;
 }
+
+/* ---- Hamle süresi çerçevesi ---- */
+:root {
+  --timer-green: #3ddc6a;
+  --timer-yellow: #ffd23f;
+  --timer-red: #ff4d4d;
+}
+.opp.timed, .rack.timed { border: 4px solid transparent; }
+.opp.timed {
+  background:
+    linear-gradient(#0d3f28, #0d3f28) padding-box,
+    conic-gradient(var(--tc) var(--p), rgba(255, 255, 255, 0.12) 0) border-box;
+}
+.rack.timed {
+  background:
+    linear-gradient(#8a5a2b, #6d4520) padding-box,
+    conic-gradient(var(--tc) var(--p), rgba(255, 255, 255, 0.15) 0) border-box;
+  box-shadow: inset 0 -6px 0 #4f3116, 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+.rack { position: relative; }
+.timer-badge {
+  position: absolute; top: -12px; right: 10px;
+  color: #1a1a1a; font-weight: 800; font-size: 0.8rem; font-variant-numeric: tabular-nums;
+  padding: 2px 8px; border-radius: 999px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  transition: background 0.3s;
+}

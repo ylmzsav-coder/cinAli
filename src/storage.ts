@@ -12,7 +12,12 @@ export interface Settings {
   uiLang: LangCode;
   /** Kelime oyununun dili (alfabe, taşlar, sözlük). */
   gameLang: LangCode;
+  /** Hamle süresi (saniye); 0 = kapalı. */
+  turnSeconds: number;
 }
+
+/** Çipli masalarda sabit hamle süresi. */
+export const TABLE_TURN_SECONDS = 30;
 
 function deviceLang(): LangCode {
   try {
@@ -24,7 +29,7 @@ function deviceLang(): LangCode {
 
 export function defaultSettings(): Settings {
   const ui = deviceLang();
-  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en" };
+  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 30 };
 }
 
 const KEY_SETTINGS = "cinali.settings";

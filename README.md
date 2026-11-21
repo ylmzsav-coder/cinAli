@@ -33,6 +33,8 @@ anahtarların ve yer tutucuların bulunduğunu doğrular.
 - **Joker:** Her harfin yerine geçer, o harfin değerini alır.
 - **Bitirme:** Son taşı atan biter. Çift bitirme yoktur.
 - **Puan:** Bitiren **-100**; diğerleri elde kalan harflerin toplamı (joker 30); açamayan **200**.
+- **Hamle süresi:** Çipli masalarda 30 sn (pratikte 15/30/45/60 sn veya kapalı). Süre çerçevede
+  yeşil → sarı → kırmızı gösterilir; bitince gerekirse desteden çekilir ve bir taş otomatik atılır.
 - **Renk Bitirme:** Bitirenin yere koyduğu taşların hepsi aynı renkse **-200**.
 - Belirlenen el sayısı sonunda en düşük toplam puan kazanır.
 

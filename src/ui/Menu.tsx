@@ -116,6 +116,13 @@ export function Practice({ settings, onStart, onBack }: PracticeProps) {
           </select>
         </label>
         <label>
+          {t("turnTime")}
+          <select value={s.turnSeconds} onChange={(e) => setS({ ...s, turnSeconds: Number(e.target.value) })}>
+            {[15, 30, 45, 60].map((n) => <option key={n} value={n}>{t("secondsN", { n })}</option>)}
+            <option value={0}>{t("timerOff")}</option>
+          </select>
+        </label>
+        <label>
           {t("gameSpeed")}
           <select value={s.speed} onChange={(e) => setS({ ...s, speed: e.target.value as Settings["speed"] })}>
             <option value="yavas">{t("speed_yavas")}</option>
