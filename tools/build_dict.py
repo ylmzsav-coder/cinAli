@@ -186,9 +186,13 @@ if __name__ == "__main__":
         path = "public/dict/tr.txt"
         with open(path, encoding="utf-8") as f:
             ws = [w for w in f.read().split("\n") if w]
-        out = [w for w in ws if not profane(w)]
+        # Ayrıca tools/tr_cikar.txt'de elle listelenenler
+        with open("tools/tr_cikar.txt", encoding="utf-8") as f:
+            extra = {w.strip() for w in f if w.strip() and not w.startswith("#")}
+        profane_or_extra = lambda w: profane(w) or w in extra  # noqa: E731
+        out = [w for w in ws if not profane_or_extra(w)]
         with open(path, "w", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
-        print(f"tr: -{len(ws) - len(out)} küfür: {' '.join(w for w in ws if profane(w))}")
+        print(f"tr: -{len(ws) - len(out)} küfür: {' '.join(w for w in ws if profane_or_extra(w))}")
     else:
         main(*sys.argv[1:4])

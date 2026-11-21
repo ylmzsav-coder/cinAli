@@ -1,0 +1,2 @@
+# Sözlükten elle çıkarılan kelimeler (küfür listesinde olmayan ama kaba sayılanlar). Her satıra bir kelime.
+SIÇ
