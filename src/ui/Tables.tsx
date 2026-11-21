@@ -16,7 +16,7 @@ export function Tables({ onPick, onShop, onBack }: Props) {
       <div className="page-head">
         <button type="button" className="link" onClick={onBack}>{t("back")}</button>
         <button type="button" className="balance small-balance" onClick={onShop} aria-label={t("balanceAria")}>
-          <Chips amount={w.balance} /> <span className="plus-chip">+</span>
+          <Chips amount={w.balance} loading={!w.ready} /> <span className="plus-chip">+</span>
         </button>
       </div>
       <h1>{t("chipTables")}</h1>
@@ -30,7 +30,9 @@ export function Tables({ onPick, onShop, onBack }: Props) {
               <div className="muted small">{t(`opponents_${tb.level}`)} · {t("handsN", { n: tb.hands })}</div>
               <div className="tc-row"><span className="muted small">{t("entry")}</span><Chips amount={tb.entry} /></div>
               <div className="tc-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(tb)} /></div>
-              {afford ? (
+              {!w.ready ? (
+                <button type="button" disabled aria-busy>…</button>
+              ) : afford ? (
                 <button type="button" className="primary" onClick={() => onPick(tb)}>{t("sit")}</button>
               ) : (
                 <button type="button" onClick={onShop}>{t("chipsMissing", { n: tb.entry - w.balance })}</button>

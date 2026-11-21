@@ -320,3 +320,30 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .waiting-seat.taken { border-style: solid; border-color: var(--accent); color: var(--text); font-weight: 700; background: rgba(0, 0, 0, 0.2); }
 .error-toast { background: var(--danger); }
 .leave-link { align-self: flex-start; font-size: 0.85rem; color: var(--muted); }
+
+/* ---- Sohbet ---- */
+.opp { position: relative; }
+.bubble {
+  position: absolute; z-index: 6; left: 50%; top: -14px; transform: translateX(-50%);
+  background: #fff; color: #1a1a1a; font-weight: 700; font-size: 0.85rem; white-space: nowrap;
+  padding: 6px 10px; border-radius: 14px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  animation: bubble-in 0.25s ease-out, bubble-out 0.4s ease-in 3.1s forwards; pointer-events: none;
+}
+.bubble::after {
+  content: ""; position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: #fff; border-bottom: 0;
+}
+.bubble-emoji { font-size: 1.6rem; padding: 2px 8px; }
+.rack .bubble { top: -40px; }
+@keyframes bubble-in { from { opacity: 0; transform: translate(-50%, 6px) scale(0.8); } }
+@keyframes bubble-out { to { opacity: 0; } }
+.chat-btn { font-size: 1.05rem; }
+.chat-btn.on { background: var(--accent); }
+.chat-panel {
+  background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 14px;
+  padding: 8px; display: grid; gap: 8px;
+}
+.chat-emojis { display: flex; justify-content: space-between; gap: 4px; }
+.chat-emojis button { background: none; font-size: 1.5rem; padding: 2px 4px; }
+.chat-msgs { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.chat-msgs button { font-size: 0.82rem; padding: 7px 10px; background: #f4f1e8; }

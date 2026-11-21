@@ -18,6 +18,8 @@ export interface Settings {
   sound: boolean;
   /** Son saniyelerde titreşim. */
   vibration: boolean;
+  /** Diğer oyuncuların hazır mesaj/emojilerini göster. */
+  chat: boolean;
 }
 
 /** Çipli masalarda sabit hamle süresi. */
@@ -33,7 +35,7 @@ function deviceLang(): LangCode {
 
 export function defaultSettings(): Settings {
   const ui = deviceLang();
-  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 30, sound: true, vibration: true };
+  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 30, sound: true, vibration: true, chat: true };
 }
 
 const KEY_SETTINGS = "cinali.settings";

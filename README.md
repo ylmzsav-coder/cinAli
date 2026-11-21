@@ -60,6 +60,9 @@ Firebase yapılandırılmışsa çipler ve çipli masalar sunucuda yönetilir; y
 - **Çevrimiçi masalar:** `functions/src/tables.ts`. Aynı dil ve seviyedeki oyuncular aynı
   masaya oturur; 8 sn içinde dolmayan koltuklara sunucudaki botlar oturur. Her hamle sunucuda
   oyun motoruyla doğrulanır; hamle süresini sunucu tutar; ödüller oyun sonunda sunucuda ödenir.
+- **Sohbet:** 10 hazır mesaj ve 8 emoji (`src/online/chat.ts`). Masaya yalnızca kimlik gider,
+  her oyuncu mesajı kendi dilinde görür; serbest metin yoktur. Kurallar yalnızca masadaki
+  oyuncuların, yalnızca izinli kimliklerle yazmasına izin verir. Pratikte botlar cevap verir.
 - **Gizlilik:** `firestore.rules`. Herkes yalnızca kendi ıstakasını ve cüzdanını okur;
   deste ve tam oyun durumu istemciye kapalıdır. Hiçbir şey istemciden yazılamaz.
 
@@ -71,6 +74,7 @@ npx firebase emulators:start --project demo-cinali
 VITE_FIREBASE_EMULATOR=1 npm run dev
 node tests/emulator/wallet.mjs     # cüzdan testi
 node tests/emulator/tables.mjs     # iki oyunculu masa testi
+node tests/emulator/chat.mjs       # sohbet güvenlik kuralları testi
 ```
 
 Gerçek projeye yayın: `.env.example` dosyasını `.env.production.local` olarak doldurun,

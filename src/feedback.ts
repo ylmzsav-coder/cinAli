@@ -52,6 +52,24 @@ export function tick(final = false) {
   osc.stop(t0 + dur + 0.02);
 }
 
+/** Mesaj geldiğinde yumuşak "pop" sesi. */
+export function pop() {
+  const a = audio();
+  if (!a) return;
+  const t0 = a.currentTime;
+  const osc = a.createOscillator();
+  const gain = a.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(520, t0);
+  osc.frequency.exponentialRampToValueAtTime(880, t0 + 0.09);
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(0.18, t0 + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.16);
+  osc.connect(gain).connect(a.destination);
+  osc.start(t0);
+  osc.stop(t0 + 0.2);
+}
+
 /** Kısa titreşim; son saniyede daha güçlü. */
 export function buzz(final = false) {
   if (Capacitor.isNativePlatform()) {

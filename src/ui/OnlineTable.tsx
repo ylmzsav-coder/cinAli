@@ -1,4 +1,4 @@
-import { doc, onSnapshot } from "firebase/firestore";
+import { addDoc, collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
@@ -6,9 +6,10 @@ import { setGameLang, type LangCode } from "../game/lang";
 import { errorText, t } from "../i18n";
 import { call, currentUser, firestore } from "../online/cloud";
 import { loadDictionary } from "../online/dicts";
+import type { ChatEvent } from "../online/chat";
 import { rotatedState, type Action, type PublicView, type SeatInfo } from "../online/view";
 import type { Settings } from "../storage";
-import { Game, type RemoteControl } from "./Game";
+import { Game, type ChatChannel, type RemoteControl } from "./Game";
 
 interface TableDoc {
   type: string;
@@ -39,6 +40,7 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [chatRaw, setChatRaw] = useState<{ uid: string; kind: "msg" | "emoji"; id: string; at: number }[]>([]);
 
   // Masaya otur (oturduğu masa varsa ona döner)
   useEffect(() => {
@@ -70,9 +72,21 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
     const db = firestore();
     const off1 = onSnapshot(doc(db, "tables", tableId), (s) => setDoc((s.data() as TableDoc) ?? null), (e) => setError(errorText(e)));
     const off2 = onSnapshot(doc(db, "tables", tableId, "hands", uid), (s) => setRack((s.data() as { seat: number; rack: unknown[] }) ?? null));
+    const off3 = onSnapshot(
+      query(collection(db, "tables", tableId, "chat"), orderBy("at", "desc"), limit(12)),
+      (s) =>
+        setChatRaw(
+          s.docs.map((d) => {
+            const x = d.data({ serverTimestamps: "estimate" });
+            return { uid: x.uid, kind: x.kind, id: x.id, at: x.at?.toMillis?.() ?? Date.now() };
+          }),
+        ),
+      () => {},
+    );
     return () => {
       off1();
       off2();
+      off3();
     };
   }, [tableId, uid]);
 
@@ -110,6 +124,21 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
         : null,
     [tableId, doc_?.deadline],
   );
+
+  // Sohbet: gönderenin koltuğunu bizim görünümümüze çevir (0 = biz)
+  const chat: ChatChannel | undefined = useMemo(() => {
+    if (!tableId || !uid || !doc_ || !rack) return undefined;
+    const events: ChatEvent[] = chatRaw
+      .map((m) => {
+        const abs = doc_.seats.findIndex((s) => s.uid === m.uid);
+        return abs < 0 ? null : { seat: (abs - rack.seat + 4) % 4, kind: m.kind, id: m.id, at: m.at };
+      })
+      .filter((e): e is ChatEvent => !!e);
+    return {
+      events,
+      send: (kind, id) => addDoc(collection(firestore(), "tables", tableId, "chat"), { uid, kind, id, at: serverTimestamp() }),
+    };
+  }, [chatRaw, tableId, uid, doc_, rack]);
 
   const leave = async () => {
     if (doc_?.status === "playing" && !confirm(t("leaveConfirm"))) return;
@@ -162,6 +191,8 @@ export function OnlineTable({ table: cfg, settings, onExit, onDone }: Props) {
   return (
     <Game
       remote={remote}
+      chat={chat}
+      chatEnabled={settings.chat}
       dict={dict}
       state={state}
       level={cfg.level}

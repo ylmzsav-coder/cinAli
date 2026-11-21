@@ -45,7 +45,7 @@ export function Shop({ onBack }: { onBack: () => void }) {
     <div className="page">
       <div className="page-head">
         <button type="button" className="link" onClick={onBack}>{t("back")}</button>
-        <span className="balance small-balance"><Chips amount={w.balance} /></span>
+        <span className="balance small-balance"><Chips amount={w.balance} loading={!w.ready} /></span>
       </div>
       <h1>{t("shop")}</h1>
       {TEST_MODE && <div className="test-banner">{t("testMode")}</div>}

@@ -53,6 +53,10 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           onClick={() => onSettings({ ...settings, vibration: !settings.vibration })}>
           📳 {t("vibration")}
         </button>
+        <button type="button" className={`toggle ${settings.chat ? "on" : ""}`} aria-pressed={settings.chat}
+          onClick={() => onSettings({ ...settings, chat: !settings.chat })}>
+          💬 {t("chat")}
+        </button>
       </div>
       {!LANGS[settings.uiLang].playable && (
         <p className="muted small">{t("wordLangSoon", { lang: LANGS[settings.uiLang].name })}</p>
@@ -60,7 +64,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
       <Logo />
       <p className="muted">{t("tagline")}</p>
       <button type="button" className="balance" onClick={onShop} aria-label={t("balanceAria")}>
-        <Chips amount={w.balance} big />
+        <Chips amount={w.balance} big loading={!w.ready} />
         <span className="plus-chip">+</span>
       </button>
       {wallet.canClaimDaily() && (

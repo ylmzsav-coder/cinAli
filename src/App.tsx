@@ -183,6 +183,7 @@ export function App() {
             turnSeconds={saved.settings.turnSeconds ?? TABLE_TURN_SECONDS}
             sound={settings.sound}
             vibration={settings.vibration}
+            chatEnabled={settings.chat}
             onChange={update}
             onExit={() => setScreen("hub")}
             onNewGame={finishGame}

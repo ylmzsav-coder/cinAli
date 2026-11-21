@@ -21,7 +21,8 @@ import {
   totals,
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, wordValue } from "../game/tiles";
-import { buzz, tick } from "../feedback";
+import { buzz, pop, tick } from "../feedback";
+import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, type ChatEvent, type ChatMessageId } from "../online/chat";
 import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
@@ -55,9 +56,19 @@ export interface RemoteControl {
   deadline: number | null;
 }
 
+/** Çevrimiçi sohbet: olaylar sunucudan gelir (seat = görünümdeki sıra). */
+export interface ChatChannel {
+  events: ChatEvent[];
+  send(kind: "msg" | "emoji", id: string): Promise<unknown>;
+}
+
 interface Props {
   /** Verilirse çevrimiçi mod. */
   remote?: RemoteControl;
+  /** Çevrimiçi sohbet kanalı; yoksa yerel (botlar cevap verir). */
+  chat?: ChatChannel;
+  /** Diğer oyuncuların mesajlarını göster. */
+  chatEnabled?: boolean;
   dict: Dictionary;
   state: GameState;
   level: BotLevel;
@@ -78,7 +89,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ remote, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, tableName, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, tableName, payout }: Props) {
   const me = state.players[ME];
   const [order, setOrder] = useState<number[]>(() => me.rack.map((t) => t.id));
   const [selected, setSelected] = useState<number[]>([]);
@@ -119,6 +130,55 @@ export function Game({ remote, dict, state, level, speed, turnSeconds, sound, vi
     const timer = setTimeout(() => onChange(botStep(dict, state, level)), SPEED_MS[speed]);
     return () => clearTimeout(timer);
   }, [remote, state, dict, level, speed, onChange]);
+
+  // ---- Sohbet (hazır mesajlar ve emojiler) ----
+  const [localChat, setLocalChat] = useState<ChatEvent[]>([]);
+  const [chatOpen, setChatOpen] = useState(false);
+  const lastSentRef = useRef(0);
+  const chatEvents = chat ? chat.events : localChat;
+  const [chatNow, setChatNow] = useState(() => Date.now());
+  const liveBubbles = chatEvents.filter((e) => chatNow - e.at < BUBBLE_MS && (e.seat === ME || chatEnabled));
+  useEffect(() => {
+    if (!chatEvents.some((e) => Date.now() - e.at < BUBBLE_MS)) return;
+    const id = setInterval(() => setChatNow(Date.now()), 300);
+    return () => clearInterval(id);
+  }, [chatEvents]);
+  // Başkasından mesaj gelince ses
+  const seenChatRef = useRef(0);
+  useEffect(() => {
+    const fresh = chatEvents.filter((e) => e.at > seenChatRef.current);
+    if (!fresh.length) return;
+    seenChatRef.current = Math.max(...fresh.map((e) => e.at));
+    setChatNow(Date.now());
+    if (sound && chatEnabled && fresh.some((e) => e.seat !== ME && Date.now() - e.at < BUBBLE_MS)) pop();
+  }, [chatEvents, sound, chatEnabled]);
+  const bubbleFor = (seat: number) => {
+    const e = liveBubbles.filter((x) => x.seat === seat).sort((a, b) => b.at - a.at)[0];
+    if (!e) return null;
+    return (
+      <span key={e.at} className={`bubble ${e.kind === "emoji" ? "bubble-emoji" : ""}`} role="status">
+        {e.kind === "emoji" ? e.id : t(`chat_${e.id}` as "chat_hello")}
+      </span>
+    );
+  };
+  const sendChat = (kind: "msg" | "emoji", id: string) => {
+    if (Date.now() - lastSentRef.current < CHAT_COOLDOWN_MS) return;
+    lastSentRef.current = Date.now();
+    setChatOpen(false);
+    if (chat) {
+      void chat.send(kind, id).catch(() => {});
+      return;
+    }
+    setLocalChat((prev) => [...prev.slice(-20), { seat: ME, kind, id, at: Date.now() }]);
+    // Bilgisayar oyuncuları bazen cevap verir
+    const replies = kind === "msg" ? BOT_REPLIES[id as ChatMessageId] : ["😂", "👍", "😮"];
+    if (replies?.length && Math.random() < 0.6) {
+      const seat = 1 + Math.floor(Math.random() * 3);
+      const reply = replies[Math.floor(Math.random() * replies.length)];
+      const replyKind = (EMOJIS as readonly string[]).includes(reply) ? "emoji" : "msg";
+      setTimeout(() => setLocalChat((prev) => [...prev.slice(-20), { seat, kind: replyKind, id: reply, at: Date.now() }]), 900 + Math.random() * 1200);
+    }
+  };
 
   // ---- Hamle süresi ----
   const active = state.phase === "draw" || state.phase === "play";
@@ -361,6 +421,7 @@ export function Game({ remote, dict, state, level, speed, turnSeconds, sound, vi
           return (
             <div key={i} className={`opp ${state.current === i && !handOver ? "active" : ""} ${timerStyle(i) ? "timed" : ""}`}
               style={timerStyle(i)}>
+              {bubbleFor(i)}
               <div className="opp-name">
                 {p.name} <span className="muted">({label})</span>
               </div>
@@ -461,6 +522,7 @@ export function Game({ remote, dict, state, level, speed, turnSeconds, sound, vi
 
       <section className={`rack ${myTurn ? "my-turn" : ""} ${timerStyle(ME) ? "timed" : ""}`} aria-label={t("rackAria")}
         style={timerStyle(ME)}>
+        {bubbleFor(ME)}
         {timerStyle(ME) && (
           <span className={`timer-badge ${secondsLeft <= WARN_SECONDS ? "urgent" : ""}`} style={{ background: timerColor }} role="timer" aria-label={t("timeLeft", { n: secondsLeft })}>
             ⏱ {secondsLeft}
@@ -487,7 +549,23 @@ export function Game({ remote, dict, state, level, speed, turnSeconds, sound, vi
         <button type="button" onClick={() => sortBy("renk")}>{t("sortColor")}</button>
         <button type="button" disabled={selected.length !== 1} onClick={() => moveSelected(-1)} aria-label={t("moveLeft")}>◀</button>
         <button type="button" disabled={selected.length !== 1} onClick={() => moveSelected(1)} aria-label={t("moveRight")}>▶</button>
+        <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
+          aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬</button>
       </section>
+      {chatOpen && (
+        <section className="chat-panel" aria-label={t("chat")}>
+          <div className="chat-emojis">
+            {EMOJIS.map((e) => (
+              <button type="button" key={e} onClick={() => sendChat("emoji", e)}>{e}</button>
+            ))}
+          </div>
+          <div className="chat-msgs">
+            {CHAT_MESSAGES.map((m) => (
+              <button type="button" key={m} onClick={() => sendChat("msg", m)}>{t(`chat_${m}`)}</button>
+            ))}
+          </div>
+        </section>
+      )}
       {colorNow && <div className="color-hint">{t("colorPath", { color: t(`color_${colorNow}`) })}</div>}
       </div>
 

@@ -51,6 +51,18 @@ const tr = {
   botTag: "bot",
   nextHandIn: "Sonraki el {n} sn içinde",
   guestName: "Misafir {n}",
+  chat_hello: "Merhaba!",
+  chat_goodLuck: "Bol şans!",
+  chat_niceWord: "Güzel kelime!",
+  chat_wellPlayed: "İyi oyundu!",
+  chat_thinking: "Düşünüyorum…",
+  chat_hurry: "Hadi biraz hızlı!",
+  chat_almost: "Az kaldı!",
+  chat_oops: "Eyvah!",
+  chat_thanks: "Teşekkürler!",
+  chat_gg: "Tebrikler!",
+  chat: "Sohbet",
+  chatOpen: "Mesaj gönder",
   start: "Başla",
 
   // Masalar
