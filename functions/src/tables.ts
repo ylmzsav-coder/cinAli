@@ -34,6 +34,7 @@ import {
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { TABLES, TableConfig, payout } from "../../src/economy/tables";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
+import { cleanName } from "./profanity";
 import { publicView, type Action, type PublicView, type SeatInfo } from "../../src/online/view";
 
 /** Masanın başlamadan önce oyuncu beklediği süre. */
@@ -210,7 +211,7 @@ export const createPrivateTable = onCall(async (req) => {
   const uid = uidOf(req);
   const cfg = configFor(req.data?.type);
   const lang = langOf(req.data?.lang);
-  const name = String(req.data?.name ?? "").trim().slice(0, 12) || "Oyuncu";
+  const name = cleanName(req.data?.name, uid, lang);
   // Kod çakışmasını önlemek için birkaç deneme
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = newCode();
@@ -242,7 +243,7 @@ export const createPrivateTable = onCall(async (req) => {
 export const joinPrivateTable = onCall(async (req) => {
   const uid = uidOf(req);
   const code = String(req.data?.code ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
-  const name = String(req.data?.name ?? "").trim().slice(0, 12) || "Oyuncu";
+  const rawName = req.data?.name;
   if (code.length !== 6) fail("codeNotFound", {}, "not-found");
   return db.runTransaction(async (t) => {
     const active = await activeTableOf(t, uid);
@@ -259,6 +260,7 @@ export const joinPrivateTable = onCall(async (req) => {
     if (!w) return fail("noWallet");
     if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
     applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
+    const name = cleanName(rawName, uid, table.lang);
     t.set(tableRef(snap.id), {
       ...table,
       seats: [...table.seats, { uid, name, bot: false }],
@@ -275,7 +277,7 @@ export const joinTable = onCall(async (req) => {
   const uid = uidOf(req);
   const cfg = configFor(req.data?.type);
   const lang = langOf(req.data?.lang);
-  const name = String(req.data?.name ?? "").trim().slice(0, 12) || "Oyuncu";
+  const name = cleanName(req.data?.name, uid, lang);
 
   return db.runTransaction(async (t) => {
     const user = (await t.get(userRef(uid))).data() ?? {};

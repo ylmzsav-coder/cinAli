@@ -18,7 +18,10 @@ EXTRA = {
         "words": ["amk", "aq", "amq", "amınakoyim", "amınakoyayım", "aminakoyim", "oç", "piç", "ibne", "gavat",
                   "puşt", "kahpe", "fahişe", "yavşak", "pezevenk", "dalyarak", "yarrak", "sikik", "sikim",
                   "sokayım", "sokarım", "amına", "amina", "göt", "götü", "götün", "götüne", "götünü",
-                  "orospu çocuğu", "ananı sikeyim", "ananı", "avradını", "bacını"],
+                  "orospu çocuğu", "ananı sikeyim", "ananı", "avradını", "bacını",
+                  # kısaltmalar ve sesli harfsiz yazımlar
+                  "sktr", "siktr", "sktir", "sktrgt", "siktirgit", "sg", "skym", "skrm", "skerim", "sikiyim",
+                  "amq", "amcik", "orspu", "orosbu", "oruspu", "yrk", "yarram"],
         "stems": ["orospu", "amcık", "yarak", "yarrak", "taşak", "kaltak", "götveren", "siktir", "sikerim",
                   "sikeyim", "sikiş", "sikis", "sikti", "sikmek", "siker", "sikik", "amına", "pezeven", "yavşa",
                   "gavat", "ibne", "kahpe", "puşt", "dalyara", "piç", "fahişe", "kevaşe", "sürtük", "şerefsiz"],

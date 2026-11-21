@@ -1,6 +1,7 @@
 import { onCall } from "firebase-functions/v2/https";
 import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, WELCOME_CHIPS, dayKey } from "../../src/economy/config";
 import { IS_EMULATOR, WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
+import { cleanName } from "./profanity";
 
 /** İstemcinin gördüğü cüzdan (sunucu saatine göre günlük durumlar dahil). */
 function view(w: WalletDoc) {
@@ -15,7 +16,7 @@ function view(w: WalletDoc) {
 /** Oturum açan kullanıcı için cüzdanı oluşturur (ilk seferde hoş geldin çipi). Tekrar çağrılabilir. */
 export const bootstrap = onCall(async (req) => {
   const uid = uidOf(req);
-  const name = typeof req.data?.name === "string" ? req.data.name.trim().slice(0, 12) : "";
+  const name = typeof req.data?.name === "string" && req.data.name.trim() ? cleanName(req.data.name, uid, "en") : "";
   return db.runTransaction(async (t) => {
     const snap = await t.get(walletRef(uid));
     let w = snap.data() as WalletDoc | undefined;

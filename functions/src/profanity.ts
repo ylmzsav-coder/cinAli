@@ -70,6 +70,13 @@ export function tokens(text: string, lang: string): string[] {
   return out;
 }
 
+/**
+ * Türkçede ı ile yazılarak kaçırılmaya çalışılan kökler ("sıktır", "sıkeyim").
+ * Bu kökler gerçek Türkçe kelimelerle çakışmadığı için ı->i katlanarak da aranır
+ * ("sıktı", "sıkıldım", "sıkışık" gibi masum kelimeler bu listede yok).
+ */
+const TR_DOTLESS_STEMS = ["siktir", "sikeyim", "sikerim", "sikiyim", "sktr", "orospu", "amına", "amina"];
+
 /** Metin kontrol edilen dillerden herhangi birinde küfür içeriyor mu. */
 export function containsProfanity(text: string, langs: string[]): boolean {
   for (const lang of new Set(langs)) {
@@ -79,6 +86,10 @@ export function containsProfanity(text: string, langs: string[]): boolean {
     const variants = toks.map((t) => [...new Set([t, fold(t), squeeze(t), squeeze(fold(t))])]);
     for (const vs of variants) {
       if (vs.some((v) => l.allow.has(v))) continue;
+      if (lang === "tr") {
+        const dotted = vs.map((v) => v.replace(/ı/g, "i"));
+        if (dotted.some((v) => TR_DOTLESS_STEMS.some((st) => v.startsWith(st)))) return true;
+      }
       if (vs.some((v) => l.words.has(v))) return true;
       if (vs.some((v) => l.stems.some((st) => v.startsWith(st)))) return true;
     }
@@ -93,4 +104,20 @@ export function containsProfanity(text: string, langs: string[]): boolean {
 /** Bağlantı / reklam engeli. */
 export function containsLink(text: string): boolean {
   return /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|me|tr|de|ru|xyz|app|gg|ly)\b)/i.test(text);
+}
+
+const GUEST: Record<string, string> = {
+  tr: "Misafir", en: "Guest", de: "Gast", fr: "Invité", es: "Invitado", it: "Ospite", pt: "Convidado",
+};
+const ALL_LANGS = Object.keys(LISTS);
+
+/**
+ * Masada herkesin göreceği oyuncu adını temizler: en fazla 12 karakter;
+ * boşsa, küfür ya da bağlantı içeriyorsa masanın dilinde "Misafir 1234" gibi bir ad verilir.
+ */
+export function cleanName(raw: unknown, uid: string, lang: string): string {
+  const name = String(raw ?? "").replace(/\s+/g, " ").trim().slice(0, 12);
+  if (name && !containsProfanity(name, ALL_LANGS) && !containsLink(name)) return name;
+  const n = String(parseInt(uid.slice(0, 6), 36) % 10000).padStart(4, "0");
+  return `${GUEST[lang] ?? GUEST.en} ${n}`;
 }
