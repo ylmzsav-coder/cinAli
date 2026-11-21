@@ -1,15 +1,6 @@
 import { Dictionary } from "./dictionary";
-import {
-  ALPHABET,
-  Color,
-  LETTER_VALUE,
-  Letter,
-  Tile,
-  createTileSet,
-  makeRng,
-  shuffle,
-  tilePenalty,
-} from "./tiles";
+import { LangCode, alphabet, gameLang, letterValue } from "./lang";
+import { Color, Letter, Tile, createTileSet, makeRng, shuffle, tilePenalty } from "./tiles";
 
 // ---- Kurallar ----------------------------------------------------------
 export const RULES = {
@@ -55,7 +46,18 @@ export interface HandResult {
   reason: "finished" | "deckEmpty";
 }
 
+/** Çevrilebilir mesaj parametreleri. */
+export type MsgParams = Record<string, string | number>;
+
+/** Oyun kaydı girdisi: çeviri anahtarı + parametreler. */
+export interface LogEntry {
+  k: string;
+  p?: MsgParams;
+}
+
 export interface GameState {
+  /** Oyunun oynandığı dil (alfabe, taşlar, sözlük). */
+  lang: LangCode;
   seed: number;
   players: Player[];
   deck: Tile[];
@@ -73,7 +75,7 @@ export interface GameState {
   /** Her elin puanları: history[el][oyuncu]. */
   history: number[][];
   lastResult: HandResult | null;
-  log: string[];
+  log: LogEntry[];
 }
 
 /** Bir kelime için oyuncunun ıstakasından seçtiği taşlar, sırasıyla. */
@@ -83,7 +85,17 @@ export interface WordSpec {
   jokerLetters?: Letter[];
 }
 
-export class GameError extends Error {}
+/** Kural ihlali; code bir çeviri anahtarıdır (err.*). */
+export class GameError extends Error {
+  constructor(
+    readonly code: string,
+    readonly params: MsgParams = {},
+  ) {
+    super(code);
+  }
+}
+
+const tileLabel = (t: Tile) => t.letter ?? "★";
 
 // ---- Yardımcılar -------------------------------------------------------
 const clone = (s: GameState): GameState => structuredClone(s);
@@ -93,7 +105,7 @@ export function wordString(tiles: PlacedTile[]): string {
 }
 
 export function placedValue(tiles: PlacedTile[]): number {
-  return tiles.reduce((s, t) => s + LETTER_VALUE[t.letter], 0);
+  return tiles.reduce((s, t) => s + letterValue(t.letter), 0);
 }
 
 export function nextIndex(state: GameState, i: number): number {
@@ -124,7 +136,7 @@ export function jokerOptions(dict: Dictionary, pattern: (Letter | null)[]): Lett
       if (dict.has(cur.join(""))) results.push(holes.map((i) => cur[i]));
       return;
     }
-    for (const l of ALPHABET) {
+    for (const l of alphabet()) {
       cur[holes[h]] = l;
       rec(h + 1);
     }
@@ -134,17 +146,17 @@ export function jokerOptions(dict: Dictionary, pattern: (Letter | null)[]): Lett
 }
 
 function takeTilesFromRack(rack: Tile[], ids: number[]): Tile[] {
-  if (new Set(ids).size !== ids.length) throw new GameError("Aynı taş iki kez seçilemez.");
+  if (new Set(ids).size !== ids.length) throw new GameError("sameTileTwice");
   return ids.map((id) => {
     const t = rack.find((r) => r.id === id);
-    if (!t) throw new GameError("Seçilen taş ıstakada yok.");
+    if (!t) throw new GameError("tileNotInRack");
     return t;
   });
 }
 
 function placeTiles(tiles: Tile[], jokerLetters: Letter[] = []): PlacedTile[] {
   const jokers = tiles.filter((t) => t.letter === null).length;
-  if (jokerLetters.length !== jokers) throw new GameError("Jokerin hangi harf olacağını seçin.");
+  if (jokerLetters.length !== jokers) throw new GameError("chooseJoker");
   let j = 0;
   return tiles.map((t) => ({ tile: t, letter: t.letter ?? jokerLetters[j++] }));
 }
@@ -155,14 +167,16 @@ function removeFromRack(p: Player, ids: Set<number>) {
 
 function assertTurn(state: GameState, phase: Phase) {
   if (state.phase !== phase) {
-    if (phase === "draw") throw new GameError("Bu tur zaten taş çektiniz.");
-    throw new GameError(state.phase === "draw" ? "Önce taş çekin." : "Şu an bu hamle yapılamaz.");
+    if (phase === "draw") throw new GameError("alreadyDrew");
+    throw new GameError(state.phase === "draw" ? "drawFirst" : "notNow");
   }
 }
 
 // ---- Oyun kurulumu -----------------------------------------------------
+/** Etkin oyun dilinde (setGameLang) yeni oyun başlatır. */
 export function newGame(names: string[], bots: boolean[], totalHands: number, seed: number): GameState {
   const state: GameState = {
+    lang: gameLang().code,
     seed,
     players: names.map((name, i) => ({ name, isBot: bots[i], rack: [], opened: false, laid: [] })),
     deck: [],
@@ -203,7 +217,7 @@ export function dealHand(prev: GameState): GameState {
   state.phase = "play";
   state.turnPlays = 0;
   state.lastResult = null;
-  state.log = [`${state.handNo}. el başladı. ${state.players[starter].name} 15 taşla başlıyor.`];
+  state.log = [{ k: "handStart", p: { n: state.handNo, name: state.players[starter].name } }];
   return state;
 }
 
@@ -216,7 +230,7 @@ export function drawFromDeck(prev: GameState): GameState {
   const p = state.players[state.current];
   p.rack.push(tile);
   state.phase = "play";
-  state.log.push(`${p.name} desteden taş çekti.`);
+  state.log.push({ k: "drewDeck", p: { name: p.name } });
   return state;
 }
 
@@ -225,38 +239,38 @@ export function drawFromDiscard(prev: GameState): GameState {
   const state = clone(prev);
   const pile = state.discards[prevIndex(state, state.current)];
   const tile = pile.pop();
-  if (!tile) throw new GameError("Alınacak taş yok.");
+  if (!tile) throw new GameError("noTileToTake");
   const p = state.players[state.current];
   p.rack.push(tile);
   state.phase = "play";
-  state.log.push(`${p.name} yandan ${tile.letter ?? "joker"} aldı.`);
+  state.log.push({ k: "tookDiscard", p: { name: p.name, letter: tileLabel(tile) } });
   return state;
 }
 
 /** Bir kelime tanımını doğrular ve yerleştirilmiş taşları döndürür. */
 export function buildWord(dict: Dictionary, rack: Tile[], spec: WordSpec): PlacedTile[] {
-  if (spec.tileIds.length < 3) throw new GameError("Kelime en az 3 harfli olmalı.");
+  if (spec.tileIds.length < 3) throw new GameError("minLength", { n: 3 });
   const placed = placeTiles(takeTilesFromRack(rack, spec.tileIds), spec.jokerLetters);
   const w = wordString(placed);
-  if (!dict.has(w)) throw new GameError(`"${w}" sözlükte yok.`);
+  if (!dict.has(w)) throw new GameError("notInDict", { word: w });
   return placed;
 }
 
-/** İlk açılış: kelimelerin toplam değeri en az 76 olmalı. */
+/** İlk açılış: kelimelerin toplam değeri en az RULES.openThreshold olmalı. */
 export function openHand(dict: Dictionary, prev: GameState, specs: WordSpec[]): GameState {
   assertTurn(prev, "play");
   const state = clone(prev);
   const p = state.players[state.current];
-  if (p.opened) throw new GameError("Eliniz zaten açık.");
-  if (!specs.length) throw new GameError("Açmak için kelime seçin.");
+  if (p.opened) throw new GameError("alreadyOpened");
+  if (!specs.length) throw new GameError("chooseWords");
   const allIds = specs.flatMap((s) => s.tileIds);
-  if (new Set(allIds).size !== allIds.length) throw new GameError("Bir taş iki kelimede kullanılamaz.");
+  if (new Set(allIds).size !== allIds.length) throw new GameError("tileInTwoWords");
   const words = specs.map((s) => buildWord(dict, p.rack, s));
   const total = words.reduce((s, w) => s + placedValue(w), 0);
   if (total < RULES.openThreshold) {
-    throw new GameError(`Açmak için en az ${RULES.openThreshold} gerekli, seçtikleriniz ${total}.`);
+    throw new GameError("openNeeds", { need: RULES.openThreshold, total });
   }
-  if (p.rack.length - allIds.length < 1) throw new GameError("Atmak için elinizde bir taş kalmalı.");
+  if (p.rack.length - allIds.length < 1) throw new GameError("keepOne");
   removeFromRack(p, new Set(allIds));
   for (const w of words) {
     state.table.push({ id: state.nextWordId++, owner: state.current, tiles: w });
@@ -264,7 +278,7 @@ export function openHand(dict: Dictionary, prev: GameState, specs: WordSpec[]): 
   }
   p.opened = true;
   state.turnPlays++;
-  state.log.push(`${p.name} elini ${total} ile açtı: ${words.map(wordString).join(", ")}.`);
+  state.log.push({ k: "opened", p: { name: p.name, total, words: words.map(wordString).join(", ") } });
   return state;
 }
 
@@ -273,14 +287,14 @@ export function layWord(dict: Dictionary, prev: GameState, spec: WordSpec): Game
   assertTurn(prev, "play");
   const state = clone(prev);
   const p = state.players[state.current];
-  if (!p.opened) throw new GameError(`Önce ${RULES.openThreshold} ile elinizi açmalısınız.`);
+  if (!p.opened) throw new GameError("mustOpenFirst", { need: RULES.openThreshold });
   const word = buildWord(dict, p.rack, spec);
-  if (p.rack.length - word.length < 1) throw new GameError("Atmak için elinizde bir taş kalmalı.");
+  if (p.rack.length - word.length < 1) throw new GameError("keepOne");
   removeFromRack(p, new Set(spec.tileIds));
   state.table.push({ id: state.nextWordId++, owner: state.current, tiles: word });
   p.laid.push(...word.map((x) => x.tile));
   state.turnPlays++;
-  state.log.push(`${p.name} yere ${wordString(word)} koydu.`);
+  state.log.push({ k: "laid", p: { name: p.name, word: wordString(word) } });
   return state;
 }
 
@@ -295,21 +309,21 @@ export function extendWord(
   assertTurn(prev, "play");
   const state = clone(prev);
   const p = state.players[state.current];
-  if (!p.opened) throw new GameError(`Önce ${RULES.openThreshold} ile elinizi açmalısınız.`);
+  if (!p.opened) throw new GameError("mustOpenFirst", { need: RULES.openThreshold });
   const target = state.table.find((w) => w.id === wordId);
-  if (!target) throw new GameError("Kelime bulunamadı.");
-  if (!spec.tileIds.length) throw new GameError("Eklenecek taşı seçin.");
+  if (!target) throw new GameError("wordNotFound");
+  if (!spec.tileIds.length) throw new GameError("chooseTileToAdd");
   const added = placeTiles(takeTilesFromRack(p.rack, spec.tileIds), spec.jokerLetters);
   const tiles = side === "start" ? [...added, ...target.tiles] : [...target.tiles, ...added];
   const w = wordString(tiles);
-  if (!dict.has(w)) throw new GameError(`"${w}" sözlükte yok.`);
-  if (p.rack.length - added.length < 1) throw new GameError("Atmak için elinizde bir taş kalmalı.");
+  if (!dict.has(w)) throw new GameError("notInDict", { word: w });
+  if (p.rack.length - added.length < 1) throw new GameError("keepOne");
   removeFromRack(p, new Set(spec.tileIds));
   const before = wordString(target.tiles);
   target.tiles = tiles;
   p.laid.push(...added.map((x) => x.tile));
   state.turnPlays++;
-  state.log.push(`${p.name} ${before} kelimesini ${w} yaptı.`);
+  state.log.push({ k: "extended", p: { name: p.name, from: before, to: w } });
   return state;
 }
 
@@ -319,10 +333,10 @@ export function discardTile(prev: GameState, tileId: number): GameState {
   const state = clone(prev);
   const p = state.players[state.current];
   const tile = p.rack.find((t) => t.id === tileId);
-  if (!tile) throw new GameError("Atılacak taşı seçin.");
+  if (!tile) throw new GameError("chooseDiscard");
   p.rack = p.rack.filter((t) => t.id !== tileId);
   state.discards[state.current].push(tile);
-  state.log.push(`${p.name} ${tile.letter ?? "joker"} attı.`);
+  state.log.push({ k: "discarded", p: { name: p.name, letter: tileLabel(tile) } });
   if (p.rack.length === 0) return endHand(state, state.current);
   if (state.deck.length === 0) return endHand(state, null);
   state.current = nextIndex(state, state.current);
@@ -354,11 +368,8 @@ function endHand(state: GameState, winner: number | null): GameState {
   state.history.push(scores);
   state.lastResult = { winner, colorWin, scores, reason: winner === null ? "deckEmpty" : "finished" };
   state.phase = state.handNo >= state.totalHands ? "gameOver" : "handOver";
-  if (winner === null) state.log.push("Deste bitti, el kazanansız sona erdi.");
-  else
-    state.log.push(
-      `${state.players[winner].name} eli bitirdi${colorWin ? " — RENK BİTİRME!" : "."}`,
-    );
+  if (winner === null) state.log.push({ k: "deckEmpty" });
+  else state.log.push({ k: colorWin ? "colorFinished" : "finished", p: { name: state.players[winner].name } });
   return state;
 }
 

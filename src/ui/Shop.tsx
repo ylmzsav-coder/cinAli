@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { CHIP_PACKS, TEST_MODE, adsAvailable, buyPack, purchasesAvailable, showRewardedAd } from "../economy/store";
-import { formatChips } from "../economy/tables";
 import { useWallet } from "../economy/useWallet";
 import { AD_REWARD, DAILY_BONUS, wallet } from "../economy/wallet";
+import { t, tk } from "../i18n";
 import { Chips } from "./Chips";
 
 export function Shop({ onBack }: { onBack: () => void }) {
@@ -18,9 +18,9 @@ export function Shop({ onBack }: { onBack: () => void }) {
     try {
       const chips = await buyPack(pack);
       wallet.add(chips, "satin-alma", productId);
-      setMsg(`+${formatChips(chips)} çip hesabınıza eklendi. Teşekkürler!`);
+      setMsg(t("purchased", { n: chips }));
     } catch (e) {
-      setMsg((e as Error).message);
+      setMsg(tk((e as Error).message));
     } finally {
       setBusy(null);
     }
@@ -30,9 +30,9 @@ export function Shop({ onBack }: { onBack: () => void }) {
     setBusy("ad");
     setMsg(null);
     try {
-      if ((await showRewardedAd()) && wallet.rewardAd()) setMsg(`+${AD_REWARD} çip kazandınız!`);
+      if ((await showRewardedAd()) && wallet.rewardAd()) setMsg(t("adRewarded", { n: AD_REWARD }));
     } catch (e) {
-      setMsg((e as Error).message);
+      setMsg(tk((e as Error).message));
     } finally {
       setBusy(null);
     }
@@ -41,51 +41,49 @@ export function Shop({ onBack }: { onBack: () => void }) {
   return (
     <div className="page">
       <div className="page-head">
-        <button type="button" className="link" onClick={onBack}>‹ Geri</button>
+        <button type="button" className="link" onClick={onBack}>{t("back")}</button>
         <span className="balance small-balance"><Chips amount={w.balance} /></span>
       </div>
-      <h1>Mağaza</h1>
-      {TEST_MODE && <div className="test-banner">TEST MODU: gerçek ödeme alınmaz.</div>}
+      <h1>{t("shop")}</h1>
+      {TEST_MODE && <div className="test-banner">{t("testMode")}</div>}
       {msg && <div className="toast">{msg}</div>}
 
       <div className="packs">
         {CHIP_PACKS.map((p) => (
           <div key={p.productId} className="pack">
-            {p.badge && <span className="pack-badge">{p.badge}</span>}
+            {p.badge && <span className="pack-badge">{t(p.badge)}</span>}
             <Chips amount={p.chips} big />
             <button type="button" className="primary" disabled={!purchasesAvailable() || !!busy}
               onClick={() => buy(p.productId)}>
-              {busy === p.productId ? "…" : purchasesAvailable() ? p.testPrice : "Yakında"}
+              {busy === p.productId ? "…" : purchasesAvailable() ? p.testPrice : t("soon")}
             </button>
           </div>
         ))}
       </div>
 
-      <h2>Bedava çip</h2>
+      <h2>{t("freeChips")}</h2>
       <div className="free">
         <div className="free-row">
           <div>
-            <b>Reklam izle</b>
-            <div className="muted small">+{AD_REWARD} çip · bugün {Math.max(0, adsLeft)} hakkınız kaldı</div>
+            <b>{t("watchAd")}</b>
+            <div className="muted small">{t("adDesc", { n: AD_REWARD, left: Math.max(0, adsLeft) })}</div>
           </div>
           <button type="button" disabled={!adsAvailable() || adsLeft <= 0 || !!busy} onClick={watchAd}>
-            {busy === "ad" ? "Reklam oynuyor…" : adsAvailable() ? "İzle" : "Yakında"}
+            {busy === "ad" ? t("adPlaying") : adsAvailable() ? t("watch") : t("soon")}
           </button>
         </div>
         <div className="free-row">
           <div>
-            <b>Günlük ödül</b>
-            <div className="muted small">Her gün +{formatChips(DAILY_BONUS)} çip</div>
+            <b>{t("dailyReward")}</b>
+            <div className="muted small">{t("dailyDesc", { n: DAILY_BONUS })}</div>
           </div>
-          <button type="button" disabled={!wallet.canClaimDaily()} onClick={() => wallet.claimDaily() && setMsg(`+${formatChips(DAILY_BONUS)} çip!`)}>
-            {wallet.canClaimDaily() ? "Al" : "Yarın"}
+          <button type="button" disabled={!wallet.canClaimDaily()}
+            onClick={() => wallet.claimDaily() && setMsg(t("dailyToast", { n: DAILY_BONUS }))}>
+            {wallet.canClaimDaily() ? t("claim") : t("tomorrow")}
           </button>
         </div>
       </div>
-      <p className="muted small legal">
-        Çipler yalnızca Cinali içinde kullanılan sanal oyun parasıdır. Gerçek paraya veya ödüle
-        çevrilemez, başka kullanıcılara devredilemez.
-      </p>
+      <p className="muted small legal">{t("legalLong")}</p>
     </div>
   );
 }

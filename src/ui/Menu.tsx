@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { DAILY_BONUS } from "../economy/wallet";
 import { useWallet } from "../economy/useWallet";
-import { wallet } from "../economy/wallet";
+import { DAILY_BONUS, wallet } from "../economy/wallet";
 import type { BotLevel } from "../game/bot";
+import { LANGS, LANG_ORDER, LangCode, PLAYABLE_LANGS } from "../game/lang";
+import { t } from "../i18n";
 import { Settings } from "../storage";
 import { Chips } from "./Chips";
 
 interface HubProps {
+  settings: Settings;
+  onSettings: (s: Settings) => void;
   canResume: boolean;
   resumeLabel: string;
   onResume: () => void;
@@ -16,31 +19,54 @@ interface HubProps {
   onRules: () => void;
 }
 
-export function Hub({ canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
+
+  const changeUi = (code: LangCode) =>
+    onSettings({ ...settings, uiLang: code, gameLang: LANGS[code].playable ? code : settings.gameLang });
+
   return (
     <div className="page menu">
+      <div className="lang-bar">
+        <label>
+          <span aria-hidden>🌐</span>
+          <span className="sr-only">{t("language")}</span>
+          <select value={settings.uiLang} onChange={(e) => changeUi(e.target.value as LangCode)} aria-label={t("language")}>
+            {LANG_ORDER.map((c) => <option key={c} value={c}>{LANGS[c].name}</option>)}
+          </select>
+        </label>
+        <label>
+          <span className="muted small">{t("wordLanguage")}</span>
+          <select value={settings.gameLang} aria-label={t("wordLanguage")}
+            onChange={(e) => onSettings({ ...settings, gameLang: e.target.value as LangCode })}>
+            {PLAYABLE_LANGS.map((c) => <option key={c} value={c}>{LANGS[c].name}</option>)}
+          </select>
+        </label>
+      </div>
+      {!LANGS[settings.uiLang].playable && (
+        <p className="muted small">{t("wordLangSoon", { lang: LANGS[settings.uiLang].name })}</p>
+      )}
       <Logo />
-      <p className="muted">Harflerle oynanan okey</p>
-      <button type="button" className="balance" onClick={onShop} aria-label="Çip bakiyesi, mağazaya git">
+      <p className="muted">{t("tagline")}</p>
+      <button type="button" className="balance" onClick={onShop} aria-label={t("balanceAria")}>
         <Chips amount={w.balance} big />
         <span className="plus-chip">+</span>
       </button>
       {wallet.canClaimDaily() && (
         <button type="button" className="gift big" onClick={() => {
-          if (wallet.claimDaily()) setToast(`Günlük ödül: +${DAILY_BONUS.toLocaleString("tr-TR")} çip!`);
+          if (wallet.claimDaily()) setToast(t("dailyToast", { n: DAILY_BONUS }));
         }}>
-          🎁 Günlük ödülü al
+          {t("dailyClaim")}
         </button>
       )}
       {toast && <div className="toast">{toast}</div>}
       {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
-      <button type="button" className={canResume ? "big" : "primary big"} onClick={onTables}>Çipli Masalar</button>
-      <button type="button" className="big" onClick={onPractice}>Pratik (çipsiz)</button>
-      <button type="button" className="big" onClick={onShop}>Mağaza</button>
-      <button type="button" className="link" onClick={onRules}>Kurallar</button>
-      <p className="muted small legal">Çipler sanal oyun parasıdır; gerçek paraya çevrilemez, devredilemez.</p>
+      <button type="button" className={canResume ? "big" : "primary big"} onClick={onTables}>{t("chipTables")}</button>
+      <button type="button" className="big" onClick={onPractice}>{t("practice")}</button>
+      <button type="button" className="big" onClick={onShop}>{t("shop")}</button>
+      <button type="button" className="link" onClick={onRules}>{t("rules")}</button>
+      <p className="muted small legal">{t("legal")}</p>
     </div>
   );
 }
@@ -67,39 +93,39 @@ export function Practice({ settings, onStart, onBack }: PracticeProps) {
   const [s, setS] = useState(settings);
   return (
     <div className="page menu">
-      <button type="button" className="link back" onClick={onBack}>‹ Geri</button>
-      <h1>Pratik</h1>
-      <p className="muted">Çip harcamadan bilgisayara karşı oynayın.</p>
+      <button type="button" className="link back" onClick={onBack}>{t("back")}</button>
+      <h1>{t("practiceTitle")}</h1>
+      <p className="muted">{t("practiceDesc")}</p>
       <div className="form">
         <label>
-          Adınız
-          <input value={s.name} maxLength={12} onChange={(e) => setS({ ...s, name: e.target.value })} />
+          {t("yourName")}
+          <input value={s.name} placeholder={t("defaultName")} maxLength={12} onChange={(e) => setS({ ...s, name: e.target.value })} />
         </label>
         <label>
-          El sayısı
+          {t("handCount")}
           <select value={s.hands} onChange={(e) => setS({ ...s, hands: Number(e.target.value) })}>
             {[1, 3, 5, 7, 9].map((n) => <option key={n} value={n}>{n}</option>)}
           </select>
         </label>
         <label>
-          Rakip seviyesi
+          {t("opponentLevel")}
           <select value={s.level} onChange={(e) => setS({ ...s, level: e.target.value as BotLevel })}>
-            <option value="kolay">Kolay</option>
-            <option value="orta">Orta</option>
-            <option value="zor">Zor</option>
+            <option value="kolay">{t("level_kolay")}</option>
+            <option value="orta">{t("level_orta")}</option>
+            <option value="zor">{t("level_zor")}</option>
           </select>
         </label>
         <label>
-          Oyun hızı
+          {t("gameSpeed")}
           <select value={s.speed} onChange={(e) => setS({ ...s, speed: e.target.value as Settings["speed"] })}>
-            <option value="yavas">Yavaş</option>
-            <option value="normal">Normal</option>
-            <option value="hizli">Hızlı</option>
+            <option value="yavas">{t("speed_yavas")}</option>
+            <option value="normal">{t("speed_normal")}</option>
+            <option value="hizli">{t("speed_hizli")}</option>
           </select>
         </label>
       </div>
-      <button type="button" className="primary big" onClick={() => onStart({ ...s, name: s.name.trim() || "Sen" })}>
-        Başla
+      <button type="button" className="primary big" onClick={() => onStart({ ...s, name: s.name.trim() })}>
+        {t("start")}
       </button>
     </div>
   );

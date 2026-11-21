@@ -40,4 +40,4 @@ export function payout(t: TableConfig, totals: number[], me: number, colorWins: 
   return prize + colorWins * t.entry;
 }
 
-export const formatChips = (n: number) => n.toLocaleString("tr-TR");
+export { formatNumber as formatChips } from "../i18n";

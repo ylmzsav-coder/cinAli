@@ -11,16 +11,22 @@ export default defineConfig({
       registerType: "autoUpdate",
       // Kayıt main.tsx'te yapılır: mobil uygulama içinde servis worker gerekmez.
       injectRegister: null,
-      includeAssets: ["icon.svg", "kelimeler.txt"],
+      includeAssets: ["icon.svg"],
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,txt}"],
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        // Sözlükler önceden indirilmez; yalnızca seçilen dilinki ilk kullanımda önbelleğe alınır.
+        globPatterns: ["**/*.{js,css,html,svg,png}"],
+        runtimeCaching: [
+          {
+            urlPattern: /\/dict\/[a-z]{2}\.txt$/,
+            handler: "CacheFirst",
+            options: { cacheName: "cinali-dict", expiration: { maxEntries: 10 } },
+          },
+        ],
       },
       manifest: {
         name: "Cinali",
         short_name: "Cinali",
-        description: "Harflerle oynanan okey tarzı kelime oyunu",
-        lang: "tr",
+        description: "Harflerle oynanan okey tarzı kelime oyunu / The rummy tile game played with letters",
         theme_color: "#0f5132",
         background_color: "#0f5132",
         display: "standalone",

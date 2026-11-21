@@ -1,14 +1,31 @@
 import type { BotLevel } from "./game/bot";
 import type { GameState } from "./game/engine";
+import { LANGS, LangCode, detectLang } from "./game/lang";
 
 export interface Settings {
+  /** Boşsa dilin varsayılan adı kullanılır ("Sen", "You"…). */
   name: string;
   hands: number;
   level: BotLevel;
   speed: "yavas" | "normal" | "hizli";
+  /** Arayüz dili. */
+  uiLang: LangCode;
+  /** Kelime oyununun dili (alfabe, taşlar, sözlük). */
+  gameLang: LangCode;
 }
 
-export const DEFAULT_SETTINGS: Settings = { name: "Sen", hands: 5, level: "orta", speed: "normal" };
+function deviceLang(): LangCode {
+  try {
+    return detectLang(navigator.languages ?? [navigator.language]);
+  } catch {
+    return "en";
+  }
+}
+
+export function defaultSettings(): Settings {
+  const ui = deviceLang();
+  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en" };
+}
 
 const KEY_SETTINGS = "cinali.settings";
 const KEY_GAME = "cinali.game";
@@ -31,11 +48,18 @@ function write(key: string, value: unknown) {
   }
 }
 
-export const loadSettings = (): Settings => ({ ...DEFAULT_SETTINGS, ...(read<Settings>(KEY_SETTINGS) ?? {}) });
+export const loadSettings = (): Settings => {
+  const s = { ...defaultSettings(), ...(read<Partial<Settings>>(KEY_SETTINGS) ?? {}) };
+  if (!(s.uiLang in LANGS)) s.uiLang = "en";
+  if (!LANGS[s.gameLang]?.playable) s.gameLang = "en";
+  // Eski sürümlerin varsayılan adı
+  if (s.name === "Sen") s.name = "";
+  return s;
+};
 export const saveSettings = (s: Settings) => write(KEY_SETTINGS, s);
 
 export interface SavedGame {
-  version: 1;
+  version: 2;
   state: GameState;
   settings: Settings;
   /** Çipli masada oynanıyorsa masa kimliği. */
@@ -48,6 +72,6 @@ export interface SavedGame {
 
 export const loadGame = (): SavedGame | null => {
   const g = read<SavedGame>(KEY_GAME);
-  return g && g.version === 1 && typeof g.state?.turnPlays === "number" ? g : null;
+  return g && g.version === 2 && typeof g.state?.lang === "string" ? g : null;
 };
 export const saveGame = (g: SavedGame | null) => write(KEY_GAME, g);

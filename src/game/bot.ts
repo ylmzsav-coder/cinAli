@@ -12,7 +12,7 @@ import {
   takeableDiscard,
   wordString,
 } from "./engine";
-import { ALPHABET, LETTER_INDEX, LETTER_VALUE, Letter, Tile, tilePenalty } from "./tiles";
+import { Letter, Tile, alphabet, letterIndex, letterValue, tilePenalty } from "./tiles";
 
 export type BotLevel = "kolay" | "orta" | "zor";
 
@@ -50,11 +50,11 @@ interface Pool {
 }
 
 function poolOf(tiles: Tile[]): Pool {
-  const counts = new Uint8Array(ALPHABET.length);
+  const counts = new Uint8Array(alphabet().length);
   let jokers = 0;
   for (const t of tiles) {
     if (t.letter === null) jokers++;
-    else counts[LETTER_INDEX[t.letter]]++;
+    else counts[letterIndex(t.letter)]++;
   }
   return { counts, jokers, size: tiles.length };
 }
@@ -89,7 +89,7 @@ export function specFor(word: string, tiles: Tile[]): WordSpec | null {
   const ids: number[] = [];
   const jokerLetters: Letter[] = [];
   const pending: number[] = [];
-  const letters = [...word] as Letter[];
+  const letters: Letter[] = [...word];
   letters.forEach((l, i) => {
     const t = tiles.find((x) => x.letter === l && !used.has(x.id));
     if (t) {
@@ -110,7 +110,7 @@ export function specFor(word: string, tiles: Tile[]): WordSpec | null {
   return { tileIds: ids, jokerLetters };
 }
 
-/** El açmak için en az 76 değerli, birbirinden bağımsız kelimeler arar. */
+/** El açmak için açılış eşiğine ulaşan, birbirinden bağımsız kelimeler arar. */
 export function planOpening(
   vocab: DictWord[],
   rack: Tile[],
@@ -246,7 +246,7 @@ export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "o
       for (const tw of state.table) {
         const base = wordString(tw.tiles);
         for (const t of p.rack) {
-          const letters = t.letter ? [t.letter] : ALPHABET.slice().sort((a, b) => LETTER_VALUE[b] - LETTER_VALUE[a]);
+          const letters = t.letter ? [t.letter] : alphabet().slice().sort((a, b) => letterValue(b) - letterValue(a));
           for (const l of letters) {
             for (const side of ["end", "start"] as const) {
               const w = side === "end" ? base + l : l + base;

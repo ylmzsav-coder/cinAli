@@ -1,4 +1,5 @@
-import { LETTER_VALUE, Letter, Tile } from "../game/tiles";
+import { Letter, Tile, letterValue } from "../game/tiles";
+import { t } from "../i18n";
 
 interface Props {
   tile: Tile;
@@ -25,7 +26,7 @@ export function TileView({ tile, as, size = "md", selected, order, onClick, dim 
   const content = (
     <>
       <span className="tile-letter">{letter ?? "★"}</span>
-      {letter && <span className="tile-value">{LETTER_VALUE[letter]}</span>}
+      {letter && <span className="tile-value">{letterValue(letter)}</span>}
       {isJoker && <span className="tile-star">★</span>}
       {order !== undefined && <span className="tile-order">{order}</span>}
     </>
@@ -33,7 +34,7 @@ export function TileView({ tile, as, size = "md", selected, order, onClick, dim 
   if (onClick) {
     return (
       <button type="button" className={cls} onClick={onClick} aria-pressed={selected}
-        aria-label={isJoker ? "Joker" : `${letter} ${tile.color}`}>
+        aria-label={isJoker ? t("joker") : `${letter} ${t(`color_${tile.color}`)}`} data-color={tile.color}>
         {content}
       </button>
     );

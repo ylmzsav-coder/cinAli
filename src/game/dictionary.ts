@@ -1,40 +1,47 @@
-import { ALPHABET, LETTER_INDEX } from "./tiles";
+import { LangCode, LangPack, gameLang } from "./lang";
 
 export const MIN_WORD_LENGTH = 3;
 
 export interface DictWord {
   word: string;
   value: number;
-  /** Her harften kaç adet (ALPHABET sırasıyla). */
+  /** Her harften kaç adet (alfabe sırasıyla). */
   counts: Uint8Array;
   len: number;
 }
 
+/** Bir dilin sözlüğü (varsayılan: etkin oyun dili). */
 export class Dictionary {
+  readonly lang: LangCode;
   readonly words: Set<string>;
   readonly entries: DictWord[];
 
-  constructor(list: Iterable<string>) {
+  constructor(list: Iterable<string>, pack: LangPack = gameLang()) {
+    this.lang = pack.code;
+    const size = pack.alphabet.length;
+    const index = new Map(pack.alphabet.map((l, i) => [l, i]));
     this.words = new Set();
     this.entries = [];
     for (const raw of list) {
       const w = raw.trim();
       if (w.length < MIN_WORD_LENGTH || this.words.has(w)) continue;
-      const counts = new Uint8Array(ALPHABET.length);
+      const counts = new Uint8Array(size);
       let value = 0;
+      let len = 0;
       let ok = true;
       for (const ch of w) {
-        const idx = LETTER_INDEX[ch];
+        const idx = index.get(ch);
         if (idx === undefined) {
           ok = false;
           break;
         }
         counts[idx]++;
         value += idx + 1;
+        len++;
       }
       if (!ok) continue;
       this.words.add(w);
-      this.entries.push({ word: w, value, counts, len: [...w].length });
+      this.entries.push({ word: w, value, counts, len });
     }
   }
 
@@ -42,12 +49,7 @@ export class Dictionary {
     return this.words.has(word);
   }
 
-  static fromText(text: string): Dictionary {
-    return new Dictionary(text.split("\n"));
+  static fromText(text: string, pack?: LangPack): Dictionary {
+    return new Dictionary(text.split("\n"), pack);
   }
-}
-
-/** Türkçe büyük harfe çevirir (i → İ, ı → I). */
-export function toTurkishUpper(s: string): string {
-  return s.toLocaleUpperCase("tr-TR");
 }

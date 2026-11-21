@@ -1,39 +1,58 @@
 import { RULES } from "../game/engine";
-import { ALPHABET, JOKER_COUNT, LETTER_COUNTS, LETTER_TILE_TOTAL } from "../game/tiles";
+import { LangCode, gameLang } from "../game/lang";
+import { JOKER_COUNT, JOKER_PENALTY, letterTileTotal, letterValue } from "../game/tiles";
+import { t } from "../i18n";
+
+/** Kural sayfasındaki örnek kelime (oyun dilinde). */
+const EXAMPLE: Record<LangCode, string> = {
+  tr: "KALEM", en: "TABLE", de: "TISCH", fr: "TABLE", es: "MESA", it: "TAVOLO", pt: "MESA",
+};
 
 export function Rules({ onBack }: { onBack: () => void }) {
+  const lang = gameLang();
+  const word = EXAMPLE[lang.code];
+  const letters = [...word];
+  const example = `${word} = ${letters.map(letterValue).join(" + ")} = ${letters.reduce((s, l) => s + letterValue(l), 0)}`;
+  const first = lang.alphabet.slice(0, 3).map((l, i) => `${l}=${i + 1}`).join(", ") +
+    ` … ${lang.alphabet[lang.alphabet.length - 1]}=${lang.alphabet.length}`;
+  const rules = [
+    t("rule_tiles", { letters: letterTileTotal(), jokers: JOKER_COUNT }),
+    t("rule_values", { first, example }),
+    t("rule_deal", { hand: RULES.handSize, hand1: RULES.handSize + 1 }),
+    t("rule_turn"),
+    t("rule_word"),
+    t("rule_open", { need: RULES.openThreshold }),
+    t("rule_after"),
+    t("rule_joker"),
+    t("rule_finish"),
+    t("rule_score", { win: RULES.winScore, joker: JOKER_PENALTY, unopened: RULES.unopenedPenalty }),
+    t("rule_color", { score: RULES.colorWinScore }),
+    t("rule_winner"),
+  ];
   return (
     <div className="page">
-      <button type="button" className="link" onClick={onBack}>‹ Geri</button>
-      <h1>Cinali Kuralları</h1>
+      <button type="button" className="link" onClick={onBack}>{t("back")}</button>
+      <h1>{t("rulesTitle")}</h1>
       <ol className="rules">
-        <li><b>Taşlar:</b> {LETTER_TILE_TOTAL} harf taşı ve {JOKER_COUNT} joker. A ve E her renkten birer tanedir. Harfler 4 renktedir (kırmızı, mavi, sarı, siyah). Renkler görseldir, kelime kurarken renk şartı yoktur.</li>
-        <li><b>Harf değeri:</b> Her harfin değeri alfabedeki sırasıdır: A=1, B=2, C=3, Ç=4 … Z=29. Örnek: KALEM = 14+1+15+6+16 = 52.</li>
-        <li><b>Dağıtım:</b> 4 oyuncu. Herkese {RULES.handSize} taş, başlayan oyuncuya 15 taş verilir. Başlayan çekmeden oynar.</li>
-        <li><b>Sıra:</b> Sıra gelen oyuncu desteden ya da solundaki oyuncunun attığı taştan bir taş çeker, oynar ve bir taş atar.</li>
-        <li><b>Kelime:</b> En az 3 harfli, sözlükte olan Türkçe kelime. Kelimeler ıstakada gizli tutulur.</li>
-        <li><b>El açma:</b> Yere açılan kelimelerin toplam değeri en az <b>{RULES.openThreshold}</b> olmalıdır.</li>
-        <li><b>Açtıktan sonra:</b> Yere yeni kelimeler koyabilir, yerdeki (kendinizin veya rakiplerin) kelimelerin başına ya da sonuna harf ekleyerek yeni geçerli bir kelime yapabilirsiniz.</li>
-        <li><b>Joker:</b> Her harfin yerine geçer ve temsil ettiği harfin değerini alır.</li>
-        <li><b>Bitirme:</b> Elindeki son taşı atan oyuncu eli bitirir. Çift bitirme yoktur.</li>
-        <li><b>Puanlama:</b> Bitiren <b>{RULES.winScore}</b> yazar. Diğerleri elinde kalan harflerin değer toplamı kadar ceza alır (joker 30). El açamayan oyuncu <b>{RULES.unopenedPenalty}</b> ceza alır. Deste biterse el kazanansız biter.</li>
-        <li><b>Renk Bitirme:</b> Bitiren oyuncunun o elde yere koyduğu taşların hepsi aynı renkteyse (joker her renge uyar) puan tablosuna <b>{RULES.colorWinScore}</b> yazılır.</li>
-        <li><b>Kazanan:</b> Belirlenen el sayısı sonunda toplam puanı en düşük olan oyuncu kazanır.</li>
+        {rules.map((r, i) => {
+          const [head, ...rest] = r.split(": ");
+          return <li key={i}>{rest.length ? <><b>{head}:</b> {rest.join(": ")}</> : r}</li>;
+        })}
       </ol>
-      <h2>Nasıl oynanır?</h2>
+      <h2>{t("howTitle")}</h2>
       <ul className="rules">
-        <li>Istakadaki taşlara harf sırasıyla dokunun; seçim sırası kelimedeki harf sırasıdır.</li>
-        <li><b>Kelime Yap</b> ile kelimeyi hazırlayın. Toplam {RULES.openThreshold}'e ulaşınca <b>Eli Aç</b>.</li>
-        <li>Açtıktan sonra taş seçip yerdeki kelimenin yanındaki <b>+</b> ile başına/sonuna ekleyin.</li>
-        <li>Tur sonunda tek taş seçip <b>Taş At</b>.</li>
+        <li>{t("how_1")}</li>
+        <li>{t("how_2", { need: RULES.openThreshold })}</li>
+        <li>{t("how_3")}</li>
+        <li>{t("how_4")}</li>
       </ul>
-      <h2>Taş dağılımı</h2>
+      <h2>{t("distTitle", { lang: lang.name })}</h2>
       <div className="dist">
-        {ALPHABET.map((l) => (
-          <span key={l}>{l}×{LETTER_COUNTS[l]}</span>
+        {lang.alphabet.map((l) => (
+          <span key={l}>{l}×{lang.counts[l]}</span>
         ))}
       </div>
-      <p className="muted small">Sözlük: Vikisözlük kelime listesi (CC BY-SA).</p>
+      <p className="muted small">{t("dictSource")}</p>
     </div>
   );
 }

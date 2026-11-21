@@ -15,14 +15,15 @@ export interface ChipPack {
   chips: number;
   /** Gerçek fiyat mağazadan gelir; bu yalnızca test modunda gösterilir. */
   testPrice: string;
-  badge?: string;
+  /** Rozet çeviri anahtarı. */
+  badge?: "badge_popular" | "badge_bonus" | "badge_best";
 }
 
 export const CHIP_PACKS: ChipPack[] = [
   { productId: "cinali_cip_10k", chips: 10_000, testPrice: "₺ 29,99" },
-  { productId: "cinali_cip_50k", chips: 50_000, testPrice: "₺ 119,99", badge: "Popüler" },
-  { productId: "cinali_cip_150k", chips: 150_000, testPrice: "₺ 299,99", badge: "+%25" },
-  { productId: "cinali_cip_500k", chips: 500_000, testPrice: "₺ 799,99", badge: "En avantajlı" },
+  { productId: "cinali_cip_50k", chips: 50_000, testPrice: "₺ 119,99", badge: "badge_popular" },
+  { productId: "cinali_cip_150k", chips: 150_000, testPrice: "₺ 299,99", badge: "badge_bonus" },
+  { productId: "cinali_cip_500k", chips: 500_000, testPrice: "₺ 799,99", badge: "badge_best" },
 ];
 
 export const TEST_MODE = import.meta.env.DEV;
@@ -34,14 +35,14 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Satın alma; başarılıysa verilecek çip miktarını döndürür. */
 export async function buyPack(pack: ChipPack): Promise<number> {
-  if (!TEST_MODE) throw new Error("Mağaza yakında açılacak.");
+  if (!TEST_MODE) throw new Error("storeSoon");
   await wait(600);
   return pack.chips;
 }
 
 /** Ödüllü reklam gösterir; sonuna kadar izlendiyse true. */
 export async function showRewardedAd(): Promise<boolean> {
-  if (!TEST_MODE) throw new Error("Reklamlar yakında.");
+  if (!TEST_MODE) throw new Error("adsSoon");
   await wait(1500);
   return true;
 }

@@ -1,7 +1,24 @@
 # Cinali
 
-Harflerle oynanan, okey tarzı kelime oyunu. Taşlarla anlamlı Türkçe kelimeler kurulur;
-web tarayıcısında ve telefonda (PWA olarak "Ana ekrana ekle") oynanır.
+Harflerle oynanan, okey tarzı kelime oyunu. Taşlarla anlamlı kelimeler kurulur;
+web tarayıcısında, Android ve iOS'ta oynanır.
+
+## Diller
+
+| Dil | Arayüz | Kelime oyunu | Alfabe | Sözlük |
+|---|---|---|---|---|
+| Türkçe | ✅ | ✅ | 29 harf (A=1 … Z=29) | 47.300 kelime |
+| English | ✅ | ✅ | 26 harf | 38.000 kelime |
+| Français | ✅ | ✅ | 26 harf (aksanlar katlanır: É→E) | 64.000 kelime |
+| Español | ✅ | ✅ | 27 harf (Ñ ayrı harf) | 53.000 kelime |
+| Português (BR) | ✅ | ✅ | 26 harf (Ç→C, aksanlar katlanır) | 234.000 kelime |
+| Deutsch | ✅ | yakında | | uygun lisanslı sözlük bekleniyor |
+| Italiano | ✅ | yakında | | uygun lisanslı sözlük bekleniyor |
+
+Arayüz dili cihaz dilinden otomatik seçilir; ana menüden arayüz dili ve kelime dili ayrı ayrı
+değiştirilebilir. Her dilin taş dağılımı (toplam 94 harf + 2 joker) `src/game/lang.ts` içindedir ve
+bot simülasyonuyla dengelenmiştir. Çeviriler `src/i18n/` klasöründedir; testler her dilde tüm
+anahtarların ve yer tutucuların bulunduğunu doğrular.
 
 ## Kurallar (özet)
 
@@ -36,11 +53,20 @@ npm run build    # dist/ klasörüne üretim derlemesi
 - `src/game/engine.ts` – oyun kuralları ve puanlama
 - `src/game/bot.ts` – bilgisayar oyuncuları (kolay/orta/zor)
 - `src/ui/` – arayüz bileşenleri
-- `public/kelimeler.txt` – sözlük (yaygın kelimeler önce)
-- `tools/build_dict.py` – sözlüğü üreten betik
+- `src/game/lang.ts` – diller: alfabe, taş dağılımı
+- `src/i18n/` – arayüz çevirileri
+- `public/dict/<dil>.txt` – sözlükler (yaygın kelimeler önce)
+- `tools/build_dict.py` – sözlükleri üreten betik
 
-## Sözlük kaynağı
+## Sözlük kaynakları ve lisanslar
 
-Kelime listesi [Vikisözlük](https://tr.wiktionary.org/) tabanlı
-[mertemin/turkish-word-list](https://github.com/mertemin/turkish-word-list) listesinden
-(CC BY-SA) üretilmiştir. Kelime sıklık sırası `an-array-of-turkish-words` (MIT) paketinden alınmıştır.
+| Dil | Kelimeler | Sıklık sırası |
+|---|---|---|
+| tr | [Vikisözlük](https://tr.wiktionary.org/) / [mertemin/turkish-word-list](https://github.com/mertemin/turkish-word-list) (CC BY-SA) | `an-array-of-turkish-words` (MIT) |
+| en | Hunspell `dictionary-en` / SCOWL (MIT ve BSD) | [FrequencyWords](https://github.com/hermitdave/FrequencyWords) (CC BY-SA 4.0) |
+| fr | Hunspell `dictionary-fr` (MPL-2.0) | FrequencyWords (CC BY-SA 4.0) |
+| es | Hunspell `dictionary-es` (MPL-1.1 seçeneği) | FrequencyWords (CC BY-SA 4.0) |
+| pt | Hunspell `dictionary-pt` (MPL-2.0 seçeneği) | FrequencyWords (CC BY-SA 4.0) |
+
+Hunspell sözlüklerinden yalnızca kök kelimeler alınır; özel adlar çıkarılır. Almanca ve İtalyanca
+Hunspell sözlükleri yalnızca GPL lisanslı olduğu için (App Store dağıtımıyla uyumsuz) kullanılmadı.

@@ -19,7 +19,8 @@ import {
   prevIndex,
   totals,
 } from "../game/engine";
-import { COLOR_NAMES, COLORS, LETTER_INDEX, LETTER_VALUE, Letter, Tile } from "../game/tiles";
+import { COLORS, Letter, Tile, letterIndex, wordValue } from "../game/tiles";
+import { formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
 
 const ME = 0;
@@ -112,7 +113,7 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
       setMessage(okMsg ? { text: okMsg } : null);
       return true;
     } catch (e) {
-      if (e instanceof GameError) setMessage({ text: e.message, error: true });
+      if (e instanceof GameError) setMessage({ text: tk(`err.${e.code}`, e.params), error: true });
       else throw e;
       return false;
     }
@@ -126,7 +127,7 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
     if (!pattern.includes(null)) return then([]);
     const options = jokerOptions(dict, pattern);
     if (!options.length) {
-      setMessage({ text: "Jokerle bu harflerden geçerli kelime çıkmıyor.", error: true });
+      setMessage({ text: t("jokerNoWord"), error: true });
       return;
     }
     if (options.length === 1) return then(options[0]);
@@ -139,29 +140,29 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
 
   const makeWord = () => {
     if (selectedTiles.length < 3) {
-      setMessage({ text: "Kelime için en az 3 taş seçin (seçim sırası harf sırasıdır).", error: true });
+      setMessage({ text: t("selectMin3"), error: true });
       return;
     }
     const pattern = selectedTiles.map((t) => t.letter);
-    resolveJokers(pattern, "Joker hangi harf olsun?", (jokerLetters) => {
+    resolveJokers(pattern, t("jokerWhich"), (jokerLetters) => {
       let j = 0;
       const word = pattern.map((p) => p ?? jokerLetters[j++]).join("");
       if (!dict.has(word)) {
-        setMessage({ text: `"${word}" sözlükte yok.`, error: true });
+        setMessage({ text: t("err.notInDict", { word }), error: true });
         return;
       }
       const spec: WordSpec = { tileIds: selected.slice(), jokerLetters };
       if (me.opened) {
         if (!canPlay) {
-          setMessage({ text: "Sıranız gelince ve taş çektikten sonra yere koyabilirsiniz.", error: true });
+          setMessage({ text: t("playAfterDraw"), error: true });
           return;
         }
-        act(() => layWord(dict, state, spec), `${word} yere kondu.`);
+        act(() => layWord(dict, state, spec), t("wordLaid", { word }));
       } else {
-        const value = [...word].reduce((s, ch) => s + LETTER_VALUE[ch], 0);
+        const value = wordValue(word);
         setStaged((prev) => [...prev, { ...spec, jokerLetters, word, value }]);
         setSelected([]);
-        setMessage({ text: `${word} (${value}) hazırlandı.` });
+        setMessage({ text: t("wordPrepared", { word, value }) });
       }
     });
   };
@@ -169,21 +170,21 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
   const open = () =>
     act(
       () => openHand(dict, state, staged.map(({ tileIds, jokerLetters }) => ({ tileIds, jokerLetters }))),
-      "Eliniz açıldı! Artık kelime koyabilir ve yerdeki kelimelere harf ekleyebilirsiniz.",
+      t("openedOk"),
     ) && setStaged([]);
 
   const extend = (w: TableWord, side: "start" | "end") => {
     const added = selectedTiles.map((t) => t.letter);
     const base = w.tiles.map((t) => t.letter);
     const pattern = side === "start" ? [...added, ...base] : [...base, ...added];
-    resolveJokers(pattern, "Joker hangi harf olsun?", (jokerLetters) =>
+    resolveJokers(pattern, t("jokerWhich"), (jokerLetters) =>
       act(() => extendWord(dict, state, w.id, side, { tileIds: selected.slice(), jokerLetters })),
     );
   };
 
   const discard = () => {
     if (selected.length !== 1) {
-      setMessage({ text: "Atmak için tek bir taş seçin.", error: true });
+      setMessage({ text: t("oneToDiscard"), error: true });
       return;
     }
     act(() => discardTile(state, selected[0]));
@@ -192,8 +193,8 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
   const sortBy = (mode: "harf" | "renk") => {
     const key = (t: Tile) =>
       mode === "harf"
-        ? (t.letter ? LETTER_INDEX[t.letter] : 99) * 10 + COLORS.indexOf(t.color)
-        : COLORS.indexOf(t.color) * 100 + (t.letter ? LETTER_INDEX[t.letter] : 99);
+        ? (t.letter ? letterIndex(t.letter) : 99) * 10 + COLORS.indexOf(t.color)
+        : COLORS.indexOf(t.color) * 100 + (t.letter ? letterIndex(t.letter) : 99);
     setOrder(me.rack.slice().sort((a, b) => key(a) - key(b)).map((t) => t.id));
   };
 
@@ -213,15 +214,12 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
   };
 
   // Rakipler: sol (taşını aldığınız), karşı, sağ
-  const seats = [3, 2, 1].map((i) => ({ i, label: i === 3 ? "Sol" : i === 2 ? "Karşı" : "Sağ" }));
+  const seats = [3, 2, 1].map((i) => ({ i, label: t(i === 3 ? "seat_left" : i === 2 ? "seat_across" : "seat_right") }));
 
   let hint = "";
-  if (state.phase === "draw" && state.current === ME) hint = "Sıra sizde: desteden ya da soldan taş çekin.";
-  else if (canPlay)
-    hint = me.opened
-      ? "Kelime koyun, yerdeki kelimelere harf ekleyin ya da bir taş atın."
-      : `Kelimeleri hazırlayıp toplam ${RULES.openThreshold}'e ulaşınca elinizi açın, sonra bir taş atın.`;
-  else if (state.phase === "draw" || state.phase === "play") hint = `${state.players[state.current].name} oynuyor…`;
+  if (state.phase === "draw" && state.current === ME) hint = t("hintDraw");
+  else if (canPlay) hint = me.opened ? t("hintPlayOpened") : t("hintPlayClosed", { n: RULES.openThreshold });
+  else if (state.phase === "draw" || state.phase === "play") hint = t("hintOther", { name: state.players[state.current].name });
 
   const myTotal = totals(state);
   const result = state.lastResult;
@@ -231,11 +229,11 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
   return (
     <div className="game">
       <header className="topbar">
-        <button type="button" className="link" onClick={onExit}>‹ Menü</button>
+        <button type="button" className="link" onClick={onExit}>{t("menu")}</button>
         <div className="title">
-          {tableName ?? "Pratik"} <span className="muted">· El {state.handNo}/{state.totalHands}</span>
+          {tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
         </div>
-        <button type="button" className="link" onClick={() => setShowScores(true)}>Puanlar</button>
+        <button type="button" className="link" onClick={() => setShowScores(true)}>{t("scores")}</button>
       </header>
 
       <section className="opponents">
@@ -248,9 +246,9 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
                 {p.name} <span className="muted">({label})</span>
               </div>
               <div className="opp-info">
-                <span className="badge">{p.rack.length} taş</span>
-                {p.opened && <span className="badge ok">Açtı</span>}
-                <span className="muted small">{myTotal[i]} puan</span>
+                <span className="badge">{t("tilesN", { n: p.rack.length })}</span>
+                {p.opened && <span className="badge ok">{t("openedBadge")}</span>}
+                <span className="muted small">{t("pointsN", { n: myTotal[i] })}</span>
               </div>
               <div className="opp-discard">
                 {top ? <TileView tile={top} size="sm" /> : <span className="slot" />}
@@ -260,14 +258,14 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
         })}
       </section>
 
-      <section className="table" aria-label="Yerdeki kelimeler">
-        {state.table.length === 0 && <div className="empty">Henüz yere kelime açılmadı.</div>}
+      <section className="table" aria-label={t("tableAria")}>
+        {state.table.length === 0 && <div className="empty">{t("noWordsYet")}</div>}
         {state.table.map((w) => {
           const canExtend = canPlay && me.opened && selected.length > 0;
           return (
             <div key={w.id} className={`word owner-${w.owner}`}>
               {canExtend && (
-                <button type="button" className="plus" onClick={() => extend(w, "start")} aria-label="Başına ekle">+</button>
+                <button type="button" className="plus" onClick={() => extend(w, "start")} aria-label={t("addStart")}>+</button>
               )}
               <div className="word-tiles">
                 {w.tiles.map((pt) => (
@@ -275,7 +273,7 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
                 ))}
               </div>
               {canExtend && (
-                <button type="button" className="plus" onClick={() => extend(w, "end")} aria-label="Sonuna ekle">+</button>
+                <button type="button" className="plus" onClick={() => extend(w, "end")} aria-label={t("addEnd")}>+</button>
               )}
               <span className="word-owner">{state.players[w.owner].name}</span>
             </div>
@@ -287,12 +285,12 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
         <button type="button" className="deck" disabled={!(myTurn && state.phase === "draw")}
           onClick={() => act(() => drawFromDeck(state))}>
           <span className="deck-count">{state.deck.length}</span>
-          <span>Desteden çek</span>
+          <span>{t("drawDeck")}</span>
         </button>
         <button type="button" className="take" disabled={!(myTurn && state.phase === "draw" && discardTop)}
           onClick={() => act(() => drawFromDiscard(state))}>
           {discardTop ? <TileView tile={discardTop} size="sm" /> : <span className="slot" />}
-          <span>Soldan al</span>
+          <span>{t("takeLeft")}</span>
         </button>
         <div className="my-discard">
           {state.discards[ME].length ? (
@@ -300,13 +298,13 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
           ) : (
             <span className="slot" />
           )}
-          <span className="muted small">Attığınız</span>
+          <span className="muted small">{t("yourDiscard")}</span>
         </div>
       </section>
 
       <ul className="log">
         {state.log.slice(-3).reverse().map((l, i) => (
-          <li key={state.log.length - i}>{l}</li>
+          <li key={state.log.length - i}>{tk(`log.${l.k}`, l.p)}</li>
         ))}
       </ul>
 
@@ -328,18 +326,18 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
                   })}
                 </div>
                 <span className="muted small">{s.value}</span>
-                <button type="button" className="x" aria-label="Geri al"
+                <button type="button" className="x" aria-label={t("undo")}
                   onClick={() => setStaged((prev) => prev.filter((_, i) => i !== k))}>×</button>
               </div>
             ))}
           </div>
           <button type="button" className="primary" disabled={!canPlay || stagedTotal < RULES.openThreshold} onClick={open}>
-            Eli Aç ({stagedTotal}/{RULES.openThreshold})
+            {t("openHand", { total: stagedTotal, need: RULES.openThreshold })}
           </button>
         </section>
       )}
 
-      <section className={`rack ${myTurn ? "my-turn" : ""}`} aria-label="Istaka">
+      <section className={`rack ${myTurn ? "my-turn" : ""}`} aria-label={t("rackAria")}>
         {rackTiles.map((t) => {
           const idx = selected.indexOf(t.id);
           return (
@@ -351,18 +349,18 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
 
       <section className="actions">
         <button type="button" className="primary" disabled={selected.length < 3} onClick={makeWord}>
-          {me.opened ? "Yere Koy" : "Kelime Yap"}
+          {me.opened ? t("layWord") : t("makeWord")}
         </button>
         <button type="button" className="danger" disabled={!canPlay || selected.length !== 1} onClick={discard}>
-          Taş At
+          {t("discard")}
         </button>
-        <button type="button" disabled={!selected.length} onClick={() => setSelected([])}>Seçimi Kaldır</button>
-        <button type="button" onClick={() => sortBy("harf")}>Harfe Diz</button>
-        <button type="button" onClick={() => sortBy("renk")}>Renge Diz</button>
-        <button type="button" disabled={selected.length !== 1} onClick={() => moveSelected(-1)} aria-label="Sola taşı">◀</button>
-        <button type="button" disabled={selected.length !== 1} onClick={() => moveSelected(1)} aria-label="Sağa taşı">▶</button>
+        <button type="button" disabled={!selected.length} onClick={() => setSelected([])}>{t("clearSelection")}</button>
+        <button type="button" onClick={() => sortBy("harf")}>{t("sortLetter")}</button>
+        <button type="button" onClick={() => sortBy("renk")}>{t("sortColor")}</button>
+        <button type="button" disabled={selected.length !== 1} onClick={() => moveSelected(-1)} aria-label={t("moveLeft")}>◀</button>
+        <button type="button" disabled={selected.length !== 1} onClick={() => moveSelected(1)} aria-label={t("moveRight")}>▶</button>
       </section>
-      {colorNow && <div className="color-hint">Yere koyduklarınızın hepsi {COLOR_NAMES[colorNow]} — Renk Bitirme yolundasınız!</div>}
+      {colorNow && <div className="color-hint">{t("colorPath", { color: t(`color_${colorNow}`) })}</div>}
       </div>
 
       {jokerPrompt && (
@@ -378,7 +376,7 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
                 }}>{w}</button>
               ))}
             </div>
-            <button type="button" className="link" onClick={() => setJokerPrompt(null)}>Vazgeç</button>
+            <button type="button" className="link" onClick={() => setJokerPrompt(null)}>{t("cancel")}</button>
           </div>
         </div>
       )}
@@ -390,31 +388,31 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
               <>
                 <h3>
                   {result.winner === null
-                    ? "Deste bitti"
-                    : `${state.players[result.winner].name} eli bitirdi!`}
+                    ? t("deckEmptyTitle")
+                    : t("finishedTitle", { name: state.players[result.winner].name })}
                 </h3>
                 {result.colorWin && (
-                  <div className="banner">RENK BİTİRME — hepsi {COLOR_NAMES[result.colorWin]}! ({RULES.colorWinScore})</div>
+                  <div className="banner">{t("colorBanner", { color: t(`color_${result.colorWin}`), score: RULES.colorWinScore })}</div>
                 )}
               </>
             )}
             <ScoreTable state={state} />
             {state.phase === "gameOver" ? (
               <>
-                <p className="winner">Kazanan: {winnerName(state)}</p>
+                <p className="winner">{t("winnerIs", { names: winnerName(state) })}</p>
                 {tableName && (
                   <div className={payout ? "banner" : "muted"}>
-                    {payout ? `+${payout.toLocaleString("tr-TR")} çip kazandınız!` : "Bu masada çip kazanamadınız."}
+                    {payout ? t("chipsWon", { n: payout }) : t("noChipsWon")}
                   </div>
                 )}
-                <button type="button" className="primary" onClick={onNewGame}>Menüye Dön</button>
+                <button type="button" className="primary" onClick={onNewGame}>{t("backToMenu")}</button>
               </>
             ) : handOver ? (
               <button type="button" className="primary" onClick={() => { setShowScores(false); onChange(dealHand(state)); }}>
-                Sonraki El
+                {t("nextHand")}
               </button>
             ) : (
-              <button type="button" className="primary" onClick={() => setShowScores(false)}>Kapat</button>
+              <button type="button" className="primary" onClick={() => setShowScores(false)}>{t("close")}</button>
             )}
           </div>
         </div>
@@ -424,18 +422,18 @@ export function Game({ dict, state, level, speed, onChange, onExit, onNewGame, t
 }
 
 function winnerName(state: GameState): string {
-  const t = totals(state);
-  const min = Math.min(...t);
-  return state.players.filter((_, i) => t[i] === min).map((p) => p.name).join(", ");
+  const sums = totals(state);
+  const min = Math.min(...sums);
+  return state.players.filter((_, i) => sums[i] === min).map((p) => p.name).join(", ");
 }
 
 function ScoreTable({ state }: { state: GameState }) {
-  const t = totals(state);
+  const sums = totals(state);
   return (
     <table className="scores">
       <thead>
         <tr>
-          <th>El</th>
+          <th>{t("handCol")}</th>
           {state.players.map((p, i) => <th key={i}>{p.name}</th>)}
         </tr>
       </thead>
@@ -447,13 +445,13 @@ function ScoreTable({ state }: { state: GameState }) {
           </tr>
         ))}
         {state.history.length === 0 && (
-          <tr><td colSpan={state.players.length + 1} className="muted">Henüz biten el yok.</td></tr>
+          <tr><td colSpan={state.players.length + 1} className="muted">{t("noHandsYet")}</td></tr>
         )}
       </tbody>
       <tfoot>
         <tr>
-          <th>Toplam</th>
-          {t.map((v, i) => <th key={i}>{v}</th>)}
+          <th>{t("totalRow")}</th>
+          {sums.map((v, i) => <th key={i}>{formatNumber(v)}</th>)}
         </tr>
       </tfoot>
     </table>

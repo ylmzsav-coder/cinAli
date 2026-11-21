@@ -2,7 +2,9 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { botStep } from "../src/game/bot";
 import { Dictionary } from "../src/game/dictionary";
+import { setGameLang } from "../src/game/lang";
 import {
+  GameError,
   GameState,
   RULES,
   colorWinOf,
@@ -17,12 +19,25 @@ import {
 } from "../src/game/engine";
 import { Tile, createTileSet, wordValue } from "../src/game/tiles";
 
-const dict = Dictionary.fromText(readFileSync("public/kelimeler.txt", "utf-8"));
+setGameLang("tr");
+const dict = Dictionary.fromText(readFileSync("public/dict/tr.txt", "utf-8"));
 
 function rig(state: GameState, rack: Tile[]): GameState {
   const s = structuredClone(state);
   s.players[s.current].rack = rack;
   return s;
+}
+
+function expectErr(fn: () => unknown, code: string, params?: Record<string, unknown>) {
+  try {
+    fn();
+  } catch (e) {
+    expect(e).toBeInstanceOf(GameError);
+    expect((e as GameError).code).toBe(code);
+    if (params) expect((e as GameError).params).toMatchObject(params);
+    return;
+  }
+  throw new Error(`${code} bekleniyordu, hata atılmadı`);
 }
 
 let nextId = 1000;
@@ -57,14 +72,16 @@ describe("kurallar", () => {
   it("101 altında açılmaz", () => {
     const rack = [...tiles("KALEM"), t("A"), t("B")];
     const s = rig(base, rack);
-    expect(() => openHand(dict, s, [{ tileIds: rack.slice(0, 5).map((x) => x.id) }])).toThrow(/101/);
+    expectErr(() => openHand(dict, s, [{ tileIds: rack.slice(0, 5).map((x) => x.id) }]), "openNeeds", { need: 101, total: 52 });
     // KALEM + ÇAY = 85: eskiden açardı, artık yetmez
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
     const s2 = rig(base, [...kalem, ...cay, t("B")]);
-    expect(() =>
-      openHand(dict, s2, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]),
-    ).toThrow(/en az 101 gerekli, seçtikleriniz 85/);
+    expectErr(
+      () => openHand(dict, s2, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]),
+      "openNeeds",
+      { need: 101, total: 85 },
+    );
   });
 
   it("101 ve üstü ile açılır, sözlükte olmayan reddedilir", () => {
@@ -77,7 +94,7 @@ describe("kurallar", () => {
     expect(opened.players[s.current].opened).toBe(true);
     expect(opened.table.length).toBe(3);
     const bad = tiles("KLAEM");
-    expect(() => openHand(dict, rig(base, [...bad, ...cay, t("B")]), [{ tileIds: bad.map((x) => x.id) }])).toThrow(/sözlükte/);
+    expectErr(() => openHand(dict, rig(base, [...bad, ...cay, t("B")]), [{ tileIds: bad.map((x) => x.id) }]), "notInDict", { word: "KLAEM" });
   });
 
   it("joker seçenekleri bulunur", () => {
@@ -93,7 +110,7 @@ describe("kurallar", () => {
     const s = rig(base, [...kalem, ...cay, ...tuz, ...ci, t("B")]);
     let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }, { tileIds: tuz.map((x) => x.id) }]);
     const cayWord = o.table[1];
-    expect(() => extendWord(dict, o, cayWord.id, "end", { tileIds: [ci[0].id] })).toThrow(/sözlükte/);
+    expectErr(() => extendWord(dict, o, cayWord.id, "end", { tileIds: [ci[0].id] }), "notInDict", { word: "ÇAYC" });
     o = extendWord(dict, o, cayWord.id, "end", { tileIds: ci.map((x) => x.id) });
     expect(o.table[1].tiles.map((x) => x.letter).join("")).toBe("ÇAYCI");
   });
