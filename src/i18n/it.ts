@@ -237,7 +237,7 @@ const it: Messages = {
   "log.colorFinished": "{name} ha chiuso la mano: CHIUSURA A COLORE!",
 
   rulesTitle: "Regole di Cinali",
-  rule_tiles: "Tessere: {letters} tessere-lettera e {jokers} jolly in 4 colori (rosso, blu, giallo, nero). I colori sono solo estetici; non ci sono regole di colore per formare parole.",
+  rule_tiles: "Tessere: {letters} tessere-lettera e {jokers} jolly; le lettere sono in 4 colori (rosso, blu, giallo, nero). I colori sono solo estetici; non ci sono regole di colore per formare parole.",
   rule_values: "Valore delle lettere: ogni lettera vale la sua posizione nell'alfabeto ({first}). Esempio: {example}.",
   rule_deal: "Distribuzione: 4 giocatori. Ognuno riceve {hand} tessere; chi inizia ne riceve {hand1} e gioca senza pescare.",
   rule_turn: "Turno: pesca una tessera dal mazzo o prendi quella scartata dal giocatore alla tua sinistra, gioca e scarta una tessera.",

@@ -1,6 +1,6 @@
 /**
  * Oyun dilleri: alfabe (harf değeri = alfabedeki sıra), taş dağılımı ve
- * sözlük dosyası. Taş dağılımları her dilde toplam 94 harf taşıdır ve harf
+ * sözlük dosyası. Taş dağılımları her dilde toplam 94 harf taşıdır (+1 joker = 95 taş) ve harf
  * sıklığından türetilip bot simülasyonuyla dengelenmiştir: Türkçe (8 sesli
  * harf) ve beş sesli harfli İspanyolca/Portekizcede sesli taşlar ~28,
  * İngilizce/Fransızcada 20'dir. Hedef: orta seviyede bir el ~4-6 tur.

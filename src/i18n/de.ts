@@ -237,7 +237,7 @@ const de: Messages = {
   "log.colorFinished": "{name} hat die Runde beendet: FARBFINISH!",
 
   rulesTitle: "Cinali-Regeln",
-  rule_tiles: "Steine: {letters} Buchstabensteine und {jokers} Joker in 4 Farben (Rot, Blau, Gelb, Schwarz). Die Farben sind nur optisch; beim Wortbilden gibt es keine Farbregel.",
+  rule_tiles: "Steine: {letters} Buchstabensteine und {jokers} Joker; die Buchstaben gibt es in 4 Farben (Rot, Blau, Gelb, Schwarz). Die Farben sind nur optisch; beim Wortbilden gibt es keine Farbregel.",
   rule_values: "Buchstabenwert: Jeder Buchstabe zählt so viel wie seine Position im Alphabet ({first}). Beispiel: {example}.",
   rule_deal: "Verteilen: 4 Spieler. Jeder erhält {hand} Steine, der Startspieler {hand1} und spielt ohne zu ziehen.",
   rule_turn: "Zug: Ziehe einen Stein vom Stapel oder nimm den Stein, den dein linker Nachbar abgeworfen hat, spiele und wirf dann einen Stein ab.",

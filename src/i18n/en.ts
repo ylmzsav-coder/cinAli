@@ -237,7 +237,7 @@ const en: Messages = {
   "log.colorFinished": "{name} finished the hand: COLOUR FINISH!",
 
   rulesTitle: "How to play Cinali",
-  rule_tiles: "Tiles: {letters} letter tiles and {jokers} jokers in 4 colours (red, blue, yellow, black). Colours are only visual; there is no colour rule when forming words.",
+  rule_tiles: "Tiles: {letters} letter tiles and {jokers} joker; letters come in 4 colours (red, blue, yellow, black). Colours are only visual; there is no colour rule when forming words.",
   rule_values: "Letter values: each letter is worth its position in the alphabet ({first}). Example: {example}.",
   rule_deal: "Deal: 4 players. Everyone gets {hand} tiles; the starting player gets {hand1} and plays without drawing.",
   rule_turn: "Turn: draw a tile from the deck or take the tile discarded by the player on your left, play, then discard one tile.",

@@ -237,7 +237,7 @@ const es: Messages = {
   "log.colorFinished": "{name} terminó la mano: ¡FINAL DE COLOR!",
 
   rulesTitle: "Reglas de Cinali",
-  rule_tiles: "Fichas: {letters} fichas de letras y {jokers} comodines en 4 colores (rojo, azul, amarillo, negro). Los colores son solo visuales; no hay regla de color al formar palabras.",
+  rule_tiles: "Fichas: {letters} fichas de letras y {jokers} comodín; las letras vienen en 4 colores (rojo, azul, amarillo, negro). Los colores son solo visuales; no hay regla de color al formar palabras.",
   rule_values: "Valor de las letras: cada letra vale su posición en el alfabeto ({first}). Ejemplo: {example}.",
   rule_deal: "Reparto: 4 jugadores. Cada uno recibe {hand} fichas; quien empieza recibe {hand1} y juega sin robar.",
   rule_turn: "Turno: roba una ficha del mazo o toma la que descartó el jugador de tu izquierda, juega y descarta una ficha.",

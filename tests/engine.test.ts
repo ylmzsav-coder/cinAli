@@ -45,9 +45,10 @@ const t = (letter: Tile["letter"], color: Tile["color"] = "siyah"): Tile => ({ i
 const tiles = (word: string, color: Tile["color"] = "siyah") => [...word].map((l) => t(l as Tile["letter"], color));
 
 describe("taş seti", () => {
-  it("94 harf + 2 joker; A ve E her renkten birer tane; renkler dengeli", () => {
+  it("94 harf + 1 joker = 95 taş; A ve E her renkten birer tane; renkler dengeli", () => {
     const set = createTileSet();
-    expect(set.length).toBe(96);
+    expect(set.length).toBe(95);
+    expect(set.filter((x) => x.letter === null).length).toBe(1);
     for (const l of ["A", "E"]) {
       const colors = set.filter((x) => x.letter === l).map((x) => x.color).sort();
       expect(colors).toEqual(["kirmizi", "mavi", "sari", "siyah"]);
@@ -66,7 +67,7 @@ describe("kurallar", () => {
 
   it("başlayan 15, diğerleri 14 taş alır", () => {
     expect(base.players.map((p) => p.rack.length).sort()).toEqual([14, 14, 14, 15]);
-    expect(base.deck.length).toBe(96 - 57);
+    expect(base.deck.length).toBe(95 - 57);
   });
 
   it("101 altında açılmaz", () => {

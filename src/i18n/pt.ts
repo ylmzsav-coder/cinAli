@@ -237,7 +237,7 @@ const pt: Messages = {
   "log.colorFinished": "{name} bateu: BATIDA DE COR!",
 
   rulesTitle: "Regras do Cinali",
-  rule_tiles: "Peças: {letters} peças de letras e {jokers} curingas em 4 cores (vermelho, azul, amarelo, preto). As cores são apenas visuais; não há regra de cor para formar palavras.",
+  rule_tiles: "Peças: {letters} peças de letras e {jokers} curinga; as letras vêm em 4 cores (vermelho, azul, amarelo, preto). As cores são apenas visuais; não há regra de cor para formar palavras.",
   rule_values: "Valor das letras: cada letra vale sua posição no alfabeto ({first}). Exemplo: {example}.",
   rule_deal: "Distribuição: 4 jogadores. Cada um recebe {hand} peças; quem começa recebe {hand1} e joga sem comprar.",
   rule_turn: "Vez: compre uma peça do monte ou pegue a descartada pelo jogador à sua esquerda, jogue e descarte uma peça.",

@@ -16,13 +16,13 @@ web tarayıcısında, Android ve iOS'ta oynanır.
 | Italiano | ✅ | ✅ | 21 harflik İtalyan alfabesi (J K W X Y yok) | 52.000 kelime |
 
 Arayüz dili cihaz dilinden otomatik seçilir; ana menüden arayüz dili ve kelime dili ayrı ayrı
-değiştirilebilir. Her dilin taş dağılımı (toplam 94 harf + 2 joker) `src/game/lang.ts` içindedir ve
+değiştirilebilir. Her dilin taş dağılımı (toplam 94 harf + 1 joker = 95 taş) `src/game/lang.ts` içindedir ve
 bot simülasyonuyla dengelenmiştir. Çeviriler `src/i18n/` klasöründedir; testler her dilde tüm
 anahtarların ve yer tutucuların bulunduğunu doğrular.
 
 ## Kurallar (özet)
 
-- **Taşlar:** 94 harf taşı + 2 joker, 4 renk (kırmızı, mavi, sarı, siyah). Renkler görseldir.
+- **Taşlar:** 94 harf taşı + 1 joker = 95 taş, harfler 4 renk (kırmızı, mavi, sarı, siyah). Renkler görseldir.
   A ve E her renkten birer tane (4'er adet). Dağılım `src/game/tiles.ts` içindeki `LETTER_COUNTS`'tadır.
 - **Harf değeri:** Alfabedeki sıra: A=1, B=2, C=3, Ç=4 … Z=29.
 - **Dağıtım:** 4 oyuncu, 14'er taş; başlayan 15 taş alır.

@@ -237,7 +237,7 @@ const fr: Messages = {
   "log.colorFinished": "{name} a terminé la manche : FINITION COULEUR !",
 
   rulesTitle: "Règles de Cinali",
-  rule_tiles: "Tuiles : {letters} tuiles-lettres et {jokers} jokers en 4 couleurs (rouge, bleu, jaune, noir). Les couleurs sont purement visuelles ; aucune règle de couleur pour former des mots.",
+  rule_tiles: "Tuiles : {letters} tuiles-lettres et {jokers} joker ; les lettres sont en 4 couleurs (rouge, bleu, jaune, noir). Les couleurs sont purement visuelles ; aucune règle de couleur pour former des mots.",
   rule_values: "Valeur des lettres : chaque lettre vaut sa position dans l'alphabet ({first}). Exemple : {example}.",
   rule_deal: "Distribution : 4 joueurs. Chacun reçoit {hand} tuiles ; le premier joueur en reçoit {hand1} et joue sans piocher.",
   rule_turn: "Tour : piochez une tuile ou prenez celle défaussée par votre voisin de gauche, jouez, puis défaussez une tuile.",

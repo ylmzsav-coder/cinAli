@@ -15,7 +15,8 @@ export interface Tile {
   color: Color;
 }
 
-export const JOKER_COUNT = 2;
+/** Oyundaki joker (okey) sayısı. */
+export const JOKER_COUNT = 1;
 /** Oyun sonunda elde kalan jokerin ceza değeri. */
 export const JOKER_PENALTY = 30;
 
