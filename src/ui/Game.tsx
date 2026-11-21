@@ -418,11 +418,14 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       ? ({ "--p": `${(fraction * 100).toFixed(1)}%`, "--tc": timerColor } as CSSProperties)
       : undefined;
 
+  /** Yere açılabilecek grup: sözlükte olan kelime; çifte gidebilecek/giden oyuncu için çift. */
+  const isLayableGroup = (g: GroupInfo) => g.valid || (g.pair && (me.pairs || !me.opened));
   const toggle = (id: number) => {
     play("pick");
-    // Bir per'in (yan yana duran taşların) herhangi bir taşına dokunmak bütün per'i seçer
+    // Geçerli bir per'in (sözlükte olan kelime ya da çifte gidende çift) herhangi bir
+    // taşına dokunmak bütün per'i seçer; anlamsız gruplarda yalnızca o taş seçilir.
     const g = groups.find((x) => x.ids.includes(id));
-    if (g && g.ids.length >= 2) {
+    if (g && isLayableGroup(g)) {
       setSelected((prev) => (g.ids.every((x) => prev.includes(x)) && prev.length === g.ids.length ? [] : g.ids.slice()));
       return;
     }
@@ -430,8 +433,8 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   };
   const toggleRef = useRef(toggle);
   toggleRef.current = toggle;
-  /** Seçili per (çerçeve çizmek için): seçim tam olarak bir grubun taşlarıysa. */
-  const selectedGroup = groups.find((g) => g.ids.length >= 2 && g.ids.length === selected.length && g.ids.every((x) => selected.includes(x)));
+  /** Seçili per (çerçeve çizmek için): seçim tam olarak geçerli bir per'in taşlarıysa. */
+  const selectedGroup = groups.find((g) => isLayableGroup(g) && g.ids.length === selected.length && g.ids.every((x) => selected.includes(x)));
 
   /** Jokerli desen için harf seçtirir; tek seçenek varsa doğrudan uygular. */
   const resolveJokers = (pattern: (Letter | null)[], title: string, then: (letters: Letter[]) => void) => {
