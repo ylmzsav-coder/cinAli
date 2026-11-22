@@ -29,6 +29,7 @@ export function GiftCatalog({ onPick, selected }: { onPick: (g: Gift) => void; s
           <button key={g.id} type="button" className={`gift-item ${selected === g.id ? "on" : ""}`} onClick={() => onPick(g)}>
             <span className="gift-emoji" aria-hidden><GiftIcon id={g.id} size="1.15em" /></span>
             <span className="gift-name">{t(`gift_${g.id}` as "gift_gul")}</span>
+            {g.joke && <span className="gift-joke">{t(`gift_note_${g.id}` as "gift_note_abakus")}</span>}
             <Chips amount={g.value} />
           </button>
         ))}

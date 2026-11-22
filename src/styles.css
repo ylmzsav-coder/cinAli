@@ -1075,3 +1075,4 @@ button.avatar { cursor: pointer; min-height: 0; }
 }
 .gift-svg { display: inline-block; vertical-align: middle; }
 .gift-emoji .gift-svg { width: 1.15em; height: 1.15em; }
+.gift-joke { font-size: 0.68rem; font-weight: 700; color: #ffe082; text-align: center; line-height: 1.15; }

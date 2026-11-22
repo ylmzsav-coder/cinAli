@@ -11,11 +11,13 @@ export interface Gift {
   category: GiftCategory;
   /** Çip değeri (100–1000). */
   value: number;
+  /** Şaka hediye: altında esprili not gösterilir (gift_note_<id>). */
+  joke?: boolean;
 }
 
 export const GIFTS: Gift[] = [
   // Erkeklere özel
-  { id: "fincan", emoji: "☕", category: "erkek", value: 100 },
+  { id: "abakus", emoji: "🧮", category: "erkek", value: 100, joke: true },
   { id: "sapka", emoji: "🎩", category: "erkek", value: 150 },
   { id: "top", emoji: "⚽", category: "erkek", value: 200 },
   { id: "gozluk", emoji: "🕶️", category: "erkek", value: 300 },
