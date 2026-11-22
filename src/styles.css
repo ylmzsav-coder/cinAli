@@ -1,8 +1,8 @@
 :root {
-  /* Istaka teması: Maun Kırmızısı (damarlı maun ahşap, koyu raflar) */
-  --rack-bg: repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.06) 0 2px, transparent 2px 9px, rgba(255, 255, 255, 0.04) 9px 11px, transparent 11px 23px), linear-gradient(#8e3b2a, #5e2218);
-  --rack-lip: #3d140d;
-  --rack-lip-dark: #2a0d08;
+  /* Istaka teması: Açık Akçaağaç (damarlı açık ahşap) */
+  --rack-bg: repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.06) 0 2px, transparent 2px 9px, rgba(255, 255, 255, 0.04) 9px 11px, transparent 11px 23px), linear-gradient(#e2c08d, #c49a5f);
+  --rack-lip: #8a6234;
+  --rack-lip-dark: #6b4a24;
   --felt: #0f5132;
   --felt-dark: #0a3d26;
   --felt-light: #1a6b45;
