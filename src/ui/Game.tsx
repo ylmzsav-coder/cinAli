@@ -305,10 +305,17 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
       if (tiles.length === 2) {
         const [a, b] = tiles;
         const l = a.letter ?? b.letter;
-        if (l && (a.letter === null || b.letter === null || a.letter === b.letter)) return { ...base, pair: true, word: l + l, value: letterValue(l) * 2 };
-        return base;
+        // Aynı iki harf: çift (iki sesli ya da iki sessiz olduğu için kelime olamaz)
+        if (a.letter !== null && a.letter === b.letter) return { ...base, pair: true, word: a.letter + a.letter, value: letterValue(a.letter) * 2 };
+        // Harf + joker: hem çift (AA) hem iki harfli kelime (AK) olabilir; aşağıdaki joker hesabı kelimeyi bulur
+        if (l && (a.letter === null || b.letter === null)) base.pair = true;
+        else if (a.letter && b.letter) {
+          const word = a.letter + b.letter;
+          const valid = dict.has(word);
+          return { ...base, word, valid, value: valid ? letterValue(a.letter) + letterValue(b.letter) : 0 };
+        }
       }
-      if (tiles.length < 3) return base;
+      if (tiles.length < 2) return base;
       const pattern = tiles.map((x) => x.letter);
       if (!pattern.includes(null)) {
         const word = pattern.join("");
@@ -1024,7 +1031,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
           {(!me.opened || me.pairs) && pairGroups.map((g) => (
             <span key={`p${g.slots[0]}`} className="group-chip ok pair-chip">{g.word} · {t("pairChip")}</span>
           ))}
-          {!me.pairs && groups.filter((g) => g.ids.length >= 3 && (g.valid || g.ids.length <= 8)).map((g) => (
+          {!me.pairs && groups.filter((g) => !(g.pair && g.ids.length === 2 && !g.valid) && g.ids.length >= 2 && (g.valid || g.ids.length <= 8)).map((g) => (
             <button type="button" key={g.slots[0]} className={`group-chip ${g.valid ? "ok" : "bad"} ${g.options.length > 1 ? "has-joker" : ""}`}
               onClick={() => chooseGroupJoker(g)} disabled={g.options.length < 2}>
               {g.word ?? "…"} {g.valid ? `· ${g.value}` : "✗"}{g.options.length > 1 ? " ★" : ""}
@@ -1086,7 +1093,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
             {draggingTile && canPlay && <span className="rack-discard-label">{t("dropToDiscard")}</span>}
           </div>
           <div className="rack-actions">
-            {me.opened && (me.pairs ? selected.length === 2 : selected.length >= 3) ? (
+            {me.opened && (me.pairs ? selected.length === 2 : selected.length >= 2) ? (
               <button type="button" className="primary" onClick={laySelected}>{me.pairs ? t("layPairs") : t("layWord")}</button>
             ) : pairMode ? (
               <button type="button" className="primary pair-mode" disabled={me.opened ? !pairGroups.length : pairGroups.length < RULES.pairsToOpen}

@@ -21,6 +21,17 @@ export interface LangPack {
 
 const split = (s: string) => [...s];
 
+/** Her dilin sesli harfleri (iki harfli kelime kuralı için). */
+export const VOWELS: Record<LangCode, string> = {
+  tr: "AEIİOÖUÜ",
+  en: "AEIOU",
+  de: "AEIOUÄÖÜ",
+  fr: "AEIOU",
+  es: "AEIOU",
+  it: "AEIOU",
+  pt: "AEIOU",
+};
+
 function counts(alphabet: string, list: number[]): Record<string, number> {
   const a = split(alphabet);
   if (a.length !== list.length) throw new Error("taş dağılımı alfabeyle uyuşmuyor");

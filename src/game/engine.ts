@@ -1,4 +1,4 @@
-import { Dictionary } from "./dictionary";
+import { Dictionary, MIN_PLAY_LENGTH } from "./dictionary";
 import { LangCode, alphabet, gameLang, letterValue } from "./lang";
 import { Color, Letter, Tile, createTileSet, makeRng, shuffle, tilePenalty } from "./tiles";
 
@@ -262,7 +262,7 @@ export function drawFromDiscard(prev: GameState): GameState {
 
 /** Bir kelime tanımını doğrular ve yerleştirilmiş taşları döndürür. */
 export function buildWord(dict: Dictionary, rack: Tile[], spec: WordSpec): PlacedTile[] {
-  if (spec.tileIds.length < 3) throw new GameError("minLength", { n: 3 });
+  if (spec.tileIds.length < MIN_PLAY_LENGTH) throw new GameError("minLength", { n: MIN_PLAY_LENGTH });
   const placed = placeTiles(takeTilesFromRack(rack, spec.tileIds), spec.jokerLetters);
   const w = wordString(placed);
   if (!dict.has(w)) throw new GameError("notInDict", { word: w });

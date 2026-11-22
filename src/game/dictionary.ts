@@ -1,6 +1,8 @@
-import { LangCode, LangPack, gameLang } from "./lang";
+import { LangCode, LangPack, VOWELS, gameLang } from "./lang";
 
 export const MIN_WORD_LENGTH = 3;
+/** Oynanabilen en kısa kelime: iki harfli kural (biri sesli, biri sessiz). */
+export const MIN_PLAY_LENGTH = 2;
 
 export interface DictWord {
   word: string;
@@ -15,9 +17,11 @@ export class Dictionary {
   readonly lang: LangCode;
   readonly words: Set<string>;
   readonly entries: DictWord[];
+  private readonly alphabetSet: Set<string>;
 
   constructor(list: Iterable<string>, pack: LangPack = gameLang()) {
     this.lang = pack.code;
+    this.alphabetSet = new Set(pack.alphabet);
     const size = pack.alphabet.length;
     const index = new Map(pack.alphabet.map((l, i) => [l, i]));
     this.words = new Set();
@@ -45,8 +49,20 @@ export class Dictionary {
     }
   }
 
+  /** Geçerli kelime mi: sözlükte olan (3+ harf) ya da iki harfli kural. */
   has(word: string): boolean {
-    return this.words.has(word);
+    return this.words.has(word) || this.isTwoLetter(word);
+  }
+
+  /**
+   * İki harfli kural: biri sesli, biri sessiz harf olan her ikili geçerlidir
+   * (AB, BA, EK, Lİ…). Oyuncu elinde son taşlarla kalınca bitirebilsin diye.
+   */
+  isTwoLetter(word: string): boolean {
+    const ch = [...word];
+    if (ch.length !== 2 || !ch.every((c) => this.alphabetSet.has(c))) return false;
+    const v = VOWELS[this.lang];
+    return v.includes(ch[0]) !== v.includes(ch[1]);
   }
 
   static fromText(text: string, pack?: LangPack): Dictionary {

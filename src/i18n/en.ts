@@ -290,7 +290,7 @@ const en: Messages = {
   rule_values: "Letter values: each letter is worth its position in the alphabet ({first}). Example: {example}.",
   rule_deal: "Deal: 4 players. Everyone gets {hand} tiles; the starting player gets {hand1} and plays without drawing.",
   rule_turn: "Turn: draw a tile from the deck or take the tile discarded by the player on your left, play, then discard one tile.",
-  rule_word: "Words: at least 3 letters and in the dictionary. Keep your words hidden on your rack.",
+  rule_word: "Words: at least 3 letters and in the dictionary. Any two-letter pair of one vowel and one consonant is also valid (AT, ON, BE, YO…). Keep your words hidden on your rack.",
   rule_open: "Opening: the words you lay down to open must total at least {need}.",
   rule_after: "After opening: you may lay new words and add letters to the start or end of any word on the table (yours or your opponents') to make a new valid word.",
   rule_joker: "Joker: stands for any letter and is worth that letter's value.",
