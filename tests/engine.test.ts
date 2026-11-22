@@ -245,9 +245,12 @@ describe("bot simülasyonu", () => {
 
 import { TABLES, payout, winnerPrize } from "../src/economy/tables";
 describe("çip ödemesi (en yüksek toplam birinci)", () => {
-  const t = TABLES[0]; // tek masa: giriş 100, birinciye 300
+  const t = TABLES[0]; // Çaylak: giriş 100, birinciye 300
   it("giriş 100, birinci 300 çip alır", () => {
-    expect(TABLES.filter((x) => !x.vip).length).toBe(1);
+    expect(TABLES.filter((x) => !x.vip).map((x) => x.id)).toEqual(["caylak", "usta"]);
+    const usta = TABLES.find((x) => x.id === "usta")!;
+    expect([usta.entry, winnerPrize(usta)]).toEqual([500, 1500]);
+    expect(payout(usta, [80, 120, 120, 40], 1, 0)).toBe(750);
     const vip = TABLES.find((x) => x.vip)!;
     expect(vip.players).toBe(2);
     expect(vip.entry).toBe(100);

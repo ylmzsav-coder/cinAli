@@ -417,6 +417,7 @@ const fr: Messages = {
   genderM: "Homme",
   genderLabel: "Genre",
   playCaylak: "Table Débutant",
+  playUsta: "Table Maître",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

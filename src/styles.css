@@ -1111,3 +1111,4 @@ button.avatar { cursor: pointer; min-height: 0; }
 /* Ana menüde Çaylak masa düğmesi: alt satırda giriş ve ödül */
 .caylak-hub { display: flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1.15; }
 .caylak-hub .caylak-sub { font-size: 0.62em; font-weight: 600; opacity: 0.85; display: inline-flex; align-items: center; gap: 4px; }
+.usta-hub.primary { background: linear-gradient(180deg, #f3d38a, #c8962e); color: #3a2400; }

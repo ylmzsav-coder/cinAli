@@ -1,5 +1,5 @@
 import type { BotLevel } from "../game/bot";
-import { TABLE_ENTRY, TABLE_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
+import { TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
 
 export interface TableConfig {
   id: string;
@@ -19,16 +19,17 @@ export interface TableConfig {
 export const HOUSE_CUT = 0.1;
 export const PLAYERS_PER_TABLE = 4;
 
-/** Oynanabilen masa: herkes 100 çip öder, birinci 300 çip alır (400 çiplik pottan 100'ü kasaya). */
+/** Oynanabilen masalar: Çaylak 100 → 300, Usta 500 → 1.500. */
 export const TABLES: TableConfig[] = [
   { id: "caylak", name: "Çaylak", entry: TABLE_ENTRY, hands: 1, level: "orta", prize: TABLE_PRIZE },
+  // Usta: yüksek girişli dört kişilik masa (2.000 çiplik pottan 500'ü kasaya)
+  { id: "usta", name: "Usta", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE },
   // VIP iki kişilik özel oda: karşılıklı, yalnızca VIP aboneler
   { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true },
 ];
 
 /** Eski masalar: yalnızca önceki sürümde başlamış oyunların ödemesi için. */
 const LEGACY_TABLES: TableConfig[] = [
-  { id: "usta", name: "Usta", entry: 2_000, hands: 3, level: "orta" },
   { id: "sampiyon", name: "Şampiyon", entry: 10_000, hands: 5, level: "zor" },
   { id: "vip", name: "VIP", entry: 50_000, hands: 5, level: "zor" },
 ];

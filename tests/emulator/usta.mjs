@@ -1,0 +1,20 @@
+// Emülatör: Usta masa (giriş 500, birinciye 1.500)
+import { initializeApp } from "firebase/app";
+import { connectAuthEmulator, getAuth, signInAnonymously } from "firebase/auth";
+import { connectFirestoreEmulator, doc, getDoc, getFirestore } from "firebase/firestore";
+import { connectFunctionsEmulator, getFunctions, httpsCallable } from "firebase/functions";
+const app = initializeApp({ projectId: "demo-cinali", apiKey: "demo-key" });
+const auth = getAuth(app); connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+const db = getFirestore(app); connectFirestoreEmulator(db, "127.0.0.1", 8080);
+const fns = getFunctions(app, "europe-west3"); connectFunctionsEmulator(fns, "127.0.0.1", 5001);
+const { user } = await signInAnonymously(auth);
+const call = (n, d) => httpsCallable(fns, n)(d).then((r) => r.data);
+await call("bootstrap", { name: "Usta" });
+const bal = async () => (await getDoc(doc(db, "wallets", user.uid))).data().balance;
+const b0 = await bal();
+const j = await call("joinTable", { type: "usta", lang: "tr", name: "Usta" });
+await call("startTable", { tableId: j.tableId });
+const tb = (await getDoc(doc(db, "tables", j.tableId))).data();
+const ok = tb.status === "playing" && tb.seats.length === 4 && (await bal()) === b0 - 500;
+console.log(ok ? "✓ Usta masa: 500 giriş alındı, oyun başladı" : "✗ " + JSON.stringify({ b0, b: await bal(), st: tb.status }));
+process.exit(ok ? 0 : 1);
