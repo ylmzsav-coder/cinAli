@@ -776,7 +776,12 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .quit-modal .danger { background: #b3261e; color: #fff; font-weight: 800; }
 
 /* Oyunu kapat */
-.close-game { background: #3b1f1c; color: #ffd9d4; border: 1px solid #b3261e; }
+.close-game {
+  background: linear-gradient(#ef5350, #b3261e); color: #fff; font-weight: 900; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(0, 0, 0, 0.35); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.35);
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+}
+.power-ico { width: 1.1em; height: 1.1em; flex: none; vertical-align: -0.15em; }
 .closed-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 100dvh; text-align: center; }
 .closed-title { font-size: 1.6rem; font-weight: 800; }
 

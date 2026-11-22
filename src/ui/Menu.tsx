@@ -167,7 +167,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           <div className="hub-row">
             <button type="button" className="big" onClick={() => setFeedbackOpen(true)}>✉️ {t("feedback")}</button>
             {canCloseGame() && (
-              <button type="button" className="big close-game" onClick={() => setCloseAsk(true)}>⏻ {t("closeGame")}</button>
+              <button type="button" className="big close-game" onClick={() => setCloseAsk(true)}><svg className="power-ico" viewBox="0 0 24 24" aria-hidden><path d="M12 3v8" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /><path d="M6.3 6.8a8 8 0 1 0 11.4 0" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /></svg> {t("closeGame")}</button>
             )}
           </div>
         </div>
@@ -192,7 +192,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
       {closeAsk && (
         <div className="modal-bg" onClick={() => setCloseAsk(false)}>
           <div className="modal quit-modal" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label={t("closeAsk")}>
-            <h3>⏻ {t("closeAsk")}</h3>
+            <h3><svg className="power-ico" viewBox="0 0 24 24" aria-hidden><path d="M12 3v8" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /><path d="M6.3 6.8a8 8 0 1 0 11.4 0" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /></svg> {t("closeAsk")}</h3>
             <div className="modal-actions">
               <button type="button" className="danger" onClick={() => void doClose()}>{t("closeYes")}</button>
               <button type="button" onClick={() => setCloseAsk(false)}>{t("cancel")}</button>
