@@ -200,7 +200,10 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </div>
           <div className="hub-row">
             <button type="button" className="big" onClick={onPractice}>{t("practice")}</button>
-            <button type="button" className="big vip-hub" onClick={() => (wallet.isVip() ? onTables() : setVipOpen(true))}>👑 {t("vipShort")}</button>
+            <button type="button" className="big vip-hub caylak-hub" onClick={() => (wallet.isVip() ? onTables() : setVipOpen(true))}>
+              <span>👑 {t("vipShort")}</span>
+              <span className="caylak-sub">💬 {t("vipChatGame")}</span>
+            </button>
           </div>
           <div className="hub-row">
             <button type="button" className="big" onClick={onShop}>{t("shop")}</button>
