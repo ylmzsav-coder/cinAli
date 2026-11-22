@@ -1,9 +1,9 @@
 import { canCloseGame, closeGame } from "../exit";
 import { FEEDBACK_EMAIL, FEEDBACK_MAX, type FeedbackType, feedbackMailto, submitFeedback } from "../feedbackBox";
 import { stopMusic } from "../music";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWallet } from "../economy/useWallet";
-import { DAILY_BONUS, WELCOME_CHIPS, WELCOME_GAMES, wallet } from "../economy/wallet";
+import { DAILY_BONUS, REFILL_CHIPS, WELCOME_CHIPS, WELCOME_GAMES, wallet } from "../economy/wallet";
 import type { BotLevel } from "../game/bot";
 import { LANGS, LANG_ORDER, LangCode, PLAYABLE_LANGS } from "../game/lang";
 import { errorText, formatNumber, t } from "../i18n";
@@ -26,6 +26,15 @@ interface HubProps {
 export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
+  // Çipi biten oyuncunun hediye sayacı (dakikada bir güncellenir)
+  const refillAt = w.ready ? wallet.refillAt() : null;
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (refillAt === null) return;
+    setNow(Date.now());
+    const id = setInterval(() => setNow(Date.now()), 20_000);
+    return () => clearInterval(id);
+  }, [refillAt]);
   const [closeAsk, setCloseAsk] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   // Yeni oyuncuya hoş geldin hediyesi (bir kez gösterilir)
@@ -124,6 +133,20 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               {t("dailyClaim")}
             </button>
           )}
+          {refillAt !== null && (refillAt <= now ? (
+            <button type="button" className="gift big" onClick={async () => {
+              try {
+                await wallet.claimRefill();
+                setToast(t("refillToast", { n: REFILL_CHIPS }));
+              } catch (e) {
+                setToast(errorText(e));
+              }
+            }}>
+              {t("refillClaim", { n: REFILL_CHIPS })}
+            </button>
+          ) : (
+            <p className="muted refill-wait">{t("refillWait", { n: REFILL_CHIPS, t: refillLeft(refillAt - now) })}</p>
+          ))}
           {toast && <div className="toast">{toast}</div>}
           {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
           <button type="button" className={canResume ? "big" : "primary big"} onClick={onTables}>{t("chipTables")}</button>
@@ -301,4 +324,10 @@ function FeedbackDialog({ lang, onClose }: { lang: string; onClose: () => void }
       </div>
     </div>
   );
+}
+
+/** Kalan süre: "11 sa 42 dk". */
+function refillLeft(ms: number): string {
+  const min = Math.max(1, Math.ceil(ms / 60_000));
+  return t("refillTime", { h: Math.floor(min / 60), m: min % 60 });
 }

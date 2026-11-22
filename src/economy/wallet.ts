@@ -7,9 +7,9 @@
  */
 import { doc, onSnapshot } from "firebase/firestore";
 import { CLOUD, call, currentUser, firestore } from "../online/cloud";
-import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, TxReason, WELCOME_CHIPS, WELCOME_GAMES, dayKey } from "./config";
+import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, REFILL_CHIPS, REFILL_MS, TxReason, WELCOME_CHIPS, WELCOME_GAMES, dayKey, nextBrokeSince } from "./config";
 
-export { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, WELCOME_CHIPS, WELCOME_GAMES };
+export { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, REFILL_CHIPS, WELCOME_CHIPS, WELCOME_GAMES };
 export type { TxReason };
 
 export interface WalletData {
@@ -17,6 +17,8 @@ export interface WalletData {
   lastDaily: string | null;
   adsDay: string | null;
   adsToday: number;
+  /** Bakiye en ucuz masa girişinin altına düştüğü an (hediye çip sayacı); yeterliyse null. */
+  brokeSince?: number | null;
   /** Sunucu modunda ilk veri geldi mi. */
   ready: boolean;
   /** Cüzdan bu açılışta yeni oluşturuldu (hoş geldin hediyesi verildi). */
@@ -32,6 +34,10 @@ export interface WalletApi {
   adsLeftToday(): number;
   /** Hata durumunda kodlu hata fırlatır (err.*). */
   claimDaily(): Promise<void>;
+  /** Çipi biten oyuncunun hediyesi ne zaman alınabilir (ms); çipi yeterliyse null. */
+  refillAt(): number | null;
+  canClaimRefill(): boolean;
+  claimRefill(): Promise<void>;
   /** Reklam izlendikten sonra ödülü ister. */
   rewardAd(): Promise<void>;
   /** Satın alma onaylandıktan sonra çipleri ekler. */
@@ -63,6 +69,16 @@ abstract class Base {
     return this.data.ready && this.data.lastDaily !== dayKey();
   }
 
+  refillAt(): number | null {
+    const since = this.data.ready ? this.data.brokeSince : null;
+    return since ? since + REFILL_MS : null;
+  }
+
+  canClaimRefill(): boolean {
+    const at = this.refillAt();
+    return at !== null && Date.now() >= at;
+  }
+
   adsLeftToday(): number {
     return this.data.adsDay === dayKey() ? Math.max(0, AD_DAILY_LIMIT - this.data.adsToday) : AD_DAILY_LIMIT;
   }
@@ -86,9 +102,12 @@ class LocalWallet extends Base implements WalletApi {
       lastDaily: stored?.lastDaily ?? null,
       adsDay: stored?.adsDay ?? null,
       adsToday: stored?.adsToday ?? 0,
+      brokeSince: stored?.brokeSince ?? null,
       ready: true,
       welcome: !stored,
     };
+    const since = nextBrokeSince(this.data.balance, this.data.brokeSince);
+    if (stored && since !== this.data.brokeSince) this.commit(0, { brokeSince: since });
     // Yeni cüzdan hemen kaydedilir (hediye bir kez verilir)
     if (!stored) {
       try {
@@ -101,7 +120,8 @@ class LocalWallet extends Base implements WalletApi {
   }
 
   private commit(amount: number, patch: Partial<WalletData> = {}) {
-    const next = { ...this.data, ...patch, balance: this.data.balance + amount };
+    const balance = this.data.balance + amount;
+    const next = { ...this.data, ...patch, balance, brokeSince: nextBrokeSince(balance, this.data.brokeSince) };
     try {
       localStorage.setItem(KEY, JSON.stringify(next));
     } catch {
@@ -123,6 +143,11 @@ class LocalWallet extends Base implements WalletApi {
   async claimDaily() {
     if (!this.canClaimDaily()) throw Object.assign(new Error("dailyClaimed"), { code: "dailyClaimed", params: {} });
     this.commit(DAILY_BONUS, { lastDaily: dayKey() });
+  }
+
+  async claimRefill() {
+    if (!this.canClaimRefill()) throw Object.assign(new Error("refillNotReady"), { code: "refillNotReady", params: {} });
+    this.commit(REFILL_CHIPS, { brokeSince: null });
   }
 
   async rewardAd() {
@@ -151,7 +176,7 @@ class CloudWallet extends Base implements WalletApi {
         onSnapshot(doc(firestore(), "wallets", user.uid), (snap) => {
           const d = snap.data();
           if (!d) return;
-          this.emit({ balance: d.balance, lastDaily: d.lastDaily ?? null, adsDay: d.adsDay ?? null, adsToday: d.adsToday ?? 0, ready: true, welcome });
+          this.emit({ balance: d.balance, lastDaily: d.lastDaily ?? null, adsDay: d.adsDay ?? null, adsToday: d.adsToday ?? 0, brokeSince: d.brokeSince ?? null, ready: true, welcome });
         });
       })
       .catch(() => {
@@ -161,6 +186,10 @@ class CloudWallet extends Base implements WalletApi {
 
   async claimDaily() {
     await call("claimDaily");
+  }
+
+  async claimRefill() {
+    await call("claimRefill");
   }
 
   async rewardAd() {

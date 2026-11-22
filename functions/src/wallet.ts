@@ -1,5 +1,5 @@
 import { onCall } from "firebase-functions/v2/https";
-import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, WELCOME_CHIPS, dayKey } from "../../src/economy/config";
+import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, REFILL_CHIPS, REFILL_MS, WELCOME_CHIPS, dayKey } from "../../src/economy/config";
 import { IS_EMULATOR, WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 
@@ -37,6 +37,17 @@ export const claimDaily = onCall(async (req) => {
     if (!w) return fail("noWallet");
     if (w.lastDaily === dayKey()) fail("dailyClaimed");
     return view(applyTx(t, uid, w, DAILY_BONUS, "gunluk", null, { lastDaily: dayKey() }));
+  });
+});
+
+/** Çipi biten oyuncuya hediye: bakiye en ucuz masa girişinin altına düştükten 12 saat sonra. */
+export const claimRefill = onCall(async (req) => {
+  const uid = uidOf(req);
+  return db.runTransaction(async (t) => {
+    const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
+    if (!w) return fail("noWallet");
+    if (!w.brokeSince || Date.now() < w.brokeSince + REFILL_MS) fail("refillNotReady");
+    return view(applyTx(t, uid, w, REFILL_CHIPS, "destek", null, { brokeSince: null }));
   });
 });
 

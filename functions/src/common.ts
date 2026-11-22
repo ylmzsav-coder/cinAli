@@ -2,7 +2,7 @@ import { getApps, initializeApp } from "firebase-admin/app";
 import { Firestore, Transaction, getFirestore } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { HttpsError, type CallableRequest } from "firebase-functions/v2/https";
-import type { TxReason } from "../../src/economy/config";
+import { nextBrokeSince, type TxReason } from "../../src/economy/config";
 
 // Frankfurt: Türkiye ve Avrupa'ya yakın. Fonksiyonlar tanımlanmadan ÖNCE ayarlanmalı.
 export const REGION = "europe-west3";
@@ -32,6 +32,8 @@ export interface WalletDoc {
   adsDay: string | null;
   adsToday: number;
   createdAt: number;
+  /** Bakiye en ucuz masa girişinin altına düştüğü an (hediye çip sayacı). */
+  brokeSince?: number | null;
 }
 
 export const walletRef = (uid: string) => db.collection("wallets").doc(uid);
@@ -46,7 +48,9 @@ export function applyTx(
   note: string | null = null,
   patch: Partial<WalletDoc> = {},
 ): WalletDoc {
-  const next = { ...wallet, ...patch, balance: wallet.balance + amount };
+  const balance = wallet.balance + amount;
+  const next = { ...wallet, ...patch, balance };
+  next.brokeSince = nextBrokeSince(balance, "brokeSince" in patch ? patch.brokeSince : wallet.brokeSince);
   if (next.balance < 0) fail("notEnoughChips", { need: -amount, have: wallet.balance });
   t.set(walletRef(uid), next);
   t.create(walletRef(uid).collection("tx").doc(), { at: Date.now(), amount, reason, note, balance: next.balance });
