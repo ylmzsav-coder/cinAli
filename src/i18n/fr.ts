@@ -290,7 +290,7 @@ const fr: Messages = {
   rule_values: "Valeur des lettres : chaque lettre vaut sa position dans l'alphabet ({first}). Exemple : {example}.",
   rule_deal: "Distribution : 4 joueurs. Chacun reçoit {hand} tuiles ; le premier joueur en reçoit {hand1} et joue sans piocher.",
   rule_turn: "Tour : piochez une tuile ou prenez celle défaussée par votre voisin de gauche, jouez, puis défaussez une tuile.",
-  rule_word: "Mots : au moins 3 lettres et présents dans le dictionnaire. Toute paire de deux lettres formée d'une voyelle et d'une consonne est aussi valable (LE, ET, ON, DU…). Gardez vos mots cachés sur votre chevalet.",
+  rule_word: "Mots : au moins 3 lettres et présents dans le dictionnaire. Les mots courants de deux lettres sont aussi valables (LE, ET, ON, DU…). Gardez vos mots cachés sur votre chevalet.",
   rule_two: "Mots de deux lettres valables : {list}.",
   rule_open: "Ouverture : les mots posés pour ouvrir doivent totaliser au moins {need}.",
   rule_after: "Après l'ouverture : vous pouvez poser de nouveaux mots et ajouter des lettres au début ou à la fin de n'importe quel mot de la table (le vôtre ou celui d'un adversaire) pour former un nouveau mot valide.",

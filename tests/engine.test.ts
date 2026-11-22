@@ -353,3 +353,24 @@ describe("iki harfli kelimeler", () => {
     expectErr(() => layWord(dict, o, { tileIds: [b.id] }), "minLength", { n: 2 });
   });
 });
+
+import { LANGS, TWO_LETTER_WORDS } from "../src/game/lang";
+describe("iki harfli kelimeler bütün dillerde", () => {
+  it("her oynanabilir dilin listesi var ve yalnızca o dilin harflerinden oluşur", () => {
+    for (const code of Object.keys(LANGS) as (keyof typeof LANGS)[]) {
+      if (!LANGS[code].playable) continue;
+      const list = TWO_LETTER_WORDS[code];
+      expect(list, code).toBeTruthy();
+      for (const w of list!) {
+        expect([...w].length, `${code} ${w}`).toBe(2);
+        for (const ch of w) expect(LANGS[code].alphabet.includes(ch), `${code} ${w}`).toBe(true);
+      }
+    }
+  });
+  it("İngilizcede IS geçerli, XQ ve ZO geçersiz", () => {
+    const en = new Dictionary(["CAT"], LANGS.en);
+    expect(en.has("IS")).toBe(true);
+    expect(en.has("XQ")).toBe(false);
+    expect(en.has("ZO")).toBe(false);
+  });
+});

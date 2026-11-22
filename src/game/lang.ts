@@ -22,12 +22,19 @@ export interface LangPack {
 const split = (s: string) => [...s];
 
 /**
- * İki harfli geçerli kelimeler. Bir dil için liste varsa yalnızca listedekiler
- * geçerlidir (Türkçe: oyun sahibinin belirlediği liste); liste yoksa biri sesli
- * biri sessiz harf olan her ikili geçerlidir.
+ * İki harfli geçerli kelimeler: her dilde yalnızca listedekiler geçerlidir
+ * (Türkçe: oyun sahibinin belirlediği liste; diğer diller: o dilin anlamlı iki
+ * harfli kelimeleri, aksanlar oyun alfabesine göre sadeleştirilmiş). Liste
+ * olmayan bir dilde biri sesli biri sessiz harf olan her ikili geçerlidir.
  */
 export const TWO_LETTER_WORDS: Partial<Record<LangCode, readonly string[]>> = {
   tr: ["AR", "AT", "AY", "AĞ", "AS", "AD", "AF", "AH", "AK", "AL", "AŞ", "AZ", "AN", "AÇ", "RA", "TA", "YA", "DA", "HA", "KA", "LA", "NA", "MA", "ER", "ET", "EY", "EK", "EL", "EŞ", "EZ", "EN", "EM", "RE", "TE", "YE", "PE", "SE", "FE", "HE", "KE", "LE", "ŞE", "ZE", "CE", "VE", "BE", "NE", "ME", "ÇE", "OL", "OY", "OK", "İZ", "ON", "LO", "KO", "MO", "NO", "TO", "RO", "İT", "İS", "İP", "İR", "İŞ", "İL", "İN", "İM", "Tİ", "Pİ", "Sİ", "Dİ", "Kİ", "Lİ", "Cİ", "Mİ", "ÖZ", "ÖN", "ÖL", "ÖP", "ÖT", "ÖD", "ÜN", "ÜÇ", "ÜS", "BU", "UN", "UT", "US", "UÇ", "UZ", "UR"],
+  en: ["AD", "AH", "AM", "AN", "AS", "AT", "AW", "AX", "AY", "BE", "BY", "DO", "GO", "HA", "HE", "HI", "IF", "IN", "IS", "IT", "ME", "MY", "NO", "OF", "OH", "OK", "ON", "OR", "OW", "OX", "PA", "PI", "SO", "TO", "UP", "US", "WE", "YE", "YO"],
+  de: ["AB", "AH", "AN", "AU", "DA", "DU", "EI", "ER", "ES", "IM", "IN", "JA", "JE", "NA", "OB", "OH", "SO", "UM", "WO", "ZU", "ÖL"],
+  fr: ["AH", "AI", "AN", "AU", "BU", "CA", "CE", "CI", "DE", "DO", "DU", "EH", "EN", "ES", "ET", "EU", "FA", "HA", "HE", "IL", "IN", "JE", "LA", "LE", "LI", "LU", "MA", "ME", "MI", "MU", "NE", "NI", "NU", "OH", "ON", "OR", "OS", "OU", "PU", "RE", "RU", "SA", "SE", "SI", "SU", "TA", "TE", "TU", "UN", "VA", "VU"],
+  es: ["AH", "AL", "AY", "DA", "DE", "DI", "DO", "EH", "EL", "EN", "ES", "FA", "HA", "HE", "IR", "JA", "LA", "LE", "LO", "ME", "MI", "NI", "NO", "OH", "OS", "SE", "SI", "SU", "TE", "TI", "TU", "UN", "VA", "VE", "VI", "YA", "YO"],
+  it: ["AH", "AI", "AL", "CE", "CI", "DA", "DI", "DO", "EH", "FA", "FU", "HA", "HO", "IL", "IN", "LA", "LE", "LI", "LO", "MA", "ME", "MI", "NE", "NO", "OH", "RE", "SE", "SI", "SO", "SU", "TE", "TI", "TU", "UN", "VA", "VI"],
+  pt: ["AH", "AI", "AO", "AS", "DA", "DE", "DO", "EH", "EI", "EM", "ES", "EU", "HA", "JA", "LA", "LE", "ME", "NA", "NO", "NU", "OH", "OI", "OS", "OU", "PE", "PO", "SE", "SI", "SO", "TE", "TU", "UM", "VA", "VE", "VI", "VO", "XI"],
 };
 
 /** Her dilin sesli harfleri (iki harfli kelime kuralı için). */
