@@ -1075,17 +1075,9 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           )}
         </main>
 
-        {/* Sağdaki oyuncu: attığınız son taş burada görünür (atma hedefi ıstakanın yanındaki kutudur) */}
+        {/* Sağdaki oyuncu (attığınız taş ıstakanın yanındaki kutuda görünür) */}
         <aside className="side side-right">
           {!duo && renderOpp(1)}
-          <div className="discard-zone" aria-label={t("yourDiscard")}>
-            {state.discards[ME].length ? (
-              <TileView tile={state.discards[ME][state.discards[ME].length - 1]} />
-            ) : (
-              <span className="slot slot-lg" />
-            )}
-            <span className="small">{t("yourDiscard")}</span>
-          </div>
         </aside>
       </div>
 
