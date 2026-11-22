@@ -1310,3 +1310,9 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .side-controls > .deck .deck-word { font-size: clamp(0.7rem, 1.6vw, 1rem); }
 .okey .side-controls > .deck .deck-word.long { font-size: clamp(0.55rem, 1.15vw, 0.8rem); letter-spacing: -0.3px; }
 .okey-rack .rack-score.live b { color: #1b8a3a; }
+/* AT kutusu küçük, ıstaka sağa doğru genişler (Eli Aç ıstaka satırında değil) */
+.game.okey { --discard-w: clamp(62px, 17vh, 82px); --actions-w: 70px; }
+.rack-discard .tile { --tile-w: calc(var(--slot-w) * 0.85); }
+.okey .side-controls > .deck { gap: 2px !important; padding: 2px; justify-content: center; }
+.okey .side-controls > .deck .deck-stack { transform: scale(0.9); margin: 0; }
+.okey .side-controls > .deck .deck-word { margin-top: 0; }
