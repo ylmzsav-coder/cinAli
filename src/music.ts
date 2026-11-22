@@ -21,8 +21,10 @@ const FADE_SECONDS = 5;
 /** Ezgi 18 saniyede biter; son 1 saniye kapanış akoru. */
 const STEP_COUNT = 96;
 const STEP = (MUSIC_SECONDS - 1) / STEP_COUNT;
-/** Ana ses seviyesi (yüksek); sınırlayıcı patlamayı önler. */
+/** Ana ses seviyesi; sınırlayıcı patlamayı önler. */
 const VOLUME = 0.9;
+/** Çıkış seviyesi: sınırlayıcıdan sonra %15 kısılır (önceki sürüme göre). */
+const OUTPUT = 0.85;
 
 const hz = (midi: number) => 440 * Math.pow(2, (midi - 69) / 12);
 const NOTE: Record<string, number> = {
@@ -192,7 +194,9 @@ export function startMusic() {
   // Son 5 saniyede kademeli azalma
   master.gain.setValueAtTime(VOLUME, t0 + 0.05 + MUSIC_SECONDS - FADE_SECONDS);
   master.gain.linearRampToValueAtTime(0.0001, t0 + 0.05 + MUSIC_SECONDS);
-  master.connect(comp).connect(a.destination);
+  const out = a.createGain();
+  out.gain.value = OUTPUT;
+  master.connect(comp).connect(out).connect(a.destination);
   bus = a.createGain();
   const verb = a.createConvolver();
   verb.buffer = reverbImpulse(a);
