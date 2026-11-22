@@ -168,6 +168,8 @@ async function settle(t: Transaction, table: TableDoc, state: GameState, wallets
 async function persist(t: Transaction, id: string, table: TableDoc, state: GameState, wallets: Map<string, WalletDoc>) {
   const now = Date.now();
   const next: TableDoc = { ...table, version: table.version + 1, deadline: deadlineFor(state, now) };
+  // VIP odada hamle süresi yok (sohbetli oyun): sıradaki oyuncu için son tarih konmaz
+  if (configFor(table.type).vip && (state.phase === "draw" || state.phase === "play")) next.deadline = null;
   const v = (table.vacant ?? []).find((x) => x.seat === state.current);
   if (v && (state.phase === "draw" || state.phase === "play")) next.deadline = v.until;
   if (state.phase === "gameOver" && table.status === "playing") {

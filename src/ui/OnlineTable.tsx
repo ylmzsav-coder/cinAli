@@ -294,7 +294,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       state={state}
       level={cfg.level}
       speed={settings.speed}
-      turnSeconds={TABLE_TURN_SECONDS}
+      turnSeconds={cfg.vip ? 0 : TABLE_TURN_SECONDS}
       sound={settings.sound}
       vibration={settings.vibration}
       onChange={() => {}}

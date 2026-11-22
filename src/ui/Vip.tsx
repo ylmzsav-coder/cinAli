@@ -35,6 +35,7 @@ export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSub
           <li>🃏 {t("vipPerkRoom")}</li>
           <li className="vip-perk-hl">🤝 {t("vipPerkGuest")}</li>
           <li>💬 {t("vipPerkChat")}</li>
+          <li>⏳ {t("vipPerkNoTimer")}</li>
           <li>🚫 {t("vipPerkNoWatch")}</li>
           <li>🪙 {t("vipPerkTable", { entry: VIP_ENTRY, prize: VIP_PRIZE })}</li>
           <li>🎁 {t("vipPerkGift", { n: formatNumber(VIP_BONUS_CHIPS) })}</li>
