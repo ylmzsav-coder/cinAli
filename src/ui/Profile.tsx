@@ -97,7 +97,7 @@ function StatsDetail({ s }: { s: PlayerStats }) {
       <div className="stats-row3">
         <Box label={t("stBestGame")} value={s.bestGame} />
         <Box label={t("stBestMove")} value={s.bestMove} />
-        <Box label={t("stBestWordPts")} value={s.bestWord?.value ?? 0} />
+        <Box label={t("stWords")} value={s.wordsLaid} />
       </div>
       <div className="stats-row3">
         <Box label={t("stHandsWon")} value={`${formatNumber(s.handsWon)} / ${formatNumber(s.handsPlayed)}`} />
@@ -105,7 +105,11 @@ function StatsDetail({ s }: { s: PlayerStats }) {
         <Box label={t("stChipsWon")} value={s.chipsWon} />
       </div>
       {s.bestWord && (
-        <div className="stat"><div className="stat-label">{t("stBestWord")}</div><WordTiles word={s.bestWord.word} /></div>
+        <div className="stat stat-hl">
+          <div className="stat-label">{t("stBestWord")}</div>
+          <WordTiles word={s.bestWord.word} />
+          <div className="stat-value">{t("pointsN", { n: s.bestWord.value })}</div>
+        </div>
       )}
       <div className="stat">
         <div className="stat-label">{t("stLongestWord")}</div>

@@ -811,7 +811,7 @@ button.avatar { cursor: pointer; min-height: 0; }
 }
 .stats-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .stats-row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.stat-line { grid-template-columns: 1fr auto; text-align: left; padding: 8px 14px; }
+.stat-line { grid-template-columns: 1fr auto; text-align: left; padding: 8px 14px; justify-items: stretch; align-items: center; }
 .stat-line .stat-value { font-size: 1.25rem; }
 .stat-hl { background: rgba(242, 179, 61, 0.18); }
 .pie { width: 52px; height: 52px; border-radius: 50%; }
