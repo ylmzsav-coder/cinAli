@@ -769,7 +769,7 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   height: 44px; min-width: 172px; font-size: 1rem;
 }
-.quit-btn > span:first-child { font-size: 1.35em; line-height: 1; }
+.door-ico { width: 1.25em; height: 1.75em; filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.6)); }
 .quit-modal { max-width: 440px; text-align: center; }
 .quit-modal p { margin: 8px 0 12px; line-height: 1.4; }
 .quit-modal .modal-actions { display: flex; gap: 10px; justify-content: center; }

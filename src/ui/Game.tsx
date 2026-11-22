@@ -883,7 +883,14 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
         </div>
         <div className="topbar-actions">
           {onLeave && !handOver && (
-            <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}><span aria-hidden>🚪</span> {t("quitGame")}</button>
+            <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}><svg className="door-ico" viewBox="0 0 40 56" aria-hidden>
+                {/* siyah kapı: kasa, iki panel, kulp */}
+                <rect x="3" y="2" width="34" height="52" rx="3" fill="#1a1a1a" stroke="#000" strokeWidth="2" />
+                <rect x="9" y="8" width="22" height="17" rx="1.5" fill="#2e2e2e" stroke="#444" strokeWidth="1.5" />
+                <rect x="9" y="30" width="22" height="18" rx="1.5" fill="#2e2e2e" stroke="#444" strokeWidth="1.5" />
+                <circle cx="31" cy="29" r="2.4" fill="#c9c9c9" />
+              </svg>
+              {t("quitGame")}</button>
           )}
           {onShop && (
             <button type="button" className="buy-btn" onClick={onShop}>
