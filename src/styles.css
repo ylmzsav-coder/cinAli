@@ -1158,3 +1158,22 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .rack-actions .actions-total { margin: 0; text-align: center; font-size: 0.72rem; line-height: 1.1; white-space: normal; flex: none; }
 /* Istaka biraz sağa: kenardan boşluk */
 .okey .rack-row { padding-left: 10px; }
+
+/* Sağ sütun: Ayşe'nin altında deste (Çek) + Çifte Git + Eli Aç */
+.okey .side-right .opp { flex: none; }
+.okey .side-controls { flex: 1; min-height: 0; display: flex; gap: 5px; align-items: stretch; }
+.okey .side-controls > .deck { flex: none; width: 54px; padding: 3px 2px; justify-content: center; }
+.okey .side-controls > .deck .deck-word { font-size: 0.85rem; }
+.okey .side-controls > .rack-actions { width: auto; flex: 1; min-width: 0; display: flex !important; flex-direction: column; gap: 4px; height: auto; overflow: hidden; }
+.okey .side-controls > .rack-actions > .primary { flex: 1; min-height: 0; grid-row: auto; }
+.okey .side-controls .pair-toggle { flex: none; font-size: 0.72rem; padding: 4px 2px; }
+.okey .side-controls .actions-total { font-size: 0.66rem; }
+.okey .side-controls .open-words { display: none; }
+.okey .side-right > .opp-compact { flex-direction: column; align-items: flex-start; gap: 2px; padding: 4px 6px !important; align-self: stretch; }
+.okey .side-right > .opp-compact .opp-name { font-size: 0.82rem; }
+.okey .side-right > .opp-compact .opp-info { flex-wrap: wrap; }
+.okey .side-controls > .rack-actions > .primary { font-size: 0.95rem; font-weight: 900; }
+/* Dar telefonlarda üst çubuk taşmasın */
+.okey .quit-btn, .okey .buy-btn { width: clamp(112px, 16vw, 158px); font-size: clamp(0.8rem, 1.9vw, 0.95rem); }
+.okey .topbar-center { gap: 6px; }
+@media (max-width: 960px) { .topbar-opp .opp-compact .opp-info > .badge:first-child { display: none; } }

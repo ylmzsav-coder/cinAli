@@ -1030,13 +1030,6 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             })}
           </section>
           <div className="felt-bottom">
-            <button type="button" className={`deck ${nudgeDraw ? "nudge" : ""}`} disabled={!canDraw}
-              onClick={() => !suppressClickRef.current && drawDeck()}
-              onPointerDown={(e) => canDraw && startDrag(e, "deck", [])}
-              aria-label={t("drawDeck")}>
-              <span className="deck-stack" aria-hidden><span className="deck-count">{state.deck.length}</span></span>
-              <span className="deck-word">{t("drawShort")}</span>
-            </button>
             {colorNow && <div className="color-hint">{t("colorPath", { color: t(`color_${colorNow}`) })}</div>}
           </div>
           {chatOpen && (
@@ -1080,7 +1073,54 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
 
         {/* Sağdaki oyuncu (attığınız taş ıstakanın yanındaki kutuda görünür) */}
         <aside className="side side-right">
-          {!duo && renderOpp(1)}
+          {!duo && renderOpp(1, true)}
+          {/* Ayşe'nin altında: deste (Çek), Çifte Git ve Eli Aç */}
+          <div className="side-controls">
+                <button type="button" className={`deck ${nudgeDraw ? "nudge" : ""}`} disabled={!canDraw}
+                  onClick={() => !suppressClickRef.current && drawDeck()}
+                  onPointerDown={(e) => canDraw && startDrag(e, "deck", [])}
+                  aria-label={t("drawDeck")}>
+                  <span className="deck-stack" aria-hidden><span className="deck-count">{state.deck.length}</span></span>
+                  <span className="deck-word">{t("drawShort")}</span>
+                </button>
+            <div className="rack-actions">
+              {!me.opened && !handOver && (
+                <span className="group-total actions-total">
+                  {groupTotal > 0 ? `${groupTotal} / ` : ""}{t("openNeedShort", { need: RULES.openThreshold })}
+                  {pairGroups.length > 0 && <><br />{t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
+                </span>
+              )}
+              {!me.opened && !handOver && (
+                <button type="button" className={`pair-toggle ${pairChoice ? "on" : ""}`} aria-pressed={pairChoice}
+                  onClick={() => setPairChoice((v) => !v)}>
+                  {pairChoice ? t("pairToggleOff") : t("pairToggleOn")}
+                </button>
+              )}
+              {me.opened && (me.pairs ? selected.length === 2 : selected.length >= 2) ? (
+                <button type="button" className="primary" onClick={laySelected}>{me.pairs ? t("layPairs") : t("layWord")}</button>
+              ) : pairMode ? (
+                <button type="button" className="primary pair-mode" disabled={me.opened ? !pairGroups.length : pairGroups.length < RULES.pairsToOpen}
+                  onClick={() => void layGroups()}>
+                  <span className="open-title">{me.opened ? t("layPairs") : t("openPairs", { n: pairGroups.length, need: RULES.pairsToOpen })}</span>
+                  {pairGroups.length > 0 && (
+                    <span className="open-words">
+                      {pairGroups.map((g) => <span key={g.ids.join("-")} className="open-word">{g.word}</span>)}
+                    </span>
+                  )}
+                </button>
+              ) : (
+                <button type="button" className="primary" disabled={me.opened ? !validGroups.length : groupTotal < RULES.openThreshold}
+                  onClick={() => void layGroups()}>
+                  <span className="open-title">{me.opened ? t("layWord") : t(groupTotal > 0 ? "openHand" : "openHandNeed", { total: groupTotal, need: RULES.openThreshold })}</span>
+                  {validGroups.length > 0 && (
+                    <span className="open-words">
+                      {validGroups.map((g) => <span key={g.ids.join("-")} className="open-word">{g.word}<small>{g.value}</small></span>)}
+                    </span>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
         </aside>
       </div>
 
@@ -1143,43 +1183,6 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               <span className="rack-discard-arrow" aria-hidden>➜</span>
             )}
             <span className="rack-discard-word">{t("discardShort")}</span>
-          </div>
-          <div className="rack-actions">
-            {!me.opened && !handOver && (
-              <span className="group-total actions-total">
-                {groupTotal > 0 ? `${groupTotal} / ` : ""}{t("openNeedShort", { need: RULES.openThreshold })}
-                {pairGroups.length > 0 && <><br />{t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
-              </span>
-            )}
-            {!me.opened && !handOver && (
-              <button type="button" className={`pair-toggle ${pairChoice ? "on" : ""}`} aria-pressed={pairChoice}
-                onClick={() => setPairChoice((v) => !v)}>
-                {pairChoice ? t("pairToggleOff") : t("pairToggleOn")}
-              </button>
-            )}
-            {me.opened && (me.pairs ? selected.length === 2 : selected.length >= 2) ? (
-              <button type="button" className="primary" onClick={laySelected}>{me.pairs ? t("layPairs") : t("layWord")}</button>
-            ) : pairMode ? (
-              <button type="button" className="primary pair-mode" disabled={me.opened ? !pairGroups.length : pairGroups.length < RULES.pairsToOpen}
-                onClick={() => void layGroups()}>
-                <span className="open-title">{me.opened ? t("layPairs") : t("openPairs", { n: pairGroups.length, need: RULES.pairsToOpen })}</span>
-                {pairGroups.length > 0 && (
-                  <span className="open-words">
-                    {pairGroups.map((g) => <span key={g.ids.join("-")} className="open-word">{g.word}</span>)}
-                  </span>
-                )}
-              </button>
-            ) : (
-              <button type="button" className="primary" disabled={me.opened ? !validGroups.length : groupTotal < RULES.openThreshold}
-                onClick={() => void layGroups()}>
-                <span className="open-title">{me.opened ? t("layWord") : t(groupTotal > 0 ? "openHand" : "openHandNeed", { total: groupTotal, need: RULES.openThreshold })}</span>
-                {validGroups.length > 0 && (
-                  <span className="open-words">
-                    {validGroups.map((g) => <span key={g.ids.join("-")} className="open-word">{g.word}<small>{g.value}</small></span>)}
-                  </span>
-                )}
-              </button>
-            )}
           </div>
         </div>
       </div>
