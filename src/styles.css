@@ -1219,3 +1219,4 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey-rack .rack-need b { font-size: clamp(1.3rem, 4.6vh, 2rem); font-weight: 900; font-style: italic; letter-spacing: -1px; }
 .okey-rack .rack-need small { font-size: clamp(0.7rem, 2.2vh, 0.95rem); font-weight: 900; -webkit-text-stroke: 4px #fff; text-transform: uppercase; }
 .okey-rack .rack-need { top: 50%; transform: translateY(-50%); }
+.okey .side-controls .actions-total:empty { visibility: hidden; }

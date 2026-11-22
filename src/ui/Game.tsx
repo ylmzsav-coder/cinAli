@@ -1086,8 +1086,8 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             <div className="rack-actions">
               {!me.opened && !handOver && (
                 <span className="group-total actions-total">
-                  {groupTotal > 0 ? `${groupTotal} / ` : ""}{t("openNeedShort", { need: RULES.openThreshold })}
-                  {pairGroups.length > 0 && <><br />{t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
+                  {groupTotal > 0 && `${groupTotal} / ${RULES.openThreshold}`}
+                  {pairGroups.length > 0 && <>{groupTotal > 0 && <br />}{t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
                 </span>
               )}
               {!me.opened && !handOver && (
