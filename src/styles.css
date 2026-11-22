@@ -1,8 +1,8 @@
 :root {
-  /* Istaka teması (varsayılan: klasik ceviz) */
-  --rack-bg: linear-gradient(#9a6a35, #7a4f24);
-  --rack-lip: #4f3116;
-  --rack-lip-dark: #3b2410;
+  /* Istaka teması: Yeşil Çuha (çuha yüzey, ahşap raflar) */
+  --rack-bg: radial-gradient(ellipse at 50% 30%, #2f8a57, #17573a);
+  --rack-lip: #7a4f24;
+  --rack-lip-dark: #4f3116;
   --felt: #0f5132;
   --felt-dark: #0a3d26;
   --felt-light: #1a6b45;
