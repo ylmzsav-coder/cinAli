@@ -330,7 +330,7 @@ const tr = {
   vipShort: "VIP Oda",
   vipMonth: "ay",
   vipPerkRoom: "2 kişilik özel VIP oda: rakibinle karşılıklı oyna",
-  vipPerkChat: "Sohbetli oyun: rakibinle filtresiz, serbest sohbet",
+  vipPerkChat: "Sohbetli oyun: Oyuncu arkadaşınla sohbet et",
   vipPerkNoWatch: "Seyirci yok: oyununu kimse izleyemez",
   vipPerkTable: "VIP masa: giriş {entry} çip, kazanan {prize} çip",
   vipPerkGift: "Abone olunca {n} çip hediye",

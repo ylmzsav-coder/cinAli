@@ -326,7 +326,7 @@ const fr: Messages = {
   vipShort: "Salon VIP",
   vipMonth: "mois",
   vipPerkRoom: "Salon VIP privé à 2 : face à face",
-  vipPerkChat: "Partie avec discussion : discussion libre et sans filtre avec ton adversaire",
+  vipPerkChat: "Partie avec discussion : discute avec ton partenaire de jeu",
   vipPerkNoWatch: "Aucun spectateur : personne ne peut regarder",
   vipPerkTable: "Table VIP : mise {entry} jetons, le gagnant reçoit {prize}",
   vipPerkGift: "{n} jetons offerts à l'abonnement",

@@ -326,7 +326,7 @@ const de: Messages = {
   vipShort: "VIP-Raum",
   vipMonth: "Monat",
   vipPerkRoom: "Privater VIP-Raum für 2: spielt euch direkt gegenüber",
-  vipPerkChat: "Spiel mit Chat: ungefilterter, freier Chat mit deinem Gegner",
+  vipPerkChat: "Spiel mit Chat: chatte mit deinem Mitspieler",
   vipPerkNoWatch: "Keine Zuschauer: niemand kann zusehen",
   vipPerkTable: "VIP-Tisch: Einsatz {entry} Chips, Sieger erhält {prize}",
   vipPerkGift: "{n} Gratis-Chips beim Abschluss",

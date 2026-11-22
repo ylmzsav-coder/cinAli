@@ -326,7 +326,7 @@ const pt: Messages = {
   vipShort: "Sala VIP",
   vipMonth: "mês",
   vipPerkRoom: "Sala VIP privada para 2: frente a frente",
-  vipPerkChat: "Jogo com chat: conversa livre e sem filtro com seu adversário",
+  vipPerkChat: "Jogo com chat: converse com seu parceiro de jogo",
   vipPerkNoWatch: "Sem espectadores: ninguém pode assistir",
   vipPerkTable: "Mesa VIP: entrada {entry} fichas, o vencedor leva {prize}",
   vipPerkGift: "{n} fichas de presente ao assinar",
