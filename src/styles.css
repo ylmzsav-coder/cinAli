@@ -1256,3 +1256,4 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .side-controls > .deck .deck-word { font-size: 1.05rem; }
 .okey .side-controls > .rack-actions > .primary { width: 88%; font-size: 0.8rem; }
 .okey-rack .rack-need { left: 2px; }
+.okey-rack .rack-need { left: 5px; }
