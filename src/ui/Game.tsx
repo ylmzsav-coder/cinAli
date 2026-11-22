@@ -412,6 +412,8 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
   }, [slots, tileById, dict, jokerPick]);
   const validGroups = groups.filter((g) => g.valid);
   const groupTotal = validGroups.reduce((s, g) => s + g.value, 0);
+  /** Istakadaki puan sayacı: açmadan önce ıstakadaki geçerli perlerin toplamı (101'e doğru), açtıktan sonra yere açılan ve işlenen puan. */
+  const liveScore = (me.points ?? 0) + (me.opened ? 0 : groupTotal);
   /** Oyuncu "Çifte Git" düğmesine bastı mı (el başında sıfırlanır). */
   const [pairChoice, setPairChoice] = useState(false);
   useEffect(() => setPairChoice(false), [state.handNo]);
@@ -1145,9 +1147,9 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               </span>
             )}
             {/* Sağda: yere açtığı ve işlediği kelimelerden topladığı puan */}
-            <span className="rack-score" aria-label={t("myTableScore", { n: me.points ?? 0 })}>
+            <span className={`rack-score ${!me.opened && groupTotal > 0 ? "live" : ""}`} aria-label={t("myTableScore", { n: liveScore })}>
               <small>{t("totalWord")}</small>
-              <b key={me.points ?? 0}>{me.points ?? 0}</b>
+              <b key={liveScore}>{liveScore}</b>
               <small>{t("pointsWord")}</small>
             </span>
             {timerStyle(ME) && (
