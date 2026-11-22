@@ -1,11 +1,28 @@
 /**
- * Şikâyet / öneri kutusu. Sunucu (Firebase) varsa mesaj hemen iletilir;
- * yoksa cihazda bekletilir ve sunucu kurulduğunda ilk açılışta iletilir.
+ * Şikâyet / öneri kutusu. Mesaj oyun sahibinin e-posta adresine gider:
+ * oyuncunun e-posta uygulaması konu ve metin hazır şekilde açılır. Sunucu
+ * (Firebase) varsa mesajın bir kopyası ayrıca sunucuya da kaydedilir.
  */
 import { CLOUD, call } from "./online/cloud";
 
 export type FeedbackType = "sikayet" | "oneri" | "hata" | "kelime";
 export const FEEDBACK_MAX = 250;
+/** Şikâyet ve önerilerin geleceği adres (oyun sahibinin isteğiyle). */
+export const FEEDBACK_EMAIL = "ylmzsav@gmail.com";
+
+const TYPE_TITLES: Record<FeedbackType, string> = { sikayet: "Şikayet", oneri: "Öneri", hata: "Hata bildirimi", kelime: "Kelime önerisi" };
+
+/** E-posta bağlantısı: konu "Word Okey – <tür>", gövde mesaj + dil/sürüm bilgisi. */
+export function feedbackMailto(item: FeedbackItem): string {
+  const subject = `Word Okey – ${TYPE_TITLES[item.type]}`;
+  const body = `${item.text}\n\n—\nDil: ${item.lang} · Sürüm: ${item.version}`;
+  return `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+/** Oyuncunun e-posta uygulamasını mesaj hazır şekilde açar. */
+export function openFeedbackMail(item: FeedbackItem) {
+  window.location.href = feedbackMailto(item);
+}
 
 export interface FeedbackItem {
   type: FeedbackType;
@@ -33,8 +50,15 @@ function writeQueue(q: FeedbackItem[]) {
   }
 }
 
-/** Mesajı gönderir; "sent" sunucuya ulaştı, "saved" cihazda bekliyor. */
-export async function submitFeedback(item: FeedbackItem): Promise<"sent" | "saved"> {
+/** Mesajı e-postayla gönderir; sunucu varsa bir kopyasını da kaydeder. */
+export async function submitFeedback(item: FeedbackItem): Promise<"mail"> {
+  openFeedbackMail(item);
+  if (CLOUD) void saveCopy(item);
+  return "mail";
+}
+
+/** Sunucuya kopya; ulaşmazsa cihazda bekletilir. */
+async function saveCopy(item: FeedbackItem): Promise<"sent" | "saved"> {
   if (CLOUD) {
     try {
       await call("sendFeedback", item);

@@ -1,5 +1,5 @@
 import { canCloseGame, closeGame } from "../exit";
-import { FEEDBACK_MAX, type FeedbackType, submitFeedback } from "../feedbackBox";
+import { FEEDBACK_EMAIL, FEEDBACK_MAX, type FeedbackType, feedbackMailto, submitFeedback } from "../feedbackBox";
 import { stopMusic } from "../music";
 import { useState } from "react";
 import { useWallet } from "../economy/useWallet";
@@ -242,7 +242,8 @@ function FeedbackDialog({ lang, onClose }: { lang: string; onClose: () => void }
   const [type, setType] = useState<FeedbackType>("oneri");
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<"sent" | "saved" | null>(null);
+  const [result, setResult] = useState<"mail" | null>(null);
+  const [lastItem, setLastItem] = useState<Parameters<typeof feedbackMailto>[0] | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const send = async () => {
     const body = text.trim();
@@ -254,7 +255,9 @@ function FeedbackDialog({ lang, onClose }: { lang: string; onClose: () => void }
     setErr(null);
     try {
       const version = typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "";
-      setResult(await submitFeedback({ type, text: body, lang, version, sentAt: Date.now() }));
+      const item = { type, text: body, lang, version, sentAt: Date.now() };
+      setLastItem(item);
+      setResult(await submitFeedback(item));
     } catch (e) {
       setErr(errorText(e));
     } finally {
@@ -267,8 +270,10 @@ function FeedbackDialog({ lang, onClose }: { lang: string; onClose: () => void }
         <h3>✉️ {t("feedbackTitle")}</h3>
         {result ? (
           <>
-            <p>{result === "sent" ? t("feedbackThanks") : t("feedbackSaved")}</p>
+            <p>{t("feedbackMailOpened")}</p>
+            <p className="muted small">{t("feedbackMailHint", { email: FEEDBACK_EMAIL })}</p>
             <div className="modal-actions">
+              {lastItem && <a className="button-like" href={feedbackMailto(lastItem)}>{t("feedbackMailAgain")}</a>}
               <button type="button" className="primary" onClick={onClose}>{t("close")}</button>
             </div>
           </>

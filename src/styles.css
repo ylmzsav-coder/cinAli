@@ -742,3 +742,4 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .fb-types button.on { background: var(--accent); color: #2a1f00; font-weight: 800; }
 .fb-count { text-align: right; margin-top: 2px; }
 .feedback-modal .modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+.feedback-modal .button-like { display: inline-flex; align-items: center; padding: 10px 16px; border-radius: 12px; background: var(--card, #e9e2cf); color: #1b2420; font-weight: 700; text-decoration: none; }
