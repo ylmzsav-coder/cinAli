@@ -319,3 +319,19 @@ describe("hoş geldin hediyesi", () => {
     expect(WELCOME_CHIPS).toBe(WELCOME_GAMES * TABLES[0].entry);
   });
 });
+
+describe("bilgisayar el açmayı geciktirir", () => {
+  it("orta seviye bilgisayar 4. turdan önce elini açmaz", () => {
+    for (let seed = 1; seed <= 5; seed++) {
+      let s = newGame(["A", "B", "C", "D"], [true, true, true, true], 1, seed);
+      let thrown = 0;
+      while (s.phase === "draw" || s.phase === "play") {
+        const before = s.current;
+        s = botStep(dict, s, "orta");
+        if (s.current !== before) thrown++;
+        if (thrown >= 12) break; // ilk 3 tur
+        expect(s.players.every((p) => !p.opened), `seed ${seed}`).toBe(true);
+      }
+    }
+  });
+});

@@ -25,12 +25,18 @@ export interface BotProfile {
   playsPerTurn: number;
   /** "az": açılış eşiğine en az taşla ulaşır; "cok": açılışta olabildiğince çok taş indirir. */
   openStyle: "az" | "cok";
+  /** Bilgisayarın kendine koyduğu açma eşiği (kuraldaki eşikten yüksek olabilir; oyuncular için kural değişmez). */
+  openThreshold?: number;
+  /** Bilgisayar en erken kaçıncı turda elini açar (1 = ilk tur). */
+  openFromRound?: number;
 }
 
 export const BOT_PROFILES: Record<BotLevel, BotProfile> = {
-  kolay: { vocabulary: 1500, maxOpenWords: 2, playsPerTurn: 1, openStyle: "az" },
-  orta: { vocabulary: 4000, maxOpenWords: 3, playsPerTurn: 1, openStyle: "az" },
-  zor: { vocabulary: 10000, maxOpenWords: 3, playsPerTurn: 2, openStyle: "az" },
+  // Bilgisayar elini hemen açmasın diye bekler: oyunlar çok çabuk bitmesin, oyuncu da kelime arayabilsin.
+  // (Ölçüm: orta seviyede 4. turdan önce açmamak bir eli 4,7 turdan 7,5 tura uzatır.)
+  kolay: { vocabulary: 1500, maxOpenWords: 2, playsPerTurn: 1, openStyle: "az", openFromRound: 5 },
+  orta: { vocabulary: 4000, maxOpenWords: 3, playsPerTurn: 1, openStyle: "az", openFromRound: 4 },
+  zor: { vocabulary: 10000, maxOpenWords: 3, playsPerTurn: 2, openStyle: "az", openFromRound: 3 },
 };
 
 const vocabCache = new WeakMap<Dictionary, Map<BotLevel, DictWord[]>>();
@@ -116,6 +122,7 @@ export function planOpening(
   rack: Tile[],
   maxWords = 4,
   style: "az" | "cok" = "cok",
+  threshold = RULES.openThreshold,
 ): string[] | null {
   const list = candidateWords(vocab, rack)
     .slice()
@@ -128,7 +135,7 @@ export function planOpening(
 
   const rec = (start: number, counts: Uint8Array, jokers: number, used: number, value: number) => {
     if (--budget < 0) return;
-    if (value >= RULES.openThreshold) {
+    if (value >= threshold) {
       const better = !best || (style === "cok" ? used > best.used : used < best.used);
       if (better) best = { words: chosen.map((c) => c.word), used, value };
       if (style === "az") return; // daha fazla kelime eklemeye gerek yok
@@ -189,6 +196,12 @@ function chooseDiscard(state: GameState, vocab: DictWord[]): Tile {
   return best;
 }
 
+/** Bu elde kaçıncı tur (0'dan): atılan taş sayısı / oyuncu sayısı. */
+function roundOf(state: GameState): number {
+  const thrown = state.discards.reduce((n, d) => n + d.length, 0);
+  return Math.floor(thrown / state.players.length);
+}
+
 /** Bilgisayar oyuncusunun tek bir hamlesini yapar (çek, aç/koy/işle veya at). */
 export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "orta"): GameState {
   const vocab = vocabularyFor(dict, level);
@@ -208,8 +221,8 @@ export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "o
 
   if (state.turnPlays >= profile.playsPerTurn) {
     // Bu turluk hamle hakkı bitti
-  } else if (!p.opened) {
-    const plan = planOpening(vocab, p.rack, profile.maxOpenWords, profile.openStyle);
+  } else if (!p.opened && roundOf(state) + 1 >= (profile.openFromRound ?? 1)) {
+    const plan = planOpening(vocab, p.rack, profile.maxOpenWords, profile.openStyle, Math.max(RULES.openThreshold, profile.openThreshold ?? 0));
     if (plan) {
       const specs: WordSpec[] = [];
       let remaining = p.rack;
