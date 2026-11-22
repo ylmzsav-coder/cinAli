@@ -1177,3 +1177,21 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .quit-btn, .okey .buy-btn { width: clamp(112px, 16vw, 158px); font-size: clamp(0.8rem, 1.9vw, 0.95rem); }
 .okey .topbar-center { gap: 6px; }
 @media (max-width: 960px) { .topbar-opp .opp-compact .opp-info > .badge:first-child { display: none; } }
+/* Eli Aç: kırmızı, yuvarlak madeni para */
+.okey .side-controls > .rack-actions > .primary {
+  flex: 1 1 auto; align-self: center; aspect-ratio: 1; height: auto; max-height: 100%; width: auto; min-width: 0;
+  border-radius: 50%; padding: 4px; font-size: 0.82rem; line-height: 1.05; text-align: center;
+  background: radial-gradient(circle at 35% 30%, #ff8a80 0%, #e53935 45%, #b71c1c 100%);
+  color: #fff; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  border: 3px solid #f6c445;
+  box-shadow: inset 0 0 0 2px #b8860b, inset 0 -3px 6px rgba(0, 0, 0, 0.35), 0 3px 6px rgba(0, 0, 0, 0.45);
+}
+.okey .side-controls > .rack-actions > .primary:disabled { opacity: 0.75; filter: saturate(0.8); }
+/* Sağ alt kontroller: sol sütun Çifte Git + deste, sağ sütun "86 puan açar" + Eli Aç parası */
+.okey .side-controls { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: auto minmax(0, 1fr); gap: 4px; }
+.okey .side-controls > .rack-actions { display: contents !important; }
+.okey .side-controls .pair-toggle { grid-column: 1; grid-row: 1; align-self: start; }
+.okey .side-controls > .deck { grid-column: 1; grid-row: 2; width: auto; min-height: 0; }
+.okey .side-controls .actions-total { grid-column: 2; grid-row: 1; align-self: center; }
+.okey .side-controls > .rack-actions > .primary { grid-column: 2; grid-row: 2; justify-self: center; align-self: center; width: 100%; max-width: 100%; height: auto; max-height: 100%; font-size: 0.9rem; }
+.okey .side-controls > .rack-actions > .primary { width: auto; height: 100%; aspect-ratio: 1 / 1; max-width: 100%; }
