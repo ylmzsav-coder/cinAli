@@ -1293,3 +1293,10 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .topbar-center .top-pair:disabled { opacity: 0.45; filter: grayscale(0.4); }
 /* Çifte Git kaldırıldı: üst çubukta 3 eşit kutu */
 .okey .topbar-center { grid-template-columns: repeat(3, var(--tb-w)); --tb-w: clamp(118px, 17vw, 170px); }
+/* Geçerli per: yeşil çerçeve (oyuncu kelimenin geçerli olduğunu görür) */
+.rack-slot.grp-ok::before { border-color: #43e07a !important; background: rgba(67, 224, 122, 0.2); box-shadow: 0 0 8px rgba(67, 224, 122, 0.45); }
+.rack-slot.grp-ok.grp-start::before { border-left-color: #43e07a !important; }
+.rack-slot.grp-ok.grp-end::before { border-right-color: #43e07a !important; }
+.rack-slot.grp-ok::before { z-index: 2; top: -5px; bottom: 0; border-top-width: 4px; border-bottom-width: 4px; background: rgba(67, 224, 122, 0.12); }
+.rack-slot.grp-ok.grp-start::before { left: -2px; border-left-width: 4px; }
+.rack-slot.grp-ok.grp-end::before { right: -2px; border-right-width: 4px; }

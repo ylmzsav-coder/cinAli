@@ -1169,8 +1169,11 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                 }
               }
               const inSel = !!selectedGroup && selectedGroup.slots.includes(i);
-              const frame = inSel
-                ? `grp-sel ${selectedGroup!.slots[0] === i ? "grp-start" : ""} ${selectedGroup!.slots[selectedGroup!.slots.length - 1] === i ? "grp-end" : ""}`
+              // Geçerli per (sözlükte olan kelime): yeşil çerçeve; seçili per: sarı çerçeve
+              const okGroup = !inSel ? validGroups.find((g) => g.slots.includes(i)) : undefined;
+              const fg = inSel ? selectedGroup! : okGroup;
+              const frame = fg
+                ? `${inSel ? "grp-sel" : "grp-sel grp-ok"} ${fg.slots[0] === i ? "grp-start" : ""} ${fg.slots[fg.slots.length - 1] === i ? "grp-end" : ""}`
                 : "";
               return (
                 <div key={i} className={`rack-slot ${frame} ${drag?.target === `slot:${i}` ? "over" : ""}`} data-drop={`slot:${i}`}>
