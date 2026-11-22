@@ -343,7 +343,7 @@ const en: Messages = {
   rule_values: "Letter values: each letter is worth its position in the alphabet ({first}). Example: {example}.",
   rule_deal: "Deal: 4 players. Everyone gets {hand} tiles; the starting player gets {hand1} and plays without drawing.",
   rule_turn: "Turn: draw a tile from the deck or take the tile discarded by the player on your left, play, then discard one tile.",
-  rule_word: "Words: at least 3 letters and in the dictionary. Common two-letter words are also valid (AT, ON, BE, IS…). Keep your words hidden on your rack.",
+  rule_word: "Word: words of at least 2 letters that are in the dictionary.",
   rule_two: "Valid two-letter words: {list}.",
   rule_open: "Opening: the words you lay down to open must total at least {need}.",
   rule_after: "After opening: you may lay new words and add letters to the start or end of any word on the table (yours or your opponents') to make a new valid word.",

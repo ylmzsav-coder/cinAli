@@ -350,7 +350,7 @@ const tr = {
   rule_values: "Harf değeri: Her harfin değeri alfabedeki sırasıdır ({first}). Örnek: {example}.",
   rule_deal: "Dağıtım: 4 oyuncu. Herkese {hand} taş, başlayan oyuncuya {hand1} taş verilir. Başlayan çekmeden oynar.",
   rule_turn: "Sıra: Sıra gelen oyuncu desteden ya da solundaki oyuncunun attığı taştan bir taş çeker, oynar ve bir taş atar.",
-  rule_word: "Kelime: En az 3 harfli, sözlükte olan kelime. Ayrıca oyunun iki harfli kelime listesindekiler de geçerlidir (AK, EL, ON, Lİ…). Kelimeler ıstakada gizli tutulur.",
+  rule_word: "Kelime: En az 2 harfli, sözlükte olan kelimeler.",
   rule_two: "İki harfli geçerli kelimeler: {list}.",
   rule_open: "El açma: Yere açılan kelimelerin toplam değeri en az {need} olmalıdır.",
   rule_after: "Açtıktan sonra: Yere yeni kelimeler koyabilir, yerdeki (kendinizin veya rakiplerin) kelimelerin başına ya da sonuna harf ekleyerek yeni geçerli bir kelime yapabilirsiniz.",

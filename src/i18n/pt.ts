@@ -343,7 +343,7 @@ const pt: Messages = {
   rule_values: "Valor das letras: cada letra vale sua posição no alfabeto ({first}). Exemplo: {example}.",
   rule_deal: "Distribuição: 4 jogadores. Cada um recebe {hand} peças; quem começa recebe {hand1} e joga sem comprar.",
   rule_turn: "Vez: compre uma peça do monte ou pegue a descartada pelo jogador à sua esquerda, jogue e descarte uma peça.",
-  rule_word: "Palavras: pelo menos 3 letras e no dicionário. Também valem as palavras comuns de duas letras (EM, LA, SE, TU…). Mantenha suas palavras escondidas no suporte.",
+  rule_word: "Palavra: palavras de pelo menos 2 letras que estão no dicionário.",
   rule_two: "Palavras de duas letras válidas: {list}.",
   rule_open: "Abrir: as palavras com que você abre devem somar pelo menos {need}.",
   rule_after: "Depois de abrir: você pode baixar novas palavras e adicionar letras no início ou no fim de qualquer palavra da mesa (sua ou dos adversários) formando uma nova palavra válida.",
