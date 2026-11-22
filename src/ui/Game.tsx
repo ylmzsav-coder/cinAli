@@ -1086,8 +1086,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             <div className="rack-actions">
               {!me.opened && !handOver && (
                 <span className="group-total actions-total">
-                  {groupTotal > 0 ? `${groupTotal} / ` : ""}{t("openNeedShort", { need: RULES.openThreshold })}
-                  {pairGroups.length > 0 && <><br />{t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
+                  {pairGroups.length > 0 && t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}
                 </span>
               )}
               {!me.opened && !handOver && (
@@ -1140,6 +1139,11 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           <section className={`rack okey-rack ${myTurn ? "my-turn" : ""} ${timerStyle(ME) ? "timed" : ""}`} aria-label={t("rackAria")}
             style={timerStyle(ME)} data-drop="rack">
             {bubbleFor(ME)}
+            {!me.opened && !handOver && (
+              <span className="rack-need" aria-hidden>
+                {groupTotal > 0 ? `${groupTotal} / ` : ""}{t("openNeedShort", { need: RULES.openThreshold })}
+              </span>
+            )}
             {timerStyle(ME) && (
               <span className={`timer-badge ${secondsLeft <= WARN_SECONDS ? "urgent" : ""}`} style={{ background: timerColor }} role="timer" aria-label={t("timeLeft", { n: secondsLeft })}>
                 ⏱ {secondsLeft}
