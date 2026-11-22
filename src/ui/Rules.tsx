@@ -1,5 +1,5 @@
 import { RULES } from "../game/engine";
-import { LangCode, gameLang } from "../game/lang";
+import { LangCode, TWO_LETTER_WORDS, gameLang } from "../game/lang";
 import { JOKER_COUNT, JOKER_PENALTY, letterTileTotal, letterValue } from "../game/tiles";
 import { t } from "../i18n";
 import { TABLE_TURN_SECONDS } from "../storage";
@@ -23,6 +23,7 @@ export function Rules({ onBack }: { onBack: () => void }) {
     t("rule_deal", { hand: RULES.handSize, hand1: RULES.handSize + 1 }),
     t("rule_turn"),
     t("rule_word"),
+    ...(TWO_LETTER_WORDS[gameLang().code] ? [t("rule_two", { list: TWO_LETTER_WORDS[gameLang().code]!.join(", ") })] : []),
     t("rule_open", { need: RULES.openThreshold }),
     t("rule_after"),
     t("rule_joker"),

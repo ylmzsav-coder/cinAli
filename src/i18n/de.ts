@@ -291,6 +291,7 @@ const de: Messages = {
   rule_deal: "Verteilen: 4 Spieler. Jeder erhält {hand} Steine, der Startspieler {hand1} und spielt ohne zu ziehen.",
   rule_turn: "Zug: Ziehe einen Stein vom Stapel oder nimm den Stein, den dein linker Nachbar abgeworfen hat, spiele und wirf dann einen Stein ab.",
   rule_word: "Wörter: mindestens 3 Buchstaben und im Wörterbuch. Außerdem gilt jedes Zweierpaar aus einem Vokal und einem Konsonanten (AN, ES, DU, OB…). Halte deine Wörter auf der Ablage verdeckt.",
+  rule_two: "Gültige Wörter mit zwei Buchstaben: {list}.",
   rule_open: "Auslegen: Die Wörter, mit denen du auslegst, müssen zusammen mindestens {need} ergeben.",
   rule_after: "Nach dem Auslegen: Du darfst neue Wörter legen und Buchstaben vorne oder hinten an jedes Wort auf dem Tisch (deine oder fremde) anlegen, sodass ein neues gültiges Wort entsteht.",
   rule_joker: "Joker: steht für jeden Buchstaben und zählt dessen Wert.",

@@ -1,4 +1,4 @@
-import { LangCode, LangPack, VOWELS, gameLang } from "./lang";
+import { LangCode, LangPack, TWO_LETTER_WORDS, VOWELS, gameLang } from "./lang";
 
 export const MIN_WORD_LENGTH = 3;
 /** Oynanabilen en kısa kelime: iki harfli kural (biri sesli, biri sessiz). */
@@ -55,12 +55,15 @@ export class Dictionary {
   }
 
   /**
-   * İki harfli kural: biri sesli, biri sessiz harf olan her ikili geçerlidir
-   * (AB, BA, EK, Lİ…). Oyuncu elinde son taşlarla kalınca bitirebilsin diye.
+   * İki harfli kelimeler: dilin listesi varsa yalnızca listedekiler (Türkçe: AK,
+   * EL, ON, Lİ…); yoksa biri sesli, biri sessiz harf olan her ikili. Oyuncu elinde
+   * son taşlarla kalınca bitirebilsin diye.
    */
   isTwoLetter(word: string): boolean {
     const ch = [...word];
     if (ch.length !== 2 || !ch.every((c) => this.alphabetSet.has(c))) return false;
+    const list = TWO_LETTER_WORDS[this.lang];
+    if (list) return list.includes(word);
     const v = VOWELS[this.lang];
     return v.includes(ch[0]) !== v.includes(ch[1]);
   }

@@ -21,6 +21,15 @@ export interface LangPack {
 
 const split = (s: string) => [...s];
 
+/**
+ * İki harfli geçerli kelimeler. Bir dil için liste varsa yalnızca listedekiler
+ * geçerlidir (Türkçe: oyun sahibinin belirlediği liste); liste yoksa biri sesli
+ * biri sessiz harf olan her ikili geçerlidir.
+ */
+export const TWO_LETTER_WORDS: Partial<Record<LangCode, readonly string[]>> = {
+  tr: ["AR", "AT", "AY", "AĞ", "AS", "AD", "AF", "AH", "AK", "AL", "AŞ", "AZ", "AN", "AÇ", "RA", "TA", "YA", "DA", "HA", "KA", "LA", "NA", "MA", "ER", "ET", "EY", "EK", "EL", "EŞ", "EZ", "EN", "EM", "RE", "TE", "YE", "PE", "SE", "FE", "HE", "KE", "LE", "ŞE", "ZE", "CE", "VE", "BE", "NE", "ME", "ÇE", "OL", "OY", "OK", "İZ", "ON", "LO", "KO", "MO", "NO", "TO", "RO", "İT", "İS", "İP", "İR", "İŞ", "İL", "İN", "İM", "Tİ", "Pİ", "Sİ", "Dİ", "Kİ", "Lİ", "Cİ", "Mİ"],
+};
+
 /** Her dilin sesli harfleri (iki harfli kelime kuralı için). */
 export const VOWELS: Record<LangCode, string> = {
   tr: "AEIİOÖUÜ",

@@ -291,6 +291,7 @@ const es: Messages = {
   rule_deal: "Reparto: 4 jugadores. Cada uno recibe {hand} fichas; quien empieza recibe {hand1} y juega sin robar.",
   rule_turn: "Turno: roba una ficha del mazo o toma la que descartó el jugador de tu izquierda, juega y descarta una ficha.",
   rule_word: "Palabras: al menos 3 letras y en el diccionario. También vale cualquier par de dos letras con una vocal y una consonante (EL, LA, SI, TU…). Mantén tus palabras ocultas en el atril.",
+  rule_two: "Palabras de dos letras válidas: {list}.",
   rule_open: "Abrir: las palabras con las que abres deben sumar al menos {need}.",
   rule_after: "Después de abrir: puedes colocar nuevas palabras y añadir letras al principio o al final de cualquier palabra de la mesa (tuya o de un rival) para formar una nueva palabra válida.",
   rule_joker: "Comodín: sustituye a cualquier letra y vale lo mismo que ella.",

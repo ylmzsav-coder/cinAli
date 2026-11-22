@@ -339,9 +339,10 @@ describe("bilgisayar el açmayı geciktirir", () => {
 import { layWord } from "../src/game/engine";
 describe("iki harfli kelimeler", () => {
   const base = newGame(["Sen", "B1", "B2", "B3"], [false, true, true, true], 3, 11);
-  it("biri sesli biri sessiz olan her ikili geçerli; iki sesli ya da iki sessiz geçersiz", () => {
-    for (const w of ["AK", "KA", "EL", "LE", "BU", "Lİ", "ÖZ", "ÜÇ"]) expect(dict.has(w), w).toBe(true);
-    for (const w of ["AE", "OU", "KL", "TR", "AA", "K"]) expect(dict.has(w), w).toBe(false);
+  it("Türkçede yalnızca listedeki iki harfli kelimeler geçerli", () => {
+    // Türkçede yalnızca oyun sahibinin listesi geçerli
+    for (const w of ["AK", "KA", "EL", "LE", "Lİ", "ON", "İZ", "ÇE", "AĞ"]) expect(dict.has(w), w).toBe(true);
+    for (const w of ["BU", "ÖZ", "ÜÇ", "ZÖ", "AE", "KL", "AA", "K"]) expect(dict.has(w), w).toBe(false);
   });
   it("açmış oyuncu iki harfli kelime koyabilir; tek harf koyamaz", () => {
     const kalem = tiles("KALEM"), cay = tiles("ÇAY"), tuz = tiles("TUZ"), ek = tiles("EK"), b = t("B");

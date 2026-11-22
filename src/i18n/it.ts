@@ -291,6 +291,7 @@ const it: Messages = {
   rule_deal: "Distribuzione: 4 giocatori. Ognuno riceve {hand} tessere; chi inizia ne riceve {hand1} e gioca senza pescare.",
   rule_turn: "Turno: pesca una tessera dal mazzo o prendi quella scartata dal giocatore alla tua sinistra, gioca e scarta una tessera.",
   rule_word: "Parole: almeno 3 lettere e presenti nel dizionario. Vale anche ogni coppia di due lettere con una vocale e una consonante (IL, LA, SE, TU…). Tieni le tue parole nascoste sul leggio.",
+  rule_two: "Parole di due lettere valide: {list}.",
   rule_open: "Apertura: le parole con cui apri devono valere in totale almeno {need}.",
   rule_after: "Dopo l'apertura: puoi calare nuove parole e aggiungere lettere all'inizio o alla fine di qualsiasi parola sul tavolo (tua o degli avversari) formando una nuova parola valida.",
   rule_joker: "Jolly: sostituisce qualsiasi lettera e ne prende il valore.",
