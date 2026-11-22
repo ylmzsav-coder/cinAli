@@ -46,7 +46,10 @@ export function Tables({ onPick, onCreatePrivate, onJoinCode, onShop, onBack }: 
                 {!w.ready ? (
                   <button type="button" disabled aria-busy>…</button>
                 ) : !isVip ? (
-                  <button type="button" className="vip-buy" onClick={() => setVipOpen(true)}>👑 {t("vipBecome")}</button>
+                  <>
+                    <div className="vip-guest-note">🤝 {t("vipGuestShort")}</div>
+                    <button type="button" className="vip-buy" onClick={() => setVipOpen(true)}>👑 {t("vipBecome")}</button>
+                  </>
                 ) : afford ? (
                   <>
                     <button type="button" className="primary" onClick={() => onPick(tb)}>{t("sit")}</button>

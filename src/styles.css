@@ -1036,3 +1036,5 @@ button.avatar { cursor: pointer; min-height: 0; }
   background: linear-gradient(135deg, #2a1f00, #5a4100); border: 2px solid #f0a500; color: #fff;
 }
 .invite-banner > span { flex: 1; }
+.vip-perks li.vip-perk-hl { background: linear-gradient(#ffe082, #f0a500); color: #3b2500; border: 2px solid #8a5a00; font-weight: 900; }
+.vip-guest-note { font-size: 0.8rem; font-weight: 800; color: #ffe082; text-align: center; }
