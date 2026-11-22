@@ -52,7 +52,7 @@ export function Tables({ onPick, onCreatePrivate, onJoinCode, onShop, onBack }: 
                   </>
                 ) : afford ? (
                   <>
-                    <button type="button" className="primary" onClick={() => onPick(tb)}>{t("sit")}</button>
+                    <button type="button" className="primary vip-search-btn" onClick={() => onPick(tb)}>🔎 {t("vipSearch")}</button>
                     {CLOUD && <button type="button" onClick={() => onCreatePrivate(tb)}>📨 {t("vipInviteFriend")}</button>}
                   </>
                 ) : (

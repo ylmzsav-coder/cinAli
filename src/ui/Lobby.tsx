@@ -58,7 +58,11 @@ export function TableLobby({ table, name, onStart, onLeave }: { table: TableConf
     <div className="lobby">
       <div className={`lobby-felt ${table.vip ? "vip" : ""}`}>
         <button type="button" className="leave-round" onClick={onLeave}>{t("leaveTableShort")}</button>
-        <InviteSeat className="seat-top" onInvite={() => void invite()} />
+        {table.vip ? (
+          <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>👑</span></span> {t("vipSearchSeat")}</div>
+        ) : (
+          <InviteSeat className="seat-top" onInvite={() => void invite()} />
+        )}
         {(table.players ?? 4) > 2 && <InviteSeat className="seat-left" onInvite={() => void invite()} />}
         {(table.players ?? 4) > 2 && <InviteSeat className="seat-right" onInvite={() => void invite()} />}
         <div className="lobby-me">
@@ -71,9 +75,18 @@ export function TableLobby({ table, name, onStart, onLeave }: { table: TableConf
             <div className="lobby-row"><span className="muted small">{t("entry")}</span><Chips amount={table.entry} /></div>
             <div className="lobby-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(table)} /></div>
             {table.vip && <div className="vip-chat-tag">💬 {t("vipChatGame")}</div>}
-            <div className="lobby-wait">{t("lobbyWaiting")}</div>
-            <div className="muted small">{t("lobbyBots", { n: formatNumber(Math.max(0, left)) })}</div>
-            <button type="button" className="primary" onClick={onStart}>{t("startNow")}</button>
+            {table.vip ? (
+              <>
+                <div className="lobby-wait">🔎 {t("vipSearching")}</div>
+                <div className="muted small">{t("vipSearchingLocal", { n: formatNumber(Math.max(0, left)) })}</div>
+              </>
+            ) : (
+              <>
+                <div className="lobby-wait">{t("lobbyWaiting")}</div>
+                <div className="muted small">{t("lobbyBots", { n: formatNumber(Math.max(0, left)) })}</div>
+              </>
+            )}
+            <button type="button" className="primary" onClick={onStart}>{table.vip ? `🤖 ${t("vipPlayBotNow")}` : t("startNow")}</button>
             {msg && <div className="toast">{msg}</div>}
           </div>
         </div>

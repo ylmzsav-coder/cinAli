@@ -260,6 +260,24 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
   const cfg = tableById(doc_.type) ?? (entry.kind !== "join" ? entry.table : undefined);
   if (!cfg) return <div className="page"><p className="muted">{t("connecting")}</p></div>;
 
+  if (doc_.status === "waiting" && cfg.vip && !doc_.private) {
+    // VIP rastgele eşleşme: başka bir VIP oyuncu aranır
+    const left = Math.max(0, Math.ceil((doc_.startAt - now) / 1000));
+    return (
+      <div className="page menu vip-searching">
+        <div className="vip-radar" aria-hidden><span>👑</span></div>
+        <h1>{t("vipSearching")}</h1>
+        <p className="muted">{t("vipSearchingDesc", { n: left })}</p>
+        <div className="waiting-seats">
+          <div className="waiting-seat taken">{doc_.seats[0]?.name}</div>
+          <div className="waiting-seat searching">🔎 {t("vipSearchSeat")}</div>
+        </div>
+        <button type="button" className="primary big" onClick={() => void call("startTable", { tableId }).catch(() => {})}>🤖 {t("vipPlayBotNow")}</button>
+        <button type="button" className="big" onClick={leave}>{t("vipCancelSearch")}</button>
+      </div>
+    );
+  }
+
   if (doc_.status === "waiting") {
     const left = Math.max(0, Math.ceil((doc_.startAt - now) / 1000));
     const size = cfg.players ?? 4;

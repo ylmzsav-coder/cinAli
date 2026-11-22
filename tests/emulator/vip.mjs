@@ -62,5 +62,18 @@ check("misafir sohbet edebilir", (await G.call("sendText", { tableId: room.table
 const H = await client("Hale");
 check("davetsiz ve abonesiz kişi VIP masaya oturamaz", (await errCode(H.call("joinTable", { type, lang, name: "Hale" }))) === "vipOnly");
 check("arkadaş olmayana davet gönderilemez", (await errCode(A.call("inviteFriend", { tableId: room.tableId, friendUid: B.uid }))) !== "BAŞARI");
+// VIP oyuncu ara: tek başına oturan 60 sn rakip bekler, isterse bilgisayarla hemen başlar
+const V = await client("Vural");
+await V.call("testSubscribeVip");
+const vs = await V.call("joinTable", { type, lang, name: "Vural" });
+const vt = (await getDoc(doc(V.db, "tables", vs.tableId))).data();
+const waitSec = Math.round((vt.startAt - Date.now()) / 1000);
+check("VIP aramada ~60 sn rakip beklenir", vt.status === "waiting" && waitSec >= 55 && waitSec <= 61, `${waitSec} sn`);
+await V.call("startTable", { tableId: vs.tableId });
+const vt2 = (await getDoc(doc(V.db, "tables", vs.tableId))).data();
+check("VIP oyuncu beklemeden bilgisayarla başlatabilir", vt2.status === "playing" && vt2.seats.length === 2 && vt2.seats[1].bot === true);
+const N = await client("Nur");
+const cj = await N.call("joinTable", { type: "caylak", lang, name: "Nur" });
+check("Çaylak masada erken başlatma yine engelli", (await errCode(N.call("startTable", { tableId: cj.tableId }))) === "notYet");
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

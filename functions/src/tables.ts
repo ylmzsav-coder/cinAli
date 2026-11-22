@@ -44,6 +44,8 @@ import { publicView, type Action, type PublicView, type SeatInfo } from "../../s
 
 /** Masanın başlamadan önce oyuncu beklediği süre. */
 export const WAIT_MS = 8_000;
+/** VIP odada rastgele eşleşme: rakip VIP oyuncu için bekleme süresi. */
+export const VIP_WAIT_MS = 60_000;
 /** Hamle süresi (sunucu tarafı; istemcideki çerçeveyle aynı). */
 export const TURN_MS = 45_000;
 /** Ağ gecikmesi için ek süre. */
@@ -352,7 +354,7 @@ export const joinTable = onCall(async (req) => {
       const table: TableDoc = {
         type: cfg.id, private: false, code: null, lang, status: "waiting",
         seats: [{ uid, name, bot: false }], uids: [uid],
-        createdAt: now, startAt: now + WAIT_MS, deadline: null, version: 0, view: null,
+        createdAt: now, startAt: now + (cfg.vip ? VIP_WAIT_MS : WAIT_MS), deadline: null, version: 0, view: null,
       };
       t.set(tableRef(id), table);
     }
@@ -372,7 +374,8 @@ export const startTable = onCall(async (req) => {
     if (table.private) {
       // Özel masayı yalnızca kuran kişi başlatır
       if (table.seats[0]?.uid !== uid) fail("hostOnly", {}, "permission-denied");
-    } else if (Date.now() < table.startAt) fail("notYet");
+    } else if (Date.now() < table.startAt && !configFor(table.type).vip) fail("notYet");
+    // VIP aramasında oyuncu beklemek istemezse bilgisayar rakiple hemen başlatabilir
     const started = startGame(table, Date.now() % 1_000_000);
     await persist(t, id, started.table, started.state, new Map());
     return { ok: true };
