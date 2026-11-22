@@ -971,7 +971,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               aria-label={t("chatOpen")} aria-expanded={chatOpen}>😊</button>
           )}
           <Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} />
-          <button type="button" className="scores-btn" onClick={() => setShowScores(true)} title={t("scores")} aria-label={t("scores")}>📊</button>
+          <button type="button" className="scores-btn" onClick={() => setShowScores(true)} title={t("scores")}>📊<span className="scores-label">{t("scores")}</span></button>
         </div>
       </header>
       {profileSeat !== null && (

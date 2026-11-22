@@ -1337,3 +1337,6 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey-rack .rack-need small, .okey-rack .rack-score small { font-size: clamp(0.8rem, 2.8vh, 1.2rem); -webkit-text-stroke: 5px #fff; }
 .okey-rack .rack-score { right: 4px; }
 .okey .topbar > .title:first-child { margin-left: 0; max-width: 100%; }
+/* Puanlar düğmesi: simge + yazı */
+.topbar .scores-btn { width: auto; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 2px 8px; font-size: 1.05rem; line-height: 1; height: 44px; }
+.topbar .scores-btn .scores-label { font-size: 0.62rem; font-weight: 800; color: #fff; margin-top: 2px; }
