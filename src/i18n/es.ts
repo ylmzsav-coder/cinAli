@@ -355,7 +355,7 @@ const es: Messages = {
   vipPerkGuest: "INVITADO GRATIS: invita a un amigo a tu sala VIP; no necesita suscripción VIP ni paga entrada",
   vipGuestShort: "Los miembros VIP pueden invitar a un amigo gratis",
   vipPerkNoTimer: "Sin tiempo por turno: juega con calma mientras chateas",
-  gift_kravat: "Corbata",
+  gift_cay: "Té",
   gift_sapka: "Sombrero",
   gift_top: "Balón",
   gift_gozluk: "Gafas de sol",
