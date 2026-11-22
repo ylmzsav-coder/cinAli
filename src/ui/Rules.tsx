@@ -1,5 +1,5 @@
-import { RULES } from "../game/engine";
-import { LangCode, TWO_LETTER_WORDS, gameLang } from "../game/lang";
+import { RULES, jokerRackValue } from "../game/engine";
+import { LangCode, TWO_LETTER_WORDS, alphabet, gameLang } from "../game/lang";
 import { JOKER_COUNT, letterTileTotal, letterValue } from "../game/tiles";
 import { t } from "../i18n";
 import { TABLE_TURN_SECONDS } from "../storage";
@@ -28,7 +28,7 @@ export function Rules({ onBack }: { onBack: () => void }) {
     t("rule_after"),
     t("rule_joker"),
     t("rule_finish"),
-    t("rule_score", { win: RULES.winBonus }),
+    t("rule_score", { win: RULES.winBonus, joker: jokerRackValue(), top: alphabet()[alphabet().length - 1] }),
     t("rule_color", { score: RULES.colorWinBonus }),
     t("rule_pairs", { need: RULES.pairsToOpen, open: RULES.openThreshold, pair: RULES.pairWinBonus, pairColor: RULES.pairColorWinBonus }),
     t("rule_timer", { n: TABLE_TURN_SECONDS }),

@@ -146,6 +146,11 @@ describe("kurallar", () => {
     expect(o3.players[owner].points).toBe(wordValue("KALEM") + wordValue("ÇAY") + wordValue("TUZ"));
   });
 
+  it("elde kalan okey taşı en yüksek harf (Z = 29) kadar eksi", () => {
+    const p = { ...base.players[0], rack: [t("A"), { id: 999, letter: null, color: "kirmizi" } as Tile] };
+    expect(rackValue(p)).toBe(1 + 29);
+  });
+
   it("en çok puanı toplayan oyunu kazanır", () => {
     const g = structuredClone(base);
     g.history = [[174 - 40, 100 + 120, -30, 0], [50, 10, 300, -5]];

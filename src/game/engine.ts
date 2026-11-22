@@ -469,9 +469,14 @@ export function colorWinOf(p: Player): Color | null {
   return colored.every((t) => t.color === c) ? c : null;
 }
 
-/** Elde kalan harflerin değeri (bitiremeyen oyuncunun hanesine eksi yazılır; okey taşı 0). */
+/** Elde kalan okey taşının cezası: alfabenin en yüksek değerli harfi kadar (Türkçede Z = 29). */
+export function jokerRackValue(): number {
+  return alphabet().length;
+}
+
+/** Elde kalan harflerin değeri (bitiremeyen oyuncunun hanesine eksi yazılır; okey taşı en yüksek harf kadar). */
 export function rackValue(p: Player): number {
-  return p.rack.reduce((s, t) => s + (t.letter === null ? 0 : letterValue(t.letter)), 0);
+  return p.rack.reduce((s, t) => s + (t.letter === null ? jokerRackValue() : letterValue(t.letter)), 0);
 }
 
 /** Bitirme ikramiyesi: normal 100, Renk Bitirme 200, çiftle 200, tek renk çiftle 400. */

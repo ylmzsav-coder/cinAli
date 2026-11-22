@@ -323,7 +323,7 @@ const pt: Messages = {
   "log.openedPairs": "{name} foi de pares: {words}",
   "log.pairFinished": "{name} bateu com pares!",
   "log.pairColorFinished": "{name} bateu com pares de uma só cor!",
-  rule_score: "Pontuação: o valor de cada palavra que você baixa vai para a sua pontuação; letras que você acrescenta às palavras dos outros também contam para você. Quem bate ganha ainda +{win} de bônus. Quem não bate perde o valor das letras que sobraram (o curinga vale 0). Exemplo: você baixou palavras no valor de 174 e sobraram 40 pontos em letras: 174 − 40 = 134. Se o monte acabar, a rodada não tem vencedor; cada um fica com o que baixou e perde o que sobrou.",
+  rule_score: "Pontuação: o valor de cada palavra que você baixa vai para a sua pontuação; letras que você acrescenta às palavras dos outros também contam para você. Quem bate ganha ainda +{win} de bônus. Quem não bate perde o valor das letras que sobraram (um curinga na mão vale como a letra mais alta, {top}: −{joker}). Exemplo: você baixou palavras no valor de 174 e sobraram 40 pontos em letras: 174 − 40 = 134. Se o monte acabar, a rodada não tem vencedor; cada um fica com o que baixou e perde o que sobrou.",
   rule_color: "Batida de cor: se todas as peças que o vencedor baixou na rodada forem da mesma cor (o curinga combina com todas), o bônus é +{score}.",
   rule_timer: "Tempo por vez: cada vez tem um limite ({n} segundos nas mesas com fichas), mostrado por uma moldura verde, depois amarela e vermelha. Quando acaba, compra-se se necessário e uma peça é descartada automaticamente.",
   rule_winner: "Vencedor: o objetivo é somar mais pontos. Após o número de rodadas definido, vence o maior total. Quem vence uma rodada também recebe +{chips} fichas de bônus.",
