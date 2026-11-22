@@ -625,7 +625,7 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
   /* kabartma: üst kenarda ışık, alt kenarda gölge */
   text-shadow: -1px -1px 0 rgba(255, 235, 215, 0.28), 1px 2px 0 rgba(0, 0, 0, 0.45), 2px 3px 3px rgba(0, 0, 0, 0.25);
 }
-.okey-rack > * { position: relative; z-index: 1; }
+.okey-rack > .rack-slot { z-index: 1; } /* süre rozeti mutlak konumlu kalsın */
 .okey-rack.timed { background: var(--rack-bg) padding-box, conic-gradient(var(--tc) var(--p), rgba(255, 255, 255, 0.15) 0) border-box !important; }
 .rack-slot {
   position: relative; display: flex; align-items: flex-end; justify-content: center;
