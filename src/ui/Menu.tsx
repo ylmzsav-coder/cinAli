@@ -9,6 +9,7 @@ import { LANGS, LANG_ORDER, LangCode, PLAYABLE_LANGS } from "../game/lang";
 import { errorText, formatNumber, t } from "../i18n";
 import { Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
+import { CartIcon } from "./CartIcon";
 import { Chips } from "./Chips";
 import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
@@ -206,7 +207,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             </button>
           </div>
           <div className="hub-row">
-            <button type="button" className="big" onClick={onShop}>{t("shop")}</button>
+            <button type="button" className="big shop-hub" onClick={onShop}><CartIcon /> {t("shop")}</button>
             <button type="button" className="big" onClick={onRules}>{t("rules")}</button>
           </div>
           <div className="hub-row">
