@@ -1125,3 +1125,8 @@ button.practice-hub { background: var(--accent); color: #2a1f00; }
 button.shop-hub { background: linear-gradient(180deg, #9c4dcc, #6a1b9a); color: #fff; border: 1px solid #4a148c; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 /* Kurallar düğmesi: mavi */
 button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color: #fff; border: 1px solid #0d47a1; }
+/* Kapalı ayar düğmesi: soluk ve çizgili, açık olan belirgin */
+.toggle.off { opacity: 0.55; position: relative; }
+.toggle.off::after { content: ""; position: absolute; left: 22%; right: 22%; top: 50%; height: 2px; background: #ff6b6b; transform: rotate(-35deg); border-radius: 2px; }
+/* Ana menü bildirimleri düğmeleri kaydırmasın: üstte yüzen kutu */
+.hub .toast { position: fixed; top: 64px; left: 50%; transform: translateX(-50%); z-index: 60; width: auto; max-width: 90vw; padding: 8px 20px; box-shadow: 0 4px 14px rgba(0,0,0,0.4); }

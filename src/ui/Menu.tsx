@@ -1,6 +1,7 @@
 import { canCloseGame, closeGame } from "../exit";
 import { FEEDBACK_EMAIL, FEEDBACK_MAX, type FeedbackType, feedbackMailto, submitFeedback } from "../feedbackBox";
 import { stopMusic } from "../music";
+import { buzz, pop, tileSound } from "../feedback";
 import { useEffect, useState } from "react";
 import { useWallet } from "../economy/useWallet";
 import { DAILY_BONUS, REFILL_CHIPS, WELCOME_CHIPS, WELCOME_GAMES, wallet } from "../economy/wallet";
@@ -38,6 +39,11 @@ interface HubProps {
 export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onPractice, onShop, onRules, onWatch, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 2500);
+    return () => clearTimeout(id);
+  }, [toast]);
   const [statsOpen, setStatsOpen] = useState(false);
   const [vipOpen, setVipOpen] = useState(false);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
@@ -116,22 +122,28 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </label>
         </div>
         <div className="toggles">
-          <button type="button" className={`toggle ${settings.music ? "on" : ""}`} aria-pressed={settings.music}
-            onClick={() => onSettings({ ...settings, music: !settings.music })} title={t("music")}>
-            🎵<span className="toggle-label"> {t("music")}</span>
-          </button>
-          <button type="button" className={`toggle ${settings.sound ? "on" : ""}`} aria-pressed={settings.sound}
-            onClick={() => onSettings({ ...settings, sound: !settings.sound })} title={t("sound")}>
-            {settings.sound ? "🔊" : "🔇"}<span className="toggle-label"> {t("sound")}</span>
-          </button>
-          <button type="button" className={`toggle ${settings.vibration ? "on" : ""}`} aria-pressed={settings.vibration}
-            onClick={() => onSettings({ ...settings, vibration: !settings.vibration })} title={t("vibration")}>
-            📳<span className="toggle-label"> {t("vibration")}</span>
-          </button>
-          <button type="button" className={`toggle ${settings.chat ? "on" : ""}`} aria-pressed={settings.chat}
-            onClick={() => onSettings({ ...settings, chat: !settings.chat })} title={t("chat")}>
-            💬<span className="toggle-label"> {t("chat")}</span>
-          </button>
+          {([
+            ["music", "🎵", "🎵"],
+            ["sound", "🔊", "🔇"],
+            ["vibration", "📳", "📴"],
+            ["chat", "💬", "💬"],
+          ] as const).map(([key, onIco, offIco]) => {
+            const on = !!settings[key];
+            return (
+              <button key={key} type="button" className={`toggle ${on ? "on" : "off"}`} aria-pressed={on} title={t(key)}
+                onClick={() => {
+                  const next = !on;
+                  onSettings({ ...settings, [key]: next });
+                  // Menüde etkisi görünmeyen ayarlar için anında geri bildirim
+                  if (next && key === "sound") tileSound("drop");
+                  if (next && key === "vibration") buzz(true);
+                  if (next && key === "chat" && settings.sound) pop();
+                  setToast(t(next ? "toggleOn" : "toggleOff", { name: t(`${key}Setting` as "soundSetting") }));
+                }}>
+                {on ? onIco : offIco}<span className="toggle-label"> {t(key)}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
       <div className="hub-main">
