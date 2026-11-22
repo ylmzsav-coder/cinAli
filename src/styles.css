@@ -884,4 +884,4 @@ button.avatar { cursor: pointer; min-height: 0; }
 }
 .pair-toggle.on { background: linear-gradient(#ffb74d, #f57c00); color: #2b1600; text-shadow: none; }
 .buy-btn { display: inline-flex; align-items: center; gap: 6px; }
-.cart-ico { width: 1.5em; height: 1.5em; color: #e53935; filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4)); }
+.cart-ico { width: 1.7em; height: 1.7em; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)); }
