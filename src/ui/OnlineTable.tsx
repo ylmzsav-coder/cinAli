@@ -296,7 +296,10 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
           <PrivateLobby code={doc_.code ?? ""} isHost={doc_.seats[0]?.uid === uid} onStart={() => call("startTable", { tableId })}
             tableId={tableId!} vip={!!cfg.vip} seatedUids={doc_.uids} />
         ) : (
-          <p className="muted">{t("waitingDesc", { n: left })}</p>
+          <>
+            <p className="muted">{t("waitingDesc", { n: left })}</p>
+            <button type="button" className="primary big" onClick={() => void call("startTable", { tableId }).catch(() => {})}>{t("startNow")}</button>
+          </>
         )}
         <button type="button" className="big" onClick={leave}>{t("leaveTable")}</button>
       </div>

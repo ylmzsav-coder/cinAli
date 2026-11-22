@@ -374,8 +374,9 @@ export const startTable = onCall(async (req) => {
     if (table.private) {
       // Özel masayı yalnızca kuran kişi başlatır
       if (table.seats[0]?.uid !== uid) fail("hostOnly", {}, "permission-denied");
-    } else if (Date.now() < table.startAt && !configFor(table.type).vip) fail("notYet");
-    // VIP aramasında oyuncu beklemek istemezse bilgisayar rakiple hemen başlatabilir
+    }
+    // Herkese açık masada (Çaylak ve VIP arama) masadaki oyuncu beklemeden başlatabilir;
+    // boş koltuklara bilgisayar oyuncuları oturur
     const started = startGame(table, Date.now() % 1_000_000);
     await persist(t, id, started.table, started.state, new Map());
     return { ok: true };

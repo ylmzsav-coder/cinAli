@@ -28,7 +28,7 @@ const ja = await A.call("joinTable", { type, lang, name: "Ali" });
 const jb = await B.call("joinTable", { type, lang, name: "Bea" });
 console.log("aynı masa:", ja.tableId === jb.tableId, "| bakiyeler:", await A.balance(), await B.balance());
 console.log("tekrar oturma ücretsiz devam:", JSON.stringify(await A.call("joinTable", { type, lang, name: "Ali" })), await A.balance());
-console.log("erken başlatma:", await errCode(A.call("startTable", { tableId: ja.tableId })));
+console.log("erken başlatma (artık izinli):", await errCode(A.call("startTable", { tableId: ja.tableId })));
 await sleep(8500);
 await A.call("startTable", { tableId: ja.tableId });
 const id = ja.tableId;
