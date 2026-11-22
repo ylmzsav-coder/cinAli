@@ -426,6 +426,8 @@ const de: Messages = {
   soundSetting: "Spielgeräusche",
   vibrationSetting: "Vibration",
   chatSetting: "Chat-Blasen",
+  openHandNeed: "Auslegen\n({need} Pkt.)",
+  groupsNeed: "Ablage: öffnet ab {need} Punkten",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

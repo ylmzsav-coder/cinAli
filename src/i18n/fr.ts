@@ -426,6 +426,8 @@ const fr: Messages = {
   soundSetting: "Sons du jeu",
   vibrationSetting: "Vibration",
   chatSetting: "Bulles de discussion",
+  openHandNeed: "Ouvrir\n({need} pts)",
+  groupsNeed: "Chevalet : ouvre à {need} points",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

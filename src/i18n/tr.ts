@@ -430,6 +430,8 @@ const tr = {
   soundSetting: "Oyun sesleri",
   vibrationSetting: "Titreşim",
   chatSetting: "Sohbet balonları",
+  openHandNeed: "Eli Aç\n({need} puan)",
+  groupsNeed: "Istaka: {need} puan açar",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

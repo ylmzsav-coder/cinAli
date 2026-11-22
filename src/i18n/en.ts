@@ -426,6 +426,8 @@ const en: Messages = {
   soundSetting: "Game sounds",
   vibrationSetting: "Vibration",
   chatSetting: "Chat bubbles",
+  openHandNeed: "Open hand\n({need} pts)",
+  groupsNeed: "Rack: opens at {need} points",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

@@ -426,6 +426,8 @@ const pt: Messages = {
   soundSetting: "Sons do jogo",
   vibrationSetting: "Vibração",
   chatSetting: "Balões de chat",
+  openHandNeed: "Abrir mão\n({need} pts)",
+  groupsNeed: "Suporte: abre com {need} pontos",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

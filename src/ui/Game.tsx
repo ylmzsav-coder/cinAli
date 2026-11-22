@@ -1104,7 +1104,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           ))}
           {!me.opened && (
             <span className="group-total">
-              {t("groupsTotal", { total: groupTotal, need: RULES.openThreshold })}
+              {t(groupTotal > 0 ? "groupsTotal" : "groupsNeed", { total: groupTotal, need: RULES.openThreshold })}
               {pairGroups.length > 0 && <> · {t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
             </span>
           )}
@@ -1179,7 +1179,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             ) : (
               <button type="button" className="primary" disabled={me.opened ? !validGroups.length : groupTotal < RULES.openThreshold}
                 onClick={() => void layGroups()}>
-                <span className="open-title">{me.opened ? t("layWord") : t("openHand", { total: groupTotal, need: RULES.openThreshold })}</span>
+                <span className="open-title">{me.opened ? t("layWord") : t(groupTotal > 0 ? "openHand" : "openHandNeed", { total: groupTotal, need: RULES.openThreshold })}</span>
                 {validGroups.length > 0 && (
                   <span className="open-words">
                     {validGroups.map((g) => <span key={g.ids.join("-")} className="open-word">{g.word}<small>{g.value}</small></span>)}

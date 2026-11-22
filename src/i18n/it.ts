@@ -426,6 +426,8 @@ const it: Messages = {
   soundSetting: "Suoni di gioco",
   vibrationSetting: "Vibrazione",
   chatSetting: "Fumetti chat",
+  openHandNeed: "Apri mano\n({need} pt)",
+  groupsNeed: "Leggio: apre a {need} punti",
   close: "Chiudi",
   handCol: "Mano",
   totalRow: "Totale",
