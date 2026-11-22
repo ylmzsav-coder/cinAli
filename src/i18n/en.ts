@@ -435,6 +435,7 @@ const en: Messages = {
   pointsWord: "Points",
   totalWord: "Total",
   myTableScore: "Points you laid and added: {n}",
+  pairsAfterOpen: "Players who opened with words cannot go pairs",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

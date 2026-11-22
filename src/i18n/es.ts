@@ -435,6 +435,7 @@ const es: Messages = {
   pointsWord: "Puntos",
   totalWord: "Total",
   myTableScore: "Puntos bajados y añadidos: {n}",
+  pairsAfterOpen: "Quien abrió con palabras no puede ir a parejas",
   close: "Cerrar",
   handCol: "Mano",
   totalRow: "Total",

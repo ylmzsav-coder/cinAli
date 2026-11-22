@@ -957,12 +957,12 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               {t("buyChips")}
             </button>
           )}
-          {!me.opened && !handOver && (
-            <button type="button" className={`pair-toggle top-pair ${pairChoice ? "on" : ""}`} aria-pressed={pairChoice}
-              onClick={() => setPairChoice((v) => !v)}>
-              {pairChoice ? t("pairToggleOff") : t("pairToggleOn")}
-            </button>
-          )}
+          {/* Çifte Git her zaman yerinde: açtıktan sonra (kelimeyle açan çifte gidemez) pasif görünür */}
+          <button type="button" className={`pair-toggle top-pair ${pairChoice || me.pairs ? "on" : ""}`} aria-pressed={pairChoice || !!me.pairs}
+            disabled={me.opened || handOver} title={me.opened && !me.pairs ? t("pairsAfterOpen") : undefined}
+            onClick={() => setPairChoice((v) => !v)}>
+            {pairChoice && !me.opened ? t("pairToggleOff") : t("pairToggleOn")}
+          </button>
         </div>
         <div className="topbar-actions">
           {chatRoom ? (

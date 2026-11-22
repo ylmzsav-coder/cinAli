@@ -435,6 +435,7 @@ const it: Messages = {
   pointsWord: "Punti",
   totalWord: "Totale",
   myTableScore: "Punti calati e aggiunti: {n}",
+  pairsAfterOpen: "Chi ha aperto con parole non può giocare a coppie",
   close: "Chiudi",
   handCol: "Mano",
   totalRow: "Totale",

@@ -1290,3 +1290,4 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey-rack .rack-score b { font-size: clamp(1.3rem, 4.6vh, 2rem); font-weight: 900; font-style: italic; letter-spacing: -1px; animation: score-pop 0.6s ease-out; }
 .okey-rack .rack-score small { font-size: clamp(0.6rem, 2vh, 0.85rem); font-weight: 900; -webkit-text-stroke: 4px #fff; text-transform: uppercase; color: #111; }
 @keyframes score-pop { 0% { transform: scale(1.6); } 100% { transform: scale(1); } }
+.okey .topbar-center .top-pair:disabled { opacity: 0.45; filter: grayscale(0.4); }
