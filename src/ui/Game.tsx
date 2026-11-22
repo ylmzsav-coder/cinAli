@@ -957,6 +957,12 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           )}
         </div>
         <div className="topbar-actions">
+          {!me.opened && !handOver && (
+            <button type="button" className={`pair-toggle top-pair ${pairChoice ? "on" : ""}`} aria-pressed={pairChoice}
+              onClick={() => setPairChoice((v) => !v)}>
+              {pairChoice ? t("pairToggleOff") : t("pairToggleOn")}
+            </button>
+          )}
           {chatRoom ? (
             <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
               aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬 {t("chatNow")}</button>
@@ -965,7 +971,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               aria-label={t("chatOpen")} aria-expanded={chatOpen}>😊</button>
           )}
           <Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} />
-          <button type="button" className="link" onClick={() => setShowScores(true)}>{t("scores")}</button>
+          <button type="button" className="scores-btn" onClick={() => setShowScores(true)} title={t("scores")} aria-label={t("scores")}>📊</button>
         </div>
       </header>
       {profileSeat !== null && (
@@ -1089,12 +1095,6 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                   {groupTotal > 0 && `${groupTotal} / ${RULES.openThreshold}`}
                   {pairGroups.length > 0 && <>{groupTotal > 0 && <br />}{t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
                 </span>
-              )}
-              {!me.opened && !handOver && (
-                <button type="button" className={`pair-toggle ${pairChoice ? "on" : ""}`} aria-pressed={pairChoice}
-                  onClick={() => setPairChoice((v) => !v)}>
-                  {pairChoice ? t("pairToggleOff") : t("pairToggleOn")}
-                </button>
               )}
               {me.opened && (me.pairs ? selected.length === 2 : selected.length >= 2) ? (
                 <button type="button" className="primary" onClick={laySelected}>{me.pairs ? t("layPairs") : t("layWord")}</button>

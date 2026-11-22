@@ -1220,3 +1220,18 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey-rack .rack-need small { font-size: clamp(0.7rem, 2.2vh, 0.95rem); font-weight: 900; -webkit-text-stroke: 4px #fff; text-transform: uppercase; }
 .okey-rack .rack-need { top: 50%; transform: translateY(-50%); }
 .okey .side-controls .actions-total:empty { visibility: hidden; }
+/* Çifte Git üst çubukta, emoji düğmesinin yanında */
+.topbar .top-pair { height: 40px; padding: 4px 12px; font-size: 0.9rem; white-space: nowrap; flex: none; }
+/* Sağ kontroller: deste + Eli Aç parası yan yana */
+.okey .side-controls { grid-template-rows: auto minmax(0, 1fr); }
+.okey .side-controls > .deck { grid-row: 1 / -1; }
+.okey .side-controls > .rack-actions > .primary { grid-row: 1 / -1; }
+.okey .side-controls .actions-total { grid-column: 2; grid-row: 1; position: relative; z-index: 2; }
+.topbar .scores-btn { height: 40px; width: 44px; padding: 0; font-size: 1.3rem; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; flex: none; }
+.topbar .top-pair { height: 40px; padding: 4px 9px; font-size: 0.8rem; }
+.okey .quit-btn, .okey .buy-btn { width: clamp(100px, 14vw, 150px); }
+.okey .topbar-actions { gap: 5px; }
+/* Eli Aç parası tam yuvarlak */
+.okey .side-controls > .rack-actions > .primary { width: 100%; height: auto; max-height: 100%; aspect-ratio: 1 / 1; align-self: center; justify-self: center; }
+.okey .quit-btn .door-ico, .okey .buy-btn .cart-ico { flex: none; }
+.okey .quit-btn, .okey .buy-btn { font-size: clamp(0.72rem, 1.65vw, 0.95rem); gap: 4px; overflow: hidden; }
