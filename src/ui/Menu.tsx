@@ -208,7 +208,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </div>
           <div className="hub-row">
             <button type="button" className="big shop-hub" onClick={onShop}><CartIcon /> {t("shop")}</button>
-            <button type="button" className="big" onClick={onRules}>{t("rules")}</button>
+            <button type="button" className="big rules-hub" onClick={onRules}>📖 {t("rules")}</button>
           </div>
           <div className="hub-row">
             <button type="button" className="big" onClick={() => setFeedbackOpen(true)}>✉️ {t("feedback")}</button>

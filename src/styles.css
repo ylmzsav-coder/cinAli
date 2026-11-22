@@ -1123,3 +1123,5 @@ button.avatar { cursor: pointer; min-height: 0; }
 button.practice-hub { background: var(--accent); color: #2a1f00; }
 /* Mağaza düğmesi: mor, sepetli */
 button.shop-hub { background: linear-gradient(180deg, #9c4dcc, #6a1b9a); color: #fff; border: 1px solid #4a148c; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+/* Kurallar düğmesi: mavi */
+button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color: #fff; border: 1px solid #0d47a1; }
