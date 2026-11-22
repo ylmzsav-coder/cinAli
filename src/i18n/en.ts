@@ -126,7 +126,7 @@ const en: Messages = {
   music: "Music",
   noValidGroups: "No valid words on your rack. Place each word's tiles side by side with gaps between words.",
   dropToDiscard: "Drop to discard",
-  groupsTotal: "Rack: {total}/{need}",
+  groupsTotal: "Rack: {total} · opens at {need}",
   autoArrange: "Auto Arrange",
   autoPerDesc: "One-time purchase: Auto Arrange finds and lays out the highest-scoring words from your tiles. Unlimited use at every table.",
   autoPerBuy: "{price} · Buy",

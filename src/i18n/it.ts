@@ -126,7 +126,7 @@ const it: Messages = {
   music: "Musica",
   noValidGroups: "Nessuna parola valida sul leggio. Metti vicine le tessere di ogni parola, con spazi tra le parole.",
   dropToDiscard: "Rilascia per scartare",
-  groupsTotal: "Leggio: {total}/{need}",
+  groupsTotal: "Leggio: {total} · apre a {need}",
   autoArrange: "Ordina auto",
   autoPerDesc: "Acquisto unico: Ordina auto trova e dispone le parole con il punteggio più alto dalle tue tessere. Uso illimitato a tutti i tavoli.",
   autoPerBuy: "{price} · Acquista",
