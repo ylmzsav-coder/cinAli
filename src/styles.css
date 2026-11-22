@@ -883,3 +883,5 @@ button.avatar { cursor: pointer; min-height: 0; }
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.35), 0 2px 6px rgba(0, 0, 0, 0.35); text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
 }
 .pair-toggle.on { background: linear-gradient(#ffb74d, #f57c00); color: #2b1600; text-shadow: none; }
+.buy-btn { display: inline-flex; align-items: center; gap: 6px; }
+.cart-ico { width: 1.5em; height: 1.5em; color: #e53935; filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4)); }

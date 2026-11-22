@@ -886,7 +886,15 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
             <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}>🚪 {t("quitGame")}</button>
           )}
           {onShop && (
-            <button type="button" className="buy-btn" onClick={onShop}><span aria-hidden>🛒</span> {t("buyChips")}</button>
+            <button type="button" className="buy-btn" onClick={onShop}>
+              <svg className="cart-ico" viewBox="0 0 24 24" aria-hidden>
+                <path d="M2 3h3l2.6 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L22 7H6.2" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M7 8h14l-2 6H8.4z" fill="currentColor" />
+                <circle cx="10" cy="20" r="1.8" fill="currentColor" />
+                <circle cx="18" cy="20" r="1.8" fill="currentColor" />
+              </svg>
+              {t("buyChips")}
+            </button>
           )}
           <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
             aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬</button>
