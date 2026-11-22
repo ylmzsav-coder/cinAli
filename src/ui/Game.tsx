@@ -24,7 +24,6 @@ import {
   openPairs,
   wordString,
   gameWinners,
-  winBonusFor,
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, letterValue } from "../game/tiles";
 import { buzz, pop, tick, tileSound, type TileSound } from "../feedback";
@@ -1250,18 +1249,19 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                     : t("finishedTitle", { name: state.players[result.winner].name })}
                 </h3>
                 {result.pairWin && (
-                  <div className="banner">{t("pairBanner", { score: winBonusFor(result.colorWin, true) })}</div>
+                  <div className="banner">{t("pairBanner")}</div>
                 )}
                 {result.colorWin && (
-                  <div className="banner">{t("colorBanner", { color: t(`color_${result.colorWin}`), score: winBonusFor(result.colorWin, !!result.pairWin) })}</div>
+                  <div className="banner">{t("colorBanner", { color: t(`color_${result.colorWin}`) })}</div>
                 )}
                 {result.laidPoints && <HandBreakdown state={state} />}
               </>
             )}
-            <ScoreTable state={state} />
+            {state.phase === "gameOver" && <p className="winner">🏆 {t("winnerIs", { names: winnerName(state) })}</p>}
+            {/* Tek elli oyunda el dökümü yeterli; çok elli (eski) oyunlarda toplam tablosu da gösterilir */}
+            {!(handOver && state.totalHands === 1 && result?.laidPoints) && <ScoreTable state={state} />}
             {state.phase === "gameOver" ? (
               <>
-                <p className="winner">{t("winnerIs", { names: winnerName(state) })}</p>
                 {tableName && (
                   <div className={payout ? "banner" : "muted"}>
                     {payout ? t("chipsWon", { n: payout }) : t("noChipsWon")}
@@ -1303,7 +1303,7 @@ function HandBreakdown({ state }: { state: GameState }) {
       </thead>
       <tbody>
         <tr><td>{t("bdLaid")}</td>{r.laidPoints.map((v, i) => <td key={i}>{v}</td>)}</tr>
-        <tr><td>{t("bdBonus")}</td>{state.players.map((_, i) => <td key={i}>{i === r.winner ? `+${r.bonus}` : ""}</td>)}</tr>
+        {!!r.bonus && <tr><td>{t("bdBonus")}</td>{state.players.map((_, i) => <td key={i}>{i === r.winner ? `+${r.bonus}` : ""}</td>)}</tr>}
         <tr><td>{t("bdRack")}</td>{(r.rackPoints ?? []).map((v, i) => <td key={i} className={v ? "neg" : ""}>{v ? `−${v}` : ""}</td>)}</tr>
       </tbody>
       <tfoot>

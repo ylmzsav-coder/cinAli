@@ -35,7 +35,7 @@ export function Tables({ onPick, onCreatePrivate, onJoinCode, onShop, onBack }: 
           return (
             <div key={tb.id} className={`table-card tc-${tb.id}`}>
               <div className="tc-name">{t(`table_${tb.id}` as "table_vip")}</div>
-              <div className="muted small">{t(`opponents_${tb.level}`)} · {t("handsN", { n: tb.hands })}</div>
+              <div className="muted small">{t(`opponents_${tb.level}`)}</div>
               <div className="tc-row"><span className="muted small">{t("entry")}</span><Chips amount={tb.entry} /></div>
               <div className="tc-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(tb)} /></div>
               {!w.ready ? (

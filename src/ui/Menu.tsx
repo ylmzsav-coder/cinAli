@@ -231,12 +231,6 @@ export function Practice({ settings, onStart, onBack }: PracticeProps) {
           <input value={s.name} placeholder={t("defaultName")} maxLength={12} onChange={(e) => setS({ ...s, name: e.target.value })} />
         </label>
         <label>
-          {t("handCount")}
-          <select value={s.hands} onChange={(e) => setS({ ...s, hands: Number(e.target.value) })}>
-            {[1, 3, 5, 7, 9].map((n) => <option key={n} value={n}>{n}</option>)}
-          </select>
-        </label>
-        <label>
           {t("opponentLevel")}
           <select value={s.level} onChange={(e) => setS({ ...s, level: e.target.value as BotLevel })}>
             <option value="kolay">{t("level_kolay")}</option>

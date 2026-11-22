@@ -3,7 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { TableConfig, payout, tableById } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
-import { GameState, colorWinsOf, newGame, totals } from "./game/engine";
+import { GAME_HANDS, GameState, colorWinsOf, newGame, totals } from "./game/engine";
 import { LangCode, setGameLang } from "./game/lang";
 import { CLOUD, currentUser, firestore } from "./online/cloud";
 import { loadDictionary } from "./online/dicts";
@@ -126,7 +126,8 @@ export function App() {
   const startGame = (s: Settings, table?: TableConfig) => {
     setGameLang(s.gameLang);
     const names = [s.name || t("defaultName"), ...botNames()];
-    const hands = table?.hands ?? s.hands;
+    // Oyun tek el: taşlarını ilk bitiren olunca oyun biter
+    const hands = table?.hands ?? GAME_HANDS;
     const g = newGame(names, [false, true, true, true], hands, Date.now() % 1_000_000);
     const next: SavedGame = {
       version: 2,

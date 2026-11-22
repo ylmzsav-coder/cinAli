@@ -14,6 +14,7 @@ import {
   extendWord,
   jokerOptions,
   newGame,
+  GAME_HANDS,
   gameWinners,
   openHand,
   rackValue,
@@ -151,6 +152,24 @@ describe("kurallar", () => {
     expect(rackValue(p)).toBe(1 + 29);
   });
 
+  it("oyun tek el: ilk bitiren olunca oyun biter, kazanan en yüksek puan (bitiren değil)", () => {
+    const g = newGame(["Sen", "B1", "B2", "B3"], [false, true, true, true], GAME_HANDS, 3);
+    const me = g.current;
+    const other = (me + 1) % 4;
+    // Diğer oyuncu yere çok puan açmış, siz az puanla bitiriyorsunuz
+    g.players[other].opened = true;
+    g.players[other].points = 300;
+    g.players[other].rack = [t("A")];
+    const kalem = tiles("KALEM"), cay = tiles("ÇAY"), tuz = tiles("TUZ"), last = t("B");
+    let o = rig(g, [...kalem, ...cay, ...tuz, last]);
+    o = openHand(dict, o, [kalem, cay, tuz].map((w) => ({ tileIds: w.map((x) => x.id) })));
+    o = discardTile(o, last.id);
+    expect(o.phase).toBe("gameOver");
+    expect(o.lastResult?.winner).toBe(me);
+    expect(o.lastResult?.scores[other]).toBe(300 - 1);
+    expect(gameWinners(o)).toEqual([other]);
+  });
+
   it("en çok puanı toplayan oyunu kazanır", () => {
     const g = structuredClone(base);
     g.history = [[174 - 40, 100 + 120, -30, 0], [50, 10, 300, -5]];
@@ -158,7 +177,7 @@ describe("kurallar", () => {
     expect(gameWinners(g)).toEqual([2]);
   });
 
-  it("son taşı atan biter; tek renk ise Renk Bitirme: açtığı + 200; diğerleri elde kalanı eksi alır", () => {
+  it("son taşı atan biter; Renk Bitirme algılanır; puan açtığı kadar, diğerleri elde kalanı eksi alır", () => {
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
     const tuz = tiles("TUZ");
@@ -175,7 +194,7 @@ describe("kurallar", () => {
     o.lastResult!.scores.forEach((sc, i) => i !== s.current && expect(sc).toBe(-rackValue(o.players[i])));
   });
 
-  it("karışık renk normal bitiş: açtığı + 100", () => {
+  it("karışık renk normal bitiş: puan yalnızca açtığı kadar", () => {
     const kalem = [...tiles("KAL"), ...tiles("EM", "mavi")];
     const cay = tiles("ÇAY");
     const tuz = tiles("TUZ");
@@ -316,7 +335,7 @@ describe("çifte gitme", () => {
     expect(o.table.length).toBe(6);
   });
 
-  it("çiftle bitiren +200, tek renk çiftle bitiren +400 (ve çiftlerin değeri)", () => {
+  it("çiftle bitiren: çiftlerin değeri kadar puan", () => {
     for (const [mixed, bonus] of [[true, RULES.pairWinBonus], [false, RULES.pairColorWinBonus]] as const) {
       const ps = [tiles("AA"), tiles("SS"), tiles("FF"), tiles("BB"), tiles("KK", mixed ? "mavi" : "siyah"), tiles("LL"), tiles("MM")];
       const last = t("E", "kirmizi");

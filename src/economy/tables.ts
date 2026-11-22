@@ -17,7 +17,7 @@ export const PLAYERS_PER_TABLE = 4;
 
 /** Oynanabilen masa: herkes 100 çip öder, birinci 300 çip alır (400 çiplik pottan 100'ü kasaya). */
 export const TABLES: TableConfig[] = [
-  { id: "caylak", name: "Çaylak", entry: TABLE_ENTRY, hands: 3, level: "orta", prize: TABLE_PRIZE },
+  { id: "caylak", name: "Çaylak", entry: TABLE_ENTRY, hands: 1, level: "orta", prize: TABLE_PRIZE },
 ];
 
 /** Eski masalar: yalnızca önceki sürümde başlamış oyunların ödemesi için. */

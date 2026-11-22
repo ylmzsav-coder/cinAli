@@ -3,26 +3,29 @@ import { LangCode, alphabet, gameLang, letterValue } from "./lang";
 import { Color, Letter, Tile, createTileSet, makeRng, shuffle } from "./tiles";
 
 // ---- Kurallar ----------------------------------------------------------
+/** Bir oyun tek elden oluşur. */
+export const GAME_HANDS = 1;
+
 export const RULES = {
   handSize: 14,
   /** Eli yere açmak için gereken en düşük toplam harf değeri. */
   openThreshold: 86,
   /*
-   * Puanlama (en çok puan kazanır): oyuncunun bu elde yere koyduğu harflerin
-   * değeri (açtığı kelimeler, çiftler ve başkasının kelimesine eklediği harfler)
-   * kendi hanesine yazılır. Bitiren oyuncu ayrıca bitirme ikramiyesi alır;
-   * bitiremeyenlerin elinde kalan harflerin değeri eksi yazılır (okey taşı 0).
+   * Puanlama (en çok puan kazanır): oyuncunun yere koyduğu harflerin değeri
+   * (açtığı kelimeler, çiftler ve başkasının kelimesine eklediği harfler) kendi
+   * hanesine yazılır. Taşlarını ilk bitiren olunca oyun biter; bitiremeyenlerin
+   * elinde kalan harflerin değeri eksi yazılır (okey taşı en yüksek harf kadar).
+   * Bitirmenin ayrıca puanı yoktur: en yüksek puanı toplayan kazanır.
    */
-  /** Normal bitirme ikramiyesi. */
-  winBonus: 100,
-  /** Tüm taşları tek renk bitirme ikramiyesi (Renk Bitirme). */
-  colorWinBonus: 200,
+  /** Bitirme puanı (kaldırıldı: 0). */
+  winBonus: 0,
+  /** Renk Bitirme puanı (kaldırıldı: 0; çipli masada çip ikramiyesi sürer). */
+  colorWinBonus: 0,
   /** Çifte giden oyuncunun açmak için gereken çift sayısı (değer şartı yok). */
   pairsToOpen: 5,
-  /** Çiftle (karışık renk) bitirme ikramiyesi. */
-  pairWinBonus: 200,
-  /** Çiftle, tüm taşları tek renk bitirme ikramiyesi. */
-  pairColorWinBonus: 400,
+  /** Çiftle bitirme puanı (kaldırıldı: 0). */
+  pairWinBonus: 0,
+  pairColorWinBonus: 0,
 };
 
 // ---- Tipler ------------------------------------------------------------
@@ -489,7 +492,7 @@ export function rackValue(p: Player): number {
   return p.rack.reduce((s, t) => s + (t.letter === null ? jokerRackValue() : letterValue(t.letter)), 0);
 }
 
-/** Bitirme ikramiyesi: normal 100, Renk Bitirme 200, çiftle 200, tek renk çiftle 400. */
+/** Bitirme puanı (şu an hepsi 0). */
 export function winBonusFor(colorWin: Color | null, pairWin: boolean): number {
   if (pairWin) return colorWin ? RULES.pairColorWinBonus : RULES.pairWinBonus;
   return colorWin ? RULES.colorWinBonus : RULES.winBonus;
