@@ -14,3 +14,4 @@ export {
 export { reportPlayer, sendText } from "./chat";
 export { sendFeedback } from "./feedback";
 export { declineInvite, friendsStatus, heartbeat, inviteFriend, removeFriend, respondFriendRequest, sendFriendRequest, stopWatching, watchTable } from "./social";
+export { convertGift, sendGift } from "./gifts";

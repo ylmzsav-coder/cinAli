@@ -6,6 +6,7 @@ import { formatNumber, t } from "../i18n";
 import { avgMove, loadStats, winRate, type PlayerStats } from "../stats";
 import { TileView } from "./TileView";
 import { FriendsPanel } from "./Friends";
+import { MyGiftsPanel } from "./Gifts";
 
 const AVATAR_COLORS = ["#C62828", "#1565C0", "#E09100", "#2E7D32", "#6A1B9A", "#00838F"];
 const PHOTO_KEY = "wordokey.avatar";
@@ -125,7 +126,7 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin }: { name: string;
   const s = loadStats();
   const shown = name || t("defaultName");
   const [photo, setPhoto] = useState(loadPhoto);
-  const [tab, setTab] = useState<"summary" | "detail" | "friends">("summary");
+  const [tab, setTab] = useState<"summary" | "detail" | "friends" | "gifts">("summary");
   const [msg, setMsg] = useState<string | null>(null);
   const rate = winRate(s.gamesWon, s.gamesPlayed);
   const share = async () => {
@@ -155,7 +156,9 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin }: { name: string;
           </label>
           <div className="profile-name">{shown}</div>
         </div>
-        {tab === "friends" ? (
+        {tab === "gifts" ? (
+          <MyGiftsPanel />
+        ) : tab === "friends" ? (
           <FriendsPanel onWatch={onWatch && ((id) => { onClose(); onWatch(id); })} onJoin={onJoin && ((c) => { onClose(); onJoin(c); })} />
         ) : tab === "detail" ? (
           <StatsDetail s={s} />
@@ -176,8 +179,11 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin }: { name: string;
           </div>
         )}
         {msg && <div className="toast">{msg}</div>}
-        <div className="profile-actions three">
+        <div className="profile-actions four">
           <button type="button" onClick={share}>🔗 {t("share")}</button>
+          <button type="button" className={tab === "gifts" ? "primary" : ""} onClick={() => setTab(tab === "gifts" ? "summary" : "gifts")}>
+            🎁 {tab === "gifts" ? t("summary") : t("myGifts")}
+          </button>
           <button type="button" className={tab === "friends" ? "primary" : ""} onClick={() => setTab(tab === "friends" ? "summary" : "friends")}>
             👥 {tab === "friends" ? t("summary") : t("friends")}
           </button>
@@ -191,7 +197,7 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin }: { name: string;
 }
 
 /** Masadaki bir oyuncunun bu oyundaki istatistikleri. */
-export function SeatStatsModal({ state, seat, onClose, onAddFriend }: { state: GameState; seat: number; onClose: () => void; onAddFriend?: () => void }) {
+export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift }: { state: GameState; seat: number; onClose: () => void; onAddFriend?: () => void; onGift?: () => void }) {
   if (seat === 0) return <MyStatsModal name={state.players[0].name} onClose={onClose} />;
   const p = state.players[seat];
   const sums = totals(state);
@@ -230,6 +236,9 @@ export function SeatStatsModal({ state, seat, onClose, onAddFriend }: { state: G
             <div className="stat"><div className="stat-label">{t("stBestWordNow")} ({best.value})</div><WordTiles word={best.word} /></div>
           )}
         </div>
+        {onGift && (
+          <button type="button" className="gift-btn add-friend-btn" onClick={() => { onClose(); onGift(); }}>🎁 {t("giftSendShort")}</button>
+        )}
         {onAddFriend && (
           <button type="button" className="primary add-friend-btn" onClick={() => { onAddFriend(); onClose(); }}>👥 {t("addFriend")}</button>
         )}

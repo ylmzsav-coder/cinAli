@@ -34,6 +34,9 @@ import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
 import { Avatar, SeatStatsModal } from "./Profile";
+import { GiftSendModal } from "./Gifts";
+import { type Gift, giftById } from "../economy/gifts";
+import { wallet } from "../economy/wallet";
 import { TABLE_PRIZE } from "../economy/config";
 import { Slots, groupsOf, initialSlots, moveGroup, moveTile, syncSlots } from "./rack";
 
@@ -104,6 +107,8 @@ export interface PlayerMenu {
   report(seat: number): Promise<unknown>;
   /** Masadaki oyuncuya arkadaşlık isteği gönder. */
   addFriend?(seat: number): Promise<"sent" | "friends">;
+  /** Masadaki oyuncuya hediye gönder. */
+  sendGift?(seat: number, giftId: string): Promise<unknown>;
 }
 
 interface Props {
@@ -211,6 +216,20 @@ export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playe
   }, [botTurnKey]);
 
   // ---- Sohbet (hazır mesajlar ve emojiler) ----
+  // ---- Hediye gönderme ----
+  const [giftSeat, setGiftSeat] = useState<number | null>(null);
+  const canGift = (seat: number) => seat !== ME && (playerMenu ? playerMenu.available(seat) && !!playerMenu.sendGift : !remote);
+  const giftTo = async (seat: number, g: Gift) => {
+    if (playerMenu?.sendGift) {
+      await playerMenu.sendGift(seat, g.id);
+      return;
+    }
+    // Cihazda: bilgisayar rakibe hediye (çip harcanır), masada görünür, rakip teşekkür eder
+    if (!wallet.spend(g.value, "hediye-gonder", g.id)) throw Object.assign(new Error("notEnoughChips"), { code: "notEnoughChips", params: { need: g.value, have: wallet.snapshot.balance } });
+    setLocalChat((prev) => [...prev.slice(-20), { seat: ME, kind: "gift", id: g.id, text: state.players[seat].name, at: Date.now() }]);
+    setTimeout(() => setLocalChat((prev) => [...prev.slice(-20), { seat, kind: "msg", id: "thanks", at: Date.now() }]), 1500);
+  };
+
   /** Masadaki oyuncuya arkadaşlık isteği. */
   const addFriendAt = (seat: number) => {
     playerMenu?.addFriend?.(seat).then(
@@ -245,7 +264,7 @@ export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playe
     if (!e) return null;
     return (
       <span key={e.at} className={`bubble ${e.kind === "emoji" ? "bubble-emoji" : ""} ${e.kind === "text" ? "bubble-text" : ""}`} role="status">
-        {e.kind === "emoji" ? e.id : e.kind === "text" ? e.text : t(`chat_${e.id}` as "chat_hello")}
+        {e.kind === "emoji" ? e.id : e.kind === "text" ? e.text : e.kind === "gift" ? `🎁 ${giftById(e.id)?.emoji ?? ""} → ${e.text ?? ""}` : t(`chat_${e.id}` as "chat_hello")}
       </span>
     );
   };
@@ -884,6 +903,9 @@ export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playe
               if (!confirm(t("reportConfirm", { name: p.name }))) return;
               playerMenu.report(i).then(() => setMessage({ text: t("reported") }), (e) => setMessage({ text: errorText(e), error: true }));
             }}>⚠️ {t("report")}</button>
+            {canGift(i) && (
+              <button type="button" role="menuitem" onClick={() => { setMenuSeat(null); setGiftSeat(i); }}>🎁 {t("giftSendShort")}</button>
+            )}
             {playerMenu.addFriend && (
               <button type="button" role="menuitem" onClick={() => { setMenuSeat(null); addFriendAt(i); }}>👥 {t("addFriend")}</button>
             )}
@@ -956,7 +978,11 @@ export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playe
       </header>
       {profileSeat !== null && (
         <SeatStatsModal state={state} seat={profileSeat} onClose={() => setProfileSeat(null)}
-          onAddFriend={playerMenu?.addFriend && playerMenu.available(profileSeat) ? () => addFriendAt(profileSeat) : undefined} />
+          onAddFriend={playerMenu?.addFriend && playerMenu.available(profileSeat) ? () => addFriendAt(profileSeat) : undefined}
+          onGift={canGift(profileSeat) ? () => setGiftSeat(profileSeat) : undefined} />
+      )}
+      {giftSeat !== null && (
+        <GiftSendModal toName={state.players[giftSeat].name} onSend={(g) => giftTo(giftSeat, g)} onClose={() => setGiftSeat(null)} />
       )}
 
       <div className="board">

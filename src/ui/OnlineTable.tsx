@@ -2,6 +2,7 @@ import { addDoc, collection, doc, limit, onSnapshot, orderBy, query, serverTimes
 import { InviteSeat, shareInvite } from "./Lobby";
 import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest } from "../online/social";
 import { Avatar } from "./Profile";
+import { sendGiftTo } from "../online/gifts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { tableById, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
@@ -31,7 +32,7 @@ function saveMuted(s: Set<string>) {
   }
 }
 
-type RawChat = { uid: string; kind: "msg" | "emoji" | "text"; id: string; text?: string; at: number };
+type RawChat = { uid: string; kind: "msg" | "emoji" | "text" | "gift"; id: string; text?: string; at: number };
 
 interface TableDoc {
   type: string;
@@ -187,7 +188,14 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       if (muted.has(m.uid)) continue; // susturulan oyuncunun mesajları görünmez
       const abs = doc_.seats.findIndex((s) => s.uid === m.uid);
       const n = doc_.seats.length;
-      if (abs >= 0) events.push({ seat: (abs - rack.seat + n) % n, kind: m.kind, id: m.id, text: m.text, at: m.at });
+      if (abs < 0) continue;
+      if (m.kind === "gift") {
+        // id: "hediye:alıcıUid" → balonda alıcının adı
+        const [gid, to] = m.id.split(":");
+        events.push({ seat: (abs - rack.seat + n) % n, kind: "gift", id: gid, text: doc_.seats.find((s) => s.uid === to)?.name ?? "", at: m.at });
+        continue;
+      }
+      events.push({ seat: (abs - rack.seat + n) % n, kind: m.kind, id: m.id, text: m.text, at: m.at });
     }
     return {
       events,
@@ -217,6 +225,11 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
         setMuted(next);
       },
       report: (seat) => call("reportPlayer", { tableId, targetUid: uidAt(seat), reason: "chat" }),
+      sendGift: async (seat, giftId) => {
+        const u = uidAt(seat);
+        if (!u) throw new Error("userNotFound");
+        await sendGiftTo(u, giftId, tableId);
+      },
       addFriend: async (seat) => {
         const u = uidAt(seat);
         if (!u) throw new Error("userNotFound");

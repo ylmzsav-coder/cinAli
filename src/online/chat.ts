@@ -14,7 +14,7 @@ export const EMOJIS = ["👍", "👏", "😂", "😮", "😅", "😢", "😡", "
 export interface ChatEvent {
   /** Görünümdeki oyuncu sırası (0 = siz). */
   seat: number;
-  kind: "msg" | "emoji" | "text";
+  kind: "msg" | "emoji" | "text" | "gift";
   id: string;
   /** Serbest yazışma (yalnızca arkadaş masaları; sunucuda süzülmüş). */
   text?: string;

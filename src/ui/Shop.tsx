@@ -1,3 +1,4 @@
+import { GiftShop } from "./Gifts";
 import { VipModal } from "./Vip";
 import { VIP_PRODUCT } from "../economy/store";
 import { VIP_BONUS_CHIPS } from "../economy/config";
@@ -74,6 +75,8 @@ export function Shop({ onBack }: { onBack: () => void }) {
           </div>
         ))}
       </div>
+
+      <GiftShop />
 
       <h2>{t("freeChips")}</h2>
       <div className="free">
