@@ -436,6 +436,7 @@ const tr = {
   discardShort: "At",
   openNeedShort: "{need} puan açar",
   opensWord: "Açar",
+  pointsWord: "Puan",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

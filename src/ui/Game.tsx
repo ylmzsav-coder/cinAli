@@ -1143,6 +1143,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             {!me.opened && !handOver && (
               <span className="rack-need" aria-label={t("openNeedShort", { need: RULES.openThreshold })}>
                 <b>{RULES.openThreshold}</b>
+                <small>{t("pointsWord")}</small>
                 <small>{t("opensWord")}</small>
               </span>
             )}

@@ -432,6 +432,7 @@ const pt: Messages = {
   discardShort: "Descartar",
   openNeedShort: "abre com {need}",
   opensWord: "Abre",
+  pointsWord: "Pontos",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

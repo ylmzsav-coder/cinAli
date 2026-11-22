@@ -432,6 +432,7 @@ const de: Messages = {
   discardShort: "Ablegen",
   openNeedShort: "öffnet ab {need}",
   opensWord: "Öffnet",
+  pointsWord: "Punkte",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",
