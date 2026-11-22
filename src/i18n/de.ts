@@ -431,6 +431,7 @@ const de: Messages = {
   drawShort: "Ziehen",
   discardShort: "Ablegen",
   openNeedShort: "öffnet ab {need}",
+  opensWord: "Öffnet",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

@@ -431,6 +431,7 @@ const pt: Messages = {
   drawShort: "Comprar",
   discardShort: "Descartar",
   openNeedShort: "abre com {need}",
+  opensWord: "Abre",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

@@ -1208,3 +1208,13 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
   border-color: #ffd54f; opacity: 1 !important; filter: saturate(1.25) !important;
   box-shadow: inset 0 0 0 2px #e0a800, inset 0 -3px 6px rgba(120, 0, 0, 0.35), 0 0 10px rgba(255, 59, 48, 0.55), 0 3px 6px rgba(0, 0, 0, 0.45);
 }
+/* Istakanın sol üstünde: büyük eğik "86", altında "Açar" (siyah, beyaz kontur) */
+.okey-rack .rack-need {
+  position: absolute; left: 8px; top: 6px; z-index: 1; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; line-height: 0.95;
+  font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif; color: #111;
+  paint-order: stroke fill; -webkit-text-stroke: 5px #fff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+.okey-rack .rack-need b { font-size: clamp(1.3rem, 4.6vh, 2rem); font-weight: 900; font-style: italic; letter-spacing: -1px; }
+.okey-rack .rack-need small { font-size: clamp(0.7rem, 2.2vh, 0.95rem); font-weight: 900; -webkit-text-stroke: 4px #fff; text-transform: uppercase; }

@@ -431,6 +431,7 @@ const en: Messages = {
   drawShort: "Draw",
   discardShort: "Discard",
   openNeedShort: "opens at {need}",
+  opensWord: "Opens",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

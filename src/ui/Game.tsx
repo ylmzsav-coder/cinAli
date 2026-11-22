@@ -1140,6 +1140,12 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           <section className={`rack okey-rack ${myTurn ? "my-turn" : ""} ${timerStyle(ME) ? "timed" : ""}`} aria-label={t("rackAria")}
             style={timerStyle(ME)} data-drop="rack">
             {bubbleFor(ME)}
+            {!me.opened && !handOver && (
+              <span className="rack-need" aria-label={t("openNeedShort", { need: RULES.openThreshold })}>
+                <b>{RULES.openThreshold}</b>
+                <small>{t("opensWord")}</small>
+              </span>
+            )}
             {timerStyle(ME) && (
               <span className={`timer-badge ${secondsLeft <= WARN_SECONDS ? "urgent" : ""}`} style={{ background: timerColor }} role="timer" aria-label={t("timeLeft", { n: secondsLeft })}>
                 ⏱ {secondsLeft}
