@@ -339,7 +339,7 @@ const tr = {
   vipExtend: "Aboneliği uzat",
   vipNote: "Abonelik her ay yenilenir; mağaza ayarlarından istediğin zaman iptal edebilirsin.",
   vipDone: "VIP oldun! {n} çip hediye cüzdanına eklendi.",
-  vipBannerSub: "2 kişilik özel oda · Ücretsiz misafir davet et · {n} çip hediye",
+  vipBannerSub: "2 kişilik özel oda · Sohbetli oyun · Ücretsiz misafir davet et · {n} çip hediye",
   vipBecome: "VIP ol",
   vipTableDesc: "Karşılıklı 2 kişi · Seyirci yok · Hamle süresi yok",
   vipInviteFriend: "Misafir davet et (ücretsiz)",

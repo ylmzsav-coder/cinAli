@@ -335,7 +335,7 @@ const fr: Messages = {
   vipExtend: "Prolonger",
   vipNote: "Renouvelé chaque mois ; résiliable à tout moment dans les réglages du store.",
   vipDone: "Tu es VIP ! {n} jetons offerts ajoutés.",
-  vipBannerSub: "Salon privé à 2 · Invité gratuit · {n} jetons offerts",
+  vipBannerSub: "Salon privé à 2 · Partie avec discussion · Invité gratuit · {n} jetons offerts",
   vipBecome: "Devenir VIP",
   vipTableDesc: "Face à face · Sans spectateurs · Sans limite de temps",
   vipInviteFriend: "Inviter un invité (gratuit)",

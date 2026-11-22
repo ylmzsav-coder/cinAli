@@ -335,7 +335,7 @@ const pt: Messages = {
   vipExtend: "Renovar",
   vipNote: "Renova todo mês; cancele quando quiser nas configurações da loja.",
   vipDone: "Você é VIP! {n} fichas de presente adicionadas.",
-  vipBannerSub: "Sala privada para 2 · Convidado grátis · {n} fichas de presente",
+  vipBannerSub: "Sala privada para 2 · Jogo com chat · Convidado grátis · {n} fichas de presente",
   vipBecome: "Seja VIP",
   vipTableDesc: "Frente a frente · Sem espectadores · Sem tempo por jogada",
   vipInviteFriend: "Convidar um convidado (grátis)",

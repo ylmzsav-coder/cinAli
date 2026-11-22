@@ -335,7 +335,7 @@ const en: Messages = {
   vipExtend: "Extend membership",
   vipNote: "Renews every month; cancel anytime in your store settings.",
   vipDone: "You're VIP! {n} free chips added to your wallet.",
-  vipBannerSub: "Private 2-player room · Invite a free guest · {n} free chips",
+  vipBannerSub: "Private 2-player room · Game with chat · Invite a free guest · {n} free chips",
   vipBecome: "Become VIP",
   vipTableDesc: "Head-to-head · No spectators · No turn timer",
   vipInviteFriend: "Invite a guest (free)",

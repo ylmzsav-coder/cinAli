@@ -335,7 +335,7 @@ const de: Messages = {
   vipExtend: "Abo verlängern",
   vipNote: "Verlängert sich monatlich; jederzeit in den Store-Einstellungen kündbar.",
   vipDone: "Du bist VIP! {n} Gratis-Chips gutgeschrieben.",
-  vipBannerSub: "Privater Raum für 2 · Gratis-Gast einladen · {n} Gratis-Chips",
+  vipBannerSub: "Privater Raum für 2 · Spiel mit Chat · Gratis-Gast einladen · {n} Gratis-Chips",
   vipBecome: "VIP werden",
   vipTableDesc: "Zu zweit gegenüber · Keine Zuschauer · Keine Zugzeit",
   vipInviteFriend: "Gast einladen (kostenlos)",
