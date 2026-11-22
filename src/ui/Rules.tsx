@@ -1,6 +1,6 @@
 import { RULES, jokerRackValue } from "../game/engine";
 import { TABLE_ENTRY, TABLE_PRIZE } from "../economy/config";
-import { LangCode, TWO_LETTER_WORDS, alphabet, gameLang } from "../game/lang";
+import { LangCode, alphabet, gameLang } from "../game/lang";
 import { JOKER_COUNT, letterTileTotal, letterValue } from "../game/tiles";
 import { t } from "../i18n";
 import { TABLE_TURN_SECONDS } from "../storage";
@@ -24,7 +24,6 @@ export function Rules({ onBack }: { onBack: () => void }) {
     t("rule_deal", { hand: RULES.handSize, hand1: RULES.handSize + 1 }),
     t("rule_turn"),
     t("rule_word"),
-    ...(TWO_LETTER_WORDS[gameLang().code] ? [t("rule_two", { list: TWO_LETTER_WORDS[gameLang().code]!.join(", ") })] : []),
     t("rule_open", { need: RULES.openThreshold }),
     t("rule_after"),
     t("rule_joker"),
