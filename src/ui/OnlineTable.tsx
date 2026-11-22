@@ -59,13 +59,15 @@ export type OnlineEntry =
 interface Props {
   entry: OnlineEntry;
   settings: Settings;
+  /** Sohbet balonlarını aç/kapat. */
+  onChat?: (on: boolean) => void;
   /** Menüye dön (masa sürmeye devam eder; tekrar girince kaldığı yerden). */
   onExit: () => void;
   /** Oyun bitti ya da masadan kalkıldı. */
   onDone: () => void;
 }
 
-export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
+export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) {
   const [uid, setUid] = useState<string | null>(null);
   const [tableId, setTableId] = useState<string | null>(null);
   const [doc_, setDoc] = useState<TableDoc | null>(null);
@@ -323,6 +325,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       remote={remote}
       chat={chat}
       chatEnabled={settings.chat}
+      onChatEnabled={onChat}
       chatRoom={isVipType(doc_.type)}
       playerMenu={playerMenu}
       watchers={doc_.watchers?.length ?? 0}

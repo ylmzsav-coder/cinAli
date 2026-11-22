@@ -120,6 +120,8 @@ interface Props {
   chat?: ChatChannel;
   /** Diğer oyuncuların mesajlarını göster. */
   chatEnabled?: boolean;
+  /** Sohbet balonlarını aç/kapat (masadaki sohbet panelinden). */
+  onChatEnabled?: (on: boolean) => void;
   /** Serbest yazışma (sohbet) açık mı: yalnızca VIP odada, filtresiz. Diğer masalarda yalnızca hazır mesaj ve emoji. */
   chatRoom?: boolean;
   playerMenu?: PlayerMenu;
@@ -147,7 +149,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playerMenu, watchers = 0, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, watchers = 0, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -1036,6 +1038,12 @@ export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playe
           </div>
           {chatOpen && (
             <section className="chat-panel" aria-label={t("chat")}>
+              {onChatEnabled && (
+                <button type="button" className={`chat-bubbles-toggle ${chatEnabled ? "on" : "off"}`} aria-pressed={chatEnabled}
+                  onClick={() => onChatEnabled(!chatEnabled)}>
+                  {chatEnabled ? "💬" : "🔕"} {t(chatEnabled ? "toggleOn" : "toggleOff", { name: t("chatSetting") })}
+                </button>
+              )}
               <div className="chat-emojis">
                 {EMOJIS.map((e) => (
                   <button type="button" key={e} onClick={() => sendChat("emoji", e)}>{e}</button>

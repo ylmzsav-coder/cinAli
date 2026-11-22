@@ -238,6 +238,7 @@ export function App() {
           <OnlineTable
             entry={online}
             settings={settings}
+            onChat={(on) => changeSettings({ ...settings, chat: on })}
             onExit={() => setScreen("hub")}
             onDone={() => {
               setOnline(null);
@@ -306,6 +307,7 @@ export function App() {
             sound={settings.sound}
             vibration={settings.vibration}
             chatEnabled={settings.chat}
+            onChatEnabled={(on) => changeSettings({ ...settings, chat: on })}
             chatRoom={!!activeTable?.vip}
             onChange={update}
             onExit={() => setScreen("hub")}

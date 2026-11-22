@@ -1,7 +1,7 @@
 import { canCloseGame, closeGame } from "../exit";
 import { FEEDBACK_EMAIL, FEEDBACK_MAX, type FeedbackType, feedbackMailto, submitFeedback } from "../feedbackBox";
 import { stopMusic } from "../music";
-import { buzz, pop, tileSound } from "../feedback";
+import { buzz, tileSound } from "../feedback";
 import { useEffect, useState } from "react";
 import { useWallet } from "../economy/useWallet";
 import { DAILY_BONUS, REFILL_CHIPS, WELCOME_CHIPS, WELCOME_GAMES, wallet } from "../economy/wallet";
@@ -126,7 +126,6 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             ["music", "🎵", "🎵"],
             ["sound", "🔊", "🔇"],
             ["vibration", "📳", "📴"],
-            ["chat", "💬", "💬"],
           ] as const).map(([key, onIco, offIco]) => {
             const on = !!settings[key];
             return (
@@ -137,7 +136,6 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
                   // Menüde etkisi görünmeyen ayarlar için anında geri bildirim
                   if (next && key === "sound") tileSound("drop");
                   if (next && key === "vibration") buzz(true);
-                  if (next && key === "chat" && settings.sound) pop();
                   setToast(t(next ? "toggleOn" : "toggleOff", { name: t(`${key}Setting` as "soundSetting") }));
                 }}>
                 {on ? onIco : offIco}<span className="toggle-label"> {t(key)}</span>
