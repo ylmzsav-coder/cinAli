@@ -7,7 +7,20 @@
  * Hiçbiri yoksa CLOUD = false: çipler cihazda tutulur, çipli masalar botlarla cihazda oynanır.
  */
 import { FirebaseApp, initializeApp } from "firebase/app";
-import { Auth, connectAuthEmulator, getAuth, onAuthStateChanged, signInAnonymously, type User } from "firebase/auth";
+import {
+  Auth,
+  EmailAuthProvider,
+  FacebookAuthProvider,
+  connectAuthEmulator,
+  getAuth,
+  linkWithCredential,
+  linkWithPopup,
+  onAuthStateChanged,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  type User,
+} from "firebase/auth";
 import { Firestore, connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { Functions, connectFunctionsEmulator, getFunctions, httpsCallable } from "firebase/functions";
 
@@ -69,6 +82,38 @@ export function currentUser(): Promise<User> {
     });
   }
   return userPromise;
+}
+
+/**
+ * E-posta ile bağlan. Yeni hesapta misafir (anonim) hesap e-postaya bağlanır,
+ * böylece çipler ve istatistikler korunur; e-posta zaten kayıtlıysa o hesaba giriş yapılır.
+ */
+export async function connectEmail(email: string, password: string, create: boolean): Promise<User> {
+  const u = await currentUser();
+  if (create) {
+    const res = await linkWithCredential(u, EmailAuthProvider.credential(email, password));
+    return res.user;
+  }
+  const res = await signInWithEmailAndPassword(auth, email, password);
+  userPromise = Promise.resolve(res.user);
+  return res.user;
+}
+
+/** Facebook ile bağlan (web: açılır pencere). Misafir hesap Facebook'a bağlanır. */
+export async function connectFacebook(): Promise<User> {
+  const u = await currentUser();
+  const provider = new FacebookAuthProvider();
+  try {
+    return (await linkWithPopup(u, provider)).user;
+  } catch (e) {
+    // Facebook hesabı zaten başka bir oyuncu hesabına bağlıysa o hesaba giriş yapılır
+    if ((e as { code?: string }).code === "auth/credential-already-in-use") {
+      const res = await signInWithPopup(auth, provider);
+      userPromise = Promise.resolve(res.user);
+      return res.user;
+    }
+    throw e;
+  }
 }
 
 /** Sunucu hatası: code bir çeviri anahtarıdır (err.*). */

@@ -421,7 +421,51 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
   position: fixed; inset: 0; width: 100%; border-radius: 0; padding: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6vh;
   background: radial-gradient(ellipse at center, var(--felt-light), var(--felt) 55%, var(--felt-dark));
-  color: var(--text); cursor: pointer;
+  color: var(--text);
+}
+.splash-hit {
+  background: none; border: 0; padding: 0; border-radius: 0; color: inherit; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 6vh; width: 100%; flex: 1; justify-content: center;
+}
+.splash-account { position: absolute; bottom: max(10px, env(safe-area-inset-bottom)); font-size: 0.85rem; color: var(--muted); }
+.splash-account .link { font-size: inherit; padding: 0; }
+/* Giriş düğmeleri: parlak, renkli */
+.login-buttons { display: flex; gap: clamp(10px, 2.4vw, 26px); flex-wrap: wrap; justify-content: center; padding: 0 16px; }
+.login-btn {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 0;
+  min-width: clamp(200px, 25vw, 290px); height: clamp(48px, 12vh, 64px); padding: 0 18px; border-radius: 12px;
+  color: #fff; font-weight: 900; font-size: clamp(0.9rem, 2.6vh, 1.15rem); letter-spacing: 0.03em; text-transform: uppercase;
+  border: 3px solid rgba(0, 0, 0, 0.55); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), inset 0 -4px 0 rgba(0, 0, 0, 0.18), 0 4px 10px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+.login-btn::before { /* üst parlaklık */
+  content: ""; position: absolute; left: 4px; right: 4px; top: 3px; height: 42%; border-radius: 8px 8px 4px 4px;
+  background: linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.08)); pointer-events: none;
+}
+.login-btn:active { transform: translateY(2px); }
+.login-btn:disabled { opacity: 0.6; }
+.login-ico {
+  display: flex; align-items: center; justify-content: center; align-self: stretch; width: 1.9em; margin-right: 0.6em;
+  font-size: 1.6em; font-weight: 900; text-transform: none; border-right: 2px solid rgba(255, 255, 255, 0.25);
+}
+.login-text { flex: 1; text-align: center; }
+.login-fb { background: linear-gradient(#2aa4f4, #0d62c9); }
+.login-email { background: linear-gradient(#a24cf0, #6a1fc2); }
+.login-guest { background: linear-gradient(#ffb21e, #e07600); }
+.login-err { color: #ffb4ab; font-weight: 700; margin: 0; text-align: center; padding: 0 16px; }
+.login-panel {
+  background: rgba(0, 0, 0, 0.35); border-radius: 16px; padding: 14px 18px; width: min(92vw, 420px);
+  display: flex; flex-direction: column; gap: 10px; text-align: center;
+}
+.login-panel h3 { margin: 0; }
+.login-panel p { margin: 0; line-height: 1.4; }
+.login-panel input { padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.25); background: rgba(255, 255, 255, 0.92); color: #111; font-size: 1rem; }
+.login-panel-actions { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.login-panel .login-btn { min-width: 0; width: 100%; }
+@media (max-height: 500px) {
+  .splash { gap: 4vh; }
+  .login-panel { padding: 10px 14px; gap: 7px; }
 }
 .splash-tap {
   font-size: clamp(16px, 4vh, 24px); font-weight: 700; letter-spacing: 0.04em; color: var(--accent);
