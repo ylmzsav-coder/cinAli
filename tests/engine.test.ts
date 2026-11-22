@@ -418,7 +418,7 @@ describe("iki harfli kelimeler", () => {
   it("Türkçede yalnızca listedeki iki harfli kelimeler geçerli", () => {
     // Türkçede yalnızca oyun sahibinin listesi geçerli
     for (const w of ["AK", "KA", "EL", "LE", "Lİ", "ON", "İZ", "ÇE", "AĞ", "ÖZ", "ÖN", "ÜÇ", "BU", "UN", "UZ", "UR"]) expect(dict.has(w), w).toBe(true);
-    for (const w of ["ŞU", "ZÖ", "AE", "KL", "AA", "K"]) expect(dict.has(w), w).toBe(false);
+    for (const w of ["ZÖ", "AE", "KL", "AA", "K"]) expect(dict.has(w), w).toBe(false);
   });
   it("açmış oyuncu iki harfli kelime koyabilir; tek harf koyamaz", () => {
     const kalem = tiles("KALEM"), cay = tiles("ÇAY"), tuz = tiles("TUZ"), ek = tiles("EK"), b = t("B");
@@ -448,5 +448,12 @@ describe("iki harfli kelimeler bütün dillerde", () => {
     expect(en.has("IS")).toBe(true);
     expect(en.has("XQ")).toBe(false);
     expect(en.has("ZO")).toBe(false);
+  });
+});
+
+describe("iki harfli Türkçe kelimeler", () => {
+  it("İÇ, EV, ŞU, OD geçerli; anlamsız ikililer geçersiz", () => {
+    for (const w of ["İÇ", "EV", "ŞU", "OD", "AT", "EL"]) expect(dict.has(w)).toBe(true);
+    for (const w of ["ÇZ", "XQ", "İĞ"]) expect(dict.has(w)).toBe(false);
   });
 });
