@@ -22,7 +22,7 @@ console.log("günlük:", await call("claimDaily"));
 console.log("günlük tekrar:", await err(call("claimDaily")));
 for (let i = 0; i < 5; i++) await call("rewardAd");
 console.log("6. reklam:", await err(call("rewardAd")));
-console.log("test satın alma:", await call("testPurchase", { chips: 10000, productId: "cinali_cip_10k" }));
+console.log("test satın alma:", await call("testPurchase", { chips: 5000, productId: "wordokey_cip_5k" }));
 console.log("geçersiz paket:", await err(call("testPurchase", { chips: 999999 })));
 const w = (await getDoc(doc(db, "wallets", user.uid))).data();
 console.log("cüzdan okuma (kendi):", w.balance);

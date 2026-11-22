@@ -33,8 +33,8 @@ await A.call("leaveTable", { tableId: caylak });
 
 // VIP oda: serbest ve filtresiz
 await A.call("testSubscribeVip"); await B.call("testSubscribeVip");
-const vip = (await A.call("joinTable", { type: "vip2", lang: "tr", name: "A" })).tableId;
-await B.call("joinTable", { type: "vip2", lang: "tr", name: "B" });
+const vip = (await A.call("joinTable", { type: "vip2", lang: "tr", name: "A", gender: "erkek", want: "kadin" })).tableId;
+await B.call("joinTable", { type: "vip2", lang: "tr", name: "B", gender: "kadin", want: "erkek" });
 check("VIP odada hazır mesaj", (await addTo(A, vip, { uid: A.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "izin verildi");
 check("VIP odada emoji", (await addTo(B, vip, { uid: B.uid, kind: "emoji", id: "🔥", at: serverTimestamp() })) === "izin verildi");
 const r1 = await A.call("sendText", { tableId: vip, text: "lan bu ne biçim hamle, salak", uiLang: "tr" });

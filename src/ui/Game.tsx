@@ -967,7 +967,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         <div className="topbar-actions">
           {chatRoom ? (
             <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
-              aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬 {t("chatNow")}</button>
+              aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬<span className="chat-room-label"> {t("chatNow")}</span></button>
           ) : (
             <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
               aria-label={t("chatOpen")} aria-expanded={chatOpen}>😊</button>

@@ -1257,3 +1257,18 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .side-controls > .rack-actions > .primary { width: 88%; font-size: 0.8rem; }
 .okey-rack .rack-need { left: 2px; }
 .okey-rack .rack-need { left: 5px; }
+.hub .toast { z-index: 9; }
+/* VIP: Sohbet düğmesi üst çubuğa sığsın */
+.okey .topbar-actions .chat-room-btn { min-width: 0 !important; height: 40px; padding: 4px 10px; font-size: 0.85rem; white-space: nowrap; flex: none; }
+/* Üst çubuktaki karşı oyuncu kutusu: taşmasın */
+.okey .topbar-center .topbar-opp .opp-compact { overflow: hidden; padding: 1px 6px !important; }
+.okey .topbar-center .topbar-opp .opp-info { flex-wrap: nowrap; line-height: 1; }
+.okey .topbar-center .topbar-opp .opp-info .tile { --tile-sm: 15px; }
+.okey .topbar-center .topbar-opp .opp-name .avatar { width: 18px; height: 18px; font-size: 0.65rem; }
+/* Dar ekranda VIP sohbet düğmesi yalnızca simge */
+@media (max-width: 1100px) { .okey .chat-room-btn .chat-room-label { display: none; } .okey .topbar-actions .chat-room-btn { font-size: 1.3rem; padding: 4px 12px; } }
+/* VIP sohbet paneli: yazı kutusu ve geçmiş en üstte (kaydırmadan görünsün) */
+.okey .chat-panel { display: flex; flex-direction: column; gap: 6px; }
+.okey .chat-panel .chat-bubbles-toggle { order: -3; flex: none; }
+.okey .chat-panel .chat-history { order: -2; }
+.okey .chat-panel .chat-input { order: -1; }

@@ -181,7 +181,11 @@ function chooseDiscard(state: GameState, vocab: DictWord[]): Tile {
   const p = state.players[state.current];
   const cands = candidateWords(vocab, p.rack);
   const nonJokers = p.rack.filter((t) => t.letter !== null);
-  const options = nonJokers.length ? nonJokers : p.rack;
+  // Yandan alınan taş aynı turda geri atılmaz (iki bilgisayarın aynı taşı
+  // sonsuza dek birbirine atıp alması engellenir); başka seçenek yoksa atılır.
+  const taken = takenThisTurn(state);
+  const fresh = taken ? nonJokers.filter((t) => t.letter !== taken) : nonJokers;
+  const options = fresh.length ? fresh : nonJokers.length ? nonJokers : p.rack;
   let best = options[0];
   let bestScore = -Infinity;
   for (const t of options) {
@@ -194,6 +198,31 @@ function chooseDiscard(state: GameState, vocab: DictWord[]): Tile {
     }
   }
   return best;
+}
+
+/** Açmış oyuncu, yandan alınacak taşla bu tur kelime koyabilir ya da işleyebilir mi? */
+function usableNow(dict: Dictionary, vocab: DictWord[], state: GameState, rack: Tile[], top: Tile): boolean {
+  const l = top.letter;
+  if (!l) return true;
+  const words = candidateWords(vocab, [...rack, top]).filter((w) => w.len <= rack.length && w.word.includes(l));
+  if (words.some((w) => specFor(w.word, [...rack, top]) !== null)) return true;
+  if (rack.length < 1) return false;
+  for (const tw of state.table) {
+    if (tw.pair) continue;
+    const base = wordString(tw.tiles);
+    if ((dict.has(base + l) && knows(vocab, base + l)) || (dict.has(l + base) && knows(vocab, l + base))) return true;
+  }
+  return false;
+}
+
+/** Bu turda soldan (yandan) alınan taşın harfi; alınmadıysa null. */
+function takenThisTurn(state: GameState): string | null {
+  for (let i = state.log.length - 1; i >= 0; i--) {
+    const e = state.log[i] as { k: string; p?: { letter?: string } };
+    if (e.k === "discarded") return null;
+    if (e.k === "tookDiscard") return e.p?.letter ?? null;
+  }
+  return null;
 }
 
 /** Bu elde kaçıncı tur (0'dan): atılan taş sayısı / oyuncu sayısı. */
@@ -214,7 +243,11 @@ export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "o
       if (top.letter === null) return drawFromDiscard(state);
       const cands = candidateWords(vocab, [...p.rack, top]);
       const gain = handStrength([...p.rack, top], cands) - handStrength(p.rack, cands);
-      if (gain >= 15) return drawFromDiscard(state);
+      // Açmış oyuncu yandan taşı ancak hemen kullanabilecekse alır (kelime koyma
+      // ya da işleme); yoksa desteden çeker. Bu, el sonunda iki bilgisayarın
+      // aynı taşları sonsuza dek birbirine atıp almasını önler.
+      const usable = !p.opened || usableNow(dict, vocab, state, p.rack, top);
+      if (gain >= 15 && usable) return drawFromDiscard(state);
     }
     return drawFromDeck(state);
   }
