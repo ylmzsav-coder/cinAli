@@ -1300,3 +1300,11 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .rack-slot.grp-ok::before { z-index: 2; top: -5px; bottom: 0; border-top-width: 4px; border-bottom-width: 4px; background: rgba(67, 224, 122, 0.12); }
 .rack-slot.grp-ok.grp-start::before { left: -2px; border-left-width: 4px; }
 .rack-slot.grp-ok.grp-end::before { right: -2px; border-right-width: 4px; }
+/* ÇEK yazısı destenin altında net görünsün (deste üstüne binmesin) */
+.okey .side-controls > .deck { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px !important; overflow: visible; }
+.okey .side-controls > .deck .deck-stack { transform: scale(1.1); margin: 4px 0 0; }
+.okey .side-controls > .deck .deck-word { position: relative; z-index: 2; margin-top: 4px; color: #fff; opacity: 1; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8); }
+.okey .side-controls > .deck:disabled .deck-word { color: #e8e8e8; }
+.okey .side-controls > .deck:disabled { opacity: 1; }
+.okey .side-controls > .deck:disabled .deck-stack { opacity: 0.6; }
+.okey .side-controls > .deck .deck-word { font-size: clamp(0.7rem, 1.6vw, 1rem); }

@@ -9,7 +9,7 @@ export const GAME_HANDS = 1;
 export const RULES = {
   handSize: 14,
   /** Eli yere açmak için gereken en düşük toplam harf değeri. */
-  openThreshold: 86,
+  openThreshold: 101,
   /*
    * Puanlama (en çok puan kazanır): oyuncunun yere koyduğu harflerin değeri
    * (açtığı kelimeler, çiftler ve başkasının kelimesine eklediği harfler) kendi

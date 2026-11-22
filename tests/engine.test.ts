@@ -79,15 +79,15 @@ describe("kurallar", () => {
     expect(base.deck.length).toBe(106 - 57);
   });
 
-  it("86 altında açılmaz, 86 ve üstü açılır", () => {
+  it("101 altında açılmaz, 101 ve üstü açılır", () => {
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
-    // KALEM + ÇAY = 85: bir eksik
+    // KALEM + ÇAY = 85: yetmez
     const s = rig(base, [...kalem, ...cay, t("B")]);
     expectErr(
       () => openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }]),
       "openNeeds",
-      { need: 86, total: 85 },
+      { need: 101, total: 85 },
     );
     // KALEM + ÇAY + TUZ = 155: açar
     const tuz = tiles("TUZ");
