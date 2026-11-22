@@ -23,8 +23,8 @@ const STEP_COUNT = 96;
 const STEP = (MUSIC_SECONDS - 1) / STEP_COUNT;
 /** Ana ses seviyesi; sınırlayıcı patlamayı önler. */
 const VOLUME = 0.9;
-/** Çıkış seviyesi: sınırlayıcıdan sonra kısılır (önce %15, sonra %10 daha). */
-const OUTPUT = 0.765;
+/** Çıkış seviyesi: sınırlayıcıdan sonra kısılır (önce %15, sonra %10, sonra %30 daha). */
+const OUTPUT = 0.5355;
 
 const hz = (midi: number) => 440 * Math.pow(2, (midi - 69) / 12);
 const NOTE: Record<string, number> = {
