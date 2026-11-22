@@ -27,7 +27,7 @@ const split = (s: string) => [...s];
  * biri sessiz harf olan her ikili geçerlidir.
  */
 export const TWO_LETTER_WORDS: Partial<Record<LangCode, readonly string[]>> = {
-  tr: ["AR", "AT", "AY", "AĞ", "AS", "AD", "AF", "AH", "AK", "AL", "AŞ", "AZ", "AN", "AÇ", "RA", "TA", "YA", "DA", "HA", "KA", "LA", "NA", "MA", "ER", "ET", "EY", "EK", "EL", "EŞ", "EZ", "EN", "EM", "RE", "TE", "YE", "PE", "SE", "FE", "HE", "KE", "LE", "ŞE", "ZE", "CE", "VE", "BE", "NE", "ME", "ÇE", "OL", "OY", "OK", "İZ", "ON", "LO", "KO", "MO", "NO", "TO", "RO", "İT", "İS", "İP", "İR", "İŞ", "İL", "İN", "İM", "Tİ", "Pİ", "Sİ", "Dİ", "Kİ", "Lİ", "Cİ", "Mİ", "ÖZ", "ÖN", "ÖL", "ÖP", "ÖT", "ÖD", "ÜN", "ÜÇ", "ÜS", "BU"],
+  tr: ["AR", "AT", "AY", "AĞ", "AS", "AD", "AF", "AH", "AK", "AL", "AŞ", "AZ", "AN", "AÇ", "RA", "TA", "YA", "DA", "HA", "KA", "LA", "NA", "MA", "ER", "ET", "EY", "EK", "EL", "EŞ", "EZ", "EN", "EM", "RE", "TE", "YE", "PE", "SE", "FE", "HE", "KE", "LE", "ŞE", "ZE", "CE", "VE", "BE", "NE", "ME", "ÇE", "OL", "OY", "OK", "İZ", "ON", "LO", "KO", "MO", "NO", "TO", "RO", "İT", "İS", "İP", "İR", "İŞ", "İL", "İN", "İM", "Tİ", "Pİ", "Sİ", "Dİ", "Kİ", "Lİ", "Cİ", "Mİ", "ÖZ", "ÖN", "ÖL", "ÖP", "ÖT", "ÖD", "ÜN", "ÜÇ", "ÜS", "BU", "UN", "UT", "US", "UÇ", "UZ", "UR"],
 };
 
 /** Her dilin sesli harfleri (iki harfli kelime kuralı için). */

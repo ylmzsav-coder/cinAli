@@ -341,7 +341,7 @@ describe("iki harfli kelimeler", () => {
   const base = newGame(["Sen", "B1", "B2", "B3"], [false, true, true, true], 3, 11);
   it("Türkçede yalnızca listedeki iki harfli kelimeler geçerli", () => {
     // Türkçede yalnızca oyun sahibinin listesi geçerli
-    for (const w of ["AK", "KA", "EL", "LE", "Lİ", "ON", "İZ", "ÇE", "AĞ", "ÖZ", "ÖN", "ÜÇ", "BU"]) expect(dict.has(w), w).toBe(true);
+    for (const w of ["AK", "KA", "EL", "LE", "Lİ", "ON", "İZ", "ÇE", "AĞ", "ÖZ", "ÖN", "ÜÇ", "BU", "UN", "UZ", "UR"]) expect(dict.has(w), w).toBe(true);
     for (const w of ["ŞU", "ZÖ", "AE", "KL", "AA", "K"]) expect(dict.has(w), w).toBe(false);
   });
   it("açmış oyuncu iki harfli kelime koyabilir; tek harf koyamaz", () => {
