@@ -113,7 +113,7 @@ interface Props {
   chat?: ChatChannel;
   /** Diğer oyuncuların mesajlarını göster. */
   chatEnabled?: boolean;
-  /** Oyuncular arası sohbet açık mı (yalnızca VIP odada; filtresiz serbest yazışma). */
+  /** Serbest yazışma (sohbet) açık mı: yalnızca VIP odada, filtresiz. Diğer masalarda yalnızca hazır mesaj ve emoji. */
   chatRoom?: boolean;
   playerMenu?: PlayerMenu;
   /** Masayı izleyen kişi sayısı (çevrimiçi). */
@@ -225,7 +225,7 @@ export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playe
   const lastSentRef = useRef(0);
   const chatEvents = chat ? chat.events : localChat;
   const [chatNow, setChatNow] = useState(() => Date.now());
-  const liveBubbles = chatRoom ? chatEvents.filter((e) => chatNow - e.at < BUBBLE_MS && (e.seat === ME || chatEnabled)) : [];
+  const liveBubbles = chatEvents.filter((e) => chatNow - e.at < BUBBLE_MS && (e.seat === ME || chatEnabled) && (chatRoom || e.kind !== "text"));
   useEffect(() => {
     if (!chatEvents.some((e) => Date.now() - e.at < BUBBLE_MS)) return;
     const id = setInterval(() => setChatNow(Date.now()), 300);
@@ -943,9 +943,12 @@ export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playe
               {t("buyChips")}
             </button>
           )}
-          {chatRoom && (
+          {chatRoom ? (
             <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
               aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬 {t("chatNow")}</button>
+          ) : (
+            <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
+              aria-label={t("chatOpen")} aria-expanded={chatOpen}>😊</button>
           )}
           <Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} />
           <button type="button" className="link" onClick={() => setShowScores(true)}>{t("scores")}</button>
@@ -1019,7 +1022,7 @@ export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playe
             </button>
             {colorNow && <div className="color-hint">{t("colorPath", { color: t(`color_${colorNow}`) })}</div>}
           </div>
-          {chatRoom && chatOpen && (
+          {chatOpen && (
             <section className="chat-panel" aria-label={t("chat")}>
               <div className="chat-emojis">
                 {EMOJIS.map((e) => (

@@ -25,7 +25,9 @@ const check = (l, c, x = "") => { console.log(`${c ? "✓" : "✗"} ${l}${x ? " 
 const A = await client("chatA"), B = await client("chatB"), C = await client("chatC");
 const caylak = (await A.call("joinTable", { type: "caylak", lang: "en", name: "A" })).tableId;
 const addTo = (c, id, data) => addDoc(collection(c.db, "tables", id, "chat"), data).then(() => "izin verildi", (e) => e.code);
-check("Çaylak masada hazır mesaj gönderilemez", (await addTo(A, caylak, { uid: A.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "permission-denied");
+check("Çaylak masada hazır mesaj gönderilir", (await addTo(A, caylak, { uid: A.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "izin verildi");
+check("Çaylak masada emoji gönderilir", (await addTo(A, caylak, { uid: A.uid, kind: "emoji", id: "👍", at: serverTimestamp() })) === "izin verildi");
+check("Çaylak masada serbest metin yazılamaz (kural)", (await addTo(A, caylak, { uid: A.uid, kind: "text", id: "", text: "selam", at: serverTimestamp() })) === "permission-denied");
 check("Çaylak masada yazışma yok", (await errCode(A.call("sendText", { tableId: caylak, text: "selam", uiLang: "tr" }))) === "chatVipOnly");
 await A.call("leaveTable", { tableId: caylak });
 
