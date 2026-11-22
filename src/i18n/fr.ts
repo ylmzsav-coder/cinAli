@@ -467,6 +467,7 @@ const fr: Messages = {
   "err.giftNotFound": "Cadeau introuvable.",
   "err.giftConverted": "Ce cadeau a déjà été converti.",
   "err.genderRequired": "Choisis ton genre pour la recherche VIP.",
+  "err.pairsDisabled": "Les paires ne font pas partie de ce jeu.",
   "err.dailyClaimed": "Vous avez déjà récupéré le bonus du jour.",
   "err.refillNotReady": "Vos jetons offerts ne sont pas encore prêts.",
   "err.adLimit": "Limite de publicités atteinte pour aujourd'hui.",

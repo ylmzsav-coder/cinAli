@@ -472,6 +472,7 @@ const tr = {
   "err.giftNotFound": "Hediye bulunamadı.",
   "err.giftConverted": "Bu hediye zaten çipe dönüştürüldü.",
   "err.genderRequired": "VIP eşleşme için cinsiyetini seç.",
+  "err.pairsDisabled": "Çifte gitme bu oyunda yok.",
   "err.dailyClaimed": "Günlük ödülü bugün zaten aldınız.",
   "err.refillNotReady": "Hediye çip henüz hazır değil.",
   "err.adLimit": "Bugünkü reklam hakkınız doldu.",

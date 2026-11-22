@@ -17,6 +17,7 @@ import {
   GAME_HANDS,
   gameWinners,
   openHand,
+  openPairs,
   rackValue,
   totals,
 } from "../src/game/engine";
@@ -308,7 +309,15 @@ describe("otomatik per", () => {
 });
 
 import { layPair, layWord, openPairs } from "../src/game/engine";
-describe("çifte gitme", () => {
+describe("çifte gitme kaldırıldı", () => {
+  it("çiftle açmak reddedilir", () => {
+    const s = newGame(["A", "B", "C", "D"], [false, true, true, true], 1, 3);
+    expect(() => openPairs(s, [])).toThrow(GameError);
+  });
+});
+
+// Çifte gitme oyundan kaldırıldı; eski kural testleri ileride açılırsa diye duruyor.
+describe.skip("çifte gitme", () => {
   const start = (() => {
     const g = newGame(["A", "B", "C", "D"], [false, true, true, true], 1, 7);
     return { ...g, phase: "play" as const };

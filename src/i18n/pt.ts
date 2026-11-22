@@ -467,6 +467,7 @@ const pt: Messages = {
   "err.giftNotFound": "Presente não encontrado.",
   "err.giftConverted": "Este presente já foi convertido.",
   "err.genderRequired": "Escolha seu gênero para a combinação VIP.",
+  "err.pairsDisabled": "Ir de pares não faz parte deste jogo.",
   "err.dailyClaimed": "Você já pegou o bônus de hoje.",
   "err.refillNotReady": "Suas fichas de presente ainda não estão prontas.",
   "err.adLimit": "Você atingiu o limite de anúncios de hoje.",

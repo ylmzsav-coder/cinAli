@@ -1291,3 +1291,5 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey-rack .rack-score small { font-size: clamp(0.6rem, 2vh, 0.85rem); font-weight: 900; -webkit-text-stroke: 4px #fff; text-transform: uppercase; color: #111; }
 @keyframes score-pop { 0% { transform: scale(1.6); } 100% { transform: scale(1); } }
 .okey .topbar-center .top-pair:disabled { opacity: 0.45; filter: grayscale(0.4); }
+/* Çifte Git kaldırıldı: üst çubukta 3 eşit kutu */
+.okey .topbar-center { grid-template-columns: repeat(3, var(--tb-w)); --tb-w: clamp(118px, 17vw, 170px); }

@@ -467,6 +467,7 @@ const en: Messages = {
   "err.giftNotFound": "Gift not found.",
   "err.giftConverted": "This gift was already converted.",
   "err.genderRequired": "Choose your gender for VIP matching.",
+  "err.pairsDisabled": "Going pairs is not part of this game.",
   "err.dailyClaimed": "You already claimed today's reward.",
   "err.refillNotReady": "Your free chips are not ready yet.",
   "err.adLimit": "You've reached today's ad limit.",

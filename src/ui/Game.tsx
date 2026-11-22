@@ -23,6 +23,7 @@ import {
   placedValue,
   layPair,
   openPairs,
+  PAIRS_ENABLED,
   wordString,
   gameWinners,
 } from "../game/engine";
@@ -414,9 +415,9 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
   /** Oyuncu "Çifte Git" düğmesine bastı mı (el başında sıfırlanır). */
   const [pairChoice, setPairChoice] = useState(false);
   useEffect(() => setPairChoice(false), [state.handNo]);
-  const pairGroups = groups.filter((g) => g.pair);
+  const pairGroups = PAIRS_ENABLED ? groups.filter((g) => g.pair) : [];
   /** Çifte gitme: açmadıysa 5 çift ve kelimeler açma eşiğine yetmiyorsa; çifte gittiyse hep. */
-  const pairMode = me.pairs ? true : !me.opened && (pairChoice || (pairGroups.length >= RULES.pairsToOpen && groupTotal < RULES.openThreshold));
+  const pairMode = !PAIRS_ENABLED ? false : me.pairs ? true : !me.opened && (pairChoice || (pairGroups.length >= RULES.pairsToOpen && groupTotal < RULES.openThreshold));
   /** Süre dolunca otomatik atılmaması gereken taşlar: geçerli kelime grupları ve çiftler. */
   const groupKeepIds = new Set([...validGroups, ...pairGroups].flatMap((g) => g.ids));
 
@@ -957,12 +958,6 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               {t("buyChips")}
             </button>
           )}
-          {/* Çifte Git her zaman yerinde: açtıktan sonra (kelimeyle açan çifte gidemez) pasif görünür */}
-          <button type="button" className={`pair-toggle top-pair ${pairChoice || me.pairs ? "on" : ""}`} aria-pressed={pairChoice || !!me.pairs}
-            disabled={me.opened || handOver} title={me.opened && !me.pairs ? t("pairsAfterOpen") : undefined}
-            onClick={() => setPairChoice((v) => !v)}>
-            {pairChoice && !me.opened ? t("pairToggleOff") : t("pairToggleOn")}
-          </button>
         </div>
         <div className="topbar-actions">
           {chatRoom ? (

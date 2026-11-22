@@ -381,8 +381,12 @@ export function buildPair(rack: Tile[], spec: WordSpec): PlacedTile[] {
   return [a, b].map((t) => ({ tile: t, letter }));
 }
 
+/** Çifte gitme oyundan kaldırıldı (kod ileride açılabilir diye duruyor). */
+export const PAIRS_ENABLED = false;
+
 /** Çifte gitme: en az RULES.pairsToOpen çiftle açılır (değer şartı yok). */
 export function openPairs(prev: GameState, specs: WordSpec[]): GameState {
+  if (!PAIRS_ENABLED) throw new GameError("pairsDisabled");
   assertTurn(prev, "play");
   const state = clone(prev);
   const p = state.players[state.current];
@@ -407,6 +411,7 @@ export function openPairs(prev: GameState, specs: WordSpec[]): GameState {
 
 /** Çifte giden oyuncu yere yeni bir çift koyar. */
 export function layPair(prev: GameState, spec: WordSpec): GameState {
+  if (!PAIRS_ENABLED) throw new GameError("pairsDisabled");
   assertTurn(prev, "play");
   const state = clone(prev);
   const p = state.players[state.current];

@@ -467,6 +467,7 @@ const de: Messages = {
   "err.giftNotFound": "Geschenk nicht gefunden.",
   "err.giftConverted": "Dieses Geschenk wurde bereits umgewandelt.",
   "err.genderRequired": "Wähle dein Geschlecht für die VIP-Suche.",
+  "err.pairsDisabled": "Paare gibt es in diesem Spiel nicht.",
   "err.dailyClaimed": "Du hast den Tagesbonus heute schon abgeholt.",
   "err.refillNotReady": "Deine Gratis-Chips sind noch nicht bereit.",
   "err.adLimit": "Das heutige Werbelimit ist erreicht.",
