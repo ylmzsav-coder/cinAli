@@ -24,8 +24,10 @@ const before = (await A.wallet()).balance;
 await A.call("testSubscribeVip"); await B.call("testSubscribeVip");
 const wa = await A.wallet();
 check("abonelik: +1000 çip ve 30 gün", wa.balance === before + 1000 && Math.round((wa.vipUntil - Date.now()) / 864e5) === 30, `${before} → ${wa.balance}`);
-const ja = await A.call("joinTable", { type, lang, name: "Ali" });
-const jb = await B.call("joinTable", { type, lang, name: "Bea" });
+check("VIP aramada cinsiyet zorunlu", (await errCode(A.call("joinTable", { type, lang, name: "Ali" }))) === "genderRequired");
+// Ali (erkek) bayan arıyor, Bea (kadın) erkek arıyor: karşılıklı uyar
+const ja = await A.call("joinTable", { type, lang, name: "Ali", gender: "erkek", want: "kadin" });
+const jb = await B.call("joinTable", { type, lang, name: "Bea", gender: "kadin", want: "erkek" });
 const t1 = (await getDoc(doc(A.db, "tables", ja.tableId))).data();
 check("iki VIP aynı masada, oyun hemen başladı", ja.tableId === jb.tableId && t1.status === "playing" && t1.seats.length === 2 && t1.seats.every((s) => !s.bot), t1.seats.map((s) => s.name).join(" vs "));
 check("VIP odada hamle süresi yok", t1.deadline === null, String(t1.deadline));
@@ -65,13 +67,27 @@ check("arkadaş olmayana davet gönderilemez", (await errCode(A.call("inviteFrie
 // VIP oyuncu ara: tek başına oturan 60 sn rakip bekler, isterse bilgisayarla hemen başlar
 const V = await client("Vural");
 await V.call("testSubscribeVip");
-const vs = await V.call("joinTable", { type, lang, name: "Vural" });
+const vs = await V.call("joinTable", { type, lang, name: "Vural", gender: "erkek", want: "kadin" });
 const vt = (await getDoc(doc(V.db, "tables", vs.tableId))).data();
 const waitSec = Math.round((vt.startAt - Date.now()) / 1000);
 check("VIP aramada ~60 sn rakip beklenir", vt.status === "waiting" && waitSec >= 55 && waitSec <= 61, `${waitSec} sn`);
 await V.call("startTable", { tableId: vs.tableId });
 const vt2 = (await getDoc(doc(V.db, "tables", vs.tableId))).data();
 check("VIP oyuncu beklemeden bilgisayarla başlatabilir", vt2.status === "playing" && vt2.seats.length === 2 && vt2.seats[1].bot === true);
+// Yedek eşleşme: bayan bulunamazsa erkek oyuncuyla eşleşir
+const M1 = await client("Murat"), M2 = await client("Mert");
+await M1.call("testSubscribeVip"); await M2.call("testSubscribeVip");
+const m1 = await M1.call("joinTable", { type, lang, name: "Murat", gender: "erkek", want: "kadin" });
+const m2 = await M2.call("joinTable", { type, lang, name: "Mert", gender: "erkek", want: "kadin" });
+const mt = (await getDoc(doc(M1.db, "tables", m1.tableId))).data();
+check("bayan yoksa erkek oyuncuyla eşleşir", m1.tableId === m2.tableId && mt.status === "playing" && mt.seats.every((s) => !s.bot), mt.seats.map((s) => s.name).join(" vs "));
+// Uyan masa varken yedeğe düşülmez: bayan arayan erkek, erkek arayan bayan masasına oturur
+const K1 = await client("Kerem"), K2 = await client("Selin"), K3 = await client("Emre");
+for (const c of [K1, K2, K3]) await c.call("testSubscribeVip");
+const kOther = await K3.call("joinTable", { type, lang, name: "Emre", gender: "erkek", want: "erkek" });
+const kSelin = await K2.call("joinTable", { type, lang, name: "Selin", gender: "kadin", want: "erkek" });
+const kKerem = await K1.call("joinTable", { type, lang, name: "Kerem", gender: "erkek", want: "kadin" });
+check("uyan masa yoksa bekleyen başka bir VIP masaya katılır", kSelin.tableId === kOther.tableId);
 const N = await client("Nur");
 const cj = await N.call("joinTable", { type: "caylak", lang, name: "Nur" });
 await N.call("startTable", { tableId: cj.tableId });

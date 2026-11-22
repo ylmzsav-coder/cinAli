@@ -5,17 +5,24 @@ import { TABLE_ENTRY, TABLE_PRIZE } from "../economy/config";
 import { useWallet } from "../economy/useWallet";
 import { t } from "../i18n";
 import { Chips } from "./Chips";
-import { VipModal } from "./Vip";
+import { GenderModal, VipModal } from "./Vip";
+import type { Gender } from "../storage";
 
 interface Props {
-  onPick: (t: TableConfig) => void;
+  onPick: (t: TableConfig, want?: Gender) => void;
+  /** Oyuncunun cinsiyeti (VIP bayan/erkek arama için); yoksa sorulur. */
+  gender?: Gender;
+  onGender: (g: Gender) => void;
   onCreatePrivate: (t: TableConfig) => void;
   onJoinCode: (code: string) => void;
   onShop: () => void;
   onBack: () => void;
 }
 
-export function Tables({ onPick, onCreatePrivate, onJoinCode, onShop, onBack }: Props) {
+export function Tables({ onPick, gender, onGender, onCreatePrivate, onJoinCode, onShop, onBack }: Props) {
+  // VIP bayan/erkek arama: cinsiyet bilinmiyorsa önce sorulur
+  const [askFor, setAskFor] = useState<{ tb: TableConfig; want: Gender } | null>(null);
+  const search = (tb: TableConfig, want: Gender) => (gender ? onPick(tb, want) : setAskFor({ tb, want }));
   const w = useWallet();
   const [level, setLevel] = useState(TABLES[0].id);
   const [code, setCode] = useState("");
@@ -52,7 +59,10 @@ export function Tables({ onPick, onCreatePrivate, onJoinCode, onShop, onBack }: 
                   </>
                 ) : afford ? (
                   <>
-                    <button type="button" className="primary vip-search-btn" onClick={() => onPick(tb)}>🔎 {t("vipSearch")}</button>
+                    <div className="vip-search-row">
+                      <button type="button" className="primary vip-search-btn vip-f" onClick={() => search(tb, "kadin")}>👩 {t("vipSearchF")}</button>
+                      <button type="button" className="primary vip-search-btn vip-m" onClick={() => search(tb, "erkek")}>👨 {t("vipSearchM")}</button>
+                    </div>
                     {CLOUD && <button type="button" onClick={() => onCreatePrivate(tb)}>📨 {t("vipInviteFriend")}</button>}
                   </>
                 ) : (
@@ -80,6 +90,9 @@ export function Tables({ onPick, onCreatePrivate, onJoinCode, onShop, onBack }: 
       </div>
 
       {vipOpen && <VipModal onClose={() => setVipOpen(false)} />}
+      {askFor && (
+        <GenderModal onClose={() => setAskFor(null)} onPick={(g) => { onGender(g); const a = askFor; setAskFor(null); onPick(a.tb, a.want); }} />
+      )}
       <h2>{t("playFriends")}</h2>
       {CLOUD ? (
         <div className="friends">

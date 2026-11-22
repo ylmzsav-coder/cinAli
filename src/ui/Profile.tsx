@@ -122,7 +122,7 @@ function StatsDetail({ s }: { s: PlayerStats }) {
 }
 
 /** Sizin profil kartınız: fotoğraf, başarı yüzdesi, özet ve ayrıntılı istatistikler. */
-export function MyStatsModal({ name, onClose, onWatch, onJoin }: { name: string; onClose: () => void; onWatch?: (tableId: string) => void; onJoin?: (code: string) => void }) {
+export function MyStatsModal({ name, onClose, onWatch, onJoin, gender, onGender }: { name: string; onClose: () => void; onWatch?: (tableId: string) => void; onJoin?: (code: string) => void; gender?: "erkek" | "kadin"; onGender?: (g: "erkek" | "kadin") => void }) {
   const s = loadStats();
   const shown = name || t("defaultName");
   const [photo, setPhoto] = useState(loadPhoto);
@@ -155,6 +155,12 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin }: { name: string;
             }} />
           </label>
           <div className="profile-name">{shown}</div>
+          {onGender && (
+            <div className="gender-toggle" role="radiogroup" aria-label={t("genderLabel")}>
+              <button type="button" role="radio" aria-checked={gender === "kadin"} className={gender === "kadin" ? "on" : ""} onClick={() => onGender("kadin")}>👩 {t("genderF")}</button>
+              <button type="button" role="radio" aria-checked={gender === "erkek"} className={gender === "erkek" ? "on" : ""} onClick={() => onGender("erkek")}>👨 {t("genderM")}</button>
+            </div>
+          )}
         </div>
         {tab === "gifts" ? (
           <MyGiftsPanel />

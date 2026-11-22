@@ -90,6 +90,9 @@ export interface TableDoc {
   payouts?: Record<string, number>;
   /** Masayı izleyenler (arkadaşlar). */
   watchers?: string[];
+  /** VIP eşleşme: masayı açanın cinsiyeti ve aradığı rakibin cinsiyeti. */
+  hostGender?: Gender;
+  seekGender?: Gender;
   /** Boşalan koltuklar ve izleyicilere açık kaldıkları son an. */
   vacant?: { seat: number; until: number }[];
 }
@@ -104,6 +107,9 @@ function configFor(type: unknown): TableConfig {
   if (!c) fail("badRequest", {}, "invalid-argument");
   return c;
 }
+
+export type Gender = "erkek" | "kadin";
+const genderOf = (v: unknown): Gender | null => (v === "erkek" || v === "kadin" ? v : null);
 
 /** VIP masaya yalnızca aboneliği süren oyuncular oturur. */
 function requireVip(cfg: TableConfig, w: WalletDoc) {
@@ -325,15 +331,22 @@ export const joinTable = onCall(async (req) => {
     if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
 
     const now = Date.now();
-    const open = await t.get(
-      db.collection("tables")
-        .where("status", "==", "waiting")
-        .where("private", "==", false)
-        .where("type", "==", cfg.id)
-        .where("lang", "==", lang)
-        .where("startAt", ">", now + 500)
-        .limit(5),
-    );
+    // VIP odada bayan/erkek oyuncu arama: karşılıklı uyan masa aranır
+    // (aranan cinsiyette açan ve benim cinsiyetimde rakip arayan)
+    const gender = genderOf(req.data?.gender);
+    const want = genderOf(req.data?.want);
+    if (cfg.vip && (!gender || !want)) fail("genderRequired", {}, "invalid-argument");
+    let q = db.collection("tables")
+      .where("status", "==", "waiting")
+      .where("private", "==", false)
+      .where("type", "==", cfg.id)
+      .where("lang", "==", lang);
+    const base = q.where("startAt", ">", now + 500).limit(5);
+    let open = await t.get(cfg.vip ? q.where("hostGender", "==", want).where("seekGender", "==", gender).where("startAt", ">", now + 500).limit(5) : base);
+    // Aranan cinsiyette uyan masa yoksa bekleyen herhangi bir VIP oyuncuyla eşleş
+    // (bayan bulunamazsa erkek, erkek bulunamazsa bayan); hiç yoksa yeni masa açılır,
+    // 60 sn içinde kimse gelmezse bilgisayar rakip oturur.
+    if (cfg.vip && open.empty) open = await t.get(base);
     const candidate = open.docs.find((d) => (d.data() as TableDoc).seats.length < (cfg.players ?? 4));
 
     applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
@@ -355,6 +368,7 @@ export const joinTable = onCall(async (req) => {
         type: cfg.id, private: false, code: null, lang, status: "waiting",
         seats: [{ uid, name, bot: false }], uids: [uid],
         createdAt: now, startAt: now + (cfg.vip ? VIP_WAIT_MS : WAIT_MS), deadline: null, version: 0, view: null,
+        ...(cfg.vip ? { hostGender: gender!, seekGender: want! } : {}),
       };
       t.set(tableRef(id), table);
     }

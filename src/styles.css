@@ -1094,3 +1094,16 @@ button.avatar { cursor: pointer; min-height: 0; }
 .vip-searching .waiting-seats { max-width: 420px; }
 .vip-searching > .big { width: 100% !important; max-width: 520px !important; }
 @media (max-height: 500px) { .vip-searching .vip-radar { width: 64px; height: 64px; font-size: 1.8rem; } }
+
+/* ---- VIP bayan/erkek arama ---- */
+.vip-search-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.vip-search-row .vip-search-btn { padding: 9px 4px; font-size: 0.9rem; }
+.vip-search-btn.vip-f { background: linear-gradient(#f48fb1, #d81b60) !important; color: #fff !important; }
+.vip-search-btn.vip-m { background: linear-gradient(#64b5f6, #1565c0) !important; color: #fff !important; }
+.gender-modal { max-width: 380px; text-align: center; }
+.gender-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+.gender-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 8px; font-weight: 900; font-size: 1rem; }
+.gender-btn span { font-size: 2.4rem; }
+.gender-toggle { display: flex; gap: 6px; }
+.gender-toggle button { padding: 3px 12px; min-height: 0; font-size: 0.8rem; font-weight: 800; background: rgba(0, 0, 0, 0.25); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 999px; }
+.gender-toggle button.on { background: #fbf6e8; color: #0f3d2b; }

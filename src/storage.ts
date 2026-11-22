@@ -1,3 +1,4 @@
+export type Gender = "erkek" | "kadin";
 import type { BotLevel } from "./game/bot";
 import type { GameState } from "./game/engine";
 import { LANGS, LangCode, detectLang } from "./game/lang";
@@ -12,6 +13,8 @@ export interface Settings {
   uiLang: LangCode;
   /** Kelime oyununun dili (alfabe, taşlar, sözlük). */
   gameLang: LangCode;
+  /** Oyuncunun cinsiyeti (VIP odada bayan/erkek oyuncu eşleşmesi için; kendi beyanı). */
+  gender?: Gender;
   /** Hamle süresi (saniye); 0 = kapalı. */
   turnSeconds: number;
   /** Hamle süresi ayarının taşıma sürümü (2 = 45 sn varsayılanı). */

@@ -8,7 +8,7 @@ import { LangCode, setGameLang } from "./game/lang";
 import { CLOUD, currentUser, firestore } from "./online/cloud";
 import { loadDictionary } from "./online/dicts";
 import { botNames, setUiLang, t } from "./i18n";
-import { SavedGame, Settings, TABLE_TURN_SECONDS, loadGame, loadSettings, saveGame, saveSettings } from "./storage";
+import { type Gender, SavedGame, Settings, TABLE_TURN_SECONDS, loadGame, loadSettings, saveGame, saveSettings } from "./storage";
 import { Game } from "./ui/Game";
 import { Hub, Practice } from "./ui/Menu";
 import { RotateHint, Splash } from "./ui/Splash";
@@ -61,6 +61,8 @@ export function App() {
   const [watchId, setWatchId] = useState<string | null>(null);
   /** Bekleme masasındaki (oyun başlamadan önce) masa. */
   const [lobbyTable, setLobbyTable] = useState<TableConfig | null>(null);
+  /** VIP bekleme masasında aranan rakip cinsiyeti (cihazda bilgisayar rakibin adı buna göre). */
+  const [lobbyWant, setLobbyWant] = useState<Gender | null>(null);
   // Açılış ekranı (dokunmadan tam ekran/müzik başlatılamaz)
   const [started, setStarted] = useState(false);
   const [saved, setSaved] = useState<SavedGame | null>(() => {
@@ -132,10 +134,12 @@ export function App() {
     });
   }, []);
 
-  const startGame = (s: Settings, table?: TableConfig) => {
+  const startGame = (s: Settings, table?: TableConfig, want?: Gender) => {
     setGameLang(s.gameLang);
     const size = table?.players ?? 4;
-    const names = [s.name || t("defaultName"), ...botNames()].slice(0, size);
+    // İki kişilik VIP odada bilgisayar rakip aranan cinsiyette (bot adları: kadın, erkek, kadın)
+    const bots = size === 2 && want ? [botNames()[want === "kadin" ? 0 : 1]] : botNames();
+    const names = [s.name || t("defaultName"), ...bots].slice(0, size);
     // Oyun tek el: taşlarını ilk bitiren olunca oyun biter
     const hands = table?.hands ?? GAME_HANDS;
     const g = newGame(names, names.map((_, i) => i > 0), hands, Date.now() % 1_000_000);
@@ -150,12 +154,12 @@ export function App() {
     setScreen("game");
   };
 
-  const sitAt = (tb: TableConfig) => {
+  const sitAt = (tb: TableConfig, want?: Gender) => {
     // VIP oda yalnızca abonelere (Masalar sayfası da kontrol eder)
     if (tb.vip && !wallet.isVip()) return;
     if (CLOUD) {
       // Giriş ücretini ve masayı sunucu yönetir
-      setOnline({ kind: "public", table: tb });
+      setOnline({ kind: "public", table: tb, want });
       setScreen("online");
       return;
     }
@@ -166,6 +170,7 @@ export function App() {
     }
     // Önce bekleme masası: boş koltuklara davet, süre dolunca bilgisayar oyuncuları
     setLobbyTable(tb);
+    setLobbyWant(want ?? null);
     setScreen("lobby");
   };
 
@@ -179,7 +184,7 @@ export function App() {
       setScreen("shop");
       return;
     }
-    startGame(settings, tb);
+    startGame(settings, tb, lobbyWant ?? undefined);
   };
 
   const finishGame = () => {
@@ -253,7 +258,7 @@ export function App() {
     case "lobby":
       if (!lobbyTable) return null;
       return (
-        <TableLobby table={lobbyTable} name={settings.name || t("defaultName")}
+        <TableLobby table={lobbyTable} name={settings.name || t("defaultName")} want={lobbyWant ?? undefined}
           onStart={startFromLobby} onLeave={() => { setLobbyTable(null); setScreen("hub"); }} />
       );
     case "shop":
@@ -262,6 +267,8 @@ export function App() {
       return (
         <Tables
           onPick={sitAt}
+          gender={settings.gender}
+          onGender={(g) => changeSettings({ ...settings, gender: g })}
           onCreatePrivate={(tb) => {
             setOnline({ kind: "create", table: tb });
             setScreen("online");

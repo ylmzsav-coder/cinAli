@@ -4,6 +4,7 @@ import { TEST_MODE, VIP_PRODUCT, buyVip, purchasesAvailable } from "../economy/s
 import { useWallet } from "../economy/useWallet";
 import { wallet } from "../economy/wallet";
 import { errorText, formatNumber, t } from "../i18n";
+import type { Gender } from "../storage";
 
 /** VIP abonelik penceresi: avantajlar, aylık ücret, hediye çip ve abonelik süresi. */
 export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSubscribed?: () => void }) {
@@ -34,6 +35,7 @@ export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSub
         <ul className="vip-perks">
           <li>🃏 {t("vipPerkRoom")}</li>
           <li className="vip-perk-hl">🤝 {t("vipPerkGuest")}</li>
+          <li className="vip-perk-hl">👩👨 {t("vipPerkGender")}</li>
           <li>💬 {t("vipPerkChat")}</li>
           <li>⏳ {t("vipPerkNoTimer")}</li>
           <li>🚫 {t("vipPerkNoWatch")}</li>
@@ -48,6 +50,23 @@ export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSub
           {busy ? "…" : !purchasesAvailable() ? t("soon") : active ? t("vipExtend") : t("vipSubscribe")}
         </button>
         <p className="muted small">{t("vipNote")}</p>
+      </div>
+    </div>
+  );
+}
+
+/** Cinsiyet seçimi (VIP odada bayan/erkek oyuncu eşleşmesi için, bir kez sorulur). */
+export function GenderModal({ onPick, onClose }: { onPick: (g: Gender) => void; onClose: () => void }) {
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal gender-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t("genderAsk")}>
+        <h3>{t("genderAsk")}</h3>
+        <p className="muted small">{t("genderWhy")}</p>
+        <div className="gender-row">
+          <button type="button" className="gender-btn" onClick={() => onPick("kadin")}><span>👩</span>{t("genderF")}</button>
+          <button type="button" className="gender-btn" onClick={() => onPick("erkek")}><span>👨</span>{t("genderM")}</button>
+        </div>
+        <button type="button" className="link" onClick={onClose}>{t("cancel")}</button>
       </div>
     </div>
   );

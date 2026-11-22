@@ -12,7 +12,7 @@ import { call, currentUser, firestore } from "../online/cloud";
 import { loadDictionary } from "../online/dicts";
 import type { ChatEvent, SendTextResult } from "../online/chat";
 import { rotatedState, type Action, type PublicView, type SeatInfo } from "../online/view";
-import { TABLE_TURN_SECONDS, type Settings } from "../storage";
+import { TABLE_TURN_SECONDS, type Gender, type Settings } from "../storage";
 import { Game, type ChatChannel, type PlayerMenu, type RemoteControl } from "./Game";
 
 /** Susturulan oyuncular cihazda hatırlanır (tüm masalarda geçerli). */
@@ -52,7 +52,7 @@ interface TableDoc {
 
 /** Masaya nasıl girildiği. */
 export type OnlineEntry =
-  | { kind: "public"; table: TableConfig }
+  | { kind: "public"; table: TableConfig; want?: Gender }
   | { kind: "create"; table: TableConfig }
   | { kind: "join"; code: string };
 
@@ -96,6 +96,8 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
                 type: entry.table.id,
                 lang: settings.gameLang,
                 name,
+                // VIP odada bayan/erkek oyuncu arama
+                ...(entry.kind === "public" && entry.want ? { want: entry.want, gender: settings.gender } : {}),
               });
         if (alive) setTableId(res.tableId);
       } catch (e) {
@@ -266,7 +268,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
     return (
       <div className="page menu vip-searching">
         <div className="vip-radar" aria-hidden><span>👑</span></div>
-        <h1>{t("vipSearching")}</h1>
+        <h1>{entry.kind === "public" && entry.want ? t(entry.want === "kadin" ? "vipSearchingF" : "vipSearchingM") : t("vipSearching")}</h1>
         <p className="muted">{t("vipSearchingDesc", { n: left })}</p>
         <div className="waiting-seats">
           <div className="waiting-seat taken">{doc_.seats[0]?.name}</div>

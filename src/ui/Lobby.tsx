@@ -40,7 +40,8 @@ export function InviteSeat({ onInvite, className = "" }: { onInvite: () => void;
  * arkadaş davet edilebilir; süre dolunca ya da "Şimdi başlat" ile boş koltuklara
  * bilgisayar oyuncuları oturur ve oyun başlar. Giriş ücreti oyun başlarken alınır.
  */
-export function TableLobby({ table, name, onStart, onLeave }: { table: TableConfig; name: string; onStart: () => void; onLeave: () => void }) {
+export function TableLobby({ table, name, want, onStart, onLeave }: { table: TableConfig; name: string; want?: "erkek" | "kadin"; onStart: () => void; onLeave: () => void }) {
+  const searchTitle = want ? t(want === "kadin" ? "vipSearchingF" : "vipSearchingM") : t("vipSearching");
   const [left, setLeft] = useState(WAIT_SECONDS);
   const [msg, setMsg] = useState<string | null>(null);
   useEffect(() => {
@@ -59,7 +60,7 @@ export function TableLobby({ table, name, onStart, onLeave }: { table: TableConf
       <div className={`lobby-felt ${table.vip ? "vip" : ""}`}>
         <button type="button" className="leave-round" onClick={onLeave}>{t("leaveTableShort")}</button>
         {table.vip ? (
-          <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>👑</span></span> {t("vipSearchSeat")}</div>
+          <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>{want === "kadin" ? "👩" : want === "erkek" ? "👨" : "👑"}</span></span> {searchTitle}</div>
         ) : (
           <InviteSeat className="seat-top" onInvite={() => void invite()} />
         )}
@@ -77,7 +78,7 @@ export function TableLobby({ table, name, onStart, onLeave }: { table: TableConf
             {table.vip && <div className="vip-chat-tag">💬 {t("vipChatGame")}</div>}
             {table.vip ? (
               <>
-                <div className="lobby-wait">🔎 {t("vipSearching")}</div>
+                <div className="lobby-wait">🔎 {searchTitle}</div>
                 <div className="muted small">{t("vipSearchingLocal", { n: formatNumber(Math.max(0, left)) })}</div>
               </>
             ) : (
