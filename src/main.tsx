@@ -12,7 +12,27 @@ if (Capacitor.isNativePlatform()) {
     .catch(() => {});
 } else {
   // Web: çevrimdışı çalışma ve "Ana ekrana ekle" için servis worker
-  import("virtual:pwa-register").then(({ registerSW }) => registerSW({ immediate: true }));
+  // Yeni sürüm oyunun ortasında sayfayı yenilemez: uygulama arka plana geçince
+  // (ya da hâlâ açılış ekranındaysa hemen) sessizce güncellenir.
+  import("virtual:pwa-register").then(({ registerSW }) => {
+    const update = registerSW({
+      immediate: true,
+      onNeedRefresh() {
+        const onSplash = sessionStorage.getItem("wordokey.started") !== "1";
+        if (onSplash) {
+          void update(true);
+          return;
+        }
+        const later = () => {
+          if (document.visibilityState === "hidden") {
+            document.removeEventListener("visibilitychange", later);
+            void update(true);
+          }
+        };
+        document.addEventListener("visibilitychange", later);
+      },
+    });
+  });
 }
 
 unlockAudio();

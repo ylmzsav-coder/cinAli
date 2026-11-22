@@ -50,6 +50,9 @@ function settle(saved: SavedGame): SavedGame {
 }
 
 
+/** Oturum içinde açılış ekranı geçildi mi (yenilemede menüye dönmek için). */
+const STARTED_KEY = "wordokey.started";
+
 export function App() {
   const [settings, setSettings] = useState<Settings>(loadSettings);
   setUiLang(settings.uiLang);
@@ -64,7 +67,14 @@ export function App() {
   /** VIP bekleme masasında aranan rakip cinsiyeti (cihazda bilgisayar rakibin adı buna göre). */
   const [lobbyWant, setLobbyWant] = useState<Gender | null>(null);
   // Açılış ekranı (dokunmadan tam ekran/müzik başlatılamaz)
-  const [started, setStarted] = useState(false);
+  // Aynı oturumda sayfa yenilenirse (ör. yeni sürüm yüklenince) açılışa geri dönülmez
+  const [started, setStarted] = useState(() => {
+    try {
+      return sessionStorage.getItem(STARTED_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [saved, setSaved] = useState<SavedGame | null>(() => {
     const g = loadGame();
     return g ? settle(g) : null;
@@ -205,6 +215,17 @@ export function App() {
     if (started) startHeartbeat(settings.name);
   }, [started, settings.name]);
 
+  // Yenilemeden sonra tam ekran ve müzik ilk dokunuşta geri gelir (tarayıcı dokunuş ister)
+  useEffect(() => {
+    if (!started) return;
+    const once = () => {
+      void enterFullscreenLandscape();
+      window.removeEventListener("pointerdown", once);
+    };
+    if (!document.fullscreenElement) window.addEventListener("pointerdown", once);
+    return () => window.removeEventListener("pointerdown", once);
+  }, [started]);
+
   useEffect(() => {
     if (!started) return;
     if (settings.music && !inGame) startMusic();
@@ -217,6 +238,11 @@ export function App() {
         onStart={() => {
           void enterFullscreenLandscape();
           if (settings.music) startMusic();
+          try {
+            sessionStorage.setItem(STARTED_KEY, "1");
+          } catch {
+            /* yok say */
+          }
           setStarted(true);
         }}
       />

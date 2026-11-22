@@ -30,7 +30,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       // Kayıt main.tsx'te yapılır: mobil uygulama içinde servis worker gerekmez.
       injectRegister: null,
       includeAssets: ["icon.svg"],
