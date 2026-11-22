@@ -1,5 +1,5 @@
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
-import { BotLevel, bestArrangement, botStep } from "../game/bot";
+import { BOT_PROFILES, BotLevel, bestArrangement, botStep } from "../game/bot";
 import { Dictionary } from "../game/dictionary";
 import {
   GameError,
@@ -172,9 +172,33 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     if (remote) return;
     if (state.phase !== "draw" && state.phase !== "play") return;
     if (!state.players[state.current].isBot) return;
-    const timer = setTimeout(() => onChange(botStep(dict, state, level)), SPEED_MS[speed]);
+    const timer = setTimeout(() => onChange(safeBotStep()), SPEED_MS[speed] ?? SPEED_MS.normal);
     return () => clearTimeout(timer);
-  }, [remote, state, dict, level, speed, onChange]);
+  }, [remote, state, dict, level, speed, onChange]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /** Bilgisayar hamlesi; bir hata olursa oyun takılmasın diye desteden çekip taş atar. */
+  const safeBotStep = (): GameState => {
+    try {
+      const next = botStep(dict, state, BOT_PROFILES[level] ? level : "orta");
+      if (next !== state) return next;
+    } catch (e) {
+      console.error("bot", e);
+    }
+    return timeoutMove(state);
+  };
+  // Güvenlik ağı: bilgisayarın sırası herhangi bir nedenle (zamanlayıcı iptali, yavaş
+  // cihaz) 3 saniyeden uzun sürerse hamle hemen yapılır; süreyi asla doldurmaz.
+  const botTurnKey =
+    !remote && (state.phase === "draw" || state.phase === "play") && state.players[state.current].isBot
+      ? `${state.handNo}:${state.current}:${state.phase}:${state.log.length}`
+      : "";
+  const botStepRef = useRef(() => onChange(safeBotStep()));
+  botStepRef.current = () => onChange(safeBotStep());
+  useEffect(() => {
+    if (!botTurnKey) return;
+    const id = setTimeout(() => botStepRef.current(), 3000);
+    return () => clearTimeout(id);
+  }, [botTurnKey]);
 
   // ---- Sohbet (hazır mesajlar ve emojiler) ----
   const [localChat, setLocalChat] = useState<ChatEvent[]>([]);
