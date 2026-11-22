@@ -433,6 +433,8 @@ const it: Messages = {
   openNeedShort: "apre a {need}",
   opensWord: "Apre",
   pointsWord: "Punti",
+  totalWord: "Totale",
+  myTableScore: "Punti calati e aggiunti: {n}",
   close: "Chiudi",
   handCol: "Mano",
   totalRow: "Totale",

@@ -1279,3 +1279,14 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .caylak-hub .caylak-sub { white-space: nowrap; font-size: clamp(0.5rem, 1.3vw, 0.62em); }
 .okey .side-controls > .rack-actions > .primary .open-title { overflow-wrap: normal; word-break: keep-all; font-size: clamp(0.56rem, 1.3vw, 0.85rem); }
 .okey .side-controls > .deck .deck-word { font-size: clamp(0.55rem, 1.3vw, 0.95rem); }
+/* Istakanın sağında: oyuncunun yere açtığı + işlediği toplam puan (86 rozeti gibi) */
+.okey-rack .rack-score {
+  position: absolute; right: 5px; top: 50%; transform: translateY(-50%); z-index: 1; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; line-height: 0.95;
+  font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif; color: #b71c1c;
+  paint-order: stroke fill; -webkit-text-stroke: 5px #fff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+.okey-rack .rack-score b { font-size: clamp(1.3rem, 4.6vh, 2rem); font-weight: 900; font-style: italic; letter-spacing: -1px; animation: score-pop 0.6s ease-out; }
+.okey-rack .rack-score small { font-size: clamp(0.6rem, 2vh, 0.85rem); font-weight: 900; -webkit-text-stroke: 4px #fff; text-transform: uppercase; color: #111; }
+@keyframes score-pop { 0% { transform: scale(1.6); } 100% { transform: scale(1); } }

@@ -1149,6 +1149,12 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                 <small>{t("opensWord")}</small>
               </span>
             )}
+            {/* Sağda: yere açtığı ve işlediği kelimelerden topladığı puan */}
+            <span className="rack-score" aria-label={t("myTableScore", { n: me.points ?? 0 })}>
+              <small>{t("totalWord")}</small>
+              <b key={me.points ?? 0}>{me.points ?? 0}</b>
+              <small>{t("pointsWord")}</small>
+            </span>
             {timerStyle(ME) && (
               <span className={`timer-badge ${secondsLeft <= WARN_SECONDS ? "urgent" : ""}`} style={{ background: timerColor }} role="timer" aria-label={t("timeLeft", { n: secondsLeft })}>
                 ⏱ {secondsLeft}

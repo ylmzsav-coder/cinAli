@@ -437,6 +437,8 @@ const tr = {
   openNeedShort: "{need} puan açar",
   opensWord: "Açar",
   pointsWord: "Puan",
+  totalWord: "Toplam",
+  myTableScore: "Yere açtığın ve işlediğin puan: {n}",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",
