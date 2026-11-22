@@ -35,6 +35,7 @@ import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
 import { Avatar, SeatStatsModal } from "./Profile";
+import { TABLE_PRIZE } from "../economy/config";
 import { Slots, arrangeWords, groupsOf, initialSlots, moveGroup, moveTile, packSlots, syncSlots } from "./rack";
 
 const ME = 0;
@@ -1257,7 +1258,14 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                 {result.laidPoints && <HandBreakdown state={state} />}
               </>
             )}
-            {state.phase === "gameOver" && <p className="winner">🏆 {t("winnerIs", { names: winnerName(state) })}</p>}
+            {state.phase === "gameOver" && (gameWinners(state).length > 1 ? (
+              <>
+                <p className="winner">🤝 {t("tieIs", { names: winnerName(state) })}</p>
+                {tableName && <p className="muted">{t("tieSplit", { prize: TABLE_PRIZE, n: gameWinners(state).length, each: Math.floor(TABLE_PRIZE / gameWinners(state).length) })}</p>}
+              </>
+            ) : (
+              <p className="winner">🏆 {t("winnerIs", { names: winnerName(state) })}</p>
+            ))}
             {/* Tek elli oyunda el dökümü yeterli; çok elli (eski) oyunlarda toplam tablosu da gösterilir */}
             {!(handOver && state.totalHands === 1 && result?.laidPoints) && <ScoreTable state={state} />}
             {state.phase === "gameOver" ? (

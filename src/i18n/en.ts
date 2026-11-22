@@ -226,6 +226,8 @@ const en: Messages = {
   bdRack: "Left in hand",
   bdTotal: "Hand score",
   winnerIs: "Winner: {names}",
+  tieIs: "Tie: {names}",
+  tieSplit: "The {prize}-chip prize is split between {n} players: {each} chips each.",
   chipsWon: "You won +{n} chips!",
   noChipsWon: "No chips won at this table.",
   backToMenu: "Back to Menu",

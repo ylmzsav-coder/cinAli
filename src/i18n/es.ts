@@ -226,6 +226,8 @@ const es: Messages = {
   bdRack: "En mano",
   bdTotal: "Puntos de la mano",
   winnerIs: "Ganador: {names}",
+  tieIs: "Empate: {names}",
+  tieSplit: "El premio de {prize} fichas se reparte entre {n} jugadores: {each} fichas cada uno.",
   chipsWon: "¡Ganaste +{n} fichas!",
   noChipsWon: "No ganaste fichas en esta mesa.",
   backToMenu: "Volver al menú",

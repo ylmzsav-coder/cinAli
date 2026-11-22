@@ -230,6 +230,8 @@ const tr = {
   bdRack: "Elde kalan",
   bdTotal: "El puanı",
   winnerIs: "Kazanan: {names}",
+  tieIs: "Berabere: {names}",
+  tieSplit: "{prize} çiplik ödül {n} oyuncu arasında bölüşüldü: kişi başı {each} çip.",
   chipsWon: "+{n} çip kazandınız!",
   noChipsWon: "Bu masada çip kazanamadınız.",
   backToMenu: "Menüye Dön",

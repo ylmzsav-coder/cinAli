@@ -255,6 +255,8 @@ describe("çip ödemesi (en yüksek toplam birinci)", () => {
   it("birinci değilse 0, eşitlikte paylaşılır", () => {
     expect(payout(t, [10, -100, 200, 30], 0, 0)).toBe(0);
     expect(payout(t, [250, 250, 200, 30], 0, 0)).toBe(150);
+    // Üç kişi berabere: 300 / 3 = 100'er çip
+    expect(payout(t, [250, 250, 250, 30], 2, 0)).toBe(100);
   });
   it("Renk Bitirme ikramiyesi giriş ücreti kadar", () => {
     expect(payout(t, [400, 50, 200, 30], 0, 1)).toBe(300 + 100);
