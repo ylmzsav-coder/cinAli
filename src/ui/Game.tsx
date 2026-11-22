@@ -126,13 +126,15 @@ interface Props {
   onNewGame: () => void;
   /** Çevrimiçi masada "Masadan kalk". */
   onLeave?: () => void;
+  /** Oyundan mağazayı aç (yerel oyunda). */
+  onShop?: () => void;
   /** Çipli masa adı (pratikte boş). */
   tableName?: string;
   /** Oyun sonunda kazanılan çip. */
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, tableName, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -363,9 +365,12 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   }, [slots, tileById, dict, jokerPick]);
   const validGroups = groups.filter((g) => g.valid);
   const groupTotal = validGroups.reduce((s, g) => s + g.value, 0);
+  /** Oyuncu "Çifte Git" düğmesine bastı mı (el başında sıfırlanır). */
+  const [pairChoice, setPairChoice] = useState(false);
+  useEffect(() => setPairChoice(false), [state.handNo]);
   const pairGroups = groups.filter((g) => g.pair);
   /** Çifte gitme: açmadıysa 5 çift ve kelimeler açma eşiğine yetmiyorsa; çifte gittiyse hep. */
-  const pairMode = me.pairs ? true : !me.opened && pairGroups.length >= RULES.pairsToOpen && groupTotal < RULES.openThreshold;
+  const pairMode = me.pairs ? true : !me.opened && (pairChoice || (pairGroups.length >= RULES.pairsToOpen && groupTotal < RULES.openThreshold));
   /** Süre dolunca otomatik atılmaması gereken taşlar: geçerli kelime grupları ve çiftler. */
   const groupKeepIds = new Set([...validGroups, ...pairGroups].flatMap((g) => g.ids));
 
@@ -880,6 +885,9 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
           {onLeave && !handOver && (
             <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}>🚪 {t("quitGame")}</button>
           )}
+          {onShop && (
+            <button type="button" className="buy-btn" onClick={onShop}><span aria-hidden>🛒</span> {t("buyChips")}</button>
+          )}
           <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
             aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬</button>
           <Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} />
@@ -1069,6 +1077,12 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
             {draggingTile && canPlay && <span className="rack-discard-label">{t("dropToDiscard")}</span>}
           </div>
           <div className="rack-actions">
+            {!me.opened && !handOver && (
+              <button type="button" className={`pair-toggle ${pairChoice ? "on" : ""}`} aria-pressed={pairChoice}
+                onClick={() => setPairChoice((v) => !v)}>
+                {pairChoice ? t("pairToggleOff") : t("pairToggleOn")}
+              </button>
+            )}
             {me.opened && (me.pairs ? selected.length === 2 : selected.length >= 2) ? (
               <button type="button" className="primary" onClick={laySelected}>{me.pairs ? t("layPairs") : t("layWord")}</button>
             ) : pairMode ? (

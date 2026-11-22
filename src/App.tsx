@@ -52,6 +52,8 @@ export function App() {
   setUiLang(settings.uiLang);
 
   const [screen, setScreen] = useState<Screen>("hub");
+  /** Mağazadan geri dönülecek ekran (oyundan açılınca oyuna döner). */
+  const [shopBack, setShopBack] = useState<Screen>("hub");
   // Açılış ekranı (dokunmadan tam ekran/müzik başlatılamaz)
   const [started, setStarted] = useState(false);
   const [saved, setSaved] = useState<SavedGame | null>(() => {
@@ -148,7 +150,7 @@ export function App() {
       return;
     }
     if (!wallet.spend(tb.entry, "masa-giris", tb.id)) {
-      setScreen("shop");
+      { setShopBack("hub"); setScreen("shop"); };
       return;
     }
     startGame(settings, tb);
@@ -211,7 +213,7 @@ export function App() {
     case "rules":
       return <Rules onBack={() => setScreen("hub")} />;
     case "shop":
-      return <Shop onBack={() => setScreen("hub")} />;
+      return <Shop onBack={() => setScreen(shopBack)} />;
     case "tables":
       return (
         <Tables
@@ -224,7 +226,7 @@ export function App() {
             setOnline({ kind: "join", code });
             setScreen("online");
           }}
-          onShop={() => setScreen("shop")}
+          onShop={() => { setShopBack("hub"); setScreen("shop"); }}
           onBack={() => setScreen("hub")}
         />
       );
@@ -257,6 +259,7 @@ export function App() {
             onExit={() => setScreen("hub")}
             onNewGame={finishGame}
             onLeave={finishGame}
+            onShop={() => { setShopBack("game"); setScreen("shop"); }}
             tableName={activeTable ? t("tableTitle", { name: t(`table_${activeTable.id}` as "table_vip") }) : undefined}
             payout={saved.payout}
           />
@@ -282,7 +285,7 @@ export function App() {
       onResume={() => setScreen(online ? "online" : "game")}
       onTables={() => setScreen("tables")}
       onPractice={() => setScreen("practice")}
-      onShop={() => setScreen("shop")}
+      onShop={() => { setShopBack("hub"); setScreen("shop"); }}
       onRules={() => setScreen("rules")}
     />
   );
