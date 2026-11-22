@@ -1,6 +1,6 @@
 /**
- * Word Okey giriş müziği: kod içinde üretilen özgün, çocuk şarkısı tadında
- * bir piyano parçası (telif sorunu yok, ses dosyası gerekmez).
+ * Word Okey giriş müziği: "Ah! vous dirai-je, maman" ezgisinin (1761, kamu malı;
+ * "Daha Dün Annemizin" okul şarkısının ezgisi) kod içinde çalınan piyano versiyonu.
  * Piyano sesi: hafif kaymalı üst sesler, çekiç vuruşu ve oda yankısı; melodi
  * oktav katlamalı, kalın ve dolgun bir tınıyla çalınır. Sol el "pam-pa" eşlik eder.
  * Toplam 19 saniye: 8 ölçü bir kez çalar (18 sn), kapanış akoruyla biter;
@@ -18,8 +18,9 @@ let ended = false;
 export const MUSIC_SECONDS = 19;
 /** Son kaç saniyede ses kademeli azalır. */
 const FADE_SECONDS = 5;
-/** 64 sekizlik 18 saniyede biter; son 1 saniye kapanış akoru. */
-const STEP = (MUSIC_SECONDS - 1) / 64;
+/** Ezgi 18 saniyede biter; son 1 saniye kapanış akoru. */
+const STEP_COUNT = 96;
+const STEP = (MUSIC_SECONDS - 1) / STEP_COUNT;
 /** Ana ses seviyesi (yüksek); sınırlayıcı patlamayı önler. */
 const VOLUME = 0.9;
 
@@ -32,21 +33,27 @@ const NOTE: Record<string, number> = {
   C6: 84, D6: 86, E6: 88, F6: 89,
 };
 
-// Sağ el: 8 ölçü × 8 sekizlik ("-" = önceki nota uzar, "." = sus). Zıplayan, tekrarlı bir çocuk ezgisi.
-const MELODY = [
-  "G5", "E5", "G5", "E5", "C6", "-", "G5", ".",
-  "F5", "D5", "F5", "D5", "B5", "-", "G5", ".",
-  "E5", "G5", "C6", "E6", "D6", "C6", "G5", ".",
-  "A5", "G5", "F5", "D5", "G5", "-", "-", ".",
-  "A5", "F5", "A5", "C6", "F6", "-", "C6", ".",
-  "G5", "E5", "G5", "C6", "E6", "-", "C6", ".",
-  "D6", "B5", "G5", "B5", "D6", "-", "B5", "G5",
-  "C6", "-", "G5", "E5", "C5", ".", ".", ".",
+// Ezgi: "Ah! vous dirai-je, maman" (Fransız halk ezgisi, 1761; Mozart'ın varyasyonlarıyla
+// tanınır; Türkiye'de "Daha Dün Annemizin" okul şarkısının ezgisi). Kamu malıdır; sözler kullanılmaz.
+// Dörtlük notalar ("-" = önceki nota uzar); her satır 8 dörtlük.
+const LINES = [
+  ["C5", "C5", "G5", "G5", "A5", "A5", "G5", "-"],
+  ["F5", "F5", "E5", "E5", "D5", "D5", "C5", "-"],
+  ["G5", "G5", "F5", "F5", "E5", "E5", "D5", "-"],
+  ["G5", "G5", "F5", "F5", "E5", "E5", "D5", "-"],
+  ["C5", "C5", "G5", "G5", "A5", "A5", "G5", "-"],
+  ["F5", "F5", "E5", "E5", "D5", "D5", "C5", "-"],
 ];
-// Sol el akorları (ölçü başına): kök, üçlü, beşli
+/** Sekizlik adımlar: her dörtlük iki adım. */
+const MELODY: string[] = LINES.flat().flatMap((n) => [n, "-"]);
+const C: [string, string, string] = ["C3", "E3", "G3"];
+const F: [string, string, string] = ["F2", "A2", "C3"];
+const G: [string, string, string] = ["G2", "B2", "D3"];
+// Sol el akorları: her iki dörtlükte bir (4 adım)
 const CHORDS: [string, string, string][] = [
-  ["C3", "E3", "G3"], ["G2", "B2", "D3"], ["C3", "E3", "G3"], ["G2", "B2", "D3"],
-  ["F2", "A2", "C3"], ["C3", "E3", "G3"], ["G2", "B2", "D3"], ["C3", "E3", "G3"],
+  C, C, F, C, F, C, G, C,
+  C, F, C, G, C, F, C, G,
+  C, C, F, C, F, C, G, C,
 ];
 
 function audio(): AudioContext | null {
@@ -149,23 +156,20 @@ function schedule() {
       break;
     }
     const i = step;
-    const bar = Math.floor(i / 8);
-    const beat = i % 8;
-    // Sağ el: kısa, zıplayan (staccato) notalar + müzik kutusu
+    // Sağ el: ezgi, kalın ve dolgun (bir oktav aşağıda, oktav katlamalı)
     const note = MELODY[i];
     if (note !== "-" && note !== ".") {
       let len = 1;
       while (MELODY[i + len] === "-") len++;
-      const accent = beat === 0 || beat === 4 ? 1 : 0.8;
-      // Kalın, dolgun ses: melodi bir oktav aşağıda, oktav katlamalı
+      const accent = i % 8 === 0 ? 1 : 0.85;
       const m = NOTE[note] - 12;
-      piano(a, bus, m, nextTime, len > 1 ? STEP * len * 0.9 : STEP * 0.7, 0.32 * accent);
-      piano(a, bus, m - 12, nextTime, len > 1 ? STEP * len * 0.9 : STEP * 0.7, 0.14 * accent);
+      piano(a, bus, m, nextTime, STEP * len * 0.92, 0.32 * accent);
+      piano(a, bus, m - 12, nextTime, STEP * len * 0.92, 0.14 * accent);
     }
     // Sol el: "pam-pa" (vuruşta bas, ara vuruşta akor)
-    const [r, third, fifth] = CHORDS[bar].map((n) => NOTE[n]);
-    if (beat === 0 || beat === 4) piano(a, bus, beat === 0 ? r - 12 : r - 5, nextTime, STEP * 1.5, 0.22);
-    if (beat === 2 || beat === 6) [r, third, fifth].forEach((m) => piano(a, bus!, m, nextTime, STEP * 0.7, 0.11));
+    const [r, third, fifth] = CHORDS[Math.floor(i / 4)].map((n) => NOTE[n]);
+    if (i % 4 === 0) piano(a, bus, r - 12, nextTime, STEP * 1.6, 0.22);
+    if (i % 4 === 2) [r, third, fifth].forEach((m) => piano(a, bus!, m, nextTime, STEP * 0.8, 0.11));
     nextTime += STEP;
     step++;
   }
