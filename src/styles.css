@@ -992,3 +992,30 @@ button.avatar { cursor: pointer; min-height: 0; }
 .spec-word { display: flex; align-items: flex-end; gap: 1px; background: rgba(0, 0, 0, 0.18); border-radius: 8px; padding: 4px; }
 .spec-word small { margin-left: 4px; font-size: 0.65rem; }
 .spec-deck { position: absolute; right: 8px; bottom: 6px; font-weight: 800; font-size: 0.8rem; opacity: 0.8; }
+
+/* ---- VIP ---- */
+.vip-modal { max-width: 440px; text-align: center; position: relative; max-height: 92vh; overflow-y: auto; }
+@media (max-height: 500px) { .vip-crown { font-size: 2rem; } .vip-perks { gap: 4px; } .vip-perks li { padding: 4px 10px; font-size: 0.9rem; } .vip-price { font-size: 1.5rem; } }
+.vip-crown { font-size: 3rem; line-height: 1; filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4)); }
+.vip-perks { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; text-align: left; }
+.vip-perks li { background: rgba(0, 0, 0, 0.22); border-radius: 10px; padding: 7px 10px; font-weight: 700; }
+.vip-price { font-size: 2rem; font-weight: 900; color: #ffd54f; margin: 4px 0; }
+.vip-price small { font-size: 0.9rem; color: var(--muted); }
+.vip-active { color: #b9f5c9; font-weight: 800; margin: 4px 0; }
+.vip-buy, .vip-hub {
+  background: linear-gradient(#ffe082, #f0a500); color: #3b2500; font-weight: 900; border: 2px solid #8a5a00;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.6), 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+.vip-modal .vip-buy { width: 100%; padding: 12px; font-size: 1.1rem; margin-top: 6px; }
+.vip-banner {
+  display: flex; align-items: center; gap: 12px; width: 100%; margin: 4px 0 14px; padding: 10px 14px; border-radius: 14px; text-align: left;
+  background: linear-gradient(135deg, #2a1f00, #5a4100); color: #fff; border: 2px solid #f0a500; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+.vip-banner-crown { font-size: 2rem; }
+.vip-banner-text { flex: 1; display: flex; flex-direction: column; }
+.vip-banner-text small { color: #ffe082; font-weight: 600; }
+.vip-banner-price { font-weight: 900; font-size: 1.3rem; color: #ffd54f; }
+.vip-banner-price small { font-size: 0.75rem; color: #ffe082; }
+.tc-vip2 { background: linear-gradient(160deg, #3b2a00, #1a1200) !important; border: 2px solid #f0a500 !important; }
+.tc-vip2 .tc-name { color: #ffd54f; }
+.lobby-felt.vip { border-color: #b8860b; box-shadow: inset 0 0 0 3px #6b4e00, inset 0 0 30px rgba(0, 0, 0, 0.35), 0 6px 18px rgba(0, 0, 0, 0.45); }

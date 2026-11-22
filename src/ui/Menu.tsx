@@ -10,6 +10,7 @@ import { errorText, formatNumber, t } from "../i18n";
 import { Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { Chips } from "./Chips";
+import { VipModal } from "./Vip";
 import { Avatar, MyStatsModal } from "./Profile";
 
 interface HubProps {
@@ -30,6 +31,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   const [statsOpen, setStatsOpen] = useState(false);
+  const [vipOpen, setVipOpen] = useState(false);
   // Çipi biten oyuncunun hediye sayacı (dakikada bir güncellenir)
   const refillAt = w.ready ? wallet.refillAt() : null;
   const [now, setNow] = useState(() => Date.now());
@@ -129,6 +131,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <span className="plus-chip">+</span>
             </button>
           </div>
+          {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); onTables(); }, 1200)} />}
           {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onWatch={onWatch} />}
         </div>
         <div className="hub-right">
@@ -161,7 +164,10 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           {toast && <div className="toast">{toast}</div>}
           {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
           <button type="button" className={canResume ? "big" : "primary big"} onClick={onTables}>{t("chipTables")}</button>
-          <button type="button" className="big" onClick={onPractice}>{t("practice")}</button>
+          <div className="hub-row">
+            <button type="button" className="big" onClick={onPractice}>{t("practice")}</button>
+            <button type="button" className="big vip-hub" onClick={() => (wallet.isVip() ? onTables() : setVipOpen(true))}>👑 {t("vipShort")}</button>
+          </div>
           <div className="hub-row">
             <button type="button" className="big" onClick={onShop}>{t("shop")}</button>
             <button type="button" className="big" onClick={onRules}>{t("rules")}</button>

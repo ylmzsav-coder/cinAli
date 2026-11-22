@@ -1,5 +1,5 @@
 import { onCall } from "firebase-functions/v2/https";
-import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, REFILL_CHIPS, REFILL_MS, WELCOME_CHIPS, dayKey } from "../../src/economy/config";
+import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, REFILL_CHIPS, REFILL_MS, VIP_BONUS_CHIPS, VIP_MS, WELCOME_CHIPS, dayKey } from "../../src/economy/config";
 import { IS_EMULATOR, WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 
@@ -73,10 +73,22 @@ export const testPurchase = onCall(async (req) => {
   const uid = uidOf(req);
   if (!IS_EMULATOR) fail("storeSoon");
   const chips = Number(req.data?.chips);
-  if (![10_000, 50_000, 150_000, 500_000].includes(chips)) fail("badRequest", {}, "invalid-argument");
+  if (![1_000, 5_000, 15_000].includes(chips)) fail("badRequest", {}, "invalid-argument");
   return db.runTransaction(async (t) => {
     const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
     if (!w) return fail("noWallet");
     return view(applyTx(t, uid, w, chips, "satin-alma", String(req.data?.productId ?? "")));
+  });
+});
+
+/** Test VIP aboneliği: yalnızca emülatörde. Gerçek abonelik RevenueCat web kancasıyla gelecek. */
+export const testSubscribeVip = onCall(async (req) => {
+  const uid = uidOf(req);
+  if (!IS_EMULATOR) fail("storeSoon");
+  return db.runTransaction(async (t) => {
+    const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
+    if (!w) return fail("noWallet");
+    const from = Math.max(Date.now(), w.vipUntil ?? 0);
+    return view(applyTx(t, uid, w, VIP_BONUS_CHIPS, "vip", "wordokey_vip_aylik", { vipUntil: from + VIP_MS }));
   });
 });

@@ -7,7 +7,7 @@
  */
 import { doc, onSnapshot } from "firebase/firestore";
 import { CLOUD, call, currentUser, firestore } from "../online/cloud";
-import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, REFILL_CHIPS, REFILL_MS, TxReason, WELCOME_CHIPS, WELCOME_GAMES, dayKey, nextBrokeSince } from "./config";
+import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, REFILL_CHIPS, REFILL_MS, TxReason, VIP_BONUS_CHIPS, VIP_MS, WELCOME_CHIPS, WELCOME_GAMES, dayKey, nextBrokeSince } from "./config";
 
 export { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, REFILL_CHIPS, WELCOME_CHIPS, WELCOME_GAMES };
 export type { TxReason };
@@ -19,6 +19,8 @@ export interface WalletData {
   adsToday: number;
   /** Bakiye en ucuz masa girişinin altına düştüğü an (hediye çip sayacı); yeterliyse null. */
   brokeSince?: number | null;
+  /** VIP aboneliğin bittiği an (ms); abone değilse null. */
+  vipUntil?: number | null;
   /** Sunucu modunda ilk veri geldi mi. */
   ready: boolean;
   /** Cüzdan bu açılışta yeni oluşturuldu (hoş geldin hediyesi verildi). */
@@ -38,6 +40,10 @@ export interface WalletApi {
   refillAt(): number | null;
   canClaimRefill(): boolean;
   claimRefill(): Promise<void>;
+  /** VIP abone mi (şu an). */
+  isVip(): boolean;
+  /** VIP abonelik satın alındıktan sonra: süreyi uzatır ve hediye çipi ekler. */
+  subscribeVip(): Promise<void>;
   /** Reklam izlendikten sonra ödülü ister. */
   rewardAd(): Promise<void>;
   /** Satın alma onaylandıktan sonra çipleri ekler. */
@@ -74,6 +80,10 @@ abstract class Base {
     return since ? since + REFILL_MS : null;
   }
 
+  isVip(): boolean {
+    return !!this.data.vipUntil && this.data.vipUntil > Date.now();
+  }
+
   canClaimRefill(): boolean {
     const at = this.refillAt();
     return at !== null && Date.now() >= at;
@@ -103,6 +113,7 @@ class LocalWallet extends Base implements WalletApi {
       adsDay: stored?.adsDay ?? null,
       adsToday: stored?.adsToday ?? 0,
       brokeSince: stored?.brokeSince ?? null,
+      vipUntil: stored?.vipUntil ?? null,
       ready: true,
       welcome: !stored,
     };
@@ -145,6 +156,11 @@ class LocalWallet extends Base implements WalletApi {
     this.commit(DAILY_BONUS, { lastDaily: dayKey() });
   }
 
+  async subscribeVip() {
+    const from = Math.max(Date.now(), this.data.vipUntil ?? 0);
+    this.commit(VIP_BONUS_CHIPS, { vipUntil: from + VIP_MS });
+  }
+
   async claimRefill() {
     if (!this.canClaimRefill()) throw Object.assign(new Error("refillNotReady"), { code: "refillNotReady", params: {} });
     this.commit(REFILL_CHIPS, { brokeSince: null });
@@ -176,7 +192,7 @@ class CloudWallet extends Base implements WalletApi {
         onSnapshot(doc(firestore(), "wallets", user.uid), (snap) => {
           const d = snap.data();
           if (!d) return;
-          this.emit({ balance: d.balance, lastDaily: d.lastDaily ?? null, adsDay: d.adsDay ?? null, adsToday: d.adsToday ?? 0, brokeSince: d.brokeSince ?? null, ready: true, welcome });
+          this.emit({ balance: d.balance, lastDaily: d.lastDaily ?? null, adsDay: d.adsDay ?? null, adsToday: d.adsToday ?? 0, brokeSince: d.brokeSince ?? null, vipUntil: d.vipUntil ?? null, ready: true, welcome });
         });
       })
       .catch(() => {
@@ -190,6 +206,11 @@ class CloudWallet extends Base implements WalletApi {
 
   async claimRefill() {
     await call("claimRefill");
+  }
+
+  async subscribeVip() {
+    // Gerçek abonelik mağaza doğrulamasıyla sunucuda işlenecek (RevenueCat).
+    await call("testSubscribeVip");
   }
 
   async rewardAd() {

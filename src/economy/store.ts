@@ -26,6 +26,12 @@ export const CHIP_PACKS: ChipPack[] = [
   { productId: "wordokey_cip_15k", chips: 15_000, testPrice: "₺ 299,99", badge: "badge_bonus" },
 ];
 
+/**
+ * VIP abonelik: aylık yenilenen abonelik ürünü. Play Console / App Store Connect'te
+ * "wordokey_vip_aylik" kimliğiyle, aylık 299 TL fiyatla oluşturulacak.
+ */
+export const VIP_PRODUCT = { productId: "wordokey_vip_aylik", testPrice: "₺ 299" };
+
 /** Geliştirme sunucusu ve test yapıları (GitHub Pages, debug APK) taklit mağaza kullanır. */
 export const TEST_MODE = import.meta.env.DEV || import.meta.env.VITE_TEST_STORE === "1";
 
@@ -39,6 +45,12 @@ export async function buyPack(pack: ChipPack): Promise<number> {
   if (!TEST_MODE) throw Object.assign(new Error("storeSoon"), { code: "storeSoon" });
   await wait(600);
   return pack.chips;
+}
+
+/** VIP abonelik satın alma (test modunda taklit). */
+export async function buyVip(): Promise<void> {
+  if (!TEST_MODE) throw Object.assign(new Error("storeSoon"), { code: "storeSoon" });
+  await wait(700);
 }
 
 /** Ödüllü reklam gösterir; sonuna kadar izlendiyse true. */

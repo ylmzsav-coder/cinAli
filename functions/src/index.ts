@@ -1,5 +1,5 @@
 // Bölge ve ortak ayarlar common.ts'te (fonksiyonlardan önce yüklenir).
-export { bootstrap, claimDaily, claimRefill, rewardAd, testPurchase } from "./wallet";
+export { bootstrap, claimDaily, claimRefill, rewardAd, testPurchase, testSubscribeVip } from "./wallet";
 export {
   act,
   claimTimeout,

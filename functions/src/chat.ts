@@ -42,7 +42,8 @@ export const sendText = onCall(async (req) => {
     const [tSnap, mSnap] = await Promise.all([t.get(tableRef), t.get(metaRef)]);
     const table = tSnap.data();
     if (!table || !(table.uids as string[]).includes(uid)) fail("notAtTable", {}, "permission-denied");
-    if (!table.private) fail("textPrivateOnly");
+    // Serbest yazışma: arkadaş masalarında ve VIP odada
+    if (!table.private && table.type !== "vip2") fail("textPrivateOnly");
     const now = Date.now();
     const meta: ChatMeta = (mSnap.data() as ChatMeta) ?? { last: 0, windowStart: now, windowCount: 0, strikes: 0, mutedUntil: 0 };
     if (meta.mutedUntil > now) fail("chatMuted", { n: Math.ceil((meta.mutedUntil - now) / 60_000) }, "resource-exhausted");

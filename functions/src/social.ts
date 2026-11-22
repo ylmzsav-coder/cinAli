@@ -10,6 +10,7 @@
 import { onCall } from "firebase-functions/v2/https";
 import { db, fail, uidOf } from "./common";
 import { cleanName } from "./profanity";
+import { allowsWatchers } from "./tables";
 
 /** Son görülme bundan yeniyse çevrimiçi sayılır (istemci dakikada bir bildirir). */
 export const ONLINE_MS = 2.5 * 60_000;
@@ -126,7 +127,7 @@ export const friendsStatus = onCall(async (req) => {
       uid: d.id,
       name: (u.name as string) || (d.data().name as string) || "?",
       online: typeof u.lastSeen === "number" && now - u.lastSeen < ONLINE_MS,
-      tableId: st ? tid : null,
+      tableId: st && allowsWatchers(tb?.type as string) ? tid : null,
       tableStatus: st,
       watchers: st ? ((tb?.watchers as string[] | undefined) ?? []).length : 0,
     };
@@ -149,6 +150,7 @@ export const watchTable = onCall(async (req) => {
     if (!snap.exists) return fail("tableNotFound", {}, "not-found");
     const table = snap.data()!;
     if (table.status !== "playing" && table.status !== "waiting") fail("tableOver");
+    if (!allowsWatchers(table.type as string)) fail("noWatchersVip", {}, "permission-denied");
     const uids = (table.uids as string[]) ?? [];
     if (uids.includes(uid)) return { ok: true, seated: true };
     const friendSnaps = await Promise.all(uids.map((u) => t.get(friendRef(uid, u))));

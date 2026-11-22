@@ -6,6 +6,13 @@ export const TABLE_PRIZE = 300;
 export const WELCOME_GAMES = 5;
 export const WELCOME_CHIPS = 500;
 export const DAILY_BONUS = 100;
+/** VIP abonelik: aylık, abone olana hediye çip; VIP masa yalnızca abonelere açık. */
+export const VIP_BONUS_CHIPS = 1_000;
+export const VIP_DAYS = 30;
+export const VIP_MS = VIP_DAYS * 86_400_000;
+/** VIP iki kişilik masa: giriş ve birinciye ödenen çip. */
+export const VIP_ENTRY = 100;
+export const VIP_PRIZE = 300;
 /** Çipi biten oyuncuya hediye: bakiye masa girişinin altına düşünce 12 saat sonra. */
 export const REFILL_CHIPS = 300;
 export const REFILL_HOURS = 12;
@@ -17,7 +24,7 @@ export const nextBrokeSince = (balance: number, prev: number | null | undefined,
 export const AD_REWARD = 50;
 export const AD_DAILY_LIMIT = 5;
 
-export type TxReason = "hosgeldin" | "gunluk" | "reklam" | "satin-alma" | "masa-giris" | "masa-odul" | "iade" | "destek" | "el-bonus";
+export type TxReason = "hosgeldin" | "gunluk" | "reklam" | "satin-alma" | "masa-giris" | "masa-odul" | "iade" | "destek" | "el-bonus" | "vip";
 
 /** UTC gününe göre anahtar (günlük ödül ve reklam sınırı için). */
 export const dayKey = (d = new Date()) => d.toISOString().slice(0, 10);

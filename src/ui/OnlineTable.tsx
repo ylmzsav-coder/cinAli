@@ -185,13 +185,14 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
     for (const m of chatRaw) {
       if (muted.has(m.uid)) continue; // susturulan oyuncunun mesajları görünmez
       const abs = doc_.seats.findIndex((s) => s.uid === m.uid);
-      if (abs >= 0) events.push({ seat: (abs - rack.seat + 4) % 4, kind: m.kind, id: m.id, text: m.text, at: m.at });
+      const n = doc_.seats.length;
+      if (abs >= 0) events.push({ seat: (abs - rack.seat + n) % n, kind: m.kind, id: m.id, text: m.text, at: m.at });
     }
     return {
       events,
       send: (kind, id) => addDoc(collection(firestore(), "tables", tableId, "chat"), { uid, kind, id, at: serverTimestamp() }),
       // Serbest yazışma yalnızca arkadaş masalarında
-      sendText: doc_.private
+      sendText: doc_.private || doc_.type === "vip2"
         ? (text: string) => call<SendTextResult>("sendText", { tableId, text, uiLang: uiLang() })
         : undefined,
     };
@@ -200,7 +201,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
   // Oyuncu menüsü: görünümdeki koltuğu gerçek koltuğa çevirip uid bul
   const playerMenu: PlayerMenu | undefined = useMemo(() => {
     if (!doc_ || !rack || !tableId) return undefined;
-    const uidAt = (seat: number) => doc_.seats[(seat + rack.seat) % 4]?.uid ?? null;
+    const uidAt = (seat: number) => doc_.seats[(seat + rack.seat) % doc_.seats.length]?.uid ?? null;
     return {
       available: (seat) => seat !== 0 && !!uidAt(seat),
       isMuted: (seat) => muted.has(uidAt(seat) ?? ""),
@@ -246,7 +247,8 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
 
   if (doc_.status === "waiting") {
     const left = Math.max(0, Math.ceil((doc_.startAt - now) / 1000));
-    const seats = [...doc_.seats, ...Array(4 - doc_.seats.length).fill(null)] as (SeatInfo | null)[];
+    const size = cfg.players ?? 4;
+    const seats = [...doc_.seats, ...Array(Math.max(0, size - doc_.seats.length)).fill(null)] as (SeatInfo | null)[];
     return (
       <div className="page menu">
         <h1>{t("waitingTitle")}</h1>

@@ -278,7 +278,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
     // Bilgisayar oyuncuları bazen cevap verir
     const replies = kind === "msg" ? BOT_REPLIES[id as ChatMessageId] : ["😂", "👍", "😮"];
     if (replies?.length && Math.random() < 0.6) {
-      const seat = 1 + Math.floor(Math.random() * 3);
+      const seat = 1 + Math.floor(Math.random() * (state.players.length - 1));
       const reply = replies[Math.floor(Math.random() * replies.length)];
       const replyKind = (EMOJIS as readonly string[]).includes(reply) ? "emoji" : "msg";
       setTimeout(() => setLocalChat((prev) => [...prev.slice(-20), { seat, kind: replyKind, id: reply, at: Date.now() }]), 900 + Math.random() * 1200);
@@ -828,7 +828,9 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
   });
 
   // Rakipler: sol (taşını aldığınız), karşı, sağ
-  const seatLabel = (i: number) => t(i === 3 ? "seat_left" : i === 2 ? "seat_across" : "seat_right");
+  // İki kişilik (VIP) masada rakip karşıda oturur; sol ve sağ koltuk yoktur
+  const duo = state.players.length === 2;
+  const seatLabel = (i: number) => t(duo || i === 2 ? "seat_across" : i === 3 ? "seat_left" : "seat_right");
 
   let hint = "";
   if (state.phase === "draw" && state.current === ME) hint = t("hintDraw");
@@ -942,7 +944,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
 
       <div className="board">
         <aside className="side side-left">
-          {renderOpp(3)}
+          {!duo && renderOpp(3)}
           {/* Soldaki oyuncunun attığı taş: dokun ya da ıstakaya sürükle */}
           <button type="button" className={`take ${nudgeDraw && discardTop ? "nudge" : ""}`} disabled={!(canDraw && discardTop)}
             onClick={() => !suppressClickRef.current && drawTake()}
@@ -954,7 +956,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
         </aside>
 
         <main className="felt">
-          {renderOpp(2, true)}
+          {renderOpp(duo ? 1 : 2, true)}
           <div className={`hint ${message?.error ? "error" : ""}`} role="status">{message?.text ?? hint}</div>
           <section className="table" aria-label={t("tableAria")}>
             {state.table.length === 0 && <div className="empty">{t("noWordsYet")}</div>}
@@ -1038,7 +1040,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
 
         {/* Sağdaki oyuncuya taş atılır: alanın tamamı atma hedefi */}
         <aside className={`side side-right ${draggingTile && canPlay ? "drop-ready" : ""} ${drag?.target === "discard" ? "drop-over" : ""}`} data-drop="discard">
-          {renderOpp(1)}
+          {!duo && renderOpp(1)}
           {/* Atma alanı: taşı buraya sürükle */}
           <div className={`discard-zone ${drag?.target === "discard" ? "over" : ""} ${draggingTile && canPlay ? "ready" : ""}`} data-drop="discard"
             aria-label={t("yourDiscard")}>

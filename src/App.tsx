@@ -134,10 +134,11 @@ export function App() {
 
   const startGame = (s: Settings, table?: TableConfig) => {
     setGameLang(s.gameLang);
-    const names = [s.name || t("defaultName"), ...botNames()];
+    const size = table?.players ?? 4;
+    const names = [s.name || t("defaultName"), ...botNames()].slice(0, size);
     // Oyun tek el: taşlarını ilk bitiren olunca oyun biter
     const hands = table?.hands ?? GAME_HANDS;
-    const g = newGame(names, [false, true, true, true], hands, Date.now() % 1_000_000);
+    const g = newGame(names, names.map((_, i) => i > 0), hands, Date.now() % 1_000_000);
     const next: SavedGame = {
       version: 2,
       state: g,
@@ -150,6 +151,8 @@ export function App() {
   };
 
   const sitAt = (tb: TableConfig) => {
+    // VIP oda yalnızca abonelere (Masalar sayfası da kontrol eder)
+    if (tb.vip && !wallet.isVip()) return;
     if (CLOUD) {
       // Giriş ücretini ve masayı sunucu yönetir
       setOnline({ kind: "public", table: tb });

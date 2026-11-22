@@ -56,11 +56,11 @@ export function TableLobby({ table, name, onStart, onLeave }: { table: TableConf
 
   return (
     <div className="lobby">
-      <div className="lobby-felt">
+      <div className={`lobby-felt ${table.vip ? "vip" : ""}`}>
         <button type="button" className="leave-round" onClick={onLeave}>{t("leaveTableShort")}</button>
         <InviteSeat className="seat-top" onInvite={() => void invite()} />
-        <InviteSeat className="seat-left" onInvite={() => void invite()} />
-        <InviteSeat className="seat-right" onInvite={() => void invite()} />
+        {(table.players ?? 4) > 2 && <InviteSeat className="seat-left" onInvite={() => void invite()} />}
+        {(table.players ?? 4) > 2 && <InviteSeat className="seat-right" onInvite={() => void invite()} />}
         <div className="lobby-me">
           <Avatar name={name} seat={0} size="md" />
           <span>{name}</span>

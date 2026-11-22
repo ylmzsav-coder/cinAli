@@ -103,6 +103,16 @@ function configFor(type: unknown): TableConfig {
   return c;
 }
 
+/** VIP masaya yalnızca aboneliği süren oyuncular oturur. */
+function requireVip(cfg: TableConfig, w: WalletDoc) {
+  if (cfg.vip && !(w.vipUntil && w.vipUntil > Date.now())) fail("vipOnly", {}, "permission-denied");
+}
+
+/** Masa izleyici kabul ediyor mu (VIP oda kabul etmez). */
+export function allowsWatchers(type: string): boolean {
+  return !TABLES.find((t) => t.id === type)?.vip;
+}
+
 function langOf(v: unknown): LangCode {
   if (typeof v === "string" && v in LANGS && LANGS[v as LangCode].playable) return v as LangCode;
   return fail("badRequest", {}, "invalid-argument");
@@ -193,9 +203,10 @@ async function walletsOf(t: Transaction, uids: string[]) {
 function startGame(table: TableDoc, seed: number): { table: TableDoc; state: GameState } {
   const seats = table.seats.slice();
   let b = seed % BOT_NAMES.length;
-  while (seats.length < 4) seats.push({ uid: null, name: BOT_NAMES[b++ % BOT_NAMES.length], bot: true });
-  setGameLang(table.lang);
   const cfg = configFor(table.type);
+  const size = cfg.players ?? 4;
+  while (seats.length < size) seats.push({ uid: null, name: BOT_NAMES[b++ % BOT_NAMES.length], bot: true });
+  setGameLang(table.lang);
   let state = newGame(seats.map((s) => s.name), seats.map((s) => s.bot), cfg.hands, seed);
   state = runBots(state, cfg.level);
   return { table: { ...table, seats, status: "playing" }, state };
@@ -234,6 +245,7 @@ export const createPrivateTable = onCall(async (req) => {
       if (active) return { tableId: active, resumed: true, code: null };
       const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
       if (!w) return fail("noWallet");
+      requireVip(cfg, w);
       if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
       applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
       const id = db.collection("tables").doc().id;
@@ -266,10 +278,11 @@ export const joinPrivateTable = onCall(async (req) => {
     const snap = found.docs[0];
     if (!snap) return fail("codeNotFound", {}, "not-found");
     const table = snap.data() as TableDoc;
-    if (table.seats.length >= 4) fail("tableFull");
     const cfg = configFor(table.type);
+    if (table.seats.length >= (cfg.players ?? 4)) fail("tableFull");
     const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
     if (!w) return fail("noWallet");
+    requireVip(cfg, w);
     if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
     applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
     const name = cleanName(rawName, uid, table.lang);
@@ -300,6 +313,7 @@ export const joinTable = onCall(async (req) => {
     }
     const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
     if (!w) return fail("noWallet");
+    requireVip(cfg, w);
     if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
 
     const now = Date.now();
@@ -312,7 +326,7 @@ export const joinTable = onCall(async (req) => {
         .where("startAt", ">", now + 500)
         .limit(5),
     );
-    const candidate = open.docs.find((d) => (d.data() as TableDoc).seats.length < 4);
+    const candidate = open.docs.find((d) => (d.data() as TableDoc).seats.length < (cfg.players ?? 4));
 
     applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
     let id: string;
@@ -321,7 +335,7 @@ export const joinTable = onCall(async (req) => {
       const table = candidate.data() as TableDoc;
       const seats = [...table.seats, { uid, name, bot: false }];
       const next: TableDoc = { ...table, seats, uids: [...table.uids, uid], version: table.version + 1 };
-      if (seats.length === 4) {
+      if (seats.length === (cfg.players ?? 4)) {
         const started = startGame(next, now % 1_000_000);
         await persist(t, id, started.table, started.state, new Map());
       } else {

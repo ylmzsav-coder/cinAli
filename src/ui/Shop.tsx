@@ -1,11 +1,15 @@
+import { VipModal } from "./Vip";
+import { VIP_PRODUCT } from "../economy/store";
+import { VIP_BONUS_CHIPS } from "../economy/config";
 import { useState } from "react";
 import { CHIP_PACKS, TEST_MODE, adsAvailable, buyPack, purchasesAvailable, showRewardedAd } from "../economy/store";
 import { useWallet } from "../economy/useWallet";
 import { AD_REWARD, DAILY_BONUS, wallet } from "../economy/wallet";
-import { errorText, t } from "../i18n";
+import { errorText, formatNumber, t } from "../i18n";
 import { Chips } from "./Chips";
 
 export function Shop({ onBack }: { onBack: () => void }) {
+  const [vipOpen, setVipOpen] = useState(false);
   const w = useWallet();
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -50,6 +54,13 @@ export function Shop({ onBack }: { onBack: () => void }) {
       <h1>{t("shop")}</h1>
       {TEST_MODE && <div className="test-banner">{t("testMode")}</div>}
       {msg && <div className="toast">{msg}</div>}
+
+      <button type="button" className="vip-banner" onClick={() => setVipOpen(true)}>
+        <span className="vip-banner-crown" aria-hidden>👑</span>
+        <span className="vip-banner-text"><b>{t("vipTitle")}</b><small>{t("vipBannerSub", { n: formatNumber(VIP_BONUS_CHIPS) })}</small></span>
+        <span className="vip-banner-price">{VIP_PRODUCT.testPrice}<small>/{t("vipMonth")}</small></span>
+      </button>
+      {vipOpen && <VipModal onClose={() => setVipOpen(false)} />}
 
       <div className="packs">
         {CHIP_PACKS.map((p) => (

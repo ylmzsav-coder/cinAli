@@ -34,6 +34,8 @@ export interface WalletDoc {
   createdAt: number;
   /** Bakiye en ucuz masa girişinin altına düştüğü an (hediye çip sayacı). */
   brokeSince?: number | null;
+  /** VIP aboneliğin bittiği an (ms). */
+  vipUntil?: number | null;
 }
 
 export const walletRef = (uid: string) => db.collection("wallets").doc(uid);

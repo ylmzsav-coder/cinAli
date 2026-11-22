@@ -1,5 +1,5 @@
 import type { BotLevel } from "../game/bot";
-import { TABLE_ENTRY, TABLE_PRIZE } from "./config";
+import { TABLE_ENTRY, TABLE_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
 
 export interface TableConfig {
   id: string;
@@ -9,6 +9,10 @@ export interface TableConfig {
   level: BotLevel;
   /** Birinciye ödenen sabit çip (yoksa pot - kasa payı). */
   prize?: number;
+  /** Oyuncu sayısı (varsayılan 4). */
+  players?: number;
+  /** Yalnızca VIP abonelere açık; izleyici kabul etmez, serbest sohbet var. */
+  vip?: boolean;
 }
 
 /** Kasa payı: pottan düşülen oran. Çiplerin zamanla erimesini sağlar. */
@@ -18,6 +22,8 @@ export const PLAYERS_PER_TABLE = 4;
 /** Oynanabilen masa: herkes 100 çip öder, birinci 300 çip alır (400 çiplik pottan 100'ü kasaya). */
 export const TABLES: TableConfig[] = [
   { id: "caylak", name: "Çaylak", entry: TABLE_ENTRY, hands: 1, level: "orta", prize: TABLE_PRIZE },
+  // VIP iki kişilik özel oda: karşılıklı, yalnızca VIP aboneler
+  { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true },
 ];
 
 /** Eski masalar: yalnızca önceki sürümde başlamış oyunların ödemesi için. */
@@ -33,7 +39,7 @@ export function tableById(id: string | undefined): TableConfig | undefined {
 
 /** Birinciye ödenen tutar. */
 export function winnerPrize(t: TableConfig): number {
-  return t.prize ?? Math.floor(t.entry * PLAYERS_PER_TABLE * (1 - HOUSE_CUT));
+  return t.prize ?? Math.floor(t.entry * (t.players ?? PLAYERS_PER_TABLE) * (1 - HOUSE_CUT));
 }
 
 /**

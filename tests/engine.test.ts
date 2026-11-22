@@ -247,7 +247,11 @@ import { TABLES, payout, winnerPrize } from "../src/economy/tables";
 describe("çip ödemesi (en yüksek toplam birinci)", () => {
   const t = TABLES[0]; // tek masa: giriş 100, birinciye 300
   it("giriş 100, birinci 300 çip alır", () => {
-    expect(TABLES.length).toBe(1);
+    expect(TABLES.filter((x) => !x.vip).length).toBe(1);
+    const vip = TABLES.find((x) => x.vip)!;
+    expect(vip.players).toBe(2);
+    expect(vip.entry).toBe(100);
+    expect(winnerPrize(vip)).toBe(300);
     expect(t.entry).toBe(100);
     expect(winnerPrize(t)).toBe(300);
     expect(payout(t, [300, 50, 200, 30], 0, 0)).toBe(300);
