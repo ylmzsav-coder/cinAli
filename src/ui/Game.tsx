@@ -35,7 +35,8 @@ import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
 import { Avatar, SeatStatsModal } from "./Profile";
 import { GiftSendModal } from "./Gifts";
-import { type Gift, giftById } from "../economy/gifts";
+import { type Gift } from "../economy/gifts";
+import { GiftIcon } from "./GiftIcon";
 import { wallet } from "../economy/wallet";
 import { TABLE_PRIZE } from "../economy/config";
 import { Slots, groupsOf, initialSlots, moveGroup, moveTile, syncSlots } from "./rack";
@@ -264,7 +265,7 @@ export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playe
     if (!e) return null;
     return (
       <span key={e.at} className={`bubble ${e.kind === "emoji" ? "bubble-emoji" : ""} ${e.kind === "text" ? "bubble-text" : ""}`} role="status">
-        {e.kind === "emoji" ? e.id : e.kind === "text" ? e.text : e.kind === "gift" ? `🎁 ${giftById(e.id)?.emoji ?? ""} → ${e.text ?? ""}` : t(`chat_${e.id}` as "chat_hello")}
+        {e.kind === "emoji" ? e.id : e.kind === "text" ? e.text : e.kind === "gift" ? <>🎁 <GiftIcon id={e.id} size="1.4em" /> → {e.text ?? ""}</> : t(`chat_${e.id}` as "chat_hello")}
       </span>
     );
   };

@@ -7,6 +7,7 @@ import { type ReceivedGift, convertGift, myGifts, sendGiftTo } from "../online/g
 import { type FriendStatus, friendsStatus } from "../online/social";
 import { Avatar } from "./Profile";
 import { Chips } from "./Chips";
+import { GiftIcon } from "./GiftIcon";
 
 const CATS: GiftCategory[] = ["erkek", "kadin", "herkes"];
 const CAT_ICON: Record<GiftCategory, string> = { erkek: "🤵", kadin: "👩", herkes: "🎁" };
@@ -26,7 +27,7 @@ export function GiftCatalog({ onPick, selected }: { onPick: (g: Gift) => void; s
       <div className="gift-grid">
         {GIFTS.filter((g) => g.category === cat).map((g) => (
           <button key={g.id} type="button" className={`gift-item ${selected === g.id ? "on" : ""}`} onClick={() => onPick(g)}>
-            <span className="gift-emoji" aria-hidden>{g.emoji}</span>
+            <span className="gift-emoji" aria-hidden><GiftIcon id={g.id} size="1.15em" /></span>
             <span className="gift-name">{t(`gift_${g.id}` as "gift_gul")}</span>
             <Chips amount={g.value} />
           </button>
@@ -65,7 +66,7 @@ export function GiftSendModal({ toName, onSend, onClose }: { toName: string; onS
         <GiftCatalog onPick={setPick} selected={pick?.id} />
         {msg && <p className={msg.error ? "error" : "toast"}>{msg.text}</p>}
         <button type="button" className="primary gift-send-btn" disabled={!pick || busy || (!!pick && w.balance < pick.value)} onClick={() => void send()}>
-          {pick ? t("giftSendBtn", { gift: `${pick.emoji} ${t(`gift_${pick.id}` as "gift_gul")}`, n: formatNumber(pick.value) }) : t("giftChoose")}
+          {pick ? <><GiftIcon id={pick.id} size="1.3em" /> {t("giftSendBtn", { gift: t(`gift_${pick.id}` as "gift_gul"), n: formatNumber(pick.value) })}</> : t("giftChoose")}
         </button>
         <p className="muted small">{t("giftNote", { pct: Math.round(GIFT_CONVERT_RATE * 100) })}</p>
       </div>
@@ -101,7 +102,7 @@ export function GiftShop() {
         <div className="modal-bg" onClick={() => setPick(null)}>
           <div className="modal gift-modal" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="profile-close" onClick={() => setPick(null)} aria-label={t("close")}>✕</button>
-            <div className="gift-big" aria-hidden>{pick.emoji}</div>
+            <div className="gift-big" aria-hidden><GiftIcon id={pick.id} size="1.1em" /></div>
             <h3>{t(`gift_${pick.id}` as "gift_gul")} · <Chips amount={pick.value} /></h3>
             {!CLOUD ? (
               <p className="muted">{t("giftShopOffline")}</p>
@@ -159,7 +160,7 @@ export function MyGiftsPanel() {
             const def = giftById(g.giftId);
             return (
               <div key={g.id} className={`friend-row ${g.converted ? "dim" : ""}`}>
-                <span className="gift-row-emoji" aria-hidden>{def?.emoji ?? "🎁"}</span>
+                <span className="gift-row-emoji" aria-hidden><GiftIcon id={g.giftId} size="1.1em" /></span>
                 <span className="friend-name">
                   {def ? t(`gift_${def.id}` as "gift_gul") : g.giftId}
                   <small className="muted">{t("giftFrom", { name: g.fromName })} · {new Date(g.at).toLocaleDateString()}</small>
