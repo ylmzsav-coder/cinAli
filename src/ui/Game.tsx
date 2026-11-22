@@ -955,14 +955,14 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               {t("buyChips")}
             </button>
           )}
-        </div>
-        <div className="topbar-actions">
           {!me.opened && !handOver && (
             <button type="button" className={`pair-toggle top-pair ${pairChoice ? "on" : ""}`} aria-pressed={pairChoice}
               onClick={() => setPairChoice((v) => !v)}>
               {pairChoice ? t("pairToggleOff") : t("pairToggleOn")}
             </button>
           )}
+        </div>
+        <div className="topbar-actions">
           {chatRoom ? (
             <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
               aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬 {t("chatNow")}</button>
