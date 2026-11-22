@@ -15,6 +15,7 @@ import { RotateHint, Splash } from "./ui/Splash";
 import { enterFullscreenLandscape } from "./display";
 import { startMusic, stopMusic } from "./music";
 import { flushFeedback } from "./feedbackBox";
+import { recordProgress, recordQuit } from "./stats";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Rules } from "./ui/Rules";
 import { Shop } from "./ui/Shop";
@@ -116,6 +117,7 @@ export function App() {
     setSaved((prev) => {
       if (!prev) return prev;
       const next = settle({ ...prev, state: s });
+      recordProgress(next.state, next.payout);
       saveGame(next);
       return next;
     });
@@ -152,6 +154,8 @@ export function App() {
   };
 
   const finishGame = () => {
+    // Oyun bitmeden çıkıldıysa "teslim olma" sayılır
+    if (saved) recordQuit(saved.state);
     setSaved(null);
     saveGame(null);
     setScreen("hub");

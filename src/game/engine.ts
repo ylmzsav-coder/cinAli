@@ -49,6 +49,9 @@ export interface Player {
   laid: Tile[];
   /** Bu elde yere koyduğu harflerin toplam değeri (puan hanesi). */
   points?: number;
+  /** Bu eldeki hamle sayısı (açma, kelime koyma, işleme) ve en yüksek hamle puanı. */
+  plays?: number;
+  bestPlay?: number;
   /** Oyuncu bu elde çifte gitti (çiftle açtı): yalnızca çift koyabilir, işleyemez. */
   pairs?: boolean;
 }
@@ -236,6 +239,8 @@ export function dealHand(prev: GameState): GameState {
     p.opened = false;
     p.laid = [];
     p.points = 0;
+    p.plays = 0;
+    p.bestPlay = 0;
     p.pairs = false;
   });
   state.deck = tiles;
@@ -304,7 +309,7 @@ export function openHand(dict: Dictionary, prev: GameState, specs: WordSpec[]): 
     state.table.push({ id: state.nextWordId++, owner: state.current, tiles: w });
     p.laid.push(...w.map((x) => x.tile));
   }
-  p.points = (p.points ?? 0) + total;
+  addPlay(p, total);
   p.opened = true;
   state.turnPlays++;
   state.log.push({ k: "opened", p: { name: p.name, total, words: words.map(wordString).join(", ") } });
@@ -323,7 +328,7 @@ export function layWord(dict: Dictionary, prev: GameState, spec: WordSpec): Game
   removeFromRack(p, new Set(spec.tileIds));
   state.table.push({ id: state.nextWordId++, owner: state.current, tiles: word });
   p.laid.push(...word.map((x) => x.tile));
-  p.points = (p.points ?? 0) + placedValue(word);
+  addPlay(p, placedValue(word));
   state.turnPlays++;
   state.log.push({ k: "laid", p: { name: p.name, word: wordString(word) } });
   return state;
@@ -356,7 +361,7 @@ export function extendWord(
   target.tiles = tiles;
   p.laid.push(...added.map((x) => x.tile));
   // Eklenen harflerin değeri ekleyen oyuncunun hanesine yazılır
-  p.points = (p.points ?? 0) + placedValue(added);
+  addPlay(p, placedValue(added));
   state.turnPlays++;
   state.log.push({ k: "extended", p: { name: p.name, from: before, to: w } });
   return state;
@@ -388,8 +393,8 @@ export function openPairs(prev: GameState, specs: WordSpec[]): GameState {
   for (const w of pairs) {
     state.table.push({ id: state.nextWordId++, owner: state.current, tiles: w, pair: true });
     p.laid.push(...w.map((x) => x.tile));
-    p.points = (p.points ?? 0) + placedValue(w);
   }
+  addPlay(p, pairs.reduce((n, w) => n + placedValue(w), 0));
   p.opened = true;
   p.pairs = true;
   state.turnPlays++;
@@ -408,7 +413,7 @@ export function layPair(prev: GameState, spec: WordSpec): GameState {
   removeFromRack(p, new Set(spec.tileIds));
   state.table.push({ id: state.nextWordId++, owner: state.current, tiles: pair, pair: true });
   p.laid.push(...pair.map((x) => x.tile));
-  p.points = (p.points ?? 0) + placedValue(pair);
+  addPlay(p, placedValue(pair));
   state.turnPlays++;
   state.log.push({ k: "laid", p: { name: p.name, word: wordString(pair) } });
   return state;
@@ -465,6 +470,13 @@ export function colorWinOf(p: Player): Color | null {
   if (!colored.length) return null;
   const c = colored[0].color;
   return colored.every((t) => t.color === c) ? c : null;
+}
+
+/** Bir hamlenin puanını oyuncunun hanesine yazar ve hamle istatistiğini günceller. */
+function addPlay(p: Player, value: number) {
+  p.points = (p.points ?? 0) + value;
+  p.plays = (p.plays ?? 0) + 1;
+  p.bestPlay = Math.max(p.bestPlay ?? 0, value);
 }
 
 /** Elde kalan okey taşının cezası: alfabenin en yüksek değerli harfi kadar (Türkçede Z = 29). */

@@ -10,6 +10,7 @@ import { errorText, formatNumber, t } from "../i18n";
 import { Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { Chips } from "./Chips";
+import { Avatar, MyStatsModal } from "./Profile";
 
 interface HubProps {
   settings: Settings;
@@ -26,6 +27,7 @@ interface HubProps {
 export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
+  const [statsOpen, setStatsOpen] = useState(false);
   // Çipi biten oyuncunun hediye sayacı (dakikada bir güncellenir)
   const refillAt = w.ready ? wallet.refillAt() : null;
   const [now, setNow] = useState(() => Date.now());
@@ -115,10 +117,17 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
         <div className="hub-left">
           <Logo />
           <p className="muted tagline">{t("tagline")}</p>
-          <button type="button" className="balance" onClick={onShop} aria-label={t("balanceAria")}>
-            <Chips amount={w.balance} big loading={!w.ready} />
-            <span className="plus-chip">+</span>
-          </button>
+          <div className="hub-me">
+            <button type="button" className="profile-chip" onClick={() => setStatsOpen(true)} aria-label={t("myProfile")}>
+              <Avatar name={settings.name || t("defaultName")} seat={0} size="md" />
+              <span>{t("myProfile")}</span>
+            </button>
+            <button type="button" className="balance" onClick={onShop} aria-label={t("balanceAria")}>
+              <Chips amount={w.balance} big loading={!w.ready} />
+              <span className="plus-chip">+</span>
+            </button>
+          </div>
+          {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} />}
         </div>
         <div className="hub-right">
           {wallet.canClaimDaily() && (

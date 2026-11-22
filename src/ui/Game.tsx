@@ -35,6 +35,7 @@ import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TE
 import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
+import { Avatar, SeatStatsModal } from "./Profile";
 import { Slots, arrangeWords, groupsOf, initialSlots, moveGroup, moveTile, packSlots, syncSlots } from "./rack";
 
 const ME = 0;
@@ -203,6 +204,8 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   }, [botTurnKey]);
 
   // ---- Sohbet (hazır mesajlar ve emojiler) ----
+  /** Profil kartı açık olan koltuk. */
+  const [profileSeat, setProfileSeat] = useState<number | null>(null);
   const [localChat, setLocalChat] = useState<ChatEvent[]>([]);
   const [chatOpen, setChatOpen] = useState(false);
   const lastSentRef = useRef(0);
@@ -889,6 +892,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
         style={timerStyle(i)}>
         {bubbleFor(i)}
         <div className="opp-name">
+          <Avatar name={p.name} seat={i} size="sm" onClick={() => setProfileSeat(i)} />{" "}
           {playerMenu?.available(i) ? (
             <button type="button" className="name-btn" onClick={() => setMenuSeat(menuSeat === i ? null : i)}
               aria-haspopup="menu" aria-expanded={menuSeat === i}>
@@ -935,9 +939,13 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
           )}
           <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
             aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬</button>
+          <Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} />
           <button type="button" className="link" onClick={() => setShowScores(true)}>{t("scores")}</button>
         </div>
       </header>
+      {profileSeat !== null && (
+        <SeatStatsModal state={state} seat={profileSeat} onClose={() => setProfileSeat(null)} />
+      )}
 
       <div className="board">
         <aside className="side side-left">
