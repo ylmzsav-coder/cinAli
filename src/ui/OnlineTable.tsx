@@ -1,4 +1,5 @@
 import { addDoc, collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
+import { InviteSeat, shareInvite } from "./Lobby";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { tableById, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
@@ -230,7 +231,8 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
         <p className="muted">{t("tableTitle", { name: t(`table_${cfg.id}` as "table_vip") })}</p>
         <div className="waiting-seats">
           {seats.map((s, i) => (
-            <div key={i} className={`waiting-seat ${s ? "taken" : ""}`}>{s ? s.name : t("emptySeat")}</div>
+            s ? <div key={i} className="waiting-seat taken">{s.name}</div>
+              : <InviteSeat key={i} className="waiting-seat" onInvite={() => void shareInvite(doc_.private ? doc_.code ?? undefined : undefined)} />
           ))}
         </div>
         {doc_.private ? (

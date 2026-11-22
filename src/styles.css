@@ -900,3 +900,55 @@ button.avatar { cursor: pointer; min-height: 0; }
 .pair-toggle.on { background: linear-gradient(#ffb74d, #f57c00); color: #2b1600; text-shadow: none; }
 .buy-btn { display: inline-flex; align-items: center; gap: 6px; }
 .cart-ico { width: 1.7em; height: 1.7em; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)); }
+
+/* ---- Bekleme masası (oyun başlamadan) ---- */
+.lobby { position: fixed; inset: 0; padding: max(10px, env(safe-area-inset-top)) 12px 10px; display: flex; }
+.lobby-felt {
+  position: relative; flex: 1; border-radius: 28px;
+  background: radial-gradient(ellipse at 50% 45%, #33a35b, #1d7a3e 60%, #135c2c);
+  border: 10px solid #8a5a2b; box-shadow: inset 0 0 0 3px #5e3a17, inset 0 0 30px rgba(0, 0, 0, 0.35), 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+.invite-seat {
+  position: absolute; display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: linear-gradient(#2b2b2b, #111); color: #fff; border: 2px solid #000; border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 10px rgba(0, 0, 0, 0.45); padding: 8px 14px;
+  font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.invite-seat:active { transform: translateY(2px); }
+.invite-plus { font-size: 2.2em; line-height: 0.8; color: #e6e6e6; font-weight: 900; }
+.invite-label { font-size: 1.15em; }
+.seat-top { top: 10px; left: 50%; transform: translateX(-50%); min-width: 200px; height: 58px; }
+.seat-top:active { transform: translateX(-50%) translateY(2px); }
+.seat-left, .seat-right { top: 50%; transform: translateY(-50%); width: 92px; height: 150px; flex-direction: column; gap: 6px; }
+.seat-left { left: 10px; }
+.seat-right { right: 10px; }
+.seat-left:active, .seat-right:active { transform: translateY(calc(-50% + 2px)); }
+.seat-left .invite-label, .seat-right .invite-label { font-size: 1em; text-align: center; }
+.lobby-me {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px;
+  background: rgba(0, 0, 0, 0.45); color: #fff; padding: 4px 14px 4px 4px; border-radius: 999px; font-weight: 800;
+}
+.lobby-panel {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(62%, 560px);
+  display: flex; align-items: center; gap: 16px;
+}
+.lobby-info {
+  flex: 1; background: rgba(15, 15, 15, 0.88); border: 2px solid rgba(255, 160, 140, 0.55); border-radius: 14px;
+  padding: 12px 16px; display: grid; gap: 8px; text-align: center; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+.lobby-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.06); border-radius: 8px; padding: 4px 10px; }
+.lobby-wait { font-weight: 800; }
+.leave-round {
+  flex: none; width: 104px; height: 104px; border-radius: 50%; padding: 6px;
+  background: radial-gradient(circle at 50% 35%, #ff6b5e, #c62828 60%, #8e1414); color: #fff;
+  border: 5px solid #1a1a1a; box-shadow: 0 0 0 3px #555, 0 6px 14px rgba(0, 0, 0, 0.5), inset 0 3px 0 rgba(255, 255, 255, 0.35);
+  font-weight: 900; font-size: 0.8rem; line-height: 1.15; text-transform: uppercase; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+}
+@media (max-height: 500px) {
+  .seat-top { height: 46px; top: 6px; }
+  .seat-left, .seat-right { width: 80px; height: 120px; }
+  .lobby-info { padding: 8px 12px; gap: 5px; }
+  .leave-round { width: 86px; height: 86px; font-size: 0.7rem; }
+}
+/* Canlı masa bekleme ekranında boş koltuk da bir davet düğmesi */
+.waiting-seats .invite-seat { position: static; height: auto; min-height: 52px; }

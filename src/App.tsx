@@ -18,10 +18,11 @@ import { flushFeedback } from "./feedbackBox";
 import { recordProgress, recordQuit } from "./stats";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Rules } from "./ui/Rules";
+import { TableLobby } from "./ui/Lobby";
 import { Shop } from "./ui/Shop";
 import { Tables } from "./ui/Tables";
 
-type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online";
+type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby";
 
 const paidGames = new Set<number>();
 
@@ -54,6 +55,8 @@ export function App() {
   const [screen, setScreen] = useState<Screen>("hub");
   /** Mağazadan geri dönülecek ekran (oyundan açılınca oyuna döner). */
   const [shopBack, setShopBack] = useState<Screen>("hub");
+  /** Bekleme masasındaki (oyun başlamadan önce) masa. */
+  const [lobbyTable, setLobbyTable] = useState<TableConfig | null>(null);
   // Açılış ekranı (dokunmadan tam ekran/müzik başlatılamaz)
   const [started, setStarted] = useState(false);
   const [saved, setSaved] = useState<SavedGame | null>(() => {
@@ -149,8 +152,24 @@ export function App() {
       setScreen("online");
       return;
     }
+    if (wallet.snapshot.balance < tb.entry) {
+      setShopBack("hub");
+      setScreen("shop");
+      return;
+    }
+    // Önce bekleme masası: boş koltuklara davet, süre dolunca bilgisayar oyuncuları
+    setLobbyTable(tb);
+    setScreen("lobby");
+  };
+
+  /** Bekleme masasından oyuna: giriş ücreti şimdi alınır. */
+  const startFromLobby = () => {
+    const tb = lobbyTable;
+    if (!tb || screen !== "lobby") return;
+    setLobbyTable(null);
     if (!wallet.spend(tb.entry, "masa-giris", tb.id)) {
-      { setShopBack("hub"); setScreen("shop"); };
+      setShopBack("hub");
+      setScreen("shop");
       return;
     }
     startGame(settings, tb);
@@ -212,6 +231,12 @@ export function App() {
       break;
     case "rules":
       return <Rules onBack={() => setScreen("hub")} />;
+    case "lobby":
+      if (!lobbyTable) return null;
+      return (
+        <TableLobby table={lobbyTable} name={settings.name || t("defaultName")}
+          onStart={startFromLobby} onLeave={() => { setLobbyTable(null); setScreen("hub"); }} />
+      );
     case "shop":
       return <Shop onBack={() => setScreen(shopBack)} />;
     case "tables":
