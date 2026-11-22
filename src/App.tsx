@@ -338,6 +338,7 @@ export function App() {
       }
       onResume={() => setScreen(online ? "online" : "game")}
       onTables={() => setScreen("tables")}
+      onCaylak={() => sitAt(tableById("caylak")!)}
       onPractice={() => setScreen("practice")}
       onShop={() => { setShopBack("hub"); setScreen("shop"); }}
       onRules={() => setScreen("rules")}

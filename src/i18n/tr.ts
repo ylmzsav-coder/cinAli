@@ -420,6 +420,7 @@ const tr = {
   genderF: "Kadın",
   genderM: "Erkek",
   genderLabel: "Cinsiyet",
+  playCaylak: "Çaylak Masa",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

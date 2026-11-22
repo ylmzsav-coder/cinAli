@@ -416,6 +416,7 @@ const pt: Messages = {
   genderF: "Mulher",
   genderM: "Homem",
   genderLabel: "Gênero",
+  playCaylak: "Mesa Iniciante",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

@@ -10,6 +10,7 @@ import { errorText, formatNumber, t } from "../i18n";
 import { Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { Chips } from "./Chips";
+import { TABLES, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
 import { CLOUD } from "../online/cloud";
 import { type TableInvite, declineInvite, friendsStatus } from "../online/social";
@@ -22,6 +23,8 @@ interface HubProps {
   resumeLabel: string;
   onResume: () => void;
   onTables: () => void;
+  /** Çaylak masaya doğrudan otur. */
+  onCaylak: () => void;
   onPractice: () => void;
   onShop: () => void;
   onRules: () => void;
@@ -31,7 +34,7 @@ interface HubProps {
   onJoinInvite?: (code: string) => void;
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules, onWatch, onJoinInvite }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onCaylak, onPractice, onShop, onRules, onWatch, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   const [statsOpen, setStatsOpen] = useState(false);
@@ -184,7 +187,10 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           )}
           {toast && <div className="toast">{toast}</div>}
           {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
-          <button type="button" className={canResume ? "big" : "primary big"} onClick={onTables}>{t("chipTables")}</button>
+          <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub`} onClick={onCaylak}>
+            <span>🌱 {t("playCaylak")}</span>
+            <span className="caylak-sub">{t("entry")} <Chips amount={TABLES[0].entry} /> · {t("toWinner")} <Chips amount={winnerPrize(TABLES[0])} /></span>
+          </button>
           <div className="hub-row">
             <button type="button" className="big" onClick={onPractice}>{t("practice")}</button>
             <button type="button" className="big vip-hub" onClick={() => (wallet.isVip() ? onTables() : setVipOpen(true))}>👑 {t("vipShort")}</button>

@@ -1107,3 +1107,7 @@ button.avatar { cursor: pointer; min-height: 0; }
 .gender-toggle { display: flex; gap: 6px; }
 .gender-toggle button { padding: 3px 12px; min-height: 0; font-size: 0.8rem; font-weight: 800; background: rgba(0, 0, 0, 0.25); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 999px; }
 .gender-toggle button.on { background: #fbf6e8; color: #0f3d2b; }
+
+/* Ana menüde Çaylak masa düğmesi: alt satırda giriş ve ödül */
+.caylak-hub { display: flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1.15; }
+.caylak-hub .caylak-sub { font-size: 0.62em; font-weight: 600; opacity: 0.85; display: inline-flex; align-items: center; gap: 4px; }
