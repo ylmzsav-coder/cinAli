@@ -14,7 +14,7 @@ export const nextBrokeSince = (balance: number, prev: number | null | undefined,
 export const AD_REWARD = 300;
 export const AD_DAILY_LIMIT = 5;
 
-export type TxReason = "hosgeldin" | "gunluk" | "reklam" | "satin-alma" | "masa-giris" | "masa-odul" | "iade" | "destek";
+export type TxReason = "hosgeldin" | "gunluk" | "reklam" | "satin-alma" | "masa-giris" | "masa-odul" | "iade" | "destek" | "el-bonus";
 
 /** UTC gününe göre anahtar (günlük ödül ve reklam sınırı için). */
 export const dayKey = (d = new Date()) => d.toISOString().slice(0, 10);

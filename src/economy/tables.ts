@@ -30,13 +30,14 @@ export function winnerPrize(t: TableConfig): number {
 
 /**
  * Oyun sonunda oyuncuya ödenecek çip.
- * En düşük toplam puan birinciliktir; eşitlikte ödül paylaşılır.
+ * En yüksek toplam puan birinciliktir; eşitlikte ödül paylaşılır.
  * Oyuncunun yaptığı her Renk Bitirme için giriş ücreti kadar ikramiye eklenir.
+ * (Kazanılan her el için verilen bonus çip el bitiminde ayrıca ödenir.)
  */
 export function payout(t: TableConfig, totals: number[], me: number, colorWins: number): number {
-  const min = Math.min(...totals);
-  const winners = totals.filter((x) => x === min).length;
-  const prize = totals[me] === min ? Math.floor(winnerPrize(t) / winners) : 0;
+  const max = Math.max(...totals);
+  const winners = totals.filter((x) => x === max).length;
+  const prize = totals[me] === max ? Math.floor(winnerPrize(t) / winners) : 0;
   return prize + colorWins * t.entry;
 }
 

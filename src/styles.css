@@ -216,7 +216,7 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .winner { font-size: 1.15rem; font-weight: 800; margin: 0; }
 .scores { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 .scores th, .scores td { padding: 5px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); font-size: 0.9rem; }
-.scores .neg { color: #8ef59a; font-weight: 700; }
+.scores .neg { color: #ff8a80; font-weight: 700; }
 
 @media (min-width: 720px) {
   .game { padding-top: 16px; gap: 14px; }

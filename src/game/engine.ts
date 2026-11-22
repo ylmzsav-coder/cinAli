@@ -1,24 +1,30 @@
 import { Dictionary, MIN_PLAY_LENGTH } from "./dictionary";
 import { LangCode, alphabet, gameLang, letterValue } from "./lang";
-import { Color, Letter, Tile, createTileSet, makeRng, shuffle, tilePenalty } from "./tiles";
+import { Color, Letter, Tile, createTileSet, makeRng, shuffle } from "./tiles";
 
 // ---- Kurallar ----------------------------------------------------------
 export const RULES = {
   handSize: 14,
   /** Eli yere açmak için gereken en düşük toplam harf değeri. */
   openThreshold: 86,
-  /** Normal bitiren oyuncunun puan tablosuna yazılan değer. */
-  winScore: -100,
-  /** Tüm taşları tek renk bitiren oyuncunun puanı (Renk Bitirme). */
-  colorWinScore: -200,
-  /** El açamamış oyuncunun cezası. */
-  unopenedPenalty: 200,
+  /*
+   * Puanlama (en çok puan kazanır): oyuncunun bu elde yere koyduğu harflerin
+   * değeri (açtığı kelimeler, çiftler ve başkasının kelimesine eklediği harfler)
+   * kendi hanesine yazılır. Bitiren oyuncu ayrıca bitirme ikramiyesi alır;
+   * bitiremeyenlerin elinde kalan harflerin değeri eksi yazılır (okey taşı 0).
+   */
+  /** Normal bitirme ikramiyesi. */
+  winBonus: 100,
+  /** Tüm taşları tek renk bitirme ikramiyesi (Renk Bitirme). */
+  colorWinBonus: 200,
   /** Çifte giden oyuncunun açmak için gereken çift sayısı (değer şartı yok). */
   pairsToOpen: 5,
-  /** Çiftle (karışık renk) bitiren oyuncunun puanı. */
-  pairWinScore: -200,
-  /** Çiftle, tüm taşları tek renk bitiren oyuncunun puanı. */
-  pairColorWinScore: -400,
+  /** Çiftle (karışık renk) bitirme ikramiyesi. */
+  pairWinBonus: 200,
+  /** Çiftle, tüm taşları tek renk bitirme ikramiyesi. */
+  pairColorWinBonus: 400,
+  /** Eli kazanan oyuncuya cüzdan ikramiyesi (çip). */
+  handWinChips: 100,
 };
 
 // ---- Tipler ------------------------------------------------------------
@@ -43,6 +49,8 @@ export interface Player {
   opened: boolean;
   /** Bu elde oyuncunun yere koyduğu taşlar (Renk Bitirme kontrolü için). */
   laid: Tile[];
+  /** Bu elde yere koyduğu harflerin toplam değeri (puan hanesi). */
+  points?: number;
   /** Oyuncu bu elde çifte gitti (çiftle açtı): yalnızca çift koyabilir, işleyemez. */
   pairs?: boolean;
 }
@@ -55,6 +63,12 @@ export interface HandResult {
   /** Kazanan çiftle mi bitirdi. */
   pairWin?: boolean;
   scores: number[];
+  /** Oyuncuların bu elde yere koyduğu harflerin değeri. */
+  laidPoints?: number[];
+  /** Bitiremeyenlerin elinde kalan harflerin değeri (eksi yazılan). */
+  rackPoints?: number[];
+  /** Bitirenin ikramiyesi. */
+  bonus?: number;
   reason: "finished" | "deckEmpty";
 }
 
@@ -86,6 +100,8 @@ export interface GameState {
   dealer: number;
   /** Her elin puanları: history[el][oyuncu]. */
   history: number[][];
+  /** Her elin sonucu (kazanan, renk/çift bitirme); ikramiyeler için. */
+  results?: { winner: number | null; colorWin: Color | null; pairWin?: boolean }[];
   lastResult: HandResult | null;
   log: LogEntry[];
 }
@@ -221,6 +237,7 @@ export function dealHand(prev: GameState): GameState {
     p.rack = tiles.splice(0, n);
     p.opened = false;
     p.laid = [];
+    p.points = 0;
     p.pairs = false;
   });
   state.deck = tiles;
@@ -289,6 +306,7 @@ export function openHand(dict: Dictionary, prev: GameState, specs: WordSpec[]): 
     state.table.push({ id: state.nextWordId++, owner: state.current, tiles: w });
     p.laid.push(...w.map((x) => x.tile));
   }
+  p.points = (p.points ?? 0) + total;
   p.opened = true;
   state.turnPlays++;
   state.log.push({ k: "opened", p: { name: p.name, total, words: words.map(wordString).join(", ") } });
@@ -307,6 +325,7 @@ export function layWord(dict: Dictionary, prev: GameState, spec: WordSpec): Game
   removeFromRack(p, new Set(spec.tileIds));
   state.table.push({ id: state.nextWordId++, owner: state.current, tiles: word });
   p.laid.push(...word.map((x) => x.tile));
+  p.points = (p.points ?? 0) + placedValue(word);
   state.turnPlays++;
   state.log.push({ k: "laid", p: { name: p.name, word: wordString(word) } });
   return state;
@@ -338,6 +357,8 @@ export function extendWord(
   const before = wordString(target.tiles);
   target.tiles = tiles;
   p.laid.push(...added.map((x) => x.tile));
+  // Eklenen harflerin değeri ekleyen oyuncunun hanesine yazılır
+  p.points = (p.points ?? 0) + placedValue(added);
   state.turnPlays++;
   state.log.push({ k: "extended", p: { name: p.name, from: before, to: w } });
   return state;
@@ -369,6 +390,7 @@ export function openPairs(prev: GameState, specs: WordSpec[]): GameState {
   for (const w of pairs) {
     state.table.push({ id: state.nextWordId++, owner: state.current, tiles: w, pair: true });
     p.laid.push(...w.map((x) => x.tile));
+    p.points = (p.points ?? 0) + placedValue(w);
   }
   p.opened = true;
   p.pairs = true;
@@ -388,6 +410,7 @@ export function layPair(prev: GameState, spec: WordSpec): GameState {
   removeFromRack(p, new Set(spec.tileIds));
   state.table.push({ id: state.nextWordId++, owner: state.current, tiles: pair, pair: true });
   p.laid.push(...pair.map((x) => x.tile));
+  p.points = (p.points ?? 0) + placedValue(pair);
   state.turnPlays++;
   state.log.push({ k: "laid", p: { name: p.name, word: wordString(pair) } });
   return state;
@@ -446,27 +469,48 @@ export function colorWinOf(p: Player): Color | null {
   return colored.every((t) => t.color === c) ? c : null;
 }
 
-export function penaltyFor(p: Player): number {
-  if (!p.opened) return RULES.unopenedPenalty;
-  return p.rack.reduce((s, t) => s + tilePenalty(t), 0);
+/** Elde kalan harflerin değeri (bitiremeyen oyuncunun hanesine eksi yazılır; okey taşı 0). */
+export function rackValue(p: Player): number {
+  return p.rack.reduce((s, t) => s + (t.letter === null ? 0 : letterValue(t.letter)), 0);
+}
+
+/** Bitirme ikramiyesi: normal 100, Renk Bitirme 200, çiftle 200, tek renk çiftle 400. */
+export function winBonusFor(colorWin: Color | null, pairWin: boolean): number {
+  if (pairWin) return colorWin ? RULES.pairColorWinBonus : RULES.pairWinBonus;
+  return colorWin ? RULES.colorWinBonus : RULES.winBonus;
 }
 
 function endHand(state: GameState, winner: number | null): GameState {
   const colorWin = winner !== null ? colorWinOf(state.players[winner]) : null;
   const pairWin = winner !== null && !!state.players[winner].pairs;
-  const scores = state.players.map((p, i) => {
-    if (i === winner) {
-      if (pairWin) return colorWin ? RULES.pairColorWinScore : RULES.pairWinScore;
-      return colorWin ? RULES.colorWinScore : RULES.winScore;
-    }
-    return penaltyFor(p);
-  });
+  const bonus = winner !== null ? winBonusFor(colorWin, pairWin) : 0;
+  const laidPoints = state.players.map((p) => p.points ?? 0);
+  const rackPoints = state.players.map((p, i) => (i === winner ? 0 : rackValue(p)));
+  const scores = state.players.map((_, i) => laidPoints[i] + (i === winner ? bonus : -rackPoints[i]));
   state.history.push(scores);
-  state.lastResult = { winner, colorWin, pairWin, scores, reason: winner === null ? "deckEmpty" : "finished" };
+  (state.results ??= []).push({ winner, colorWin, pairWin });
+  state.lastResult = { winner, colorWin, pairWin, scores, laidPoints, rackPoints, bonus, reason: winner === null ? "deckEmpty" : "finished" };
   state.phase = state.handNo >= state.totalHands ? "gameOver" : "handOver";
   if (winner === null) state.log.push({ k: "deckEmpty" });
   else state.log.push({ k: pairWin ? (colorWin ? "pairColorFinished" : "pairFinished") : colorWin ? "colorFinished" : "finished", p: { name: state.players[winner].name } });
   return state;
+}
+
+/** Oyunun galipleri: en yüksek toplam puan (eşitlikte birden fazla). */
+export function gameWinners(state: GameState): number[] {
+  const sums = totals(state);
+  const max = Math.max(...sums);
+  return sums.map((v, i) => (v === max ? i : -1)).filter((i) => i >= 0);
+}
+
+/** Oyuncunun bu oyunda Renk Bitirme sayısı (çipli masa ikramiyesi). */
+export function colorWinsOf(state: GameState, i: number): number {
+  return (state.results ?? []).filter((r) => r.winner === i && r.colorWin).length;
+}
+
+/** Oyuncunun bu oyunda kazandığı el sayısı. */
+export function handWinsOf(state: GameState, i: number): number {
+  return (state.results ?? []).filter((r) => r.winner === i).length;
 }
 
 export function totals(state: GameState): number[] {

@@ -86,6 +86,8 @@ export interface SavedGame {
   /** Çipli masada oynanıyorsa masa kimliği. */
   tableId?: string;
   /** Masa ödülü ödendi mi (iki kez ödenmesin). */
+  /** Bonus çipi ödenmiş el sayısı (kazanılan her el için). */
+  handChipsPaid?: number;
   settled?: boolean;
   /** Ödenen çip (oyun sonu ekranı için). */
   payout?: number;
@@ -93,6 +95,12 @@ export interface SavedGame {
 
 export const loadGame = (): SavedGame | null => {
   const g = read<SavedGame>(KEY_GAME);
+  // Eski puanlama (en düşük kazanır) ile başlamış oyun: puanlar yeni sisteme
+  // (en yüksek kazanır) uysun diye işaretleri çevrilir.
+  if (g?.state && !g.state.results && g.state.history?.length) {
+    g.state.history = g.state.history.map((h) => h.map((v) => -v));
+    g.state.results = [];
+  }
   return g && g.version === 2 && typeof g.state?.lang === "string" ? g : null;
 };
 export const saveGame = (g: SavedGame | null) => write(KEY_GAME, g);

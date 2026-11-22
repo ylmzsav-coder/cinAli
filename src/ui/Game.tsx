@@ -23,6 +23,8 @@ import {
   layPair,
   openPairs,
   wordString,
+  gameWinners,
+  winBonusFor,
 } from "../game/engine";
 import { COLORS, Letter, Tile, letterIndex, letterValue } from "../game/tiles";
 import { buzz, pop, tick, tileSound, type TileSound } from "../feedback";
@@ -279,8 +281,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     if (!ended || !wasActive || !sound) return;
     let won: boolean;
     if (state.phase === "gameOver") {
-      const sums = totals(state);
-      won = sums[ME] === Math.min(...sums);
+      won = gameWinners(state).includes(ME);
     } else won = state.lastResult?.winner === ME;
     if (won) playWin();
     else playLose();
@@ -911,7 +912,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
         <div className="opp-info">
           <span className="badge">{t("tilesN", { n: p.rack.length })}</span>
           {p.opened && <span className="badge ok">{t("openedBadge")}</span>}
-          <span className="muted small">{t("pointsN", { n: myTotal[i] })}</span>
+          <span className="muted small">{t("pointsN", { n: myTotal[i] + (handOver ? 0 : p.points ?? 0) })}</span>
           {compact && top && <TileView tile={top} size="sm" />}
         </div>
         {!compact && i !== 3 && (
@@ -1241,11 +1242,15 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                     : t("finishedTitle", { name: state.players[result.winner].name })}
                 </h3>
                 {result.pairWin && (
-                  <div className="banner">{t("pairBanner", { score: result.colorWin ? RULES.pairColorWinScore : RULES.pairWinScore })}</div>
+                  <div className="banner">{t("pairBanner", { score: winBonusFor(result.colorWin, true) })}</div>
                 )}
                 {result.colorWin && (
-                  <div className="banner">{t("colorBanner", { color: t(`color_${result.colorWin}`), score: result.pairWin ? RULES.pairColorWinScore : RULES.colorWinScore })}</div>
+                  <div className="banner">{t("colorBanner", { color: t(`color_${result.colorWin}`), score: winBonusFor(result.colorWin, !!result.pairWin) })}</div>
                 )}
+                {result.winner === ME && !remote && (
+                  <div className="banner">{t("handChips", { n: RULES.handWinChips })}</div>
+                )}
+                {result.laidPoints && <HandBreakdown state={state} />}
               </>
             )}
             <ScoreTable state={state} />
@@ -1279,9 +1284,28 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
 }
 
 function winnerName(state: GameState): string {
-  const sums = totals(state);
-  const min = Math.min(...sums);
-  return state.players.filter((_, i) => sums[i] === min).map((p) => p.name).join(", ");
+  return gameWinners(state).map((i) => state.players[i].name).join(", ");
+}
+
+/** El sonu dökümü: açtığı puan + bitirme puanı − elde kalan = el puanı. */
+function HandBreakdown({ state }: { state: GameState }) {
+  const r = state.lastResult;
+  if (!r?.laidPoints) return null;
+  return (
+    <table className="scores breakdown">
+      <thead>
+        <tr><th />{state.players.map((p, i) => <th key={i}>{p.name}</th>)}</tr>
+      </thead>
+      <tbody>
+        <tr><td>{t("bdLaid")}</td>{r.laidPoints.map((v, i) => <td key={i}>{v}</td>)}</tr>
+        <tr><td>{t("bdBonus")}</td>{state.players.map((_, i) => <td key={i}>{i === r.winner ? `+${r.bonus}` : ""}</td>)}</tr>
+        <tr><td>{t("bdRack")}</td>{(r.rackPoints ?? []).map((v, i) => <td key={i} className={v ? "neg" : ""}>{v ? `−${v}` : ""}</td>)}</tr>
+      </tbody>
+      <tfoot>
+        <tr><th>{t("bdTotal")}</th>{r.scores.map((v, i) => <th key={i} className={v < 0 ? "neg" : ""}>{v}</th>)}</tr>
+      </tfoot>
+    </table>
+  );
 }
 
 function ScoreTable({ state }: { state: GameState }) {

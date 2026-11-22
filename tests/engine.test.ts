@@ -14,7 +14,9 @@ import {
   extendWord,
   jokerOptions,
   newGame,
+  gameWinners,
   openHand,
+  rackValue,
   totals,
 } from "../src/game/engine";
 import { Tile, createTileSet, wordValue } from "../src/game/tiles";
@@ -121,9 +123,37 @@ describe("kurallar", () => {
     expectErr(() => extendWord(dict, o, cayWord.id, "end", { tileIds: [ci[0].id] }), "notInDict", { word: "ÇAYC" });
     o = extendWord(dict, o, cayWord.id, "end", { tileIds: ci.map((x) => x.id) });
     expect(o.table[1].tiles.map((x) => x.letter).join("")).toBe("ÇAYCI");
+    // Açtığı kelimeler + eklediği harfler oyuncunun hanesine yazılır
+    expect(o.players[s.current].points).toBe(wordValue("KALEM") + wordValue("ÇAY") + wordValue("TUZ") + wordValue("CI"));
   });
 
-  it("son taşı atan biter; tek renk ise Renk Bitirme -200", () => {
+  it("başkasının kelimesine eklenen harfin değeri ekleyenin hanesine yazılır", () => {
+    const kalem = tiles("KALEM"), cay = tiles("ÇAY"), tuz = tiles("TUZ");
+    const s = rig(base, [...kalem, ...cay, ...tuz, t("B")]);
+    const o = openHand(dict, s, [kalem, cay, tuz].map((w) => ({ tileIds: w.map((x) => x.id) })));
+    const owner = s.current;
+    // Sırayı ikinci oyuncuya ver: açmış sayılır, ÇAY kelimesine CI ekler
+    const o2 = structuredClone(o);
+    const other = (owner + 1) % 4;
+    o2.current = other;
+    o2.phase = "play";
+    o2.turnPlays = 0;
+    o2.players[other].opened = true;
+    const ci = tiles("CI");
+    o2.players[other].rack = [...ci, t("B")];
+    const o3 = extendWord(dict, o2, o2.table[1].id, "end", { tileIds: ci.map((x) => x.id) });
+    expect(o3.players[other].points).toBe(wordValue("CI"));
+    expect(o3.players[owner].points).toBe(wordValue("KALEM") + wordValue("ÇAY") + wordValue("TUZ"));
+  });
+
+  it("en çok puanı toplayan oyunu kazanır", () => {
+    const g = structuredClone(base);
+    g.history = [[174 - 40, 100 + 120, -30, 0], [50, 10, 300, -5]];
+    expect(totals(g)).toEqual([184, 230, 270, -5]);
+    expect(gameWinners(g)).toEqual([2]);
+  });
+
+  it("son taşı atan biter; tek renk ise Renk Bitirme: açtığı + 200; diğerleri elde kalanı eksi alır", () => {
     const kalem = tiles("KALEM");
     const cay = tiles("ÇAY");
     const tuz = tiles("TUZ");
@@ -134,12 +164,13 @@ describe("kurallar", () => {
     o = discardTile(o, last.id);
     expect(o.lastResult?.winner).toBe(s.current);
     expect(o.lastResult?.colorWin).toBe("siyah");
-    expect(o.lastResult?.scores[s.current]).toBe(RULES.colorWinScore);
-    // diğerleri el açmadı -> 200
-    o.lastResult!.scores.forEach((sc, i) => i !== s.current && expect(sc).toBe(RULES.unopenedPenalty));
+    const laid = wordValue("KALEM") + wordValue("ÇAY") + wordValue("TUZ");
+    expect(o.lastResult?.scores[s.current]).toBe(laid + RULES.colorWinBonus);
+    // diğerleri hiç açmadı: yalnızca elde kalan harflerin değeri eksi (okey 0)
+    o.lastResult!.scores.forEach((sc, i) => i !== s.current && expect(sc).toBe(-rackValue(o.players[i])));
   });
 
-  it("karışık renk normal bitiş -100", () => {
+  it("karışık renk normal bitiş: açtığı + 100", () => {
     const kalem = [...tiles("KAL"), ...tiles("EM", "mavi")];
     const cay = tiles("ÇAY");
     const tuz = tiles("TUZ");
@@ -148,7 +179,7 @@ describe("kurallar", () => {
     let o = openHand(dict, s, [{ tileIds: kalem.map((x) => x.id) }, { tileIds: cay.map((x) => x.id) }, { tileIds: tuz.map((x) => x.id) }]);
     o = discardTile(o, last.id);
     expect(o.lastResult?.colorWin).toBe(null);
-    expect(o.lastResult?.scores[s.current]).toBe(RULES.winScore);
+    expect(o.lastResult?.scores[s.current]).toBe(wordValue("KALEM") + wordValue("ÇAY") + wordValue("TUZ") + RULES.winBonus);
   });
 
   it("çekmeden atılamaz", () => {
@@ -189,19 +220,19 @@ describe("bot simülasyonu", () => {
 });
 
 import { TABLES, payout, winnerPrize } from "../src/economy/tables";
-describe("çip ödemesi", () => {
+describe("çip ödemesi (en yüksek toplam birinci)", () => {
   const t = TABLES[0]; // Çaylak, giriş 500
   it("birinci potun %90'ını alır", () => {
     expect(winnerPrize(t)).toBe(1800);
-    expect(payout(t, [-100, 50, 200, 30], 0, 0)).toBe(1800);
+    expect(payout(t, [300, 50, 200, 30], 0, 0)).toBe(1800);
   });
   it("birinci değilse 0, eşitlikte paylaşılır", () => {
     expect(payout(t, [10, -100, 200, 30], 0, 0)).toBe(0);
-    expect(payout(t, [-100, -100, 200, 30], 0, 0)).toBe(900);
+    expect(payout(t, [250, 250, 200, 30], 0, 0)).toBe(900);
   });
   it("Renk Bitirme ikramiyesi giriş ücreti kadar", () => {
-    expect(payout(t, [-200, 50, 200, 30], 0, 1)).toBe(1800 + 500);
-    expect(payout(t, [100, -200, 50, 30], 0, 0)).toBe(0);
+    expect(payout(t, [400, 50, 200, 30], 0, 1)).toBe(1800 + 500);
+    expect(payout(t, [100, 400, 50, 30], 0, 0)).toBe(0);
   });
 });
 
@@ -278,8 +309,8 @@ describe("çifte gitme", () => {
     expect(o.table.length).toBe(6);
   });
 
-  it("çiftle bitiren -200, tek renk çiftle bitiren -400", () => {
-    for (const [mixed, score] of [[true, RULES.pairWinScore], [false, RULES.pairColorWinScore]] as const) {
+  it("çiftle bitiren +200, tek renk çiftle bitiren +400 (ve çiftlerin değeri)", () => {
+    for (const [mixed, bonus] of [[true, RULES.pairWinBonus], [false, RULES.pairColorWinBonus]] as const) {
       const ps = [tiles("AA"), tiles("SS"), tiles("FF"), tiles("BB"), tiles("KK", mixed ? "mavi" : "siyah"), tiles("LL"), tiles("MM")];
       const last = t("E", "kirmizi");
       const s = rig(start, [...ps.flat(), last]);
@@ -287,7 +318,7 @@ describe("çifte gitme", () => {
       o = discardTile(o, last.id);
       expect(o.lastResult?.winner).toBe(s.current);
       expect(o.lastResult?.pairWin).toBe(true);
-      expect(o.lastResult?.scores[s.current]).toBe(score);
+      expect(o.lastResult?.scores[s.current]).toBe(wordValue("AASSFFBBKKLLMM") + bonus);
     }
   });
 
