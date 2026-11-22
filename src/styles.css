@@ -1318,3 +1318,10 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .side-controls > .deck .deck-word { margin-top: 0; }
 /* 101 PUAN AÇAR ve TOPLAM PUAN rozetleri: alt rafa indir, taşların üstünde kalsın */
 .okey-rack .rack-need, .okey-rack .rack-score { top: auto; bottom: 10%; transform: none; z-index: 3; }
+/* Raf (üst ve alt çizgi) iki yandan ~1 cm kısa: uç yuvalarda dudak yalnızca içe doğru */
+.okey-rack > .rack-slot.edge-l, .okey-rack > .rack-slot.edge-r { border-bottom-color: transparent; box-shadow: none; }
+.okey-rack > .rack-slot.edge-l::after, .okey-rack > .rack-slot.edge-r::after {
+  content: ""; position: absolute; bottom: -6px; height: 6px; background: var(--rack-lip); box-shadow: 0 3px 0 var(--rack-lip-dark); pointer-events: none;
+}
+.okey-rack > .rack-slot.edge-l::after { right: 0; left: min(38px, 75%); }
+.okey-rack > .rack-slot.edge-r::after { left: 0; right: min(38px, 75%); }

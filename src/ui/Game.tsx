@@ -1178,7 +1178,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                 ? `${inSel ? "grp-sel" : "grp-sel grp-ok"} ${fg.slots[0] === i ? "grp-start" : ""} ${fg.slots[fg.slots.length - 1] === i ? "grp-end" : ""}`
                 : "";
               return (
-                <div key={i} className={`rack-slot ${frame} ${drag?.target === `slot:${i}` ? "over" : ""}`} data-drop={`slot:${i}`}>
+                <div key={i} className={`rack-slot ${i % 16 === 0 ? "edge-l" : i % 16 === 15 ? "edge-r" : ""} ${frame} ${drag?.target === `slot:${i}` ? "over" : ""}`} data-drop={`slot:${i}`}>
                   {tile && (
                     <div className={`rack-tile ${isDragged ? "ghosted" : ""}`} {...tileHandlers(tile.id)}>
                       <TileView tile={tile} as={jokerAs} selected={idx >= 0} order={idx >= 0 && selected.length > 1 && !selectedGroup ? idx + 1 : undefined}
