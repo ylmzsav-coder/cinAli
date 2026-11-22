@@ -14,6 +14,8 @@ export interface Settings {
   gameLang: LangCode;
   /** Hamle süresi (saniye); 0 = kapalı. */
   turnSeconds: number;
+  /** Hamle süresi ayarının taşıma sürümü (2 = 45 sn varsayılanı). */
+  timerV?: number;
   /** Son saniyelerde tık sesi. */
   sound: boolean;
   /** Son saniyelerde titreşim. */
@@ -25,7 +27,7 @@ export interface Settings {
 }
 
 /** Çipli masalarda sabit hamle süresi. */
-export const TABLE_TURN_SECONDS = 60;
+export const TABLE_TURN_SECONDS = 45;
 
 function deviceLang(): LangCode {
   try {
@@ -37,7 +39,7 @@ function deviceLang(): LangCode {
 
 export function defaultSettings(): Settings {
   const ui = deviceLang();
-  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 60, sound: true, vibration: true, chat: true, music: true };
+  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 45, timerV: 2, sound: true, vibration: true, chat: true, music: true };
 }
 
 const KEY_SETTINGS = "cinali.settings";
@@ -67,9 +69,10 @@ export const loadSettings = (): Settings => {
   if (!LANGS[s.gameLang]?.playable) s.gameLang = "en";
   // Eski sürümlerin varsayılan adı
   if (s.name === "Sen") s.name = "";
-  // Eski 30 sn hamle süresi kaldırıldı: 60 sn'ye taşınır ve kalıcı kaydedilir
-  if (!(s.turnSeconds >= 45 || s.turnSeconds === 0)) {
-    s.turnSeconds = 60;
+  // Varsayılan hamle süresi 45 sn oldu: eski kayıtlar (30/60 sn) bir kez 45 sn'ye taşınır
+  if (s.timerV !== 2) {
+    if (s.turnSeconds !== 0) s.turnSeconds = 45;
+    s.timerV = 2;
     write(KEY_SETTINGS, s);
   }
   return s;
