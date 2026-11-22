@@ -894,7 +894,9 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               aria-haspopup="menu" aria-expanded={menuSeat === i}>
               {p.name} {playerMenu.isMuted(i) && <span aria-label={t("mutedTag")}>🔇</span>}
             </button>
-          ) : p.name}{" "}
+          ) : (
+            <button type="button" className="name-btn" onClick={() => setProfileSeat(i)}>{p.name}</button>
+          )}{" "}
           <span className="muted">({seatLabel(i)})</span>
         </div>
         {menuSeat === i && playerMenu && (
