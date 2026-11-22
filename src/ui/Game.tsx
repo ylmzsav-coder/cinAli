@@ -947,6 +947,8 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               </svg>
               {t("quitGame")}</button>
           )}
+          {/* Karşıdaki oyuncu: üst çubukta, Oyundan çık ile Satın al arasında */}
+          <div className="topbar-opp">{renderOpp(duo ? 1 : 2, true)}</div>
           {onShop && (
             <button type="button" className="buy-btn" onClick={onShop}>
               <CartIcon />
@@ -987,7 +989,6 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         </aside>
 
         <main className="felt">
-          {renderOpp(duo ? 1 : 2, true)}
           <div className={`hint ${message?.error ? "error" : ""}`} role="status">{message?.text ?? hint}</div>
           <section className="table" aria-label={t("tableAria")}>
             {state.table.length === 0 && <div className="empty">{t("noWordsYet")}</div>}
