@@ -452,7 +452,7 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .login-text { flex: 1; text-align: center; }
 .login-fb { background: linear-gradient(#2aa4f4, #0d62c9); }
 .login-email { background: linear-gradient(#4a4a4a, #111111); }
-.login-guest { background: linear-gradient(#ffb21e, #e07600); }
+.login-guest { background: linear-gradient(#f04a3e, #b3170e); }
 .login-err { color: #ffb4ab; font-weight: 700; margin: 0; text-align: center; padding: 0 16px; }
 .login-panel {
   background: rgba(0, 0, 0, 0.35); border-radius: 16px; padding: 14px 18px; width: min(92vw, 420px);
