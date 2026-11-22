@@ -1247,9 +1247,6 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                 {result.colorWin && (
                   <div className="banner">{t("colorBanner", { color: t(`color_${result.colorWin}`), score: winBonusFor(result.colorWin, !!result.pairWin) })}</div>
                 )}
-                {result.winner === ME && !remote && (
-                  <div className="banner">{t("handChips", { n: RULES.handWinChips })}</div>
-                )}
                 {result.laidPoints && <HandBreakdown state={state} />}
               </>
             )}

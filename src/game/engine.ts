@@ -23,8 +23,6 @@ export const RULES = {
   pairWinBonus: 200,
   /** Çiftle, tüm taşları tek renk bitirme ikramiyesi. */
   pairColorWinBonus: 400,
-  /** Eli kazanan oyuncuya cüzdan ikramiyesi (çip). */
-  handWinChips: 100,
 };
 
 // ---- Tipler ------------------------------------------------------------

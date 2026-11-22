@@ -1,4 +1,5 @@
 import type { BotLevel } from "../game/bot";
+import { TABLE_ENTRY, TABLE_PRIZE } from "./config";
 
 export interface TableConfig {
   id: string;
@@ -6,26 +7,33 @@ export interface TableConfig {
   entry: number;
   hands: number;
   level: BotLevel;
+  /** Birinciye ödenen sabit çip (yoksa pot - kasa payı). */
+  prize?: number;
 }
 
 /** Kasa payı: pottan düşülen oran. Çiplerin zamanla erimesini sağlar. */
 export const HOUSE_CUT = 0.1;
 export const PLAYERS_PER_TABLE = 4;
 
+/** Oynanabilen masa: herkes 100 çip öder, birinci 300 çip alır (400 çiplik pottan 100'ü kasaya). */
 export const TABLES: TableConfig[] = [
-  { id: "caylak", name: "Çaylak", entry: 500, hands: 3, level: "kolay" },
+  { id: "caylak", name: "Çaylak", entry: TABLE_ENTRY, hands: 3, level: "orta", prize: TABLE_PRIZE },
+];
+
+/** Eski masalar: yalnızca önceki sürümde başlamış oyunların ödemesi için. */
+const LEGACY_TABLES: TableConfig[] = [
   { id: "usta", name: "Usta", entry: 2_000, hands: 3, level: "orta" },
   { id: "sampiyon", name: "Şampiyon", entry: 10_000, hands: 5, level: "zor" },
   { id: "vip", name: "VIP", entry: 50_000, hands: 5, level: "zor" },
 ];
 
 export function tableById(id: string | undefined): TableConfig | undefined {
-  return TABLES.find((t) => t.id === id);
+  return TABLES.find((t) => t.id === id) ?? LEGACY_TABLES.find((t) => t.id === id);
 }
 
-/** Birinciye ödenen tutar (pot - kasa payı). */
+/** Birinciye ödenen tutar. */
 export function winnerPrize(t: TableConfig): number {
-  return Math.floor(t.entry * PLAYERS_PER_TABLE * (1 - HOUSE_CUT));
+  return t.prize ?? Math.floor(t.entry * PLAYERS_PER_TABLE * (1 - HOUSE_CUT));
 }
 
 /**

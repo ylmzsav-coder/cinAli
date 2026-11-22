@@ -143,7 +143,7 @@ const tr = {
   start: "Başla",
 
   // Masalar
-  tablesDesc: "Giriş ücreti masaya oturunca alınır. Birinci, potun %90'ını kazanır. Renk Bitirme yaparsanız giriş ücreti kadar ikramiye!",
+  tablesDesc: "Giriş ücreti masaya oturunca alınır. Herkes {entry} çip öder, birinci {prize} çip kazanır. Renk Bitirme yaparsanız giriş ücreti kadar ikramiye!",
   opponents_kolay: "Kolay rakipler",
   opponents_orta: "Orta rakipler",
   opponents_zor: "Zor rakipler",
@@ -225,7 +225,6 @@ const tr = {
   deckEmptyTitle: "Deste bitti",
   finishedTitle: "{name} eli bitirdi!",
   colorBanner: "RENK BİTİRME! Hepsi {color}! (+{score})",
-  handChips: "Eli kazandınız: +{n} bonus çip!",
   bdLaid: "Açtığı",
   bdBonus: "Bitirme",
   bdRack: "Elde kalan",
@@ -333,7 +332,7 @@ const tr = {
   rule_score: "Puanlama: Yere açtığınız her kelimenin değeri kendi puan hanenize yazılır; başkasının kelimesine eklediğiniz harflerin değeri de sizin hanenize geçer. Eli bitiren oyuncu bunlara ek olarak +{win} bitirme puanı alır. Bitiremeyen oyuncuların elinde kalan harflerin değer toplamı hanelerine eksi yazılır (elde kalan okey taşı en yüksek değerli harf olan {top} kadar, −{joker} sayılır). Örnek: yere 174 değerinde kelime açtınız, elinizde 40 değerinde harf kaldı: 174 − 40 = 134. Deste biterse el kazanansız biter; herkes açtığı puanı alır, elinde kalanı kaybeder.",
   rule_color: "Renk Bitirme: Bitiren oyuncunun o elde yere koyduğu taşların hepsi aynı renkteyse (joker her renge uyar) bitirme puanı +{score} olur.",
   rule_timer: "Hamle süresi: Her oyuncunun hamle süresi vardır (çipli masalarda {n} saniye). Süre çerçevede gösterilir: yeşil, sarı, kırmızı. Süre bitince taş çekilmediyse desteden çekilir ve ıstakadan bir taş otomatik atılır.",
-  rule_winner: "Kazanan: Oyunun amacı en çok puanı toplamaktır. Belirlenen el sayısı sonunda toplam puanı en yüksek olan oyuncu kazanır. Her eli kazanan oyuncuya ayrıca cüzdanına +{chips} bonus çip verilir.",
+  rule_winner: "Kazanan: Oyunun amacı en çok puanı toplamaktır. Belirlenen el sayısı sonunda toplam puanı en yüksek olan oyuncu kazanır. Çipli masada her oyuncu {entry} çip giriş öder; kazanan {prize} çip alır.",
   howTitle: "Nasıl oynanır?",
   how_1: "Taşları parmağınızla sürükleyip ıstakada istediğiniz yuvaya koyun. Yan yana duran taşlar bir kelimedir; kelimeler arasında boşluk bırakın.",
   how_2: "Istakanın üstünde her kelimenin değeri görünür. Toplam {need}'e ulaşınca Eli Aç'a basın.",

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TABLES, TableConfig, winnerPrize } from "../economy/tables";
 import { CLOUD } from "../online/cloud";
+import { TABLE_ENTRY, TABLE_PRIZE } from "../economy/config";
 import { useWallet } from "../economy/useWallet";
 import { t } from "../i18n";
 import { Chips } from "./Chips";
@@ -27,7 +28,7 @@ export function Tables({ onPick, onCreatePrivate, onJoinCode, onShop, onBack }: 
         </button>
       </div>
       <h1>{t("chipTables")}</h1>
-      <p className="muted small">{t("tablesDesc")}</p>
+      <p className="muted small">{t("tablesDesc", { entry: TABLE_ENTRY, prize: TABLE_PRIZE })}</p>
       <div className="tables">
         {TABLES.map((tb) => {
           const afford = w.balance >= tb.entry;

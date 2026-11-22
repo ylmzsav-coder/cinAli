@@ -33,7 +33,6 @@ import {
   timeoutMove,
   totals,
   colorWinsOf,
-  handWinsOf,
 } from "../../src/game/engine";
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { TABLES, TableConfig, payout } from "../../src/economy/tables";
@@ -136,8 +135,7 @@ async function settle(t: Transaction, table: TableDoc, state: GameState, wallets
   const payouts: Record<string, number> = {};
   table.seats.forEach((seat, i) => {
     if (!seat.uid) return;
-    // Masa ödülü + kazanılan her el için bonus çip
-    const amount = payout(cfg, sums, i, colorWinsOf(state, i)) + handWinsOf(state, i) * RULES.handWinChips;
+    const amount = payout(cfg, sums, i, colorWinsOf(state, i));
     payouts[seat.uid] = amount;
     const w = wallets.get(seat.uid);
     if (amount > 0 && w) wallets.set(seat.uid, applyTx(t, seat.uid, w, amount, "masa-odul", cfg.id));

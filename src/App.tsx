@@ -3,7 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { TableConfig, payout, tableById } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
-import { GameState, RULES, colorWinsOf, newGame, totals } from "./game/engine";
+import { GameState, colorWinsOf, newGame, totals } from "./game/engine";
 import { LangCode, setGameLang } from "./game/lang";
 import { CLOUD, currentUser, firestore } from "./online/cloud";
 import { loadDictionary } from "./online/dicts";
@@ -29,26 +29,6 @@ const paidGames = new Set<number>();
  * sonra çip eklenir; aynı oyun için tekrar çağrılırsa (React'in çift
  * çağrısı, sayfa yenileme vb.) ikinci kez ödeme yapılmaz.
  */
-const paidHands = new Set<string>();
-
-/**
- * Kazanılan her el için cüzdana bonus çip (RULES.handWinChips) BİR KEZ eklenir;
- * hangi ellerin ödendiği kayıtta tutulur.
- */
-function payHandBonus(saved: SavedGame): SavedGame {
-  const results = saved.state.results ?? [];
-  const done = saved.handChipsPaid ?? 0;
-  if (results.length <= done) return saved;
-  for (let i = done; i < results.length; i++) {
-    const key = `${saved.state.seed}:${i}`;
-    if (results[i].winner === 0 && !paidHands.has(key)) {
-      paidHands.add(key);
-      wallet.add(RULES.handWinChips, "el-bonus");
-    }
-  }
-  return { ...saved, handChipsPaid: results.length };
-}
-
 function settle(saved: SavedGame): SavedGame {
   const table = tableById(saved.tableId);
   if (!table || saved.settled || saved.state.phase !== "gameOver") return saved;
@@ -135,7 +115,7 @@ export function App() {
   const update = useCallback((s: GameState) => {
     setSaved((prev) => {
       if (!prev) return prev;
-      const next = settle(payHandBonus({ ...prev, state: s }));
+      const next = settle({ ...prev, state: s });
       saveGame(next);
       return next;
     });

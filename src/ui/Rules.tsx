@@ -1,4 +1,5 @@
 import { RULES, jokerRackValue } from "../game/engine";
+import { TABLE_ENTRY, TABLE_PRIZE } from "../economy/config";
 import { LangCode, TWO_LETTER_WORDS, alphabet, gameLang } from "../game/lang";
 import { JOKER_COUNT, letterTileTotal, letterValue } from "../game/tiles";
 import { t } from "../i18n";
@@ -32,7 +33,7 @@ export function Rules({ onBack }: { onBack: () => void }) {
     t("rule_color", { score: RULES.colorWinBonus }),
     t("rule_pairs", { need: RULES.pairsToOpen, open: RULES.openThreshold, pair: RULES.pairWinBonus, pairColor: RULES.pairColorWinBonus }),
     t("rule_timer", { n: TABLE_TURN_SECONDS }),
-    t("rule_winner", { chips: RULES.handWinChips }),
+    t("rule_winner", { entry: TABLE_ENTRY, prize: TABLE_PRIZE }),
   ];
   return (
     <div className="page">

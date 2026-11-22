@@ -226,17 +226,19 @@ describe("bot simülasyonu", () => {
 
 import { TABLES, payout, winnerPrize } from "../src/economy/tables";
 describe("çip ödemesi (en yüksek toplam birinci)", () => {
-  const t = TABLES[0]; // Çaylak, giriş 500
-  it("birinci potun %90'ını alır", () => {
-    expect(winnerPrize(t)).toBe(1800);
-    expect(payout(t, [300, 50, 200, 30], 0, 0)).toBe(1800);
+  const t = TABLES[0]; // tek masa: giriş 100, birinciye 300
+  it("giriş 100, birinci 300 çip alır", () => {
+    expect(TABLES.length).toBe(1);
+    expect(t.entry).toBe(100);
+    expect(winnerPrize(t)).toBe(300);
+    expect(payout(t, [300, 50, 200, 30], 0, 0)).toBe(300);
   });
   it("birinci değilse 0, eşitlikte paylaşılır", () => {
     expect(payout(t, [10, -100, 200, 30], 0, 0)).toBe(0);
-    expect(payout(t, [250, 250, 200, 30], 0, 0)).toBe(900);
+    expect(payout(t, [250, 250, 200, 30], 0, 0)).toBe(150);
   });
   it("Renk Bitirme ikramiyesi giriş ücreti kadar", () => {
-    expect(payout(t, [400, 50, 200, 30], 0, 1)).toBe(1800 + 500);
+    expect(payout(t, [400, 50, 200, 30], 0, 1)).toBe(300 + 100);
     expect(payout(t, [100, 400, 50, 30], 0, 0)).toBe(0);
   });
 });
@@ -350,8 +352,9 @@ describe("Türkçe sözlükte küfür yok", () => {
 
 import { WELCOME_CHIPS, WELCOME_GAMES } from "../src/economy/config";
 describe("hoş geldin hediyesi", () => {
-  it("en ucuz masada 3 oyunluk çip", () => {
-    expect(WELCOME_GAMES).toBe(3);
+  it("500 çip = masada 5 oyunluk çip", () => {
+    expect(WELCOME_CHIPS).toBe(500);
+    expect(WELCOME_GAMES).toBe(5);
     expect(WELCOME_CHIPS).toBe(WELCOME_GAMES * TABLES[0].entry);
   });
 });
