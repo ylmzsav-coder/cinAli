@@ -883,7 +883,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
         </div>
         <div className="topbar-actions">
           {onLeave && !handOver && (
-            <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}>🚪 {t("quitGame")}</button>
+            <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}><span aria-hidden>🚪</span> {t("quitGame")}</button>
           )}
           {onShop && (
             <button type="button" className="buy-btn" onClick={onShop}>

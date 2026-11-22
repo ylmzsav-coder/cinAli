@@ -759,7 +759,17 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .word-total { display: inline-block; transform-origin: right center; }
 
 /* Oyundan çıkış */
-.quit-btn { background: #b3261e; color: #fff; border-radius: 999px; padding: 4px 12px; font-weight: 800; font-size: 0.85rem; white-space: nowrap; }
+.quit-btn {
+  background: linear-gradient(#ef5350, #b3261e); color: #fff; font-weight: 900; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(0, 0, 0, 0.35); padding: 6px 14px; border-radius: 10px; white-space: nowrap;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+/* Oyundan çık ve Satın al: aynı boyut */
+.quit-btn, .buy-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 44px; min-width: 172px; font-size: 1rem;
+}
+.quit-btn > span:first-child { font-size: 1.35em; line-height: 1; }
 .quit-modal { max-width: 440px; text-align: center; }
 .quit-modal p { margin: 8px 0 12px; line-height: 1.4; }
 .quit-modal .modal-actions { display: flex; gap: 10px; justify-content: center; }
