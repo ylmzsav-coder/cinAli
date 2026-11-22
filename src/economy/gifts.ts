@@ -15,7 +15,7 @@ export interface Gift {
 
 export const GIFTS: Gift[] = [
   // Erkeklere özel
-  { id: "cay", emoji: "☕", category: "erkek", value: 100 },
+  { id: "fincan", emoji: "☕", category: "erkek", value: 100 },
   { id: "sapka", emoji: "🎩", category: "erkek", value: 150 },
   { id: "top", emoji: "⚽", category: "erkek", value: 200 },
   { id: "gozluk", emoji: "🕶️", category: "erkek", value: 300 },

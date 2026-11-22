@@ -359,7 +359,7 @@ const tr = {
   vipPerkGuest: "ÜCRETSİZ MİSAFİR: Arkadaşını VIP odana davet et; ondan VIP abonelik ve giriş ücreti istenmez",
   vipGuestShort: "VIP abone, arkadaşını ücretsiz misafir olarak davet edebilir",
   vipPerkNoTimer: "Hamle süresi yok: acele etmeden, sohbet ederek oyna",
-  gift_cay: "Çay",
+  gift_fincan: "Kahve",
   gift_sapka: "Fötr şapka",
   gift_top: "Futbol topu",
   gift_gozluk: "Güneş gözlüğü",
