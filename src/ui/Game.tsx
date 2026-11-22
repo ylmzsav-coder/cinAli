@@ -1075,18 +1075,16 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           )}
         </main>
 
-        {/* Sağdaki oyuncuya taş atılır: alanın tamamı atma hedefi */}
-        <aside className={`side side-right ${draggingTile && canPlay ? "drop-ready" : ""} ${drag?.target === "discard" ? "drop-over" : ""}`} data-drop="discard">
+        {/* Sağdaki oyuncu: attığınız son taş burada görünür (atma hedefi ıstakanın yanındaki kutudur) */}
+        <aside className="side side-right">
           {!duo && renderOpp(1)}
-          {/* Atma alanı: taşı buraya sürükle */}
-          <div className={`discard-zone ${drag?.target === "discard" ? "over" : ""} ${draggingTile && canPlay ? "ready" : ""}`} data-drop="discard"
-            aria-label={t("yourDiscard")}>
+          <div className="discard-zone" aria-label={t("yourDiscard")}>
             {state.discards[ME].length ? (
               <TileView tile={state.discards[ME][state.discards[ME].length - 1]} />
             ) : (
               <span className="slot slot-lg" />
             )}
-            <span className="small">{draggingTile && canPlay ? t("dropToDiscard") : t("yourDiscard")}</span>
+            <span className="small">{t("yourDiscard")}</span>
           </div>
         </aside>
       </div>
