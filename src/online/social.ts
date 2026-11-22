@@ -14,7 +14,16 @@ export interface FriendRequest {
   name: string;
 }
 
-export const friendsStatus = () => call<{ friends: FriendStatus[]; requests: FriendRequest[] }>("friendsStatus");
+/** Gelen masa daveti (VIP odada misafir olarak ücretsiz). */
+export interface TableInvite {
+  tableId: string;
+  name: string;
+  code: string;
+  type: string;
+}
+export const friendsStatus = () => call<{ friends: FriendStatus[]; requests: FriendRequest[]; invites: TableInvite[] }>("friendsStatus");
+export const inviteFriend = (tableId: string, friendUid: string) => call("inviteFriend", { tableId, friendUid });
+export const declineInvite = (tableId: string) => call("declineInvite", { tableId });
 export const sendFriendRequest = (targetUid: string) => call<{ status: "sent" | "friends" }>("sendFriendRequest", { targetUid });
 export const respondFriendRequest = (fromUid: string, accept: boolean) => call("respondFriendRequest", { fromUid, accept });
 export const removeFriend = (friendUid: string) => call("removeFriend", { friendUid });

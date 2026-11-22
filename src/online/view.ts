@@ -21,6 +21,8 @@ export interface SeatInfo {
   uid: string | null;
   name: string;
   bot: boolean;
+  /** VIP odaya davetle gelen misafir (abonelik ve giriş ücreti yok). */
+  guest?: boolean;
 }
 
 export interface PublicView extends Omit<GameState, "players" | "deck"> {

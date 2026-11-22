@@ -1,6 +1,7 @@
 import { addDoc, collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
 import { InviteSeat, shareInvite } from "./Lobby";
-import { sendFriendRequest } from "../online/social";
+import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest } from "../online/social";
+import { Avatar } from "./Profile";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { tableById, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
@@ -256,12 +257,13 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
         <p className="muted">{t("tableTitle", { name: t(`table_${cfg.id}` as "table_vip") })}</p>
         <div className="waiting-seats">
           {seats.map((s, i) => (
-            s ? <div key={i} className="waiting-seat taken">{s.name}</div>
+            s ? <div key={i} className="waiting-seat taken">{s.name}{s.guest && <small className="guest-tag"> · {t("guestTag")}</small>}</div>
               : <InviteSeat key={i} className="waiting-seat" onInvite={() => void shareInvite(doc_.private ? doc_.code ?? undefined : undefined)} />
           ))}
         </div>
         {doc_.private ? (
-          <PrivateLobby code={doc_.code ?? ""} isHost={doc_.seats[0]?.uid === uid} onStart={() => call("startTable", { tableId })} />
+          <PrivateLobby code={doc_.code ?? ""} isHost={doc_.seats[0]?.uid === uid} onStart={() => call("startTable", { tableId })}
+            tableId={tableId!} vip={!!cfg.vip} seatedUids={doc_.uids} />
         ) : (
           <p className="muted">{t("waitingDesc", { n: left })}</p>
         )}
@@ -306,7 +308,23 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
 }
 
 /** Özel masa bekleme alanı: davet kodu, paylaş, (kurucu için) başlat. */
-function PrivateLobby({ code, isHost, onStart }: { code: string; isHost: boolean; onStart: () => Promise<unknown> }) {
+function PrivateLobby({ code, isHost, onStart, tableId, vip, seatedUids }: { code: string; isHost: boolean; onStart: () => Promise<unknown>; tableId: string; vip: boolean; seatedUids: string[] }) {
+  // Arkadaş listesinden doğrudan davet (VIP odada misafir: abonelik ve ücret yok)
+  const [friends, setFriends] = useState<FriendStatus[]>([]);
+  const [invited, setInvited] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    if (!isHost) return;
+    friendsStatus().then((r) => setFriends(r.friends), () => {});
+  }, [isHost]);
+  const inviteOne = async (f: FriendStatus) => {
+    try {
+      await inviteFriend(tableId, f.uid);
+      setInvited((s) => new Set(s).add(f.uid));
+      setMsg(t("inviteSentTo", { name: f.name }));
+    } catch (e) {
+      setMsg(errorText(e));
+    }
+  };
   const [msg, setMsg] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const link = `${location.origin}${location.pathname}#join=${code}`;
@@ -328,6 +346,21 @@ function PrivateLobby({ code, isHost, onStart }: { code: string; isHost: boolean
       <div className="muted small">{t("tableCode")}</div>
       <div className="invite-code" aria-label={t("tableCode")}>{code}</div>
       <button type="button" className="primary big" onClick={share}>📨 {t("invite")}</button>
+      {vip && <p className="muted small">{t("vipGuestNote")}</p>}
+      {isHost && friends.length > 0 && (
+        <div className="friend-list lobby-friends">
+          <div className="stat-label">{t("inviteFromFriends")}</div>
+          {friends.filter((f) => !seatedUids.includes(f.uid)).slice(0, 8).map((f) => (
+            <div key={f.uid} className="friend-row">
+              <span className="friend-ava"><Avatar name={f.name} seat={1} size="sm" /><i className={`presence ${f.online ? "on" : ""}`} aria-hidden /></span>
+              <span className="friend-name">{f.name}<small className="muted">{f.online ? t("online") : t("offline")}</small></span>
+              <button type="button" className="primary small-btn" disabled={invited.has(f.uid)} onClick={() => void inviteOne(f)}>
+                {invited.has(f.uid) ? "✓" : t("inviteSeat")}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
       {msg && <div className="toast">{msg}</div>}
       {isHost ? (
         <button type="button" className="big" disabled={starting} onClick={() => {

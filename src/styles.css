@@ -1029,3 +1029,10 @@ button.avatar { cursor: pointer; min-height: 0; }
 .topbar .title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Üç büyük düğme yan yana sığsın */
 .topbar-actions:has(.chat-room-btn) .quit-btn, .topbar-actions:has(.chat-room-btn) .buy-btn { min-width: 150px; }
+.guest-tag { color: #ffd54f; font-weight: 800; }
+.lobby-friends { width: 100%; max-width: 420px; text-align: left; }
+.invite-banner {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; font-weight: 800;
+  background: linear-gradient(135deg, #2a1f00, #5a4100); border: 2px solid #f0a500; color: #fff;
+}
+.invite-banner > span { flex: 1; }

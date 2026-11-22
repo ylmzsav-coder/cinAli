@@ -11,6 +11,8 @@ import { Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { Chips } from "./Chips";
 import { VipModal } from "./Vip";
+import { CLOUD } from "../online/cloud";
+import { type TableInvite, declineInvite, friendsStatus } from "../online/social";
 import { Avatar, MyStatsModal } from "./Profile";
 
 interface HubProps {
@@ -25,13 +27,24 @@ interface HubProps {
   onRules: () => void;
   /** Arkadaşın masasını izle. */
   onWatch?: (tableId: string) => void;
+  /** Gelen masa davetine katıl (davet kodu). */
+  onJoinInvite?: (code: string) => void;
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules, onWatch }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules, onWatch, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   const [statsOpen, setStatsOpen] = useState(false);
   const [vipOpen, setVipOpen] = useState(false);
+  // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
+  const [invite, setInvite] = useState<TableInvite | null>(null);
+  useEffect(() => {
+    if (!CLOUD || !onJoinInvite) return;
+    const check = () => friendsStatus().then((r) => setInvite(r.invites?.[0] ?? null), () => {});
+    check();
+    const id = setInterval(check, 30_000);
+    return () => clearInterval(id);
+  }, [onJoinInvite]);
   // Çipi biten oyuncunun hediye sayacı (dakikada bir güncellenir)
   const refillAt = w.ready ? wallet.refillAt() : null;
   const [now, setNow] = useState(() => Date.now());
@@ -132,7 +145,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             </button>
           </div>
           {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); onTables(); }, 1200)} />}
-          {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onWatch={onWatch} />}
+          {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onWatch={onWatch} onJoin={onJoinInvite} />}
         </div>
         <div className="hub-right">
           {wallet.canClaimDaily() && (
@@ -161,6 +174,13 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           ) : (
             <p className="muted refill-wait">{t("refillWait", { n: REFILL_CHIPS, t: refillLeft(refillAt - now) })}</p>
           ))}
+          {invite && onJoinInvite && (
+            <div className="invite-banner">
+              <span>📨 {t(invite.type === "vip2" ? "inviteBannerVip" : "inviteBanner", { name: invite.name })}</span>
+              <button type="button" className="primary small-btn" onClick={() => onJoinInvite(invite.code)}>{t("joinFree")}</button>
+              <button type="button" className="link small-btn" aria-label={t("decline")} onClick={() => { void declineInvite(invite.tableId); setInvite(null); }}>✕</button>
+            </div>
+          )}
           {toast && <div className="toast">{toast}</div>}
           {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
           <button type="button" className={canResume ? "big" : "primary big"} onClick={onTables}>{t("chipTables")}</button>

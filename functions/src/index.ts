@@ -13,4 +13,4 @@ export {
 } from "./tables";
 export { reportPlayer, sendText } from "./chat";
 export { sendFeedback } from "./feedback";
-export { friendsStatus, heartbeat, removeFriend, respondFriendRequest, sendFriendRequest, stopWatching, watchTable } from "./social";
+export { declineInvite, friendsStatus, heartbeat, inviteFriend, removeFriend, respondFriendRequest, sendFriendRequest, stopWatching, watchTable } from "./social";

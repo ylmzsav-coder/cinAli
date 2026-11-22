@@ -314,6 +314,7 @@ export function App() {
   return (
     <Hub
       onWatch={CLOUD ? (id) => { setWatchId(id); setScreen("watch"); } : undefined}
+      onJoinInvite={CLOUD ? (code) => { setOnline({ kind: "join", code }); setScreen("online"); } : undefined}
       settings={settings}
       onSettings={changeSettings}
       canResume={!!saved || !!online}

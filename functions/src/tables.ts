@@ -282,13 +282,17 @@ export const joinPrivateTable = onCall(async (req) => {
     if (table.seats.length >= (cfg.players ?? 4)) fail("tableFull");
     const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
     if (!w) return fail("noWallet");
-    requireVip(cfg, w);
-    if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
-    applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
+    // VIP abonenin özel odasına davetle gelen misafir: abonelik şartı yok, ücretsiz oturur
+    const guest = !!cfg.vip;
+    if (!guest) {
+      if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
+      applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
+    }
     const name = cleanName(rawName, uid, table.lang);
+    t.delete(userRef(uid).collection("invites").doc(snap.id));
     t.set(tableRef(snap.id), {
       ...table,
-      seats: [...table.seats, { uid, name, bot: false }],
+      seats: [...table.seats, { uid, name, bot: false, ...(guest ? { guest: true } : {}) }],
       uids: [...table.uids, uid],
       version: table.version + 1,
     });
@@ -480,7 +484,8 @@ export const leaveTable = onCall(async (req) => {
     const seats = table.seats.map((s, i) => (i === seat ? { uid: null, name: s.name, bot: true } : s));
     if (table.status === "waiting") {
       // Başlamamış masadan kalkan oyuncuya giriş ücreti iade edilir.
-      if (w) applyTx(t, uid, w, configFor(table.type).entry, "iade", table.type);
+      // Misafir ücret ödemediği için iade yok
+      if (w && !table.seats[seat].guest) applyTx(t, uid, w, configFor(table.type).entry, "iade", table.type);
       const rest = table.seats.filter((_, i) => i !== seat);
       t.set(tableRef(id), { ...table, seats: rest, uids, status: rest.length ? "waiting" : "abandoned", version: table.version + 1 });
       return { ok: true };

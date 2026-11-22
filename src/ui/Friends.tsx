@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { errorText, t } from "../i18n";
 import { CLOUD } from "../online/cloud";
-import { type FriendRequest, type FriendStatus, friendsStatus, removeFriend, respondFriendRequest } from "../online/social";
+import { type FriendRequest, type FriendStatus, type TableInvite, declineInvite, friendsStatus, removeFriend, respondFriendRequest } from "../online/social";
 import { Avatar } from "./Profile";
 
 /**
  * Profildeki arkadaş listesi: bekleyen istekler, çevrimiçi durum ve masada
  * oynayan arkadaşın masasını izleme.
  */
-export function FriendsPanel({ onWatch }: { onWatch?: (tableId: string) => void }) {
+export function FriendsPanel({ onWatch, onJoin }: { onWatch?: (tableId: string) => void; onJoin?: (code: string) => void }) {
   const [friends, setFriends] = useState<FriendStatus[] | null>(null);
   const [requests, setRequests] = useState<FriendRequest[]>([]);
+  const [invites, setInvites] = useState<TableInvite[]>([]);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -20,6 +21,7 @@ export function FriendsPanel({ onWatch }: { onWatch?: (tableId: string) => void 
       (r) => {
         setFriends(r.friends);
         setRequests(r.requests);
+        setInvites(r.invites ?? []);
         setErr(null);
       },
       (e) => setErr(errorText(e)),
@@ -53,6 +55,21 @@ export function FriendsPanel({ onWatch }: { onWatch?: (tableId: string) => void 
 
   return (
     <div className="friends-panel">
+      {invites.length > 0 && (
+        <div className="friend-requests">
+          <div className="stat-label">{t("tableInvites")}</div>
+          {invites.map((v) => (
+            <div key={v.tableId} className="friend-row invite-row">
+              <span className="friend-name">
+                {v.type === "vip2" ? "👑 " : ""}{v.name}
+                <small className="muted">{v.type === "vip2" ? t("inviteVipGuest") : t("inviteTable")}</small>
+              </span>
+              {onJoin && <button type="button" className="primary small-btn" onClick={() => onJoin(v.code)}>{t("joinFree")}</button>}
+              <button type="button" className="small-btn" onClick={() => void declineInvite(v.tableId).then(load)}>{t("decline")}</button>
+            </div>
+          ))}
+        </div>
+      )}
       {requests.length > 0 && (
         <div className="friend-requests">
           <div className="stat-label">{t("friendRequests")}</div>

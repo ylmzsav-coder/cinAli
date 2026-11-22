@@ -121,7 +121,7 @@ function StatsDetail({ s }: { s: PlayerStats }) {
 }
 
 /** Sizin profil kartınız: fotoğraf, başarı yüzdesi, özet ve ayrıntılı istatistikler. */
-export function MyStatsModal({ name, onClose, onWatch }: { name: string; onClose: () => void; onWatch?: (tableId: string) => void }) {
+export function MyStatsModal({ name, onClose, onWatch, onJoin }: { name: string; onClose: () => void; onWatch?: (tableId: string) => void; onJoin?: (code: string) => void }) {
   const s = loadStats();
   const shown = name || t("defaultName");
   const [photo, setPhoto] = useState(loadPhoto);
@@ -156,7 +156,7 @@ export function MyStatsModal({ name, onClose, onWatch }: { name: string; onClose
           <div className="profile-name">{shown}</div>
         </div>
         {tab === "friends" ? (
-          <FriendsPanel onWatch={onWatch && ((id) => { onClose(); onWatch(id); })} />
+          <FriendsPanel onWatch={onWatch && ((id) => { onClose(); onWatch(id); })} onJoin={onJoin && ((c) => { onClose(); onJoin(c); })} />
         ) : tab === "detail" ? (
           <StatsDetail s={s} />
         ) : (

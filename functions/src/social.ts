@@ -109,9 +109,10 @@ export interface FriendStatus {
  */
 export const friendsStatus = onCall(async (req) => {
   const uid = uidOf(req);
-  const [friends, requests] = await Promise.all([
+  const [friends, requests, invites] = await Promise.all([
     userRef(uid).collection("friends").limit(200).get(),
     userRef(uid).collection("requests").orderBy("at", "desc").limit(50).get(),
+    userRef(uid).collection("invites").orderBy("at", "desc").limit(10).get(),
   ]);
   const now = Date.now();
   const users = friends.empty ? [] : await db.getAll(...friends.docs.map((d) => userRef(d.id)));
@@ -137,6 +138,10 @@ export const friendsStatus = onCall(async (req) => {
   return {
     friends: list,
     requests: requests.docs.map((r) => ({ uid: r.id, name: (r.data().name as string) || "?" })),
+    // Süresi geçmemiş masa davetleri
+    invites: invites.docs
+      .filter((d) => now - (d.data().at as number) < INVITE_MS)
+      .map((d) => ({ tableId: d.id, name: d.data().name as string, code: d.data().code as string, type: d.data().type as string })),
   };
 });
 
@@ -160,6 +165,44 @@ export const watchTable = onCall(async (req) => {
     t.update(tableRef(id), { watchers: [...watchers, uid] });
     return { ok: true, seated: false };
   });
+});
+
+/** Masa daveti geçerlilik süresi. */
+export const INVITE_MS = 15 * 60_000;
+const inviteRef = (uid: string, tableId: string) => userRef(uid).collection("invites").doc(tableId);
+
+/**
+ * Özel masadan arkadaşa doğrudan davet. VIP odada misafir abonelik şartı olmadan
+ * ve ücretsiz oturur. Davet, arkadaşın profilinde ve ana menüsünde görünür.
+ */
+export const inviteFriend = onCall(async (req) => {
+  const uid = uidOf(req);
+  const id = str(req.data?.tableId);
+  const fid = str(req.data?.friendUid);
+  if (!id || !fid) fail("badRequest", {}, "invalid-argument");
+  return db.runTransaction(async (t) => {
+    const [tSnap, fSnap, me] = await Promise.all([t.get(tableRef(id)), t.get(friendRef(uid, fid)), t.get(userRef(uid))]);
+    const table = tSnap.data();
+    if (!table || !(table.uids as string[]).includes(uid)) return fail("notAtTable", {}, "permission-denied");
+    if (!table.private || table.status !== "waiting" || !table.code) fail("notNow");
+    if (!fSnap.exists) fail("notFriend", {}, "permission-denied");
+    t.set(inviteRef(fid, id), {
+      fromUid: uid,
+      name: (me.data()?.name as string) || "?",
+      code: table.code,
+      type: table.type,
+      at: Date.now(),
+    });
+    return { ok: true };
+  });
+});
+
+/** Gelen masa davetini reddet. */
+export const declineInvite = onCall(async (req) => {
+  const uid = uidOf(req);
+  const id = str(req.data?.tableId);
+  if (id) await inviteRef(uid, id).delete();
+  return { ok: true };
 });
 
 /** İzlemeyi bırak. */
