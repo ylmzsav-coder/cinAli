@@ -743,3 +743,26 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .fb-count { text-align: right; margin-top: 2px; }
 .feedback-modal .modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
 .feedback-modal .button-like { display: inline-flex; align-items: center; padding: 10px 16px; border-radius: 12px; background: var(--card, #e9e2cf); color: #1b2420; font-weight: 700; text-decoration: none; }
+
+/* Şikâyet formu: ekranın üstünde, düğmeler başlık satırında (klavye altını kapatsa da görünür) */
+.feedback-bg { align-items: flex-start !important; padding-top: max(8px, env(safe-area-inset-top)); }
+.fb-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.fb-head h3 { margin: 0; font-size: 1.05rem; }
+.fb-actions { display: flex; gap: 8px; }
+.fb-actions button { padding: 8px 16px; }
+.feedback-modal .fb-types { align-items: center; }
+.feedback-modal .fb-count { margin-left: auto; }
+.fb-err { margin: 0 0 6px; }
+.feedback-modal .fb-title { margin: 0 0 4px; font-size: 1.05rem; }
+.feedback-modal .fb-count { margin-left: auto; }
+.feedback-modal .fb-actions { margin-left: 4px; }
+.feedback-modal textarea { min-height: 48px; }
+/* Klavye açıkken (görünen alan çok kısa): başlığı gizle, boşlukları daralt */
+@media (max-height: 300px) {
+  .feedback-bg { padding-top: 4px; }
+  .feedback-modal { padding: 8px 10px; }
+  .feedback-modal .fb-title { display: none; }
+  .feedback-modal .fb-types { margin: 0 0 6px; gap: 4px; }
+  .feedback-modal .fb-types button, .feedback-modal .fb-actions button { padding: 4px 10px; font-size: 0.8rem; }
+  .feedback-modal textarea { min-height: 40px; padding: 6px 8px; }
+}

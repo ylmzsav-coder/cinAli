@@ -265,11 +265,11 @@ function FeedbackDialog({ lang, onClose }: { lang: string; onClose: () => void }
     }
   };
   return (
-    <div className="modal-bg" onClick={onClose}>
+    <div className="modal-bg feedback-bg" onClick={onClose}>
       <div className="modal feedback-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t("feedback")}>
-        <h3>✉️ {t("feedbackTitle")}</h3>
         {result ? (
           <>
+            <h3>✉️ {t("feedbackTitle")}</h3>
             <p>{t("feedbackMailOpened")}</p>
             <p className="muted small">{t("feedbackMailHint", { email: FEEDBACK_EMAIL })}</p>
             <div className="modal-actions">
@@ -279,21 +279,23 @@ function FeedbackDialog({ lang, onClose }: { lang: string; onClose: () => void }
           </>
         ) : (
           <>
+            {/* Düğmeler konu satırında: telefonda klavye açılınca da görünür kalır */}
+            <h3 className="fb-title">✉️ {t("feedbackTitle")}</h3>
             <div className="fb-types" role="radiogroup">
               {FEEDBACK_TYPES.map((k) => (
                 <button type="button" key={k} role="radio" aria-checked={type === k} className={type === k ? "on" : ""} onClick={() => setType(k)}>
                   {t(`fb_${k}`)}
                 </button>
               ))}
+              <span className="fb-count muted small">{[...text].length}/{FEEDBACK_MAX}</span>
+              <div className="fb-actions">
+                <button type="button" className="primary" disabled={busy} onClick={() => void send()}>{busy ? "…" : t("feedbackSend")}</button>
+                <button type="button" onClick={onClose}>{t("cancel")}</button>
+              </div>
             </div>
-            <textarea value={text} maxLength={FEEDBACK_MAX} rows={3} placeholder={t("feedbackPlaceholder")}
+            {err && <p className="error fb-err">{err}</p>}
+            <textarea value={text} maxLength={FEEDBACK_MAX} rows={2} placeholder={t("feedbackPlaceholder")}
               onChange={(e) => { setText(e.target.value); setErr(null); }} aria-label={t("feedbackPlaceholder")} />
-            <div className="fb-count muted small">{[...text].length}/{FEEDBACK_MAX}</div>
-            {err && <p className="error">{err}</p>}
-            <div className="modal-actions">
-              <button type="button" className="primary" disabled={busy} onClick={() => void send()}>{busy ? "…" : t("feedbackSend")}</button>
-              <button type="button" onClick={onClose}>{t("cancel")}</button>
-            </div>
           </>
         )}
       </div>
