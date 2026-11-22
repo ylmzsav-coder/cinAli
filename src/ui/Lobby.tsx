@@ -57,6 +57,7 @@ export function TableLobby({ table, name, onStart, onLeave }: { table: TableConf
   return (
     <div className="lobby">
       <div className="lobby-felt">
+        <button type="button" className="leave-round" onClick={onLeave}>{t("leaveTableShort")}</button>
         <InviteSeat className="seat-top" onInvite={() => void invite()} />
         <InviteSeat className="seat-left" onInvite={() => void invite()} />
         <InviteSeat className="seat-right" onInvite={() => void invite()} />
@@ -66,7 +67,6 @@ export function TableLobby({ table, name, onStart, onLeave }: { table: TableConf
         </div>
 
         <div className="lobby-panel">
-          <button type="button" className="leave-round" onClick={onLeave}>{t("leaveTableShort")}</button>
           <div className="lobby-info">
             <div className="lobby-row"><span className="muted small">{t("entry")}</span><Chips amount={table.entry} /></div>
             <div className="lobby-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(table)} /></div>

@@ -952,3 +952,5 @@ button.avatar { cursor: pointer; min-height: 0; }
 }
 /* Canlı masa bekleme ekranında boş koltuk da bir davet düğmesi */
 .waiting-seats .invite-seat { position: static; height: auto; min-height: 52px; }
+/* Masadan ayrıl: masanın sol üst köşesinde */
+.lobby-felt > .leave-round { position: absolute; top: 6px; left: 6px; z-index: 2; }
