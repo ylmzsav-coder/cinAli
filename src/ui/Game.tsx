@@ -1095,12 +1095,6 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               {g.word ?? "…"} {g.valid ? `· ${g.value}` : "✗"}{g.options.length > 1 ? " ★" : ""}
             </button>
           ))}
-          {!me.opened && (
-            <span className="group-total">
-              {t(groupTotal > 0 ? "groupsTotal" : "groupsNeed", { total: groupTotal, need: RULES.openThreshold })}
-              {pairGroups.length > 0 && <> · {t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
-            </span>
-          )}
         </div>
         <div className="rack-row">
           <section className={`rack okey-rack ${myTurn ? "my-turn" : ""} ${timerStyle(ME) ? "timed" : ""}`} aria-label={t("rackAria")}
@@ -1151,6 +1145,12 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             <span className="rack-discard-word">{t("discardShort")}</span>
           </div>
           <div className="rack-actions">
+            {!me.opened && !handOver && (
+              <span className="group-total actions-total">
+                {groupTotal > 0 ? `${groupTotal} / ` : ""}{t("openNeedShort", { need: RULES.openThreshold })}
+                {pairGroups.length > 0 && <><br />{t("pairsCount", { n: pairGroups.length, need: RULES.pairsToOpen })}</>}
+              </span>
+            )}
             {!me.opened && !handOver && (
               <button type="button" className={`pair-toggle ${pairChoice ? "on" : ""}`} aria-pressed={pairChoice}
                 onClick={() => setPairChoice((v) => !v)}>

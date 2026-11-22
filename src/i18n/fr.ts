@@ -430,6 +430,7 @@ const fr: Messages = {
   groupsNeed: "Chevalet : ouvre à {need} points",
   drawShort: "Piocher",
   discardShort: "Jeter",
+  openNeedShort: "ouvre à {need}",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

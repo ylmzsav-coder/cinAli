@@ -430,6 +430,7 @@ const pt: Messages = {
   groupsNeed: "Suporte: abre com {need} pontos",
   drawShort: "Comprar",
   discardShort: "Descartar",
+  openNeedShort: "abre com {need}",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

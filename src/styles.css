@@ -1154,3 +1154,7 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .deck-word, .rack-discard-word { font-weight: 900; font-size: 1rem; letter-spacing: 0.5px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); text-transform: uppercase; }
 .rack-discard-word { font-size: 1.15rem; }
 .rack-discard.ready .rack-discard-word { color: var(--accent); }
+/* "86 puan açar": Eli Aç sütununun en üstünde */
+.okey .rack-actions .actions-total { margin: 0; text-align: center; font-size: 0.72rem; line-height: 1.1; white-space: normal; flex: none; }
+/* Istaka biraz sağa: kenardan boşluk */
+.okey .rack-row { padding-left: 10px; }

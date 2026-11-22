@@ -430,6 +430,7 @@ const es: Messages = {
   groupsNeed: "Atril: abre con {need} puntos",
   drawShort: "Robar",
   discardShort: "Descartar",
+  openNeedShort: "abre con {need}",
   close: "Cerrar",
   handCol: "Mano",
   totalRow: "Total",

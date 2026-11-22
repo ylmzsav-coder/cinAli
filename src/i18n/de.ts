@@ -430,6 +430,7 @@ const de: Messages = {
   groupsNeed: "Ablage: öffnet ab {need} Punkten",
   drawShort: "Ziehen",
   discardShort: "Ablegen",
+  openNeedShort: "öffnet ab {need}",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

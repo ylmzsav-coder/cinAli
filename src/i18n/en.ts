@@ -430,6 +430,7 @@ const en: Messages = {
   groupsNeed: "Rack: opens at {need} points",
   drawShort: "Draw",
   discardShort: "Discard",
+  openNeedShort: "opens at {need}",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

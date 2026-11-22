@@ -434,6 +434,7 @@ const tr = {
   groupsNeed: "Istaka: {need} puan açar",
   drawShort: "Çek",
   discardShort: "At",
+  openNeedShort: "{need} puan açar",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

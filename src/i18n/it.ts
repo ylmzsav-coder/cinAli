@@ -430,6 +430,7 @@ const it: Messages = {
   groupsNeed: "Leggio: apre a {need} punti",
   drawShort: "Pesca",
   discardShort: "Scarta",
+  openNeedShort: "apre a {need}",
   close: "Chiudi",
   handCol: "Mano",
   totalRow: "Totale",
