@@ -19,10 +19,12 @@ import { recordProgress, recordQuit } from "./stats";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Rules } from "./ui/Rules";
 import { TableLobby } from "./ui/Lobby";
+import { Spectator } from "./ui/Spectator";
+import { startHeartbeat } from "./online/social";
 import { Shop } from "./ui/Shop";
 import { Tables } from "./ui/Tables";
 
-type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby";
+type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby" | "watch";
 
 const paidGames = new Set<number>();
 
@@ -55,6 +57,8 @@ export function App() {
   const [screen, setScreen] = useState<Screen>("hub");
   /** Mağazadan geri dönülecek ekran (oyundan açılınca oyuna döner). */
   const [shopBack, setShopBack] = useState<Screen>("hub");
+  /** İzlenen arkadaş masası. */
+  const [watchId, setWatchId] = useState<string | null>(null);
   /** Bekleme masasındaki (oyun başlamadan önce) masa. */
   const [lobbyTable, setLobbyTable] = useState<TableConfig | null>(null);
   // Açılış ekranı (dokunmadan tam ekran/müzik başlatılamaz)
@@ -188,6 +192,11 @@ export function App() {
 
   // Müzik: menülerde çalar, oyunda susar
   const inGame = screen === "game" || screen === "online";
+  // Çevrimiçi durumu (arkadaş listesindeki yeşil nokta)
+  useEffect(() => {
+    if (started) startHeartbeat(settings.name);
+  }, [started, settings.name]);
+
   useEffect(() => {
     if (!started) return;
     if (settings.music && !inGame) startMusic();
@@ -231,6 +240,13 @@ export function App() {
       break;
     case "rules":
       return <Rules onBack={() => setScreen("hub")} />;
+    case "watch":
+      if (!watchId) return null;
+      return (
+        <Spectator tableId={watchId} name={settings.name || t("defaultName")}
+          onLeave={() => { setWatchId(null); setScreen("hub"); }}
+          onSeated={(cfg) => { setWatchId(null); setOnline({ kind: "public", table: cfg }); setScreen("online"); }} />
+      );
     case "lobby":
       if (!lobbyTable) return null;
       return (
@@ -293,6 +309,7 @@ export function App() {
   }
   return (
     <Hub
+      onWatch={CLOUD ? (id) => { setWatchId(id); setScreen("watch"); } : undefined}
       settings={settings}
       onSettings={changeSettings}
       canResume={!!saved || !!online}

@@ -1,5 +1,6 @@
 import { addDoc, collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
 import { InviteSeat, shareInvite } from "./Lobby";
+import { sendFriendRequest } from "../online/social";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { tableById, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
@@ -43,6 +44,8 @@ interface TableDoc {
   deadline: number | null;
   view: string | null;
   payouts?: Record<string, number>;
+  watchers?: string[];
+  vacant?: { seat: number; until: number }[];
 }
 
 /** Masaya nasıl girildiği. */
@@ -148,6 +151,20 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
     });
   }, [now, doc_, tableId]);
 
+  // Boşalan koltuğun 10 sn'lik süresi dolunca bilgisayara geçmesi için sunucuya bildir
+  const vacantClaimRef = useRef(0);
+  useEffect(() => {
+    const vs = doc_?.vacant ?? [];
+    if (!tableId || doc_?.status !== "playing" || !vs.length) return;
+    const until = Math.min(...vs.map((v) => v.until));
+    const id = setTimeout(() => {
+      if (vacantClaimRef.current === until) return;
+      vacantClaimRef.current = until;
+      call("claimTimeout", { tableId }).catch(() => { vacantClaimRef.current = 0; });
+    }, Math.max(0, until - Date.now()) + 600);
+    return () => clearTimeout(id);
+  }, [doc_?.vacant, doc_?.status, tableId]);
+
   const remote: RemoteControl | null = useMemo(
     () =>
       tableId
@@ -197,6 +214,11 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
         setMuted(next);
       },
       report: (seat) => call("reportPlayer", { tableId, targetUid: uidAt(seat), reason: "chat" }),
+      addFriend: async (seat) => {
+        const u = uidAt(seat);
+        if (!u) throw new Error("userNotFound");
+        return (await sendFriendRequest(u)).status;
+      },
     };
   }, [doc_, rack, tableId, muted]);
 
@@ -261,6 +283,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       chat={chat}
       chatEnabled={settings.chat}
       playerMenu={playerMenu}
+      watchers={doc_.watchers?.length ?? 0}
       dict={dict}
       state={state}
       level={cfg.level}

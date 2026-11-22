@@ -9,6 +9,8 @@ export {
   leaveTable,
   nextHand,
   startTable,
+  takeSeat,
 } from "./tables";
 export { reportPlayer, sendText } from "./chat";
 export { sendFeedback } from "./feedback";
+export { friendsStatus, heartbeat, removeFriend, respondFriendRequest, sendFriendRequest, stopWatching, watchTable } from "./social";

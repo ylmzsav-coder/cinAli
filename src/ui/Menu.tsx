@@ -22,9 +22,11 @@ interface HubProps {
   onPractice: () => void;
   onShop: () => void;
   onRules: () => void;
+  /** Arkadaşın masasını izle. */
+  onWatch?: (tableId: string) => void;
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onPractice, onShop, onRules, onWatch }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   const [statsOpen, setStatsOpen] = useState(false);
@@ -127,7 +129,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <span className="plus-chip">+</span>
             </button>
           </div>
-          {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} />}
+          {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onWatch={onWatch} />}
         </div>
         <div className="hub-right">
           {wallet.canClaimDaily() && (

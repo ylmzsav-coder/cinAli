@@ -102,6 +102,8 @@ export interface PlayerMenu {
   isMuted(seat: number): boolean;
   toggleMute(seat: number): void;
   report(seat: number): Promise<unknown>;
+  /** Masadaki oyuncuya arkadaşlık isteği gönder. */
+  addFriend?(seat: number): Promise<"sent" | "friends">;
 }
 
 interface Props {
@@ -112,6 +114,8 @@ interface Props {
   /** Diğer oyuncuların mesajlarını göster. */
   chatEnabled?: boolean;
   playerMenu?: PlayerMenu;
+  /** Masayı izleyen kişi sayısı (çevrimiçi). */
+  watchers?: number;
   dict: Dictionary;
   state: GameState;
   level: BotLevel;
@@ -134,7 +138,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 0, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -205,6 +209,13 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   }, [botTurnKey]);
 
   // ---- Sohbet (hazır mesajlar ve emojiler) ----
+  /** Masadaki oyuncuya arkadaşlık isteği. */
+  const addFriendAt = (seat: number) => {
+    playerMenu?.addFriend?.(seat).then(
+      (r) => setMessage({ text: r === "friends" ? t("friendAdded") : t("friendRequestSent") }),
+      (e) => setMessage({ text: errorText(e), error: true }),
+    );
+  };
   /** Profil kartı açık olan koltuk. */
   const [profileSeat, setProfileSeat] = useState<number | null>(null);
   const [localChat, setLocalChat] = useState<ChatEvent[]>([]);
@@ -859,6 +870,9 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
               if (!confirm(t("reportConfirm", { name: p.name }))) return;
               playerMenu.report(i).then(() => setMessage({ text: t("reported") }), (e) => setMessage({ text: errorText(e), error: true }));
             }}>⚠️ {t("report")}</button>
+            {playerMenu.addFriend && (
+              <button type="button" role="menuitem" onClick={() => { setMenuSeat(null); addFriendAt(i); }}>👥 {t("addFriend")}</button>
+            )}
           </div>
         )}
         <div className="opp-info">
@@ -880,6 +894,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
         <button type="button" className="link" onClick={onExit}>{t("menu")}</button>
         <div className="title">
           {tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
+          {watchers > 0 && <span className="watchers-badge" title={t("watchersN", { n: watchers })}>👁 {watchers}</span>}
         </div>
         <div className="topbar-actions">
           {onLeave && !handOver && (
@@ -921,7 +936,8 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
         </div>
       </header>
       {profileSeat !== null && (
-        <SeatStatsModal state={state} seat={profileSeat} onClose={() => setProfileSeat(null)} />
+        <SeatStatsModal state={state} seat={profileSeat} onClose={() => setProfileSeat(null)}
+          onAddFriend={playerMenu?.addFriend && playerMenu.available(profileSeat) ? () => addFriendAt(profileSeat) : undefined} />
       )}
 
       <div className="board">

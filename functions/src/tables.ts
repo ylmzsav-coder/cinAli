@@ -6,6 +6,8 @@
  *  tables/{id}/hands/{uid}     her oyuncunun kendi ıstakası (yalnızca kendisi okur)
  *  tables/{id}/server/state    tam oyun durumu (yalnızca sunucu)
  *  users/{uid}.activeTable     oyuncunun oturduğu masa
+ *  tables/{id}.watchers        masayı izleyen arkadaşlar (social.ts)
+ *  tables/{id}.vacant          oyun sürerken boşalan koltuklar: 10 sn izleyicilere açık, sonra bota geçer
  *
  * Firestore iç içe dizileri desteklemediği için oyun durumu ve görünüm JSON
  * metni olarak saklanır.
@@ -48,6 +50,8 @@ export const TURN_MS = 45_000;
 const GRACE_MS = 1_500;
 /** El bittikten sonra sonraki ele geçmeden önce sonuç ekranı süresi. */
 const HAND_BREAK_MS = 12_000;
+/** Boşalan koltuğun izleyicilere açık kaldığı süre. */
+export const VACANT_MS = 10_000;
 const BOT_NAMES = ["Bot Ada", "Bot Deniz", "Bot Kaan", "Bot Ece", "Bot Arda", "Bot Lale"];
 
 // ---- Sözlükler (sıcak örnekte bir kez yüklenir) -------------------------
@@ -82,6 +86,10 @@ export interface TableDoc {
   /** PublicView JSON. */
   view: string | null;
   payouts?: Record<string, number>;
+  /** Masayı izleyenler (arkadaşlar). */
+  watchers?: string[];
+  /** Boşalan koltuklar ve izleyicilere açık kaldıkları son an. */
+  vacant?: { seat: number; until: number }[];
 }
 
 const tableRef = (id: string) => db.collection("tables").doc(id);
@@ -150,6 +158,8 @@ async function settle(t: Transaction, table: TableDoc, state: GameState, wallets
 async function persist(t: Transaction, id: string, table: TableDoc, state: GameState, wallets: Map<string, WalletDoc>) {
   const now = Date.now();
   const next: TableDoc = { ...table, version: table.version + 1, deadline: deadlineFor(state, now) };
+  const v = (table.vacant ?? []).find((x) => x.seat === state.current);
+  if (v && (state.phase === "draw" || state.phase === "play")) next.deadline = v.until;
   if (state.phase === "gameOver" && table.status === "playing") {
     next.status = "finished";
     next.payouts = await settle(t, table, state, wallets);
@@ -394,10 +404,23 @@ export const claimTimeout = onCall(async (req) => {
   return db.runTransaction(async (t) => {
     const { table, state } = await load(t, id);
     if (!table.uids.includes(uid)) fail("notAtTable", {}, "permission-denied");
-    if (table.status !== "playing" || !state || !table.deadline) return { ok: false };
-    if (Date.now() + 250 < table.deadline + GRACE_MS) return { ok: false };
+    if (table.status !== "playing" || !state) return { ok: false };
     const cfg = configFor(table.type);
     setGameLang(state.lang);
+    // Süresi dolan boş koltuklar bilgisayara geçer
+    const now = Date.now();
+    const expired = (table.vacant ?? []).filter((v) => now + 250 >= v.until);
+    if (expired.length) {
+      const seats = table.seats.map((s, i) => (expired.some((v) => v.seat === i) ? { uid: null, name: s.name, bot: true } : s));
+      for (const v of expired) state.players[v.seat].isBot = true;
+      const vacant = (table.vacant ?? []).filter((v) => !expired.includes(v));
+      const next = runBots(state, cfg.level);
+      const wallets = next.phase === "gameOver" ? await walletsOf(t, table.uids) : new Map();
+      await persist(t, id, { ...table, seats, vacant }, next, wallets);
+      return { ok: true };
+    }
+    if (!table.deadline) return { ok: false };
+    if (now + 250 < table.deadline + GRACE_MS) return { ok: false };
     let next: GameState;
     if (state.phase === "handOver") next = dealHand(state);
     else if (state.phase === "draw" || state.phase === "play") next = timeoutMove(state);
@@ -455,9 +478,56 @@ export const leaveTable = onCall(async (req) => {
     }
     const cfg = configFor(table.type);
     setGameLang(state.lang);
+    if ((table.watchers ?? []).length) {
+      // İzleyici var: koltuk 10 saniye boş kalır, oturan olmazsa bilgisayara geçer
+      const vacantSeats = table.seats.map((s, i) => (i === seat ? { uid: null, name: s.name, bot: false } : s));
+      const vacant = [...(table.vacant ?? []).filter((v) => v.seat !== seat), { seat, until: Date.now() + VACANT_MS }];
+      await persist(t, id, { ...table, seats: vacantSeats, uids, vacant }, state, others);
+      return { ok: true };
+    }
     state.players[seat].isBot = true;
     const next = runBots(state, cfg.level);
     await persist(t, id, { ...table, seats, uids }, next, others);
+    return { ok: true };
+  });
+});
+
+/** İzleyici, oyun sürerken boşalan koltuğa oturur: giriş ücreti alınır, koltuğun taşlarını ve puanını devralır. */
+export const takeSeat = onCall(async (req) => {
+  const uid = uidOf(req);
+  const id = String(req.data?.tableId ?? "");
+  const seat = Number(req.data?.seat);
+  const rawName = req.data?.name;
+  return db.runTransaction(async (t) => {
+    const { table, state } = await load(t, id);
+    const user = (await t.get(userRef(uid))).data() ?? {};
+    const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
+    if (table.status !== "playing" || !state) fail("notNow");
+    if (table.uids.includes(uid)) fail("alreadySeated");
+    if (!(table.watchers ?? []).includes(uid)) fail("notWatching", {}, "permission-denied");
+    if (user.activeTable && user.activeTable !== id) {
+      const other = (await t.get(tableRef(user.activeTable))).data()?.status;
+      if (other === "waiting" || other === "playing") fail("alreadySeated");
+    }
+    const v = (table.vacant ?? []).find((x) => x.seat === seat);
+    if (!v || Date.now() > v.until) fail("seatGone");
+    const cfg = configFor(table.type);
+    if (!w) return fail("noWallet");
+    if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
+    applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
+    const name = cleanName(rawName, uid, table.lang);
+    const seats = table.seats.map((s, i) => (i === seat ? { uid, name, bot: false } : s));
+    state.players[seat].name = name;
+    state.players[seat].isBot = false;
+    const next: TableDoc = {
+      ...table,
+      seats,
+      uids: [...table.uids, uid],
+      watchers: (table.watchers ?? []).filter((x) => x !== uid),
+      vacant: (table.vacant ?? []).filter((x) => x.seat !== seat),
+    };
+    t.set(userRef(uid), { activeTable: id }, { merge: true });
+    await persist(t, id, next, state, new Map());
     return { ok: true };
   });
 });

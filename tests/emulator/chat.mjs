@@ -19,7 +19,7 @@ async function client(name) {
 }
 const A = await client("chatA");
 const C = await client("chatC");
-const { tableId } = await A.call("joinTable", { type: "usta", lang: "en", name: "A" });
+const { tableId } = await A.call("joinTable", { type: "caylak", lang: "en", name: "A" });
 const chat = (c) => collection(c.db, "tables", tableId, "chat");
 const tryAdd = (c, data) => addDoc(chat(c), data).then(() => "izin verildi", (e) => e.code);
 
