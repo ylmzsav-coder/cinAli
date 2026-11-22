@@ -1,5 +1,5 @@
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
-import { BOT_PROFILES, BotLevel, bestArrangement, botStep } from "../game/bot";
+import { BOT_PROFILES, BotLevel, botStep } from "../game/bot";
 import { Dictionary } from "../game/dictionary";
 import {
   GameError,
@@ -25,18 +25,17 @@ import {
   wordString,
   gameWinners,
 } from "../game/engine";
-import { COLORS, Letter, Tile, letterIndex, letterValue } from "../game/tiles";
+import { Letter, Tile, letterValue } from "../game/tiles";
 import { buzz, pop, tick, tileSound, type TileSound } from "../feedback";
 import { playLose, playWin, stopJingle } from "../jingles";
 import { lookupMeaning, type Meaning } from "../meaning";
-import { AUTO_PER_PRODUCT, TEST_MODE, buyAutoPer, ownsAutoPer, purchasesAvailable } from "../economy/store";
 import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TEXT, type ChatEvent, type ChatMessageId, type SendTextResult } from "../online/chat";
 import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
 import { Avatar, SeatStatsModal } from "./Profile";
 import { TABLE_PRIZE } from "../economy/config";
-import { Slots, arrangeWords, groupsOf, initialSlots, moveGroup, moveTile, packSlots, syncSlots } from "./rack";
+import { Slots, groupsOf, initialSlots, moveGroup, moveTile, syncSlots } from "./rack";
 
 const ME = 0;
 const SPEED_MS = { yavas: 1100, normal: 650, hizli: 250 } as const;
@@ -596,16 +595,6 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
   const drawDeck = () => void act(() => drawFromDeck(state), { type: "drawDeck" }, undefined, "drop");
   const drawTake = () => void act(() => drawFromDiscard(state), { type: "drawDiscard" }, undefined, "drop");
 
-  const sortBy = (mode: "harf" | "renk") => {
-    const key = (x: Tile) =>
-      mode === "harf"
-        ? (x.letter ? letterIndex(x.letter) : 99) * 10 + COLORS.indexOf(x.color)
-        : COLORS.indexOf(x.color) * 100 + (x.letter ? letterIndex(x.letter) : 99);
-    setSlots(packSlots(me.rack.slice().sort((a, b) => key(a) - key(b)).map((x) => x.id)));
-    play("open");
-  };
-
-  /** Otomatik per: en değerli kelimeleri bulup ıstakaya kelime kelime dizer. */
   // ---- Kelimeye harf eklenince genel toplam kısa bir süre parlar (yeni değer yerinde yazılır) ----
   const prevTotalsRef = useRef<Map<number, number> | null>(null);
   const [wordGain, setWordGain] = useState<Record<number, { n: number; key: number }>>({});
@@ -643,52 +632,6 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
     lookupMeaning(word, state.lang)
       .then((data) => req === meaningReq.current && setMeaning({ word, status: data ? "ok" : "none", data: data ?? undefined }))
       .catch(() => req === meaningReq.current && setMeaning({ word, status: "error" }));
-  };
-
-  // Otomatik Per uygulama içi satın almayla açılır (tek sefer, sınırsız kullanım)
-  const [autoOwned, setAutoOwned] = useState(ownsAutoPer);
-  const [autoOffer, setAutoOffer] = useState(false);
-  const [autoBusy, setAutoBusy] = useState(false);
-  const [autoErr, setAutoErr] = useState<string | null>(null);
-  const buyAuto = async () => {
-    setAutoBusy(true);
-    setAutoErr(null);
-    try {
-      await buyAutoPer();
-      setAutoOwned(true);
-      setAutoOffer(false);
-      setMessage({ text: t("autoPerUnlocked") });
-    } catch (e) {
-      setAutoErr(errorText(e));
-    } finally {
-      setAutoBusy(false);
-    }
-  };
-  const autoArrange = () => {
-    if (!autoOwned) {
-      setAutoErr(null);
-      setAutoOffer(true);
-      return;
-    }
-    const res = bestArrangement(dict, me.rack);
-    if (!res.length) {
-      setMessage({ text: t("autoNone"), error: true });
-      return;
-    }
-    const used = new Set(res.flatMap((r) => r.spec.tileIds));
-    const rest = slots.filter((id): id is number => id !== null && !used.has(id));
-    setSlots(arrangeWords(res.map((r) => r.spec.tileIds), rest));
-    // Jokerin seçilen harfini hatırla (ıstakada ve el açarken kullanılsın)
-    const picks: Record<number, Letter[]> = {};
-    for (const r of res) {
-      const jokerId = r.spec.tileIds.find((id) => tileById.get(id)?.letter === null);
-      if (jokerId !== undefined && r.spec.jokerLetters?.length) picks[jokerId] = r.spec.jokerLetters;
-    }
-    setJokerPick((p) => ({ ...p, ...picks }));
-    setSelected([]);
-    const total = res.reduce((s, r) => s + [...r.word].reduce((a, ch) => a + letterValue(ch), 0), 0);
-    setMessage({ text: t("autoDone", { words: res.map((r) => r.word).join(", "), total }) });
-    play("open");
   };
 
   /** Grup etiketine dokununca: jokerli grupta harf seçtir. */
@@ -1149,15 +1092,6 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
                 )}
               </button>
             )}
-            <button type="button" className={`auto-btn ${autoOwned ? "" : "locked"}`} onClick={autoArrange}>
-              {autoOwned ? "✨" : "🔒"} {t("autoArrange")}{!autoOwned && <span className="auto-price">{AUTO_PER_PRODUCT.testPrice}</span>}
-            </button>
-            <div className="sort-row">
-              <button type="button" onClick={() => sortBy("harf")} title={t("sortLetter")}>A–Z</button>
-              <button type="button" onClick={() => sortBy("renk")} title={t("sortColor")} aria-label={t("sortColor")}>
-                <span className="color-dots" aria-hidden><i /><i /><i /><i /></span>
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -1199,23 +1133,6 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, dict, state
             )}
             <div className="modal-actions">
               <button type="button" onClick={() => setMeaning(null)}>{t("close")}</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {autoOffer && (
-        <div className="modal-bg" onClick={() => setAutoOffer(false)}>
-          <div className="modal auto-offer" onClick={(e) => e.stopPropagation()}>
-            <h3>✨ {t("autoArrange")}</h3>
-            <p>{t("autoPerDesc")}</p>
-            {TEST_MODE && <div className="test-banner">{t("testMode")}</div>}
-            {autoErr && <p className="error">{autoErr}</p>}
-            <div className="modal-actions">
-              <button type="button" className="auto-buy" disabled={autoBusy || !purchasesAvailable()} onClick={() => void buyAuto()}>
-                {autoBusy ? "…" : purchasesAvailable() ? t("autoPerBuy", { price: AUTO_PER_PRODUCT.testPrice }) : t("soon")}
-              </button>
-              <button type="button" onClick={() => setAutoOffer(false)}>{t("cancel")}</button>
             </div>
           </div>
         </div>
