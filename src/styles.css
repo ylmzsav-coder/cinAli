@@ -1316,3 +1316,5 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .side-controls > .deck { gap: 2px !important; padding: 2px; justify-content: center; }
 .okey .side-controls > .deck .deck-stack { transform: scale(0.9); margin: 0; }
 .okey .side-controls > .deck .deck-word { margin-top: 0; }
+/* 101 PUAN AÇAR ve TOPLAM PUAN rozetleri: alt rafa indir, taşların üstünde kalsın */
+.okey-rack .rack-need, .okey-rack .rack-score { top: auto; bottom: 10%; transform: none; z-index: 3; }
