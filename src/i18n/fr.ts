@@ -206,7 +206,7 @@ const fr: Messages = {
   jokerWhich: "Quelle lettre doit remplacer le joker ?",
   oneToDiscard: "Sélectionnez une seule tuile à défausser.",
   undo: "Annuler",
-  openHand: "Ouvrir ({total}/{need})",
+  openHand: "Ouvrir\n({total}/{need} pts)",
   rackAria: "Chevalet",
   makeWord: "Former",
   layWord: "Poser",

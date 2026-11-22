@@ -206,7 +206,7 @@ const pt: Messages = {
   jokerWhich: "Qual letra o curinga deve ser?",
   oneToDiscard: "Escolha apenas uma peça para descartar.",
   undo: "Desfazer",
-  openHand: "Abrir ({total}/{need})",
+  openHand: "Abrir mão\n({total}/{need} pts)",
   rackAria: "Suporte",
   makeWord: "Formar",
   layWord: "Baixar",

@@ -206,7 +206,7 @@ const en: Messages = {
   jokerWhich: "Which letter should the joker be?",
   oneToDiscard: "Select exactly one tile to discard.",
   undo: "Undo",
-  openHand: "Open ({total}/{need})",
+  openHand: "Open hand\n({total}/{need} pts)",
   rackAria: "Rack",
   makeWord: "Make Word",
   layWord: "Lay Word",

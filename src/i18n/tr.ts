@@ -210,7 +210,7 @@ const tr = {
   jokerWhich: "Joker hangi harf olsun?",
   oneToDiscard: "Atmak için tek bir taş seçin.",
   undo: "Geri al",
-  openHand: "Eli Aç ({total}/{need})",
+  openHand: "Eli Aç\n({total}/{need} puan)",
   rackAria: "Istaka",
   makeWord: "Kelime Yap",
   layWord: "Yere Koy",

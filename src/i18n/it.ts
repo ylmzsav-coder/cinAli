@@ -206,7 +206,7 @@ const it: Messages = {
   jokerWhich: "Quale lettera deve essere il jolly?",
   oneToDiscard: "Seleziona una sola tessera da scartare.",
   undo: "Annulla",
-  openHand: "Apri ({total}/{need})",
+  openHand: "Apri mano\n({total}/{need} pt)",
   rackAria: "Leggio",
   makeWord: "Forma",
   layWord: "Cala",

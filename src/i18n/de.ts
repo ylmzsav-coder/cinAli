@@ -206,7 +206,7 @@ const de: Messages = {
   jokerWhich: "Für welchen Buchstaben steht der Joker?",
   oneToDiscard: "Wähle genau einen Stein zum Abwerfen.",
   undo: "Rückgängig",
-  openHand: "Auslegen ({total}/{need})",
+  openHand: "Auslegen\n({total}/{need} Pkt.)",
   rackAria: "Ablage",
   makeWord: "Wort bilden",
   layWord: "Auslegen",

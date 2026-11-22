@@ -206,7 +206,7 @@ const es: Messages = {
   jokerWhich: "¿Qué letra debe ser el comodín?",
   oneToDiscard: "Elige una sola ficha para descartar.",
   undo: "Deshacer",
-  openHand: "Abrir ({total}/{need})",
+  openHand: "Abrir mano\n({total}/{need} pts)",
   rackAria: "Atril",
   makeWord: "Formar",
   layWord: "Colocar",
