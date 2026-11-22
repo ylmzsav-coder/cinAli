@@ -299,6 +299,7 @@ export function App() {
             sound={settings.sound}
             vibration={settings.vibration}
             chatEnabled={settings.chat}
+            chatRoom={!!activeTable?.vip}
             onChange={update}
             onExit={() => setScreen("hub")}
             onNewGame={finishGame}

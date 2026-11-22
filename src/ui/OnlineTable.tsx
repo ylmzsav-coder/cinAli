@@ -192,7 +192,8 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       events,
       send: (kind, id) => addDoc(collection(firestore(), "tables", tableId, "chat"), { uid, kind, id, at: serverTimestamp() }),
       // Serbest yazışma yalnızca arkadaş masalarında
-      sendText: doc_.private || doc_.type === "vip2"
+      // Oyuncular arası sohbet yalnızca VIP odada (filtresiz)
+      sendText: doc_.type === "vip2"
         ? (text: string) => call<SendTextResult>("sendText", { tableId, text, uiLang: uiLang() })
         : undefined,
     };
@@ -284,6 +285,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       remote={remote}
       chat={chat}
       chatEnabled={settings.chat}
+      chatRoom={doc_.type === "vip2"}
       playerMenu={playerMenu}
       watchers={doc_.watchers?.length ?? 0}
       dict={dict}

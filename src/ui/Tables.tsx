@@ -39,6 +39,7 @@ export function Tables({ onPick, onCreatePrivate, onJoinCode, onShop, onBack }: 
             return (
               <div key={tb.id} className="table-card tc-vip2">
                 <div className="tc-name">👑 {t("table_vip2")}</div>
+                <div className="vip-chat-tag">💬 {t("vipChatGame")}</div>
                 <div className="muted small">{t("vipTableDesc")}</div>
                 <div className="tc-row"><span className="muted small">{t("entry")}</span><Chips amount={tb.entry} /></div>
                 <div className="tc-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(tb)} /></div>

@@ -42,8 +42,8 @@ export const sendText = onCall(async (req) => {
     const [tSnap, mSnap] = await Promise.all([t.get(tableRef), t.get(metaRef)]);
     const table = tSnap.data();
     if (!table || !(table.uids as string[]).includes(uid)) fail("notAtTable", {}, "permission-denied");
-    // Serbest yazışma: arkadaş masalarında ve VIP odada
-    if (!table.private && table.type !== "vip2") fail("textPrivateOnly");
+    // Oyuncular arası yazışma yalnızca VIP odada; özel oda olduğu için içerik filtresi yok
+    if (table.type !== "vip2") fail("chatVipOnly");
     const now = Date.now();
     const meta: ChatMeta = (mSnap.data() as ChatMeta) ?? { last: 0, windowStart: now, windowCount: 0, strikes: 0, mutedUntil: 0 };
     if (meta.mutedUntil > now) fail("chatMuted", { n: Math.ceil((meta.mutedUntil - now) / 60_000) }, "resource-exhausted");
@@ -53,21 +53,6 @@ export const sendText = onCall(async (req) => {
       meta.windowCount = 0;
     }
     if (meta.windowCount >= PER_MINUTE) fail("tooFast", {}, "resource-exhausted");
-    if (containsLink(text)) fail("noLinks");
-
-    const langs = [table.lang, ...(uiLang in LANGS ? [uiLang] : [])];
-    if (containsProfanity(text, langs)) {
-      meta.strikes += 1;
-      const muted = meta.strikes >= STRIKES_TO_MUTE;
-      if (muted) {
-        meta.mutedUntil = now + MUTE_MS;
-        meta.strikes = 0;
-      }
-      t.set(metaRef, meta);
-      // Küfürlü mesaj kaydedilmez; denetim için yalnızca sayaç tutulur.
-      return { ok: false, blocked: true, muted, strikesLeft: muted ? 0 : STRIKES_TO_MUTE - meta.strikes };
-    }
-
     meta.last = now;
     meta.windowCount += 1;
     t.set(metaRef, meta);

@@ -113,6 +113,8 @@ interface Props {
   chat?: ChatChannel;
   /** Diğer oyuncuların mesajlarını göster. */
   chatEnabled?: boolean;
+  /** Oyuncular arası sohbet açık mı (yalnızca VIP odada; filtresiz serbest yazışma). */
+  chatRoom?: boolean;
   playerMenu?: PlayerMenu;
   /** Masayı izleyen kişi sayısı (çevrimiçi). */
   watchers?: number;
@@ -138,7 +140,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 0, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, chatRoom = false, playerMenu, watchers = 0, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -223,7 +225,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
   const lastSentRef = useRef(0);
   const chatEvents = chat ? chat.events : localChat;
   const [chatNow, setChatNow] = useState(() => Date.now());
-  const liveBubbles = chatEvents.filter((e) => chatNow - e.at < BUBBLE_MS && (e.seat === ME || chatEnabled));
+  const liveBubbles = chatRoom ? chatEvents.filter((e) => chatNow - e.at < BUBBLE_MS && (e.seat === ME || chatEnabled)) : [];
   useEffect(() => {
     if (!chatEvents.some((e) => Date.now() - e.at < BUBBLE_MS)) return;
     const id = setInterval(() => setChatNow(Date.now()), 300);
@@ -251,7 +253,17 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
   const [chatNote, setChatNote] = useState<string | null>(null);
   const sendText = async () => {
     const text = draft.trim();
-    if (!text || !chat?.sendText) return;
+    if (!text || !chatRoom) return;
+    if (!chat?.sendText) {
+      // Cihazda (bilgisayara karşı) VIP oda: mesaj yerel, bilgisayar bazen emojiyle cevap verir
+      setLocalChat((prev) => [...prev.slice(-20), { seat: ME, kind: "text", id: "", text, at: Date.now() }]);
+      setDraft("");
+      if (Math.random() < 0.5) {
+        const reply = ["👍", "😂", "😮", "🔥"][Math.floor(Math.random() * 4)];
+        setTimeout(() => setLocalChat((prev) => [...prev.slice(-20), { seat: 1, kind: "emoji", id: reply, at: Date.now() }]), 1200);
+      }
+      return;
+    }
     try {
       const res = await chat.sendText(text);
       if (res.ok) {
@@ -931,8 +943,10 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
               {t("buyChips")}
             </button>
           )}
-          <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
-            aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬</button>
+          {chatRoom && (
+            <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
+              aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬 {t("chatNow")}</button>
+          )}
           <Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} />
           <button type="button" className="link" onClick={() => setShowScores(true)}>{t("scores")}</button>
         </div>
@@ -1005,7 +1019,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
             </button>
             {colorNow && <div className="color-hint">{t("colorPath", { color: t(`color_${colorNow}`) })}</div>}
           </div>
-          {chatOpen && (
+          {chatRoom && chatOpen && (
             <section className="chat-panel" aria-label={t("chat")}>
               <div className="chat-emojis">
                 {EMOJIS.map((e) => (
@@ -1017,7 +1031,7 @@ export function Game({ remote, chat, chatEnabled = true, playerMenu, watchers = 
                   <button type="button" key={m} onClick={() => sendChat("msg", m)}>{t(`chat_${m}`)}</button>
                 ))}
               </div>
-              {chat?.sendText && (
+              {chatRoom && (
                 <>
                   {textHistory.length > 0 && (
                     <ul className="chat-history">

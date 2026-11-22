@@ -1,4 +1,4 @@
-// Sohbet güvenlik kuralları testi: node tests/emulator/chat.mjs
+// Sohbet testi: oyuncular arası sohbet yalnızca VIP odada, filtresiz. node tests/emulator/chat.mjs
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, signInAnonymously } from "firebase/auth";
 import { addDoc, collection, connectFirestoreEmulator, getDocs, getFirestore, serverTimestamp } from "firebase/firestore";
@@ -17,19 +17,33 @@ async function client(name) {
   await call("bootstrap", {});
   return { uid: user.uid, db, call };
 }
-const A = await client("chatA");
-const C = await client("chatC");
-const { tableId } = await A.call("joinTable", { type: "caylak", lang: "en", name: "A" });
-const chat = (c) => collection(c.db, "tables", tableId, "chat");
-const tryAdd = (c, data) => addDoc(chat(c), data).then(() => "izin verildi", (e) => e.code);
+const errCode = (p) => p.then(() => "izin verildi", (e) => e.details?.code ?? e.code);
+let ok = true;
+const check = (l, c, x = "") => { console.log(`${c ? "✓" : "✗"} ${l}${x ? " — " + x : ""}`); if (!c) ok = false; };
 
-console.log("geçerli mesaj:", await tryAdd(A, { uid: A.uid, kind: "msg", id: "hello", at: serverTimestamp() }));
-console.log("geçerli emoji:", await tryAdd(A, { uid: A.uid, kind: "emoji", id: "🔥", at: serverTimestamp() }));
-console.log("serbest metin:", await tryAdd(A, { uid: A.uid, kind: "msg", id: "kötü söz", at: serverTimestamp() }));
-console.log("izinsiz emoji:", await tryAdd(A, { uid: A.uid, kind: "emoji", id: "🖕", at: serverTimestamp() }));
-console.log("ek alan:", await tryAdd(A, { uid: A.uid, kind: "msg", id: "hello", at: serverTimestamp(), text: "x" }));
-console.log("başkası adına:", await tryAdd(A, { uid: C.uid, kind: "msg", id: "hello", at: serverTimestamp() }));
-console.log("sahte zaman:", await tryAdd(A, { uid: A.uid, kind: "msg", id: "hello", at: new Date(0) }));
-console.log("masada olmayan yazar:", await tryAdd(C, { uid: C.uid, kind: "msg", id: "hello", at: serverTimestamp() }));
-console.log("masada olmayan okur:", await getDocs(chat(C)).then(() => "izin verildi", (e) => e.code));
-process.exit(0);
+// Çaylak masası: sohbet yok
+const A = await client("chatA"), B = await client("chatB"), C = await client("chatC");
+const caylak = (await A.call("joinTable", { type: "caylak", lang: "en", name: "A" })).tableId;
+const addTo = (c, id, data) => addDoc(collection(c.db, "tables", id, "chat"), data).then(() => "izin verildi", (e) => e.code);
+check("Çaylak masada hazır mesaj gönderilemez", (await addTo(A, caylak, { uid: A.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "permission-denied");
+check("Çaylak masada yazışma yok", (await errCode(A.call("sendText", { tableId: caylak, text: "selam", uiLang: "tr" }))) === "chatVipOnly");
+await A.call("leaveTable", { tableId: caylak });
+
+// VIP oda: serbest ve filtresiz
+await A.call("testSubscribeVip"); await B.call("testSubscribeVip");
+const vip = (await A.call("joinTable", { type: "vip2", lang: "tr", name: "A" })).tableId;
+await B.call("joinTable", { type: "vip2", lang: "tr", name: "B" });
+check("VIP odada hazır mesaj", (await addTo(A, vip, { uid: A.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "izin verildi");
+check("VIP odada emoji", (await addTo(B, vip, { uid: B.uid, kind: "emoji", id: "🔥", at: serverTimestamp() })) === "izin verildi");
+const r1 = await A.call("sendText", { tableId: vip, text: "lan bu ne biçim hamle, salak", uiLang: "tr" });
+check("VIP odada küfürlü söz de iletilir (filtre yok)", r1.ok === true, JSON.stringify(r1));
+await new Promise((r) => setTimeout(r, 2100));
+const r2 = await A.call("sendText", { tableId: vip, text: "bak: https://ornek.com", uiLang: "tr" });
+check("VIP odada bağlantı da serbest", r2.ok === true);
+const texts = (await getDocs(collection(B.db, "tables", vip, "chat"))).docs.map((d) => d.data()).filter((x) => x.kind === "text").map((x) => x.text);
+check("rakip mesajları okuyabilir", texts.length === 2, texts.join(" | "));
+check("başkası adına yazılamaz", (await addTo(A, vip, { uid: B.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "permission-denied");
+check("masada olmayan yazamaz", (await addTo(C, vip, { uid: C.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "permission-denied");
+check("masada olmayan okuyamaz", (await getDocs(collection(C.db, "tables", vip, "chat")).then(() => "izin verildi", (e) => e.code)) === "permission-denied");
+console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
+process.exit(ok ? 0 : 1);

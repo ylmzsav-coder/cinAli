@@ -70,6 +70,7 @@ export function TableLobby({ table, name, onStart, onLeave }: { table: TableConf
           <div className="lobby-info">
             <div className="lobby-row"><span className="muted small">{t("entry")}</span><Chips amount={table.entry} /></div>
             <div className="lobby-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(table)} /></div>
+            {table.vip && <div className="vip-chat-tag">💬 {t("vipChatGame")}</div>}
             <div className="lobby-wait">{t("lobbyWaiting")}</div>
             <div className="muted small">{t("lobbyBots", { n: formatNumber(Math.max(0, left)) })}</div>
             <button type="button" className="primary" onClick={onStart}>{t("startNow")}</button>

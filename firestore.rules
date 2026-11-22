@@ -44,9 +44,10 @@ service cloud.firestore {
       // Hazır mesajlar ve emojiler: yalnızca masadaki oyuncular okur/yazar; serbest metin yok,
       // yalnızca izin verilen kimlikler (src/online/chat.ts ile aynı liste).
       match /chat/{msgId} {
+        // Oyuncular arası sohbet yalnızca VIP odada
         function seated() {
-          return request.auth != null
-            && request.auth.uid in get(/databases/$(database)/documents/tables/$(tableId)).data.uids;
+          let tb = get(/databases/$(database)/documents/tables/$(tableId)).data;
+          return request.auth != null && request.auth.uid in tb.uids && tb.type == "vip2";
         }
         allow read: if seated();
         allow create: if seated()

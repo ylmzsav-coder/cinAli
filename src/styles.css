@@ -1019,3 +1019,13 @@ button.avatar { cursor: pointer; min-height: 0; }
 .tc-vip2 { background: linear-gradient(160deg, #3b2a00, #1a1200) !important; border: 2px solid #f0a500 !important; }
 .tc-vip2 .tc-name { color: #ffd54f; }
 .lobby-felt.vip { border-color: #b8860b; box-shadow: inset 0 0 0 3px #6b4e00, inset 0 0 30px rgba(0, 0, 0, 0.35), 0 6px 18px rgba(0, 0, 0, 0.45); }
+.vip-chat-tag {
+  display: inline-block; justify-self: center; align-self: flex-start; padding: 3px 12px; border-radius: 999px; font-weight: 900; font-size: 0.85rem;
+  background: linear-gradient(#ffe082, #f0a500); color: #3b2500; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.chat-room-btn { width: auto !important; padding: 6px 14px !important; font-weight: 900; background: linear-gradient(#ffe082, #f0a500) !important; color: #3b2500 !important; border: 2px solid #8a5a00 !important; border-radius: 10px !important; }
+.chat-room-btn { height: 44px; white-space: nowrap; display: inline-flex !important; align-items: center; gap: 4px; }
+.topbar > .link { white-space: nowrap; }
+.topbar .title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Üç büyük düğme yan yana sığsın */
+.topbar-actions:has(.chat-room-btn) .quit-btn, .topbar-actions:has(.chat-room-btn) .buy-btn { min-width: 150px; }
