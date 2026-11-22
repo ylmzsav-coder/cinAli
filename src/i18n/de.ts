@@ -428,6 +428,8 @@ const de: Messages = {
   chatSetting: "Chat-Blasen",
   openHandNeed: "Auslegen\n({need} Pkt.)",
   groupsNeed: "Ablage: öffnet ab {need} Punkten",
+  drawShort: "Ziehen",
+  discardShort: "Ablegen",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

@@ -428,6 +428,8 @@ const pt: Messages = {
   chatSetting: "Balões de chat",
   openHandNeed: "Abrir mão\n({need} pts)",
   groupsNeed: "Suporte: abre com {need} pontos",
+  drawShort: "Comprar",
+  discardShort: "Descartar",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

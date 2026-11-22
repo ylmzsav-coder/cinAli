@@ -428,6 +428,8 @@ const es: Messages = {
   chatSetting: "Burbujas de chat",
   openHandNeed: "Abrir mano\n({need} pts)",
   groupsNeed: "Atril: abre con {need} puntos",
+  drawShort: "Robar",
+  discardShort: "Descartar",
   close: "Cerrar",
   handCol: "Mano",
   totalRow: "Total",

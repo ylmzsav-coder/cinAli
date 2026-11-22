@@ -428,6 +428,8 @@ const fr: Messages = {
   chatSetting: "Bulles de discussion",
   openHandNeed: "Ouvrir\n({need} pts)",
   groupsNeed: "Chevalet : ouvre à {need} points",
+  drawShort: "Piocher",
+  discardShort: "Jeter",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

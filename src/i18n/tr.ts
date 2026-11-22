@@ -432,6 +432,8 @@ const tr = {
   chatSetting: "Sohbet balonları",
   openHandNeed: "Eli Aç\n({need} puan)",
   groupsNeed: "Istaka: {need} puan açar",
+  drawShort: "Çek",
+  discardShort: "At",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

@@ -428,6 +428,8 @@ const en: Messages = {
   chatSetting: "Chat bubbles",
   openHandNeed: "Open hand\n({need} pts)",
   groupsNeed: "Rack: opens at {need} points",
+  drawShort: "Draw",
+  discardShort: "Discard",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

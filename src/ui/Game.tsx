@@ -1035,7 +1035,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               onPointerDown={(e) => canDraw && startDrag(e, "deck", [])}
               aria-label={t("drawDeck")}>
               <span className="deck-stack" aria-hidden><span className="deck-count">{state.deck.length}</span></span>
-              <span className="small">{t("drawDeck")}</span>
+              <span className="deck-word">{t("drawShort")}</span>
             </button>
             {colorNow && <div className="color-hint">{t("colorPath", { color: t(`color_${colorNow}`) })}</div>}
           </div>
@@ -1148,7 +1148,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             ) : (
               <span className="rack-discard-arrow" aria-hidden>➜</span>
             )}
-            {draggingTile && canPlay && <span className="rack-discard-label">{t("dropToDiscard")}</span>}
+            <span className="rack-discard-word">{t("discardShort")}</span>
           </div>
           <div className="rack-actions">
             {!me.opened && !handOver && (

@@ -428,6 +428,8 @@ const it: Messages = {
   chatSetting: "Fumetti chat",
   openHandNeed: "Apri mano\n({need} pt)",
   groupsNeed: "Leggio: apre a {need} punti",
+  drawShort: "Pesca",
+  discardShort: "Scarta",
   close: "Chiudi",
   handCol: "Mano",
   totalRow: "Totale",
