@@ -126,7 +126,7 @@ const pt: Messages = {
   music: "Música",
   noValidGroups: "Não há palavras válidas no suporte. Coloque as peças de cada palavra lado a lado, com espaços entre as palavras.",
   dropToDiscard: "Solte para descartar",
-  groupsTotal: "Suporte: {total} · abre com {need}",
+  groupsTotal: "Suporte: {total} · abre com {need} pontos",
   autoArrange: "Organizar auto",
   autoPerDesc: "Compra única: Organizar auto encontra e arruma as palavras de maior pontuação com suas peças. Uso ilimitado em todas as mesas.",
   autoPerBuy: "{price} · Comprar",

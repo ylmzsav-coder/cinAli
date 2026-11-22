@@ -126,7 +126,7 @@ const de: Messages = {
   music: "Musik",
   noValidGroups: "Keine gültigen Wörter auf der Ablage. Lege die Steine eines Wortes nebeneinander, mit Lücken zwischen den Wörtern.",
   dropToDiscard: "Zum Abwerfen loslassen",
-  groupsTotal: "Ablage: {total} · öffnet ab {need}",
+  groupsTotal: "Ablage: {total} · öffnet ab {need} Punkten",
   autoArrange: "Auto-Ordnen",
   autoPerDesc: "Einmaliger Kauf: Auto-Ordnen findet die Wörter mit den meisten Punkten aus deinen Steinen und ordnet sie an. Unbegrenzt an allen Tischen.",
   autoPerBuy: "{price} · Kaufen",

@@ -126,7 +126,7 @@ const fr: Messages = {
   music: "Musique",
   noValidGroups: "Aucun mot valide sur le chevalet. Placez les tuiles de chaque mot côte à côte, avec des espaces entre les mots.",
   dropToDiscard: "Lâchez pour défausser",
-  groupsTotal: "Chevalet : {total} · ouvre à {need}",
+  groupsTotal: "Chevalet : {total} · ouvre à {need} points",
   autoArrange: "Ranger auto",
   autoPerDesc: "Achat unique : Ranger auto trouve et dispose les mots les plus rentables avec vos tuiles. Utilisation illimitée à toutes les tables.",
   autoPerBuy: "{price} · Acheter",

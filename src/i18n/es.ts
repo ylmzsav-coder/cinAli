@@ -126,7 +126,7 @@ const es: Messages = {
   music: "Música",
   noValidGroups: "No hay palabras válidas en el atril. Pon las fichas de cada palabra juntas, con huecos entre palabras.",
   dropToDiscard: "Suelta para descartar",
-  groupsTotal: "Atril: {total} · abre con {need}",
+  groupsTotal: "Atril: {total} · abre con {need} puntos",
   autoArrange: "Ordenar auto",
   autoPerDesc: "Compra única: Ordenar auto encuentra y coloca las palabras de mayor puntuación con tus fichas. Uso ilimitado en todas las mesas.",
   autoPerBuy: "{price} · Comprar",

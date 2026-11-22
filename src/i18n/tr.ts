@@ -127,7 +127,7 @@ const tr = {
   music: "Müzik",
   noValidGroups: "Istakada geçerli kelime yok. Kelimeleri yan yana dizin; kelimeler arasında boşluk bırakın.",
   dropToDiscard: "Atmak için bırakın",
-  groupsTotal: "Istaka: {total} · {need} açar",
+  groupsTotal: "Istaka: {total} · {need} puan açar",
   autoArrange: "Otomatik Per",
   autoPerDesc: "Tek seferlik satın alma: Otomatik Per, ıstakanızdaki taşlarla en yüksek puanlı kelimeleri bulup dizer. Sınırsız kullanım, tüm masalarda.",
   autoPerBuy: "{price} · Satın al",
