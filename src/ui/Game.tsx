@@ -936,7 +936,8 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
   return (
     <div className={`game okey ${draggingTile ? "dragging" : ""}`}>
       <header className="topbar">
-        <button type="button" className="link" onClick={onExit}>{t("menu")}</button>
+        {/* Menü bağlantısı yalnızca "Oyundan çık" yokken (el bittiğinde, izlerken) */}
+        {!(onLeave && !handOver) && <button type="button" className="link" onClick={onExit}>{t("menu")}</button>}
         <div className="title">
           {tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
           {watchers > 0 && <span className="watchers-badge" title={t("watchersN", { n: watchers })}>👁 {watchers}</span>}
