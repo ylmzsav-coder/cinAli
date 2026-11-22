@@ -24,7 +24,6 @@ export const CHIP_PACKS: ChipPack[] = [
   { productId: "wordokey_cip_1k", chips: 1_000, testPrice: "₺ 29,99" },
   { productId: "wordokey_cip_5k", chips: 5_000, testPrice: "₺ 119,99", badge: "badge_popular" },
   { productId: "wordokey_cip_15k", chips: 15_000, testPrice: "₺ 299,99", badge: "badge_bonus" },
-  { productId: "wordokey_cip_50k", chips: 50_000, testPrice: "₺ 799,99", badge: "badge_best" },
 ];
 
 /** Geliştirme sunucusu ve test yapıları (GitHub Pages, debug APK) taklit mağaza kullanır. */
