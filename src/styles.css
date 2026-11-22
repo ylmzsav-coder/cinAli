@@ -1195,3 +1195,9 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .side-controls .actions-total { grid-column: 2; grid-row: 1; align-self: center; }
 .okey .side-controls > .rack-actions > .primary { grid-column: 2; grid-row: 2; justify-self: center; align-self: center; width: 100%; max-width: 100%; height: auto; max-height: 100%; font-size: 0.9rem; }
 .okey .side-controls > .rack-actions > .primary { width: auto; height: 100%; aspect-ratio: 1 / 1; max-width: 100%; }
+/* Eli Aç parası: Oyundan çık ile aynı canlı kırmızı, pasifken de soluk değil */
+.okey .side-controls > .rack-actions > .primary,
+.okey .side-controls > .rack-actions > .primary:disabled {
+  background: radial-gradient(circle at 35% 28%, #ff7a73 0%, #ef5350 40%, #b3261e 100%);
+  opacity: 1; filter: none; color: #fff;
+}
