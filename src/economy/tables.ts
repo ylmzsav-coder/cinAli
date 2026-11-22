@@ -1,5 +1,5 @@
 import type { BotLevel } from "../game/bot";
-import { TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
+import { TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
 
 export interface TableConfig {
   id: string;
@@ -26,7 +26,12 @@ export const TABLES: TableConfig[] = [
   { id: "usta", name: "Usta", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE },
   // VIP iki kişilik özel oda: karşılıklı, yalnızca VIP aboneler
   { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true },
+  // VIP Usta: aynı oda, yüksek giriş (VIP kartındaki giriş seçiminden)
+  { id: "vip2u", name: "VIP Usta", entry: VIP_USTA_ENTRY, hands: 1, level: "zor", prize: VIP_USTA_PRIZE, players: 2, vip: true },
 ];
+
+/** VIP oda türü mü (serbest sohbet, izleyici yok, süre yok). */
+export const isVipType = (type: string | undefined) => !!TABLES.find((t) => t.id === type)?.vip;
 
 /** Eski masalar: yalnızca önceki sürümde başlamış oyunların ödemesi için. */
 const LEGACY_TABLES: TableConfig[] = [

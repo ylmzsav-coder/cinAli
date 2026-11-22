@@ -10,7 +10,7 @@ import { errorText, formatNumber, t } from "../i18n";
 import { Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { Chips } from "./Chips";
-import { type TableConfig, tableById, winnerPrize } from "../economy/tables";
+import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
 import { CLOUD } from "../online/cloud";
 import { type TableInvite, declineInvite, friendsStatus } from "../online/social";
@@ -180,7 +180,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           ))}
           {invite && onJoinInvite && (
             <div className="invite-banner">
-              <span>📨 {t(invite.type === "vip2" ? "inviteBannerVip" : "inviteBanner", { name: invite.name })}</span>
+              <span>📨 {t(isVipType(invite.type) ? "inviteBannerVip" : "inviteBanner", { name: invite.name })}</span>
               <button type="button" className="primary small-btn" onClick={() => onJoinInvite(invite.code)}>{t("joinFree")}</button>
               <button type="button" className="link small-btn" aria-label={t("decline")} onClick={() => { void declineInvite(invite.tableId); setInvite(null); }}>✕</button>
             </div>

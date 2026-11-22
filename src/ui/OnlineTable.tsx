@@ -4,7 +4,7 @@ import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest } fro
 import { Avatar } from "./Profile";
 import { sendGiftTo } from "../online/gifts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { tableById, type TableConfig } from "../economy/tables";
+import { isVipType, tableById, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
 import { setGameLang, type LangCode } from "../game/lang";
 import { errorText, t, uiLang } from "../i18n";
@@ -204,7 +204,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       send: (kind, id) => addDoc(collection(firestore(), "tables", tableId, "chat"), { uid, kind, id, at: serverTimestamp() }),
       // Serbest yazışma yalnızca arkadaş masalarında
       // Oyuncular arası sohbet yalnızca VIP odada (filtresiz)
-      sendText: doc_.type === "vip2"
+      sendText: isVipType(doc_.type)
         ? (text: string) => call<SendTextResult>("sendText", { tableId, text, uiLang: uiLang() })
         : undefined,
     };
@@ -323,7 +323,7 @@ export function OnlineTable({ entry, settings, onExit, onDone }: Props) {
       remote={remote}
       chat={chat}
       chatEnabled={settings.chat}
-      chatRoom={doc_.type === "vip2"}
+      chatRoom={isVipType(doc_.type)}
       playerMenu={playerMenu}
       watchers={doc_.watchers?.length ?? 0}
       dict={dict}

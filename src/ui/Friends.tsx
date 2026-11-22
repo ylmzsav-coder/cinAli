@@ -1,3 +1,4 @@
+import { isVipType } from "../economy/tables";
 import { useEffect, useState } from "react";
 import { errorText, t } from "../i18n";
 import { CLOUD } from "../online/cloud";
@@ -61,8 +62,8 @@ export function FriendsPanel({ onWatch, onJoin }: { onWatch?: (tableId: string) 
           {invites.map((v) => (
             <div key={v.tableId} className="friend-row invite-row">
               <span className="friend-name">
-                {v.type === "vip2" ? "👑 " : ""}{v.name}
-                <small className="muted">{v.type === "vip2" ? t("inviteVipGuest") : t("inviteTable")}</small>
+                {isVipType(v.type) ? "👑 " : ""}{v.name}
+                <small className="muted">{isVipType(v.type) ? t("inviteVipGuest") : t("inviteTable")}</small>
               </span>
               {onJoin && <button type="button" className="primary small-btn" onClick={() => onJoin(v.code)}>{t("joinFree")}</button>}
               <button type="button" className="small-btn" onClick={() => void declineInvite(v.tableId).then(load)}>{t("decline")}</button>

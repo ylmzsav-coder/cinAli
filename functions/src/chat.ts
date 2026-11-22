@@ -11,6 +11,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { onCall } from "firebase-functions/v2/https";
 import { LANGS } from "../../src/game/lang";
+import { isVipType } from "../../src/economy/tables";
 import { db, fail, uidOf } from "./common";
 import { containsLink, containsProfanity } from "./profanity";
 
@@ -43,7 +44,7 @@ export const sendText = onCall(async (req) => {
     const table = tSnap.data();
     if (!table || !(table.uids as string[]).includes(uid)) fail("notAtTable", {}, "permission-denied");
     // Oyuncular arası yazışma yalnızca VIP odada; özel oda olduğu için içerik filtresi yok
-    if (table.type !== "vip2") fail("chatVipOnly");
+    if (!isVipType(table.type as string)) fail("chatVipOnly");
     const now = Date.now();
     const meta: ChatMeta = (mSnap.data() as ChatMeta) ?? { last: 0, windowStart: now, windowCount: 0, strikes: 0, mutedUntil: 0 };
     if (meta.mutedUntil > now) fail("chatMuted", { n: Math.ceil((meta.mutedUntil - now) / 60_000) }, "resource-exhausted");

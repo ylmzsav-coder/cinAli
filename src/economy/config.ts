@@ -5,6 +5,9 @@ export const TABLE_PRIZE = 300;
 /** Usta masa: giriş ve birinciye ödül. */
 export const USTA_ENTRY = 500;
 export const USTA_PRIZE = 1_500;
+/** VIP Usta oda (2 kişi): giriş ve kazanana ödül. */
+export const VIP_USTA_ENTRY = 500;
+export const VIP_USTA_PRIZE = 1_500;
 /** Yeni oyuncuya hoş geldin hediyesi: 5 oyunluk çip. */
 export const WELCOME_GAMES = 5;
 export const WELCOME_CHIPS = 500;

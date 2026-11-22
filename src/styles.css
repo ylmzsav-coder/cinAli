@@ -1112,3 +1112,10 @@ button.avatar { cursor: pointer; min-height: 0; }
 .caylak-hub { display: flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1.15; }
 .caylak-hub .caylak-sub { font-size: 0.62em; font-weight: 600; opacity: 0.85; display: inline-flex; align-items: center; gap: 4px; }
 .usta-hub.primary { background: linear-gradient(180deg, #f3d38a, #c8962e); color: #3a2400; }
+
+/* VIP oda giriş seçimi */
+.vip-stake-label { margin-top: 4px; }
+.vip-stake { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.vip-stake button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; background: rgba(255,255,255,0.06); border: 2px solid rgba(240,165,0,0.35); color: #fff3c4; font-weight: 700; }
+.vip-stake button .vip-stake-arrow { font-size: 0.8em; opacity: 0.85; white-space: nowrap; display: inline-flex; align-items: center; gap: 3px; }
+.vip-stake button.on { background: linear-gradient(180deg, #ffd54f, #f0a500); border-color: #ffe082; color: #2b1d00; box-shadow: 0 0 10px rgba(255,213,79,0.5); }

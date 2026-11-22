@@ -143,7 +143,7 @@ const tr = {
   start: "Başla",
 
   // Masalar
-  tablesDesc: "Giriş ücreti masaya oturunca alınır. Herkes {entry} çip öder, birinci {prize} çip kazanır. Renk Bitirme yaparsanız giriş ücreti kadar ikramiye!",
+  tablesDesc: "Giriş ücreti masaya oturunca alınır. Masada en yüksek puanı toplayan ödülü kazanır; berabere kalanlar ödülü paylaşır.",
   opponents_kolay: "Kolay rakipler",
   opponents_orta: "Orta rakipler",
   opponents_zor: "Zor rakipler",
@@ -332,7 +332,7 @@ const tr = {
   vipPerkRoom: "2 kişilik özel VIP oda: rakibinle karşılıklı oyna",
   vipPerkChat: "Sohbetli oyun: Oyuncu arkadaşınla sohbet et",
   vipPerkNoWatch: "Seyirci yok: oyununu kimse izleyemez",
-  vipPerkTable: "VIP masa: giriş {entry} çip, kazanan {prize} çip",
+  vipPerkTable: "VIP masa iki seçenek: giriş {entry} → kazanan {prize} çip ya da giriş {entry2} → kazanan {prize2} çip",
   vipPerkGift: "Abone olunca {n} çip hediye",
   vipActiveUntil: "VIP aboneliğin {date} tarihine kadar geçerli.",
   vipSubscribe: "Abone ol",
@@ -422,6 +422,8 @@ const tr = {
   genderLabel: "Cinsiyet",
   playCaylak: "Çaylak Masa",
   playUsta: "Usta Masa",
+  vipStake: "Masa girişi",
+  table_vip2u: "VIP Usta",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

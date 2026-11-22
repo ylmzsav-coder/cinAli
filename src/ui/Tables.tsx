@@ -28,6 +28,9 @@ export function Tables({ onPick, gender, onGender, onCreatePrivate, onJoinCode, 
   const [code, setCode] = useState("");
   const [vipOpen, setVipOpen] = useState(false);
   const chosen = TABLES.find((x) => x.id === level)!;
+  // VIP oda tek kart: giriş seçimi (100 → 300 / 500 → 1.500)
+  const vipTables = TABLES.filter((x) => x.vip);
+  const [vipId, setVipId] = useState(vipTables[0].id);
   return (
     <div className="page">
       <div className="page-head">
@@ -40,16 +43,26 @@ export function Tables({ onPick, gender, onGender, onCreatePrivate, onJoinCode, 
       <p className="muted small">{t("tablesDesc", { entry: TABLE_ENTRY, prize: TABLE_PRIZE })}</p>
       <div className="tables">
         {TABLES.map((tb) => {
+          if (tb.vip && tb.id !== vipTables[0].id) return null;
+          if (tb.vip) tb = vipTables.find((x) => x.id === vipId) ?? tb;
           const afford = w.balance >= tb.entry;
           if (tb.vip) {
             const isVip = !!w.vipUntil && w.vipUntil > Date.now();
             return (
-              <div key={tb.id} className="table-card tc-vip2">
+              <div key="vip" className="table-card tc-vip2">
                 <div className="tc-name">👑 {t("table_vip2")}</div>
                 <div className="vip-chat-tag">💬 {t("vipChatGame")}</div>
                 <div className="muted small">{t("vipTableDesc")}</div>
-                <div className="tc-row"><span className="muted small">{t("entry")}</span><Chips amount={tb.entry} /></div>
-                <div className="tc-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(tb)} /></div>
+                <div className="muted small vip-stake-label">{t("vipStake")}</div>
+                <div className="vip-stake" role="radiogroup" aria-label={t("vipStake")}>
+                  {vipTables.map((v) => (
+                    <button key={v.id} type="button" role="radio" aria-checked={v.id === tb.id}
+                      className={v.id === tb.id ? "on" : ""} onClick={() => setVipId(v.id)}>
+                      <span><Chips amount={v.entry} /></span>
+                      <span className="vip-stake-arrow">→ <Chips amount={winnerPrize(v)} /></span>
+                    </button>
+                  ))}
+                </div>
                 {!w.ready ? (
                   <button type="button" disabled aria-busy>…</button>
                 ) : !isVip ? (

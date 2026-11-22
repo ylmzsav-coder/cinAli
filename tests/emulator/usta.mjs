@@ -17,4 +17,14 @@ await call("startTable", { tableId: j.tableId });
 const tb = (await getDoc(doc(db, "tables", j.tableId))).data();
 const ok = tb.status === "playing" && tb.seats.length === 4 && (await bal()) === b0 - 500;
 console.log(ok ? "✓ Usta masa: 500 giriş alındı, oyun başladı" : "✗ " + JSON.stringify({ b0, b: await bal(), st: tb.status }));
-process.exit(ok ? 0 : 1);
+// VIP Usta: 500 giriş, sohbet açık, 100'lük VIP masa ile karışmaz
+await call("testSubscribeVip");
+const b1 = await bal();
+await call("leaveTable", { tableId: j.tableId }).catch(() => {});
+const v = await call("joinTable", { type: "vip2u", lang: "tr", name: "Usta", gender: "erkek", want: "kadin" });
+const vt = (await getDoc(doc(db, "tables", v.tableId))).data();
+await call("startTable", { tableId: v.tableId });
+const txt = await call("sendText", { tableId: v.tableId, text: "selam", uiLang: "tr" });
+const ok2 = vt.type === "vip2u" && (await bal()) === b1 - 500 && txt.ok === true;
+console.log(ok2 ? "✓ VIP Usta: 500 giriş alındı, sohbet açık" : "✗ VIP Usta " + JSON.stringify({ b1, b: await bal(), type: vt.type, txt }));
+process.exit(ok && ok2 ? 0 : 1);
