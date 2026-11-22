@@ -1084,7 +1084,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                   onPointerDown={(e) => canDraw && startDrag(e, "deck", [])}
                   aria-label={t("drawDeck")}>
                   <span className="deck-stack" aria-hidden><span className="deck-count">{state.deck.length}</span></span>
-                  <span className="deck-word">{t("drawShort")}</span>
+                  <span className={`deck-word ${t("drawShort").length > 5 ? "long" : ""}`}>{t("drawShort")}</span>
                 </button>
             <div className="rack-actions">
               {!me.opened && !handOver && (

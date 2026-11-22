@@ -1308,3 +1308,4 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .okey .side-controls > .deck:disabled { opacity: 1; }
 .okey .side-controls > .deck:disabled .deck-stack { opacity: 0.6; }
 .okey .side-controls > .deck .deck-word { font-size: clamp(0.7rem, 1.6vw, 1rem); }
+.okey .side-controls > .deck .deck-word.long { font-size: clamp(0.55rem, 1.15vw, 0.8rem); letter-spacing: -0.3px; }
