@@ -1,4 +1,5 @@
 import { canCloseGame, closeGame } from "../exit";
+import { FEEDBACK_MAX, type FeedbackType, submitFeedback } from "../feedbackBox";
 import { stopMusic } from "../music";
 import { useState } from "react";
 import { useWallet } from "../economy/useWallet";
@@ -26,6 +27,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   const [closeAsk, setCloseAsk] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   // Yeni oyuncuya hoş geldin hediyesi (bir kez gösterilir)
   const [welcomeSeen, setWelcomeSeen] = useState(() => {
     try {
@@ -130,9 +132,12 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             <button type="button" className="big" onClick={onShop}>{t("shop")}</button>
             <button type="button" className="big" onClick={onRules}>{t("rules")}</button>
           </div>
-          {canCloseGame() && (
-            <button type="button" className="big close-game" onClick={() => setCloseAsk(true)}>⏻ {t("closeGame")}</button>
-          )}
+          <div className="hub-row">
+            <button type="button" className="big" onClick={() => setFeedbackOpen(true)}>✉️ {t("feedback")}</button>
+            {canCloseGame() && (
+              <button type="button" className="big close-game" onClick={() => setCloseAsk(true)}>⏻ {t("closeGame")}</button>
+            )}
+          </div>
         </div>
       </div>
       {!LANGS[settings.uiLang].playable && (
@@ -151,6 +156,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </div>
         </div>
       )}
+      {feedbackOpen && <FeedbackDialog lang={settings.uiLang} onClose={() => setFeedbackOpen(false)} />}
       {closeAsk && (
         <div className="modal-bg" onClick={() => setCloseAsk(false)}>
           <div className="modal quit-modal" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label={t("closeAsk")}>
@@ -225,6 +231,67 @@ export function Practice({ settings, onStart, onBack }: PracticeProps) {
       <button type="button" className="primary big" onClick={() => onStart({ ...s, name: s.name.trim() })}>
         {t("start")}
       </button>
+    </div>
+  );
+}
+
+const FEEDBACK_TYPES: FeedbackType[] = ["oneri", "sikayet", "hata", "kelime"];
+
+/** Şikâyet / öneri formu. */
+function FeedbackDialog({ lang, onClose }: { lang: string; onClose: () => void }) {
+  const [type, setType] = useState<FeedbackType>("oneri");
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<"sent" | "saved" | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const send = async () => {
+    const body = text.trim();
+    if (!body) {
+      setErr(t("feedbackEmpty"));
+      return;
+    }
+    setBusy(true);
+    setErr(null);
+    try {
+      const version = typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "";
+      setResult(await submitFeedback({ type, text: body, lang, version, sentAt: Date.now() }));
+    } catch (e) {
+      setErr(errorText(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal feedback-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t("feedback")}>
+        <h3>✉️ {t("feedbackTitle")}</h3>
+        {result ? (
+          <>
+            <p>{result === "sent" ? t("feedbackThanks") : t("feedbackSaved")}</p>
+            <div className="modal-actions">
+              <button type="button" className="primary" onClick={onClose}>{t("close")}</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="fb-types" role="radiogroup">
+              {FEEDBACK_TYPES.map((k) => (
+                <button type="button" key={k} role="radio" aria-checked={type === k} className={type === k ? "on" : ""} onClick={() => setType(k)}>
+                  {t(`fb_${k}`)}
+                </button>
+              ))}
+            </div>
+            <textarea value={text} maxLength={FEEDBACK_MAX} rows={3} placeholder={t("feedbackPlaceholder")}
+              onChange={(e) => { setText(e.target.value); setErr(null); }} aria-label={t("feedbackPlaceholder")} />
+            <div className="fb-count muted small">{[...text].length}/{FEEDBACK_MAX}</div>
+            {err && <p className="error">{err}</p>}
+            <div className="modal-actions">
+              <button type="button" className="primary" disabled={busy} onClick={() => void send()}>{busy ? "…" : t("feedbackSend")}</button>
+              <button type="button" onClick={onClose}>{t("cancel")}</button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

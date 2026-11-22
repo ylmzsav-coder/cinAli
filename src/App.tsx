@@ -14,6 +14,7 @@ import { Hub, Practice } from "./ui/Menu";
 import { RotateHint, Splash } from "./ui/Splash";
 import { enterFullscreenLandscape } from "./display";
 import { startMusic, stopMusic } from "./music";
+import { flushFeedback } from "./feedbackBox";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Rules } from "./ui/Rules";
 import { Shop } from "./ui/Shop";
@@ -72,6 +73,11 @@ export function App() {
   }, []);
 
   // Sunucu modu: oturum aç, cüzdanı başlat, yarım kalan masa varsa hatırla
+  // Sunucu kurulduysa cihazda bekleyen şikâyet/öneri mesajlarını ilet
+  useEffect(() => {
+    void flushFeedback();
+  }, []);
+
   useEffect(() => {
     if (!CLOUD) return;
     wallet.start?.(settings.name);

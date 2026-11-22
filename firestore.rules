@@ -19,6 +19,13 @@ service cloud.firestore {
     match /reports/{id} {
       allow read, write: if false;
     }
+    // Oyuncu şikâyet ve önerileri: yalnızca sunucu yazar, kimse okuyamaz (yönetici konsoldan bakar).
+    match /feedback/{id} {
+      allow read, write: if false;
+    }
+    match /feedbackmeta/{uid} {
+      allow read, write: if false;
+    }
     match /tables/{tableId} {
       // Masanın herkese açık görünümü (ıstakalar hariç): masadaki oyunculara açık
       allow read: if request.auth != null && request.auth.uid in resource.data.uids;

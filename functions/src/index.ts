@@ -11,3 +11,4 @@ export {
   startTable,
 } from "./tables";
 export { reportPlayer, sendText } from "./chat";
+export { sendFeedback } from "./feedback";

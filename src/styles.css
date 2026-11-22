@@ -733,3 +733,12 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
 .welcome-modal { max-width: 460px; text-align: center; }
 .welcome-gift { font-size: 3rem; margin: 0; line-height: 1; animation: total-pop 1.2s ease-out; }
 .welcome-modal .modal-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+
+/* Şikâyet / öneri */
+.feedback-modal { max-width: 520px; width: calc(100vw - 32px); max-height: 92dvh; overflow-y: auto; }
+.feedback-modal textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: 1rem; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.25); color: inherit; resize: vertical; min-height: 64px; }
+.fb-types { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.fb-types button { padding: 6px 12px; border-radius: 999px; font-size: 0.85rem; }
+.fb-types button.on { background: var(--accent); color: #2a1f00; font-weight: 800; }
+.fb-count { text-align: right; margin-top: 2px; }
+.feedback-modal .modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
