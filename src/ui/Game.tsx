@@ -936,7 +936,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           {tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
           {watchers > 0 && <span className="watchers-badge" title={t("watchersN", { n: watchers })}>👁 {watchers}</span>}
         </div>
-        <div className="topbar-actions">
+        <div className="topbar-center">
           {onLeave && !handOver && (
             <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}><svg className="door-ico" viewBox="0 0 40 56" aria-hidden>
                 {/* siyah kapı: kasa, iki panel, kulp */}
@@ -955,6 +955,8 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               {t("buyChips")}
             </button>
           )}
+        </div>
+        <div className="topbar-actions">
           {chatRoom ? (
             <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
               aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬 {t("chatNow")}</button>
