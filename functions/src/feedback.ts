@@ -7,7 +7,7 @@ import { onCall } from "firebase-functions/v2/https";
 import { dayKey } from "../../src/economy/config";
 import { db, fail, uidOf } from "./common";
 
-export const FEEDBACK_MAX = 1000;
+export const FEEDBACK_MAX = 250;
 const TYPES = new Set(["sikayet", "oneri", "hata", "kelime"]);
 const PER_DAY = 10;
 

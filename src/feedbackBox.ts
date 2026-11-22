@@ -5,7 +5,7 @@
 import { CLOUD, call } from "./online/cloud";
 
 export type FeedbackType = "sikayet" | "oneri" | "hata" | "kelime";
-export const FEEDBACK_MAX = 1000;
+export const FEEDBACK_MAX = 250;
 
 export interface FeedbackItem {
   type: FeedbackType;
