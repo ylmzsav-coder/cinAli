@@ -1142,3 +1142,4 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .topbar-opp .opp-name > .muted { display: none; }
 .okey .buy-btn, .okey .quit-btn { white-space: nowrap; flex: none; }
 .topbar-opp .opp-compact { gap: 6px; }
+.okey .quit-btn, .okey .buy-btn { width: 158px; padding: 6px 8px; }
