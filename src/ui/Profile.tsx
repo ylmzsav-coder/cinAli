@@ -1,4 +1,7 @@
-import { loadSettings, type Settings } from "../storage";
+import { loadSettings, saveSettings, type Settings } from "../storage";
+
+/** Ayarlar oyun içinden (masadaki profil kartı) değişince uygulamaya haber verilir. */
+export const SETTINGS_EVENT = "wordokey:settings";
 import { blockedList, deleteAccount, unblockPlayer } from "../online/social";
 import { CLOUD } from "../online/cloud";
 import { wallet } from "../economy/wallet";
@@ -115,7 +118,13 @@ function StatsDetail({ s }: { s: PlayerStats }) {
 }
 
 /** Sizin profil kartınız: fotoğraf, başarı yüzdesi, özet ve ayrıntılı istatistikler. */
-export function MyStatsModal({ name, onClose, onJoin, gender, onGender, settings, onSettings }: { name: string; onClose: () => void; onJoin?: (code: string) => void; gender?: "erkek" | "kadin"; onGender?: (g: "erkek" | "kadin") => void; settings?: Settings; onSettings?: (s: Settings) => void }) {
+export function MyStatsModal({ name, onClose, onJoin, gender: genderProp, onGender: onGenderProp, settings: settingsProp, onSettings: onSettingsProp, standalone = false }: { name: string; onClose: () => void; onJoin?: (code: string) => void; gender?: "erkek" | "kadin"; onGender?: (g: "erkek" | "kadin") => void; settings?: Settings; onSettings?: (s: Settings) => void; standalone?: boolean }) {
+  // Oyun masasından açılınca ayarlar doğrudan kaydedilir ve uygulamaya olayla bildirilir
+  const [localSettings, setLocalSettings] = useState<Settings>(() => settingsProp ?? loadSettings());
+  const settings = settingsProp ?? (standalone ? localSettings : undefined);
+  const onSettings = onSettingsProp ?? (standalone ? (s: Settings) => { setLocalSettings(s); saveSettings(s); window.dispatchEvent(new CustomEvent(SETTINGS_EVENT)); } : undefined);
+  const gender = genderProp ?? (standalone ? settings?.gender : undefined);
+  const onGender = onGenderProp ?? (standalone && onSettings && settings ? (g: "erkek" | "kadin") => onSettings({ ...settings, gender: g }) : undefined);
   const s = loadStats();
   const shown = name || t("defaultName");
   const [photo, setPhoto] = useState(loadPhoto);
@@ -315,7 +324,7 @@ function GamesBar({ s }: { s: PlayerStats }) {
 
 /** Masadaki bir oyuncunun bu oyundaki istatistikleri. */
 export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip = false }: { state: GameState; seat: number; onClose: () => void; onAddFriend?: () => void; onGift?: () => void; vip?: boolean }) {
-  if (seat === 0) return <MyStatsModal name={state.players[0].name} onClose={onClose} />;
+  if (seat === 0) return <MyStatsModal name={state.players[0].name} onClose={onClose} standalone />;
   const p = state.players[seat];
   const sums = totals(state);
   const active = state.phase === "draw" || state.phase === "play";

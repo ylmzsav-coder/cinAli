@@ -1,3 +1,4 @@
+import { SETTINGS_EVENT } from "./ui/Profile";
 import { BACK_EVENT, setupBackButton } from "./backButton";
 import { useCallback, useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
@@ -131,6 +132,12 @@ export function App() {
     };
   }, [activeLang]);
 
+  // Oyun masasındaki profil kartından değişen ayarlar
+  useEffect(() => {
+    const onChange = () => setSettings(loadSettings());
+    window.addEventListener(SETTINGS_EVENT, onChange);
+    return () => window.removeEventListener(SETTINGS_EVENT, onChange);
+  }, []);
   const changeSettings = (s: Settings) => {
     setSettings(s);
     saveSettings(s);
