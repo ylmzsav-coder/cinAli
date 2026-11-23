@@ -1437,3 +1437,8 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .vip-badge-line { display: inline-block; margin-top: 4px; padding: 2px 10px; border-radius: 999px; background: linear-gradient(#ffe082, #ffb300); color: #4a3000; font-weight: 800; font-size: 0.85rem; }
 .okey .topbar > .topbar-center, .okey .topbar > .topbar-actions, .okey .topbar > .topbar-me { grid-row: 1; }
 .okey .side-controls .actions-total { display: none !important; }
+.legal-links { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.legal-links.terms-link { margin: 6px auto 0; font-size: 0.8rem; opacity: 0.85; }
+.login-agree { font-size: 0.78rem; opacity: 0.85; text-align: center; margin: 8px 0 0; }
+.login-agree .link { font-size: inherit; padding: 0; }
+.legal-overlay { position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: var(--bg, #0f3d26); }

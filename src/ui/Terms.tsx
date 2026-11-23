@@ -1,14 +1,17 @@
 import { t, uiLang } from "../i18n";
-import { acceptVipTerms, termsFor } from "../terms";
+import { acceptVipTerms, privacyFor, termsFor } from "../terms";
 
-/** Kullanım Koşulları ve Gizlilik sayfası. */
-export function Terms({ onBack }: { onBack: () => void }) {
-  const doc = termsFor(uiLang());
+/** Kullanım Koşulları ya da Gizlilik Politikası sayfası. */
+export function Terms({ onBack, kind = "terms" }: { onBack: () => void; kind?: "terms" | "privacy" }) {
+  const doc = kind === "privacy" ? privacyFor(uiLang()) : termsFor(uiLang());
+  const extra = kind === "privacy" ? (doc as ReturnType<typeof privacyFor>) : null;
   return (
     <div className="page terms-page">
       <button type="button" className="link" onClick={onBack}>{t("back")}</button>
+      {extra?.note && <p className="muted small">🌐 {extra.note}</p>}
       <h1>{doc.title}</h1>
       <p className="muted small">{doc.updated}</p>
+      {extra && <p>{extra.intro}</p>}
       {doc.sections.map((s) => (
         <section key={s.h}>
           <h2>{s.h}</h2>
@@ -20,7 +23,12 @@ export function Terms({ onBack }: { onBack: () => void }) {
 }
 
 /** VIP Oda'ya ilk girişte gösterilen kurallar ve kayıt uyarısı: kabul edilmeden oda açılmaz. */
-export function VipTermsModal({ onAccept, onClose, onRead }: { onAccept: () => void; onClose: () => void; onRead: () => void }) {
+/** Tam ekran yasal metin (giriş ekranından açılır). */
+export function LegalOverlay({ kind, onClose }: { kind: "terms" | "privacy"; onClose: () => void }) {
+  return <div className="legal-overlay"><Terms kind={kind} onBack={onClose} /></div>;
+}
+
+export function VipTermsModal({ onAccept, onClose, onRead, onPrivacy }: { onAccept: () => void; onClose: () => void; onRead: () => void; onPrivacy?: () => void }) {
   return (
     <div className="modal-bg" onClick={onClose}>
       <div className="modal vip-terms" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label={t("vipTermsTitle")}>
@@ -32,7 +40,10 @@ export function VipTermsModal({ onAccept, onClose, onRead }: { onAccept: () => v
           <li>⛔ {t("vipTerms4")}</li>
           <li>🔞 {t("vipTerms5")}</li>
         </ul>
-        <button type="button" className="link" onClick={onRead}>{t("termsLink")}</button>
+        <div className="legal-links">
+          <button type="button" className="link" onClick={onRead}>{t("termsOnly")}</button>
+          {onPrivacy && <button type="button" className="link" onClick={onPrivacy}>{t("privacyLink")}</button>}
+        </div>
         <div className="modal-actions">
           <button type="button" className="primary" onClick={() => { acceptVipTerms(); onAccept(); }}>{t("vipTermsAccept")}</button>
           <button type="button" onClick={onClose}>{t("cancel")}</button>

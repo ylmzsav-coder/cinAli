@@ -37,6 +37,7 @@ interface HubProps {
   onShop: () => void;
   onRules: () => void;
   onTerms: () => void;
+  onPrivacy: () => void;
   onAdmin: () => void;
   /** Arkadaşın masasını izle. */
   /** Gelen masa davetine katıl (davet kodu). */
@@ -61,7 +62,7 @@ function PlayerIcon() {
   );
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onTerms, onAdmin, onJoinInvite }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onTerms, onPrivacy, onAdmin, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
@@ -232,7 +233,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               onPick={(tb, mode) => { setVipLobby(false); onTwo(tb, mode); }}
               onSeek={(tb, want) => { setVipLobby(false); onSitTable(tb, want); }} />
           )}
-          {vipTerms && <VipTermsModal onAccept={() => { setVipTerms(false); setVipLobby(true); }} onClose={() => setVipTerms(false)} onRead={() => { setVipTerms(false); onTerms(); }} />}
+          {vipTerms && <VipTermsModal onAccept={() => { setVipTerms(false); setVipLobby(true); }} onClose={() => setVipTerms(false)} onRead={() => { setVipTerms(false); onTerms(); }} onPrivacy={() => { setVipTerms(false); onPrivacy(); }} />}
           {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); openVipLobby(); }, 1200)} />}
           {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onJoin={onJoinInvite}
             gender={settings.gender} onGender={(g) => onSettings({ ...settings, gender: g })} />}
@@ -318,7 +319,11 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </div>
         </div>
       )}
-      <button type="button" className="link small terms-link" onClick={onTerms}>{t("termsLink")}</button>
+      <div className="legal-links terms-link">
+        <button type="button" className="link small" onClick={onTerms}>{t("termsOnly")}</button>
+        <span aria-hidden>·</span>
+        <button type="button" className="link small" onClick={onPrivacy}>{t("privacyLink")}</button>
+      </div>
       {isOwner() && <button type="button" className="link small terms-link" onClick={onAdmin}>🛡️ Yönetici paneli</button>}
       <p className="muted small legal" onClick={() => {
         // Sahip (kontrol) modu: sürüm yazısına 7 kez dokun

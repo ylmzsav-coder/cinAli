@@ -1,0 +1,148 @@
+{
+  "tr": {
+    "title": "Word Okey Gizlilik Politikası",
+    "updated": "Yürürlük tarihi: 23 Kasım 2026",
+    "intro": "Bu politika, Word Okey oyununu (web sürümü, Android ve iOS uygulamaları) kullanırken hangi kişisel verilerinin işlendiğini, ne amaçla kullanıldığını, kimlerle paylaşıldığını ve haklarını açıklar. 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında aydınlatma metni yerine de geçer.",
+    "sections": [
+      { "h": "1. Veri sorumlusu", "items": [
+        "Kişisel verilerinin veri sorumlusu Word Okey uygulama sahibidir.",
+        "Gizlilikle ilgili her türlü soru ve başvurun için uygulamadaki \"Şikayet / Öneri\" bölümünü kullanabilirsin."
+      ] },
+      { "h": "2. Topladığımız bilgiler", "items": [
+        "Senin verdiğin bilgiler: oyuncu adın; e-postayla giriş yaparsan e-posta adresin (şifren yalnızca giriş hizmetinde şifrelenmiş olarak tutulur, biz göremeyiz); Facebook ile giriş yaparsan Facebook'un paylaştığı ad ve hesap kimliği; isteğe bağlı cinsiyet tercihin; Şikayet / Öneri bölümünden gönderdiğin mesajlar.",
+        "Oyun sırasında oluşan bilgiler: hesap kimliğin, oyun istatistiklerin (galibiyet, yenilgi, en iyi kelimeler), çip bakiyen ve çip hareketlerin, gönderdiğin ve aldığın hediyeler, arkadaş listen, arkadaşlık istekleri ve masa davetlerin, oturduğun masalar.",
+        "VIP Oda sohbeti: yazdığın mesajlar; gönderen hesap, oyuncu adı, masa ve zaman bilgisiyle birlikte. Filtreye takılan mesajlar ihlal kaydı olarak ayrıca tutulur.",
+        "Şikâyetler: bir oyuncuyu şikâyet ettiğinde ya da şikâyet edildiğinde, şikâyet kaydı ve o masadaki son mesajlar.",
+        "Otomatik toplanan bilgiler: IP adresin, bağlantı ve son görülme zamanların (çevrimiçi durumu için).",
+        "Satın almalar: VIP üyelik ve çip satın alımları Google Play veya App Store üzerinden yapılır. Kart ve ödeme bilgilerin bize gelmez; yalnızca satın alma kaydı (ürün, tarih, sipariş numarası) tutulur.",
+        "Toplamadıklarımız: rehberin, konumun, fotoğraf galerin, mikrofonun veya kameran. Profil fotoğrafı seçersen fotoğraf yalnızca kendi cihazında saklanır, sunucumuza gönderilmez."
+      ] },
+      { "h": "3. Bilgileri ne için kullanıyoruz", "items": [
+        "Oyunu sunmak: hesabını açmak, seni masalara ve rakiplere eşleştirmek, çiplerini, hediyelerini ve VIP üyeliğini yönetmek.",
+        "Sosyal özellikler: arkadaş listesi, çevrimiçi durumu, masa davetleri ve VIP Oda sohbeti.",
+        "Güvenlik ve adil oyun: hile, dolandırıcılık ve kötüye kullanımı önlemek; küfür ve yasa dışı içeriği filtrelemek; şikâyetleri incelemek; kuralları ihlal eden hesapları kısıtlamak.",
+        "Yasal yükümlülükler: 5651 sayılı Kanun başta olmak üzere mevzuatın gerektirdiği kayıtları tutmak ve yetkili makamların taleplerini karşılamak.",
+        "Destek ve geliştirme: Şikayet / Öneri mesajlarını yanıtlamak, hataları düzeltmek ve oyunu iyileştirmek.",
+        "Verilerini reklam profili çıkarmak için kullanmayız ve hiçbir şekilde satmayız."
+      ] },
+      { "h": "4. Hukuki sebepler", "items": [
+        "Sözleşmenin kurulması ve ifası (KVKK m.5/2-c): oyunu ve satın aldığın hizmetleri sunabilmek.",
+        "Hukuki yükümlülük (KVKK m.5/2-ç): sohbet ve bağlantı kayıtlarının saklanması, yetkili makam talepleri.",
+        "Meşru menfaat (KVKK m.5/2-f): güvenlik, hile ve kötüye kullanımın önlenmesi, oyunun geliştirilmesi.",
+        "Açık rıza: isteğe bağlı olarak paylaştığın bilgiler (örneğin cinsiyet tercihi). Rızanı istediğin zaman geri alabilirsin."
+      ] },
+      { "h": "5. Kimlerle paylaşıyoruz", "items": [
+        "Diğer oyuncular: oyuncu adın, profil harfin, VIP rozetin, masadaki puanların ve istatistiklerin masadaki oyunculara; çevrimiçi ve masada olma durumun arkadaşlarına görünür. VIP Oda mesajlarını yalnızca o masadaki oyuncular görür.",
+        "Hizmet sağlayıcılar: oyunun altyapısı Google Firebase (kimlik doğrulama, veritabanı ve sunucu işlevleri) üzerinde çalışır; satın almalar Google Play / App Store tarafından işlenir; Facebook ile giriş yaparsan giriş Facebook üzerinden yapılır. Bu şirketler verileri yalnızca hizmetlerini sunmak için ve kendi gizlilik politikalarına uygun olarak işler.",
+        "Yetkili makamlar: mahkeme, savcılık veya yetkili kurumlardan usulüne uygun bir talep gelirse ilgili kayıtlar bu makamlarla paylaşılır.",
+        "Bunlar dışında verilerini kimseyle paylaşmayız, satmayız veya kiralamayız."
+      ] },
+      { "h": "6. Yurt dışına aktarım", "items": [
+        "Veriler Google Firebase'in Avrupa Birliği'ndeki (Frankfurt, Almanya) sunucularında barındırılır. Google ve diğer hizmet sağlayıcılar verileri yurt dışında işleyebilir.",
+        "Bu aktarım, KVKK m.9'da öngörülen güvencelere ve hizmet sağlayıcıların standart sözleşme hükümlerine dayanılarak yapılır."
+      ] },
+      { "h": "7. Saklama süreleri", "items": [
+        "Hesap bilgileri, istatistikler, çip ve hediye kayıtları: hesabın silinene kadar.",
+        "VIP Oda sohbet kayıtları: 2 yıl; süre dolunca otomatik silinir.",
+        "İhlal ve şikâyet kayıtları: inceleme süresince ve olası hukuki süreçlerin zamanaşımı süresi boyunca.",
+        "Satın alma kayıtları: vergi ve ticari mevzuatın öngördüğü süre boyunca.",
+        "Süresi dolan veriler silinir, yok edilir veya anonim hâle getirilir."
+      ] },
+      { "h": "8. Cihazında saklananlar", "items": [
+        "Ayarların (dil, ses, müzik), profil fotoğrafın, cihazdaki istatistiklerin ve yarım kalan oyunun yalnızca senin cihazında (tarayıcı/uygulama hafızası) saklanır.",
+        "Reklam veya izleme amaçlı çerez kullanmayız. Oyunun çalışması için gereken bu yerel kayıtları uygulama verilerini silerek kaldırabilirsin."
+      ] },
+      { "h": "9. Güvenlik", "items": [
+        "Bağlantılar şifrelidir (HTTPS). Çip, hediye ve oyun hamleleri sunucuda doğrulanır; başka oyuncuların ıstakaları, sohbet kayıtları ve şikâyetler oyunculara kapalıdır.",
+        "Sohbet kayıtlarına ve ihlal kayıtlarına yalnızca yetkili yönetici erişebilir; yönetici işlemleri ayrıca kayıt altına alınır.",
+        "Hiçbir sistem tamamen güvenli değildir; bir güvenlik ihlali olursa mevzuatın öngördüğü şekilde seni ve ilgili kurumları bilgilendiririz."
+      ] },
+      { "h": "10. Çocuklar", "items": [
+        "Word Okey 13 yaşından küçükler için tasarlanmamıştır ve 13 yaşından küçüklerden bilerek kişisel veri toplamayız. Böyle bir durumu fark edersek ilgili verileri sileriz.",
+        "VIP Oda sohbeti 18 yaşından büyükler içindir. 18 yaşından küçükler uygulamayı ebeveyn veya vasilerinin izniyle kullanmalıdır."
+      ] },
+      { "h": "11. Hakların", "items": [
+        "KVKK m.11 kapsamında; verilerinin işlenip işlenmediğini öğrenme, bilgi isteme, işleme amacını öğrenme, aktarıldığı kişileri bilme, eksik veya yanlış verilerin düzeltilmesini, silinmesini veya yok edilmesini isteme, otomatik işleme sonucuna itiraz etme ve zararın giderilmesini isteme haklarına sahipsin.",
+        "Avrupa Birliği'nde yaşıyorsan GDPR kapsamındaki erişim, düzeltme, silme, işlemeyi kısıtlama, veri taşınabilirliği ve itiraz haklarına da sahipsin.",
+        "Hesabının ve verilerinin silinmesini istemek dahil tüm başvurularını uygulamadaki \"Şikayet / Öneri\" bölümünden iletebilirsin. Başvurular en geç 30 gün içinde ücretsiz yanıtlanır. Yasal saklama yükümlülüğü olan kayıtlar (örneğin sohbet kayıtları) bu süre dolana kadar saklanmaya devam eder.",
+        "Başvurunun yanıtsız kalması veya yanıtı yeterli bulmaman hâlinde Kişisel Verileri Koruma Kurulu'na şikâyette bulunabilirsin."
+      ] },
+      { "h": "12. Değişiklikler", "items": [
+        "Bu politikayı zaman zaman güncelleyebiliriz. Güncel metin her zaman uygulamada ve bu sayfada yayımlanır; önemli değişiklikleri uygulama içinden duyururuz."
+      ] }
+    ]
+  },
+  "en": {
+    "title": "Word Okey Privacy Policy",
+    "updated": "Effective date: 23 November 2026",
+    "intro": "This policy explains which personal data is processed when you use Word Okey (web version, Android and iOS apps), why it is used, who it is shared with and what your rights are. It also serves as the privacy notice under the Turkish Personal Data Protection Law No. 6698 (KVKK).",
+    "sections": [
+      { "h": "1. Data controller", "items": [
+        "The data controller is the owner of the Word Okey app.",
+        "For any privacy question or request, use the \"Feedback\" section in the app."
+      ] },
+      { "h": "2. Information we collect", "items": [
+        "Information you give us: your player name; your e-mail address if you sign in with e-mail (your password is kept encrypted by the sign-in service and we cannot see it); the name and account ID shared by Facebook if you sign in with Facebook; your optional gender preference; messages you send through the Feedback section.",
+        "Information created while playing: your account ID, game statistics (wins, losses, best words), chip balance and chip transactions, gifts sent and received, friends list, friend requests and table invitations, tables you sat at.",
+        "VIP Room chat: the messages you write, together with the sending account, player name, table and time. Messages caught by the filter are also kept as violation records.",
+        "Reports: when you report a player or are reported, the report and the latest messages at that table.",
+        "Automatically collected information: your IP address, connection and last-seen times (for online status).",
+        "Purchases: VIP membership and chips are bought through Google Play or the App Store. Your card and payment details never reach us; we only keep the purchase record (product, date, order number).",
+        "What we do not collect: your contacts, location, photo gallery, microphone or camera. If you choose a profile photo, it is stored only on your own device and is never sent to our servers."
+      ] },
+      { "h": "3. How we use it", "items": [
+        "Providing the game: creating your account, matching you with tables and opponents, managing your chips, gifts and VIP membership.",
+        "Social features: friends list, online status, table invitations and VIP Room chat.",
+        "Safety and fair play: preventing cheating, fraud and abuse; filtering profanity and illegal content; reviewing reports; restricting accounts that break the rules.",
+        "Legal obligations: keeping the records required by law (including Turkish Law No. 5651) and responding to requests from competent authorities.",
+        "Support and improvement: answering feedback, fixing bugs and improving the game.",
+        "We do not use your data to build advertising profiles and we never sell it."
+      ] },
+      { "h": "4. Legal bases", "items": [
+        "Performance of a contract: to provide the game and the services you buy.",
+        "Legal obligation: retention of chat and connection records, requests from authorities.",
+        "Legitimate interest: security, preventing cheating and abuse, improving the game.",
+        "Consent: information you choose to share (for example gender preference). You can withdraw consent at any time."
+      ] },
+      { "h": "5. Who we share it with", "items": [
+        "Other players: your player name, profile letter, VIP badge, scores and statistics are visible to players at your table; your online and at-table status is visible to your friends. VIP Room messages are seen only by the players at that table.",
+        "Service providers: the game runs on Google Firebase (authentication, database and server functions); purchases are processed by Google Play / the App Store; if you sign in with Facebook, sign-in happens through Facebook. These companies process data only to provide their services and under their own privacy policies.",
+        "Authorities: if a court, prosecutor or competent authority makes a lawful request, the relevant records are shared with them.",
+        "Apart from this we do not share, sell or rent your data to anyone."
+      ] },
+      { "h": "6. International transfers", "items": [
+        "Data is hosted on Google Firebase servers in the European Union (Frankfurt, Germany). Google and other providers may process data in other countries.",
+        "Such transfers rely on the safeguards required by law and the providers' standard contractual clauses."
+      ] },
+      { "h": "7. Retention", "items": [
+        "Account data, statistics, chip and gift records: until your account is deleted.",
+        "VIP Room chat logs: 2 years, then deleted automatically.",
+        "Violation and report records: during the review and for the limitation period of any legal proceedings.",
+        "Purchase records: for the period required by tax and commercial law.",
+        "Expired data is deleted, destroyed or anonymised."
+      ] },
+      { "h": "8. Stored on your device", "items": [
+        "Your settings (language, sound, music), profile photo, on-device statistics and unfinished game are stored only on your device (browser/app storage).",
+        "We do not use advertising or tracking cookies. You can remove this local data by clearing the app's data."
+      ] },
+      { "h": "9. Security", "items": [
+        "Connections are encrypted (HTTPS). Chips, gifts and game moves are verified on the server; other players' racks, chat logs and reports are closed to players.",
+        "Only an authorised administrator can access chat and violation logs, and administrator actions are logged.",
+        "No system is completely secure; if a breach occurs we will inform you and the relevant authorities as required by law."
+      ] },
+      { "h": "10. Children", "items": [
+        "Word Okey is not designed for children under 13 and we do not knowingly collect personal data from them. If we learn that we have, we delete it.",
+        "VIP Room chat is for people aged 18 and over. Under-18s should use the app with the permission of a parent or guardian."
+      ] },
+      { "h": "11. Your rights", "items": [
+        "You have the right to know whether your data is processed, to request information, to learn the purpose of processing and the recipients, to have incomplete or wrong data corrected, deleted or destroyed, to object to results of automated processing and to claim compensation.",
+        "If you live in the European Union you also have the GDPR rights of access, rectification, erasure, restriction, data portability and objection.",
+        "Send all requests, including a request to delete your account and data, through the Feedback section of the app. Requests are answered free of charge within 30 days. Records we are legally required to keep (such as chat logs) are kept until that period ends.",
+        "If you are not satisfied with our answer you can complain to your data protection authority."
+      ] },
+      { "h": "12. Changes", "items": [
+        "We may update this policy from time to time. The current version is always published in the app and on this page; we announce important changes in the app."
+      ] }
+    ]
+  }
+}

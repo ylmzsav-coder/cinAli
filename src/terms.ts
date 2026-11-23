@@ -2,6 +2,7 @@
  * Kullanım Koşulları ve KVKK / gizlilik aydınlatma metni (7 dil).
  * Metin genel bir çerçevedir; yayından önce bir hukukçunun gözden geçirmesi önerilir.
  */
+import PRIVACY from "./legal/privacy.json";
 
 
 export interface TermsDoc {
@@ -15,8 +16,8 @@ export const CHAT_LOG_YEARS = 2;
 export const TERMS_VERSION = "2026-11-24";
 
 const TR: TermsDoc = {
-  title: "Kullanım Koşulları ve Gizlilik",
-  updated: "Son güncelleme: 24.11.2026",
+  title: "Kullanım Koşulları",
+  updated: "Son güncelleme: 23.11.2026",
   sections: [
     { h: "1. Hizmet", items: [
       "Word Okey, harf taşlarıyla oynanan bir kelime oyunudur.",
@@ -40,15 +41,7 @@ const TR: TermsDoc = {
       "Bu kayıtlar yalnızca yönetici tarafından ve şikâyet/ihlal incelemesi için görülür.",
       "5651 sayılı Kanun ve ilgili mevzuat gereği, mahkeme, savcılık veya yetkili kurumların talebi üzerine bu kayıtlar ilgili makamlarla paylaşılır.",
     ] },
-    { h: "5. KVKK aydınlatma metni", items: [
-      "Veri sorumlusu: Word Okey uygulama sahibi. Başvuru için uygulamadaki \"Şikayet / Öneri\" bölümünü kullanabilirsin.",
-      "İşlenen veriler: oyuncu adı, hesap kimliği, cinsiyet tercihi (isteğe bağlı), oyun istatistikleri, çip ve hediye hareketleri, arkadaş listesi, sohbet mesajları, IP adresi ve bağlantı zamanları, satın alma kayıtları.",
-      "Amaçlar: oyunun sunulması ve eşleştirme, hesap güvenliği, hile ve kötüye kullanımın önlenmesi, şikâyetlerin incelenmesi, yasal yükümlülüklerin yerine getirilmesi.",
-      "Hukuki sebepler: sözleşmenin kurulması ve ifası, hukuki yükümlülük (5651 sayılı Kanun), veri sorumlusunun meşru menfaati (KVKK m.5/2-c, ç, f).",
-      "Aktarım: veriler Google Firebase altyapısında (Avrupa Birliği, Frankfurt) barındırılır; yetkili kurum ve makamlarla yalnızca yasal talep üzerine paylaşılır.",
-      "Saklama: hesap verileri hesap silinene kadar, sohbet kayıtları 2 yıl, ihlal kayıtları inceleme ve olası hukuki süreçler boyunca saklanır.",
-      "Hakların (KVKK m.11): verilerinin işlenip işlenmediğini öğrenme, bilgi isteme, düzeltme, silme, itiraz ve zararın giderilmesini isteme. Başvurularını \"Şikayet / Öneri\" bölümünden iletebilirsin.",
-    ] },
+    { h: "5. Kişisel veriler", items: ["Kişisel verilerinin nasıl işlendiği, saklandığı ve hakların Gizlilik Politikası'nda anlatılır."] },
     { h: "6. Yaş", items: [
       "VIP Oda sohbeti 18 yaşından büyükler içindir. 18 yaşından küçükler uygulamayı ebeveyn izniyle kullanmalıdır.",
     ] },
@@ -56,8 +49,8 @@ const TR: TermsDoc = {
 };
 
 const EN: TermsDoc = {
-  title: "Terms of Use and Privacy",
-  updated: "Last updated: 24 Nov 2026",
+  title: "Terms of Use",
+  updated: "Last updated: 23 Nov 2026",
   sections: [
     { h: "1. The service", items: [
       "Word Okey is a word game played with letter tiles.",
@@ -81,22 +74,14 @@ const EN: TermsDoc = {
       "These logs are seen only by the administrator, for reviewing reports and violations.",
       "Where required by law (including Turkish Law No. 5651), logs are shared with courts, prosecutors or competent authorities on their request.",
     ] },
-    { h: "5. Privacy notice", items: [
-      "Data controller: the owner of the Word Okey app. Use the in-app \"Feedback\" section to contact us.",
-      "Data processed: player name, account ID, gender preference (optional), game statistics, chip and gift transactions, friends list, chat messages, IP address and connection times, purchase records.",
-      "Purposes: providing the game and matchmaking, account security, preventing cheating and abuse, reviewing reports, meeting legal obligations.",
-      "Legal grounds: performance of a contract, legal obligation, legitimate interest.",
-      "Transfers: data is hosted on Google Firebase (European Union, Frankfurt) and shared with authorities only on lawful request.",
-      "Retention: account data until the account is deleted, chat logs for 2 years, violation records for the review and any legal proceedings.",
-      "Your rights: access, information, correction, deletion, objection and compensation. Send requests through the \"Feedback\" section.",
-    ] },
+    { h: "5. Personal data", items: ["How your personal data is processed and stored, and your rights, are explained in the Privacy Policy."] },
     { h: "6. Age", items: ["VIP Room chat is for people aged 18 and over. Under-18s should use the app with parental consent."] },
   ],
 };
 
 const DE: TermsDoc = {
-  title: "Nutzungsbedingungen und Datenschutz",
-  updated: "Stand: 24.11.2026",
+  title: "Nutzungsbedingungen",
+  updated: "Stand: 23.11.2026",
   sections: [
     { h: "1. Der Dienst", items: [
       "Word Okey ist ein Wortspiel mit Buchstabensteinen.",
@@ -120,22 +105,14 @@ const DE: TermsDoc = {
       "Nur der Administrator sieht diese Protokolle, zur Prüfung von Meldungen und Verstößen.",
       "Soweit gesetzlich vorgeschrieben (u. a. türkisches Gesetz Nr. 5651), werden die Protokolle auf Anfrage an Gerichte, Staatsanwaltschaften oder zuständige Behörden weitergegeben.",
     ] },
-    { h: "5. Datenschutzhinweis", items: [
-      "Verantwortlicher: der Betreiber der App Word Okey. Kontakt über den Bereich „Feedback“ in der App.",
-      "Verarbeitete Daten: Spielername, Konto-ID, Geschlechtsangabe (optional), Spielstatistiken, Chip- und Geschenkbewegungen, Freundesliste, Chatnachrichten, IP-Adresse und Verbindungszeiten, Kaufbelege.",
-      "Zwecke: Bereitstellung des Spiels und Matchmaking, Kontosicherheit, Verhinderung von Betrug und Missbrauch, Prüfung von Meldungen, Erfüllung gesetzlicher Pflichten.",
-      "Rechtsgrundlagen: Vertragserfüllung, rechtliche Verpflichtung, berechtigtes Interesse.",
-      "Übermittlung: Hosting bei Google Firebase (EU, Frankfurt); Weitergabe an Behörden nur auf rechtmäßige Anfrage.",
-      "Speicherdauer: Kontodaten bis zur Löschung des Kontos, Chatprotokolle 2 Jahre, Verstoßdaten für die Dauer der Prüfung und etwaiger Verfahren.",
-      "Deine Rechte: Auskunft, Berichtigung, Löschung, Widerspruch und Schadenersatz. Anfragen über den Bereich „Feedback“.",
-    ] },
+    { h: "5. Personenbezogene Daten", items: ["Wie deine Daten verarbeitet und gespeichert werden und welche Rechte du hast, steht in der Datenschutzerklärung."] },
     { h: "6. Alter", items: ["Der Chat im VIP-Raum ist für Personen ab 18 Jahren. Minderjährige nutzen die App mit Zustimmung der Eltern."] },
   ],
 };
 
 const FR: TermsDoc = {
-  title: "Conditions d’utilisation et confidentialité",
-  updated: "Mise à jour : 24/11/2026",
+  title: "Conditions d’utilisation",
+  updated: "Mise à jour : 23/11/2026",
   sections: [
     { h: "1. Le service", items: [
       "Word Okey est un jeu de mots joué avec des tuiles de lettres.",
@@ -159,22 +136,14 @@ const FR: TermsDoc = {
       "Seul l’administrateur consulte ces journaux, pour examiner les signalements et infractions.",
       "Lorsque la loi l’exige (notamment la loi turque n° 5651), ils sont transmis aux tribunaux, parquets ou autorités compétentes sur demande.",
     ] },
-    { h: "5. Confidentialité", items: [
-      "Responsable du traitement : le propriétaire de l’application Word Okey. Contact via la section « Avis » de l’application.",
-      "Données traitées : nom de joueur, identifiant de compte, genre (facultatif), statistiques, mouvements de jetons et de cadeaux, liste d’amis, messages, adresse IP et heures de connexion, achats.",
-      "Finalités : fournir le jeu, sécurité des comptes, prévention de la triche et des abus, examen des signalements, obligations légales.",
-      "Bases légales : exécution du contrat, obligation légale, intérêt légitime.",
-      "Transferts : hébergement sur Google Firebase (UE, Francfort) ; communication aux autorités uniquement sur demande légale.",
-      "Conservation : données de compte jusqu’à suppression du compte, journaux de chat 2 ans, infractions pendant l’examen et les procédures éventuelles.",
-      "Tes droits : accès, rectification, effacement, opposition et réparation. Demandes via la section « Avis ».",
-    ] },
+    { h: "5. Données personnelles", items: ["Le traitement et la conservation de tes données ainsi que tes droits sont décrits dans la Politique de confidentialité."] },
     { h: "6. Âge", items: ["Le chat du salon VIP est réservé aux 18 ans et plus. Les mineurs utilisent l’application avec l’accord parental."] },
   ],
 };
 
 const ES: TermsDoc = {
-  title: "Condiciones de uso y privacidad",
-  updated: "Actualizado: 24/11/2026",
+  title: "Condiciones de uso",
+  updated: "Actualizado: 23/11/2026",
   sections: [
     { h: "1. El servicio", items: [
       "Word Okey es un juego de palabras con fichas de letras.",
@@ -198,22 +167,14 @@ const ES: TermsDoc = {
       "Solo el administrador ve estos registros, para revisar denuncias e infracciones.",
       "Cuando la ley lo exija (incluida la Ley turca n.º 5651), se comparten con tribunales, fiscalías o autoridades competentes a petición de estas.",
     ] },
-    { h: "5. Privacidad", items: [
-      "Responsable: el propietario de la aplicación Word Okey. Contacto a través de la sección «Sugerencias».",
-      "Datos tratados: nombre de jugador, ID de cuenta, género (opcional), estadísticas, movimientos de fichas y regalos, amigos, mensajes, IP y horas de conexión, compras.",
-      "Finalidades: ofrecer el juego, seguridad de la cuenta, prevenir trampas y abusos, revisar denuncias, obligaciones legales.",
-      "Bases legales: ejecución del contrato, obligación legal, interés legítimo.",
-      "Transferencias: alojamiento en Google Firebase (UE, Fráncfort); comunicación a autoridades solo bajo requerimiento legal.",
-      "Conservación: datos de cuenta hasta su eliminación, registros de chat 2 años, infracciones durante la revisión y posibles procedimientos.",
-      "Tus derechos: acceso, rectificación, supresión, oposición e indemnización. Solicitudes en la sección «Sugerencias».",
-    ] },
+    { h: "5. Datos personales", items: ["Cómo se tratan y conservan tus datos y cuáles son tus derechos se explica en la Política de privacidad."] },
     { h: "6. Edad", items: ["El chat de la Sala VIP es para mayores de 18 años. Los menores deben usar la aplicación con permiso de sus padres."] },
   ],
 };
 
 const IT: TermsDoc = {
-  title: "Condizioni d’uso e privacy",
-  updated: "Aggiornato: 24/11/2026",
+  title: "Condizioni d’uso",
+  updated: "Aggiornato: 23/11/2026",
   sections: [
     { h: "1. Il servizio", items: [
       "Word Okey è un gioco di parole con tessere di lettere.",
@@ -237,22 +198,14 @@ const IT: TermsDoc = {
       "Solo l’amministratore vede questi registri, per esaminare segnalazioni e violazioni.",
       "Quando la legge lo richiede (inclusa la legge turca n. 5651), sono condivisi con tribunali, procure o autorità competenti su loro richiesta.",
     ] },
-    { h: "5. Privacy", items: [
-      "Titolare: il proprietario dell’app Word Okey. Contatti tramite la sezione «Suggerimenti».",
-      "Dati trattati: nome del giocatore, ID account, genere (facoltativo), statistiche, movimenti di gettoni e regali, amici, messaggi, indirizzo IP e orari di connessione, acquisti.",
-      "Finalità: fornire il gioco, sicurezza dell’account, prevenzione di imbrogli e abusi, esame delle segnalazioni, obblighi di legge.",
-      "Basi giuridiche: esecuzione del contratto, obbligo legale, legittimo interesse.",
-      "Trasferimenti: hosting su Google Firebase (UE, Francoforte); comunicazione alle autorità solo su richiesta legittima.",
-      "Conservazione: dati dell’account fino alla sua cancellazione, registri chat 2 anni, violazioni per la durata dell’esame e di eventuali procedimenti.",
-      "I tuoi diritti: accesso, rettifica, cancellazione, opposizione e risarcimento. Richieste tramite la sezione «Suggerimenti».",
-    ] },
+    { h: "5. Dati personali", items: ["Come vengono trattati e conservati i tuoi dati e quali sono i tuoi diritti è spiegato nell’Informativa sulla privacy."] },
     { h: "6. Età", items: ["La chat della Sala VIP è riservata ai maggiori di 18 anni. I minori usano l’app con il consenso dei genitori."] },
   ],
 };
 
 const PT: TermsDoc = {
-  title: "Termos de utilização e privacidade",
-  updated: "Atualizado: 24/11/2026",
+  title: "Termos de utilização",
+  updated: "Atualizado: 23/11/2026",
   sections: [
     { h: "1. O serviço", items: [
       "Word Okey é um jogo de palavras com peças de letras.",
@@ -276,15 +229,7 @@ const PT: TermsDoc = {
       "Só o administrador vê estes registos, para analisar denúncias e infrações.",
       "Quando a lei o exigir (incluindo a Lei turca n.º 5651), são partilhados com tribunais, Ministério Público ou autoridades competentes a pedido destes.",
     ] },
-    { h: "5. Privacidade", items: [
-      "Responsável: o proprietário da aplicação Word Okey. Contacto através da secção «Sugestões».",
-      "Dados tratados: nome de jogador, ID de conta, género (opcional), estatísticas, movimentos de fichas e presentes, amigos, mensagens, IP e horas de ligação, compras.",
-      "Finalidades: fornecer o jogo, segurança da conta, prevenir batota e abusos, analisar denúncias, obrigações legais.",
-      "Fundamentos: execução do contrato, obrigação legal, interesse legítimo.",
-      "Transferências: alojamento no Google Firebase (UE, Frankfurt); comunicação a autoridades apenas mediante pedido legal.",
-      "Conservação: dados da conta até à sua eliminação, registos de chat 2 anos, infrações durante a análise e eventuais processos.",
-      "Os teus direitos: acesso, retificação, apagamento, oposição e indemnização. Pedidos através da secção «Sugestões».",
-    ] },
+    { h: "5. Dados pessoais", items: ["A forma como os teus dados são tratados e guardados e os teus direitos estão descritos na Política de privacidade."] },
     { h: "6. Idade", items: ["O chat da Sala VIP é para maiores de 18 anos. Os menores devem usar a aplicação com autorização dos pais."] },
   ],
 };
@@ -306,4 +251,23 @@ export function acceptVipTerms() {
   } catch {
     /* gizli sekme vb. */
   }
+}
+
+
+export interface PrivacyDoc extends TermsDoc {
+  intro: string;
+  /** Bu dilde çeviri yoksa İngilizce metnin üstünde gösterilen not. */
+  note?: string;
+}
+const ONLY_EN: Record<string, string> = {
+  de: "Die Datenschutzerklärung ist derzeit auf Englisch verfügbar.",
+  fr: "La politique de confidentialité est actuellement disponible en anglais.",
+  es: "La política de privacidad está disponible por ahora en inglés.",
+  it: "L’informativa sulla privacy è al momento disponibile in inglese.",
+  pt: "A política de privacidade está, por agora, disponível em inglês.",
+};
+/** Gizlilik Politikası (Türkçe ve İngilizce; diğer dillerde İngilizce metin + not). */
+export function privacyFor(lang: string): PrivacyDoc {
+  const docs = PRIVACY as Record<string, PrivacyDoc>;
+  return docs[lang] ?? { ...docs.en, note: ONLY_EN[lang] };
 }
