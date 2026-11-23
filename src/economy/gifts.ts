@@ -22,7 +22,6 @@ export const GIFTS: Gift[] = [
   { id: "sapka", emoji: "🎩", category: "erkek", value: 300 },
   { id: "parfum_e", emoji: "🧴", category: "erkek", value: 400 },
   { id: "gitar", emoji: "🎸", category: "erkek", value: 500 },
-  { id: "saat", emoji: "⌚", category: "erkek", value: 750 },
   { id: "araba", emoji: "🏎️", category: "erkek", value: 1000 },
   // Kadınlara özel
   // Kimlik "gul" korunur (eski hediyeler bozulmasın); artık gülen kahve fincanı
@@ -50,6 +49,7 @@ const RETIRED_GIFTS: Gift[] = [
   { id: "gozluk", emoji: "🕶️", category: "erkek", value: 300 },
   { id: "kahve", emoji: "☕", category: "herkes", value: 100 },
   { id: "abakus", emoji: "🧮", category: "erkek", value: 100, joke: true },
+  { id: "saat", emoji: "⌚", category: "erkek", value: 750 },
 ];
 export const giftById = (id: string): Gift | undefined => GIFTS.find((g) => g.id === id) ?? RETIRED_GIFTS.find((g) => g.id === id);
 /** Gönderilebilir (mağazada satılan) hediye mi? */
