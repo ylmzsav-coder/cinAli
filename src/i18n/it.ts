@@ -152,6 +152,8 @@ const it: Messages = {
   chipsMissing: "Mancano {n} fiches",
   table_caylak: "Sala da tè",
   table_usta: "Alta Società",
+  table_usta2: "Alta Società 1000",
+  table_usta5: "Alta Società 5000",
   table_sampiyon: "Campione",
   table_vip: "VIP",
   tableTitle: "Tavolo {name}",

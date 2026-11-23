@@ -12,7 +12,7 @@ import { type Gender, Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { CartIcon } from "./CartIcon";
 import { type TwoMode } from "./TwoPlayer";
-import { TwoLobby } from "./Lobby";
+import { SosyeteLobby, TwoLobby } from "./Lobby";
 import { Chips } from "./Chips";
 import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
@@ -69,6 +69,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [statsOpen, setStatsOpen] = useState(false);
   const [vipOpen, setVipOpen] = useState(false);
   const [ozelOpen, setOzelOpen] = useState(false);
+  const [sosyeteOpen, setSosyeteOpen] = useState(false);
   const [vipLobby, setVipLobby] = useState(false);
   const ownerTaps = useRef(0);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
@@ -211,6 +212,10 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <span className="plus-chip">+</span>
             </button>
           </div>
+          {sosyeteOpen && (
+            <SosyeteLobby name={settings.name || t("defaultName")} onClose={() => setSosyeteOpen(false)}
+              onPick={(tb) => { setSosyeteOpen(false); onSitTable(tb); }} />
+          )}
           {ozelOpen && (
             <TwoLobby name={settings.name || t("defaultName")} onClose={() => setOzelOpen(false)}
               onPick={(tb, mode) => { setOzelOpen(false); onTwo(tb, mode); }} />
@@ -251,9 +256,11 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             {(["caylak", "usta"] as const).map((id) => {
               const tb = tableById(id)!;
               return (
-                <button key={id} type="button" className={`${canResume ? "big" : "primary big"} caylak-hub ${id}-hub`} onClick={() => onSitTable(tb)}>
+                <button key={id} type="button" className={`${canResume ? "big" : "primary big"} caylak-hub ${id}-hub`} onClick={() => (id === "usta" ? setSosyeteOpen(true) : onSitTable(tb))}>
                   <span>{id === "caylak" ? "🫖 " : "🚘 "}{t(id === "caylak" ? "playCaylak" : "playUsta")}</span>
-                  <span className="caylak-sub">{t("entry")} <Chips amount={tb.entry} /> · {t("toWinner")} <Chips amount={winnerPrize(tb)} /></span>
+                  {id === "usta"
+                    ? <span className="caylak-sub">{t("entry")} <Chips amount={tb.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
+                    : <span className="caylak-sub">{t("entry")} <Chips amount={tb.entry} /> · {t("toWinner")} <Chips amount={winnerPrize(tb)} /></span>}
                 </button>
               );
             })}

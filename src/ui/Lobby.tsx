@@ -104,6 +104,41 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
  * aynı görünüm. Ortada giriş seçimi ve Rastgele oyuncu / Arkadaşla oyna /
  * Bilgisayara karşı oyna düğmeleri; VIP'te ayrıca Bayan / Erkek oyuncu ara.
  */
+/** Sosyete: dört kişilik yüksek girişli masalar (500 → 2.000, 1.000 → 4.000, 5.000 → 20.000). */
+export function SosyeteLobby({ name, onClose, onPick }: { name: string; onClose: () => void; onPick: (tb: TableConfig) => void }) {
+  const ids = ["usta", "usta2", "usta5"] as const;
+  const [id, setId] = useState<string>(ids[0]);
+  const tb = tableById(id)!;
+  return (
+    <div className="lobby ozel-lobby sosyete-lobby">
+      <div className="lobby-felt">
+        <button type="button" className="leave-round" onClick={onClose}>{t("leaveTableShort")}</button>
+        <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>🚘</span></span> {t("playUsta")}</div>
+        <div className="lobby-me">
+          <Avatar name={name} seat={0} size="md" />
+          <span>{name}</span>
+        </div>
+        <div className="lobby-panel">
+          <div className="lobby-info">
+            <div className="vip-stake ozel-stake" role="radiogroup" aria-label={t("vipStake")}>
+              {ids.map((k) => {
+                const x = tableById(k)!;
+                return (
+                  <button key={k} type="button" role="radio" aria-checked={id === k} className={id === k ? "on" : ""} onClick={() => setId(k)}>
+                    <span><Chips amount={x.entry} /></span>
+                    <span className="vip-stake-arrow">→ <Chips amount={winnerPrize(x)} /></span>
+                  </button>
+                );
+              })}
+            </div>
+            <button type="button" className="primary big sosyete-sit" onClick={() => onPick(tb)}>{t("sit")}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function TwoLobby({ vip = false, name, gender, onGender, onClose, onPick, onSeek }: {
   vip?: boolean;
   name: string;

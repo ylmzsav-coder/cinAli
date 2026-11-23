@@ -1436,3 +1436,7 @@ button.watchers-badge { cursor: pointer; border: none; font: inherit; }
 .okey .side-controls .actions-total { display: none; }
 .title-ico { display: inline-flex; vertical-align: -0.2em; margin-right: 4px; }
 .shop-notice { background: #7a1f1f; border: 2px solid #ff8a80; color: #fff; font-weight: 700; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; text-align: center; }
+.sosyete-lobby .vip-stake { grid-template-columns: repeat(3, 1fr); }
+.sosyete-sit { width: 100%; margin-top: 8px; }
+.sosyete-lobby .lobby-info > .sosyete-sit { grid-column: 1 / -1; width: 100%; }
+.sosyete-lobby button.sosyete-sit { max-width: none; }

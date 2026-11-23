@@ -152,6 +152,8 @@ const fr: Messages = {
   chipsMissing: "Il manque {n} jetons",
   table_caylak: "Salon de thé",
   table_usta: "Haute Société",
+  table_usta2: "Haute Société 1000",
+  table_usta5: "Haute Société 5000",
   table_sampiyon: "Champion",
   table_vip: "VIP",
   tableTitle: "Table {name}",
