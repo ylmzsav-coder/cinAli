@@ -12,6 +12,7 @@ import { type Gender, SavedGame, Settings, TABLE_TURN_SECONDS, loadGame, loadSet
 import { Game } from "./ui/Game";
 import { Hub, Practice } from "./ui/Menu";
 import { RotateHint, Splash } from "./ui/Splash";
+import type { TwoMode } from "./ui/TwoPlayer";
 import { enterFullscreenLandscape } from "./display";
 import { startMusic, stopMusic } from "./music";
 import { flushFeedback } from "./feedbackBox";
@@ -184,6 +185,30 @@ export function App() {
     setScreen("lobby");
   };
 
+  /** İki kişilik oda (Özel Oda / VIP): rastgele oyuncu, arkadaşla ya da bilgisayara karşı. */
+  const playTwo = (tb: TableConfig, mode: TwoMode) => {
+    if (tb.vip && !wallet.isVip()) return;
+    if (mode === "random") return sitAt(tb);
+    if (mode === "friend") {
+      if (!CLOUD) return sitAt(tb); // bekleme masasında "+ DAVET ET"
+      setOnline({ kind: "create", table: tb });
+      setScreen("online");
+      return;
+    }
+    // Bilgisayara karşı: beklemeden başlar
+    if (CLOUD) {
+      setOnline({ kind: "public", table: tb, bot: true });
+      setScreen("online");
+      return;
+    }
+    if (!wallet.spend(tb.entry, "masa-giris", tb.id)) {
+      setShopBack("hub");
+      setScreen("shop");
+      return;
+    }
+    startGame(settings, tb);
+  };
+
   /** Bekleme masasından oyuna: giriş ücreti şimdi alınır. */
   const startFromLobby = () => {
     const tb = lobbyTable;
@@ -294,6 +319,7 @@ export function App() {
       return (
         <Tables
           onPick={sitAt}
+          onTwo={playTwo}
           gender={settings.gender}
           onGender={(g) => changeSettings({ ...settings, gender: g })}
           onCreatePrivate={(tb) => {
@@ -367,6 +393,7 @@ export function App() {
       onResume={() => setScreen(online ? "online" : "game")}
       onTables={() => setScreen("tables")}
       onSitTable={(tb) => sitAt(tb)}
+      onTwo={playTwo}
       onPractice={() => setScreen("practice")}
       onShop={() => { setShopBack("hub"); setScreen("shop"); }}
       onRules={() => setScreen("rules")}

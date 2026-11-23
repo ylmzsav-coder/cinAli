@@ -24,7 +24,6 @@ const before = (await A.wallet()).balance;
 await A.call("testSubscribeVip"); await B.call("testSubscribeVip");
 const wa = await A.wallet();
 check("abonelik: +1000 çip ve 30 gün", wa.balance === before + 1000 && Math.round((wa.vipUntil - Date.now()) / 864e5) === 30, `${before} → ${wa.balance}`);
-check("VIP aramada cinsiyet zorunlu", (await errCode(A.call("joinTable", { type, lang, name: "Ali" }))) === "genderRequired");
 // Ali (erkek) bayan arıyor, Bea (kadın) erkek arıyor: karşılıklı uyar
 const ja = await A.call("joinTable", { type, lang, name: "Ali", gender: "erkek", want: "kadin" });
 const jb = await B.call("joinTable", { type, lang, name: "Bea", gender: "kadin", want: "erkek" });
@@ -88,6 +87,24 @@ const kOther = await K3.call("joinTable", { type, lang, name: "Emre", gender: "e
 const kSelin = await K2.call("joinTable", { type, lang, name: "Selin", gender: "kadin", want: "erkek" });
 const kKerem = await K1.call("joinTable", { type, lang, name: "Kerem", gender: "erkek", want: "kadin" });
 check("uyan masa yoksa bekleyen başka bir VIP masaya katılır", kSelin.tableId === kOther.tableId);
+// Rastgele VIP oyuncu (cinsiyet seçmeden) ve herkese açık Özel Oda
+const R1 = await client("Rıza"), R2 = await client("Rana");
+await R1.call("testSubscribeVip"); await R2.call("testSubscribeVip");
+const r1 = await R1.call("joinTable", { type, lang, name: "Rıza" });
+const rt = (await getDoc(doc(R1.db, "tables", r1.tableId))).data();
+// Bekleyen bir VIP masası (Kerem) varken cinsiyetsiz arayan ona katılır
+check("rastgele VIP oyuncu bekleyen VIP oyuncuyla eşleşir (cinsiyetsiz)", rt.status === "playing" && rt.seats.length === 2 && rt.seats.every((x) => !x.bot), rt.seats.map((x) => x.name).join(" vs "));
+await R2.call("joinTable", { type, lang, name: "Rana" });
+const O1 = await client("Oya"), O2 = await client("Onur");
+const o1 = await O1.call("joinTable", { type: "ozel2", lang, name: "Oya" });
+const o2 = await O2.call("joinTable", { type: "ozel2", lang, name: "Onur" });
+const ot = (await getDoc(doc(O1.db, "tables", o1.tableId))).data();
+check("Özel Oda: abonesiz iki oyuncu rastgele eşleşir", o1.tableId === o2.tableId && ot.status === "playing" && ot.seats.length === 2 && ot.deadline !== null);
+const O3 = await client("Ozan");
+const o3 = await O3.call("joinTable", { type: "ozel2", lang, name: "Ozan" });
+await O3.call("startTable", { tableId: o3.tableId });
+const ob = (await getDoc(doc(O3.db, "tables", o3.tableId))).data();
+check("Özel Oda: bilgisayara karşı hemen başlar", ob.status === "playing" && ob.seats[1].bot === true);
 const N = await client("Nur");
 const cj = await N.call("joinTable", { type: "caylak", lang, name: "Nur" });
 await N.call("startTable", { tableId: cj.tableId });

@@ -11,6 +11,7 @@ import { errorText, formatNumber, t } from "../i18n";
 import { Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { CartIcon } from "./CartIcon";
+import { TwoPlayerChoices, type TwoMode } from "./TwoPlayer";
 import { Chips } from "./Chips";
 import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
@@ -27,6 +28,8 @@ interface HubProps {
   onTables: () => void;
   /** Masaya doğrudan otur (Çaylak / Usta). */
   onSitTable: (tb: TableConfig) => void;
+  /** İki kişilik oda: rastgele oyuncu, arkadaşla ya da bilgisayara karşı. */
+  onTwo: (tb: TableConfig, mode: TwoMode) => void;
   onPractice: () => void;
   onShop: () => void;
   onRules: () => void;
@@ -36,7 +39,7 @@ interface HubProps {
   onJoinInvite?: (code: string) => void;
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onPractice, onShop, onRules, onWatch, onJoinInvite }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onWatch, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
@@ -46,6 +49,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   }, [toast]);
   const [statsOpen, setStatsOpen] = useState(false);
   const [vipOpen, setVipOpen] = useState(false);
+  const [ozelOpen, setOzelOpen] = useState(false);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
   const [invite, setInvite] = useState<TableInvite | null>(null);
   useEffect(() => {
@@ -121,6 +125,34 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             </select>
           </label>
         </div>
+        <div className="daily-slot">
+        {wallet.canClaimDaily() && (
+          <button type="button" className="gift big daily-top" onClick={async () => {
+            try {
+              await wallet.claimDaily();
+              setToast(t("dailyToast", { n: DAILY_BONUS }));
+            } catch (e) {
+              setToast(errorText(e));
+            }
+          }}>
+            {t("dailyClaim")}
+          </button>
+        )}
+        {refillAt !== null && (refillAt <= now ? (
+          <button type="button" className="gift big daily-top" onClick={async () => {
+            try {
+              await wallet.claimRefill();
+              setToast(t("refillToast", { n: REFILL_CHIPS }));
+            } catch (e) {
+              setToast(errorText(e));
+            }
+          }}>
+            {t("refillClaim", { n: REFILL_CHIPS })}
+          </button>
+        ) : (
+          <p className="muted refill-wait">{t("refillWait", { n: REFILL_CHIPS, t: refillLeft(refillAt - now) })}</p>
+        ))}
+        </div>
         <div className="toggles">
           {([
             ["music", "🎵", "🎵"],
@@ -158,37 +190,29 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <span className="plus-chip">+</span>
             </button>
           </div>
+          {ozelOpen && (
+            <div className="modal-bg" onClick={() => setOzelOpen(false)}>
+              <div className="modal ozel-modal" onClick={(e) => e.stopPropagation()}>
+                <h2>🎲 {t("ozelTitle")}</h2>
+                <p className="muted small">{t("ozelDesc")}</p>
+                <div className="lobby-row"><span className="muted small">{t("entry")}</span><Chips amount={tableById("ozel2")!.entry} /> · <span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(tableById("ozel2")!)} /></div>
+                <TwoPlayerChoices onRandom={() => { setOzelOpen(false); onTwo(tableById("ozel2")!, "random"); }}
+                  onFriend={() => { setOzelOpen(false); onTwo(tableById("ozel2")!, "friend"); }}
+                  onBot={() => { setOzelOpen(false); onTwo(tableById("ozel2")!, "bot"); }} />
+                <button type="button" className="link" onClick={() => setOzelOpen(false)}>{t("close")}</button>
+              </div>
+            </div>
+          )}
           {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); onTables(); }, 1200)} />}
           {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onWatch={onWatch} onJoin={onJoinInvite}
             gender={settings.gender} onGender={(g) => onSettings({ ...settings, gender: g })} />}
         </div>
         <div className="hub-right">
-          {wallet.canClaimDaily() && (
-            <button type="button" className="gift big" onClick={async () => {
-              try {
-                await wallet.claimDaily();
-                setToast(t("dailyToast", { n: DAILY_BONUS }));
-              } catch (e) {
-                setToast(errorText(e));
-              }
-            }}>
-              {t("dailyClaim")}
-            </button>
-          )}
-          {refillAt !== null && (refillAt <= now ? (
-            <button type="button" className="gift big" onClick={async () => {
-              try {
-                await wallet.claimRefill();
-                setToast(t("refillToast", { n: REFILL_CHIPS }));
-              } catch (e) {
-                setToast(errorText(e));
-              }
-            }}>
-              {t("refillClaim", { n: REFILL_CHIPS })}
-            </button>
-          ) : (
-            <p className="muted refill-wait">{t("refillWait", { n: REFILL_CHIPS, t: refillLeft(refillAt - now) })}</p>
-          ))}
+          {/* Özel Oda (2 kişilik): rastgele oyuncu, arkadaş ya da bilgisayar */}
+          <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
+            <span className="ozel-top">{t("ozelShort")} · {t("twoPlayers")}</span>
+            <span>🎲 {t("tpRandom")} · 👥 · 🤖</span>
+          </button>
           {invite && onJoinInvite && (
             <div className="invite-banner">
               <span>📨 {t(isVipType(invite.type) ? "inviteBannerVip" : "inviteBanner", { name: invite.name })}</span>
@@ -213,7 +237,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             <button type="button" className="big practice-hub" onClick={onPractice}>{t("practice")}</button>
             <button type="button" className="big vip-hub caylak-hub" onClick={() => (wallet.isVip() ? onTables() : setVipOpen(true))}>
               <span>👑 {t("vipShort")}</span>
-              <span className="caylak-sub">💬 {t("vipChatGame")}</span>
+              <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
             </button>
           </div>
           <div className="hub-row">

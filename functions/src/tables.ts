@@ -335,18 +335,19 @@ export const joinTable = onCall(async (req) => {
     // (aranan cinsiyette açan ve benim cinsiyetimde rakip arayan)
     const gender = genderOf(req.data?.gender);
     const want = genderOf(req.data?.want);
-    if (cfg.vip && (!gender || !want)) fail("genderRequired", {}, "invalid-argument");
+    // Cinsiyetli arama yalnızca ikisi de verilince; yoksa rastgele VIP oyuncu
+    const byGender = !!(cfg.vip && gender && want);
     let q = db.collection("tables")
       .where("status", "==", "waiting")
       .where("private", "==", false)
       .where("type", "==", cfg.id)
       .where("lang", "==", lang);
     const base = q.where("startAt", ">", now + 500).limit(5);
-    let open = await t.get(cfg.vip ? q.where("hostGender", "==", want).where("seekGender", "==", gender).where("startAt", ">", now + 500).limit(5) : base);
+    let open = await t.get(byGender ? q.where("hostGender", "==", want).where("seekGender", "==", gender).where("startAt", ">", now + 500).limit(5) : base);
     // Aranan cinsiyette uyan masa yoksa bekleyen herhangi bir VIP oyuncuyla eşleş
     // (bayan bulunamazsa erkek, erkek bulunamazsa bayan); hiç yoksa yeni masa açılır,
     // 60 sn içinde kimse gelmezse bilgisayar rakip oturur.
-    if (cfg.vip && open.empty) open = await t.get(base);
+    if (byGender && open.empty) open = await t.get(base);
     const candidate = open.docs.find((d) => (d.data() as TableDoc).seats.length < (cfg.players ?? 4));
 
     applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
@@ -367,8 +368,8 @@ export const joinTable = onCall(async (req) => {
       const table: TableDoc = {
         type: cfg.id, private: false, code: null, lang, status: "waiting",
         seats: [{ uid, name, bot: false }], uids: [uid],
-        createdAt: now, startAt: now + (cfg.vip ? VIP_WAIT_MS : WAIT_MS), deadline: null, version: 0, view: null,
-        ...(cfg.vip ? { hostGender: gender!, seekGender: want! } : {}),
+        createdAt: now, startAt: now + (cfg.vip || cfg.players === 2 ? VIP_WAIT_MS : WAIT_MS), deadline: null, version: 0, view: null,
+        ...(byGender ? { hostGender: gender!, seekGender: want! } : {}),
       };
       t.set(tableRef(id), table);
     }

@@ -5,6 +5,9 @@ export const TABLE_PRIZE = 300;
 /** Usta masa: giriş ve birinciye ödül. */
 export const USTA_ENTRY = 500;
 export const USTA_PRIZE = 1_500;
+/** Özel oda (2 kişi, herkese açık): giriş ve kazanana ödül. */
+export const OZEL_ENTRY = 100;
+export const OZEL_PRIZE = 150;
 /** VIP Usta oda (2 kişi): giriş ve kazanana ödül. */
 export const VIP_USTA_ENTRY = 500;
 export const VIP_USTA_PRIZE = 1_500;

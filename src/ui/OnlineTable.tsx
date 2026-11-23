@@ -52,7 +52,7 @@ interface TableDoc {
 
 /** Masaya nasıl girildiği. */
 export type OnlineEntry =
-  | { kind: "public"; table: TableConfig; want?: Gender }
+  | { kind: "public"; table: TableConfig; want?: Gender; bot?: boolean }
   | { kind: "create"; table: TableConfig }
   | { kind: "join"; code: string };
 
@@ -102,6 +102,8 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
                 ...(entry.kind === "public" && entry.want ? { want: entry.want, gender: settings.gender } : {}),
               });
         if (alive) setTableId(res.tableId);
+        // "Bilgisayara karşı oyna": masa açılır açılmaz bilgisayarla başlar
+        if (alive && entry.kind === "public" && entry.bot) await call("startTable", { tableId: res.tableId }).catch(() => {});
       } catch (e) {
         if (alive) setError(errorText(e));
       }
@@ -264,12 +266,12 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
   const cfg = tableById(doc_.type) ?? (entry.kind !== "join" ? entry.table : undefined);
   if (!cfg) return <div className="page"><p className="muted">{t("connecting")}</p></div>;
 
-  if (doc_.status === "waiting" && cfg.vip && !doc_.private) {
+  if (doc_.status === "waiting" && (cfg.players ?? 4) === 2 && !doc_.private) {
     // VIP rastgele eşleşme: başka bir VIP oyuncu aranır
     const left = Math.max(0, Math.ceil((doc_.startAt - now) / 1000));
     return (
       <div className="page menu vip-searching">
-        <div className="vip-radar" aria-hidden><span>👑</span></div>
+        <div className="vip-radar" aria-hidden><span>{cfg.vip ? "👑" : "🎲"}</span></div>
         <h1>{entry.kind === "public" && entry.want ? t(entry.want === "kadin" ? "vipSearchingF" : "vipSearchingM") : t("vipSearching")}</h1>
         <p className="muted">{t("vipSearchingDesc", { n: left })}</p>
         <div className="waiting-seats">

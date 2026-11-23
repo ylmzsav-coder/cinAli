@@ -6,10 +6,13 @@ import { useWallet } from "../economy/useWallet";
 import { t } from "../i18n";
 import { Chips } from "./Chips";
 import { GenderModal, VipModal } from "./Vip";
+import { TwoPlayerChoices, type TwoMode } from "./TwoPlayer";
 import type { Gender } from "../storage";
 
 interface Props {
   onPick: (t: TableConfig, want?: Gender) => void;
+  /** İki kişilik oda: rastgele oyuncu, arkadaşla ya da bilgisayara karşı. */
+  onTwo: (t: TableConfig, mode: TwoMode) => void;
   /** Oyuncunun cinsiyeti (VIP bayan/erkek arama için); yoksa sorulur. */
   gender?: Gender;
   onGender: (g: Gender) => void;
@@ -19,7 +22,7 @@ interface Props {
   onBack: () => void;
 }
 
-export function Tables({ onPick, gender, onGender, onCreatePrivate, onJoinCode, onShop, onBack }: Props) {
+export function Tables({ onPick, onTwo, gender, onGender, onCreatePrivate, onJoinCode, onShop, onBack }: Props) {
   // VIP bayan/erkek arama: cinsiyet bilinmiyorsa önce sorulur
   const [askFor, setAskFor] = useState<{ tb: TableConfig; want: Gender } | null>(null);
   const search = (tb: TableConfig, want: Gender) => (gender ? onPick(tb, want) : setAskFor({ tb, want }));
@@ -76,7 +79,7 @@ export function Tables({ onPick, gender, onGender, onCreatePrivate, onJoinCode, 
                       <button type="button" className="primary vip-search-btn vip-f" onClick={() => search(tb, "kadin")}>👩 {t("vipSearchF")}</button>
                       <button type="button" className="primary vip-search-btn vip-m" onClick={() => search(tb, "erkek")}>👨 {t("vipSearchM")}</button>
                     </div>
-                    {CLOUD && <button type="button" onClick={() => onCreatePrivate(tb)}>📨 {t("vipInviteFriend")}</button>}
+                    <TwoPlayerChoices onRandom={() => onTwo(tb, "random")} onFriend={() => onTwo(tb, "friend")} onBot={() => onTwo(tb, "bot")} />
                   </>
                 ) : (
                   <button type="button" onClick={onShop}>{t("chipsMissing", { n: tb.entry - w.balance })}</button>
@@ -92,6 +95,8 @@ export function Tables({ onPick, gender, onGender, onCreatePrivate, onJoinCode, 
               <div className="tc-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(tb)} /></div>
               {!w.ready ? (
                 <button type="button" disabled aria-busy>…</button>
+              ) : afford && (tb.players ?? 4) === 2 ? (
+                <TwoPlayerChoices onRandom={() => onTwo(tb, "random")} onFriend={() => onTwo(tb, "friend")} onBot={() => onTwo(tb, "bot")} />
               ) : afford ? (
                 <button type="button" className="primary" onClick={() => onPick(tb)}>{t("sit")}</button>
               ) : (

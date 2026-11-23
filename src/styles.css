@@ -1350,3 +1350,17 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 .gb-win { background: #2e9d4f; } .gb-draw { background: #d9a520; } .gb-loss { background: #d0453a; } .gb-quit { background: #6d6d6d; }
 .games-bar-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.78rem; color: var(--muted); }
 .games-bar-legend .gb-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+/* Özel Oda düğmesi (ana menü) ve iki kişilik seçenekler */
+button.ozel-hub { background: linear-gradient(180deg, #26c6da, #00838f); color: #fff; border: 1px solid #006064; }
+button.ozel-hub .ozel-top { font-weight: 900; font-size: 1.05em; }
+button.ozel-hub .ozel-top + span { font-size: 0.7em; opacity: 0.95; }
+.two-choices { display: grid; grid-template-columns: 1fr; gap: 6px; width: 100%; }
+.two-choices button { padding: 8px 6px; font-size: 0.9rem; font-weight: 800; }
+.ozel-modal { max-width: 420px; text-align: center; display: flex; flex-direction: column; gap: 10px; }
+.ozel-modal h2 { margin: 0; }
+.ozel-modal .lobby-row { justify-content: center; gap: 6px; }
+/* Günlük ödül: en üstte, mavi */
+.hub-top .daily-slot { display: flex; gap: 6px; align-items: center; }
+.hub-top .daily-slot:empty { display: none; }
+button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !important; color: #fff !important; border: 1px solid #0d47a1; padding: 6px 16px !important; font-size: 0.95rem !important; width: auto; }
+.hub-top .daily-slot .refill-wait { margin: 0; font-size: 0.75rem; }
