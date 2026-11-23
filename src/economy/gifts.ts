@@ -33,8 +33,6 @@ export const GIFTS: Gift[] = [
   { id: "yuzuk", emoji: "💍", category: "kadin", value: 1000 },
   // Herkese
   { id: "abakus_h", emoji: "🧮", category: "herkes", value: 100, joke: true },
-  { id: "pasta", emoji: "🎂", category: "herkes", value: 200 },
-  { id: "ayicik", emoji: "🧸", category: "herkes", value: 250 },
   { id: "kupa", emoji: "🏆", category: "herkes", value: 500 },
   { id: "tac", emoji: "👑", category: "herkes", value: 1000 },
 ];
@@ -50,6 +48,8 @@ const RETIRED_GIFTS: Gift[] = [
   { id: "saat", emoji: "⌚", category: "erkek", value: 750 },
   { id: "cikolata", emoji: "🍫", category: "kadin", value: 150 },
   { id: "kolye", emoji: "📿", category: "kadin", value: 750 },
+  { id: "pasta", emoji: "🎂", category: "herkes", value: 200 },
+  { id: "ayicik", emoji: "🧸", category: "herkes", value: 250 },
 ];
 export const giftById = (id: string): Gift | undefined => GIFTS.find((g) => g.id === id) ?? RETIRED_GIFTS.find((g) => g.id === id);
 /** Gönderilebilir (mağazada satılan) hediye mi? */
