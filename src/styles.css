@@ -1427,3 +1427,10 @@ button.watchers-badge { cursor: pointer; border: none; font: inherit; }
 /* VIP üç giriş seçeneği */
 .vip-lobby .vip-stake { grid-template-columns: repeat(3, 1fr); }
 .ozel-lobby:not(.vip-lobby) .vip-stake { grid-template-columns: repeat(3, 1fr); }
+/* Oyuncu profili üst çubukta (Oyundan çık'ın solunda); sağda yalnızca Eli Aç */
+.topbar-me { display: flex; align-items: center; flex: none; }
+.topbar-me .avatar { width: 34px; height: 34px; font-size: 1rem; border-width: 2px; cursor: pointer; }
+.okey .side-controls > .rack-actions > .primary { grid-row: 1 / -1 !important; align-self: center; height: auto !important; width: 100% !important; max-height: 100%; }
+.okey .topbar > .topbar-me { grid-column: 1; grid-row: 1; justify-self: end; }
+.okey .topbar > .title { max-width: calc(100% - 110px); }
+.okey .side-controls .actions-total { display: none; }

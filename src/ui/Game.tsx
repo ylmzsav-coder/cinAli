@@ -945,6 +945,8 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           {tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
           <WatchersBadge names={watchers} />
         </div>
+        {/* Oyuncu profili: sol üstte, Oyundan çık'ın solunda */}
+        <div className="me-slot topbar-me"><Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} /></div>
         <div className="topbar-center">
           {onLeave && !handOver && (
             <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}><svg className="door-ico" viewBox="0 0 40 56" aria-hidden>
@@ -1087,8 +1089,6 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           {!duo && renderOpp(1, true)}
           {/* Ayşe'nin altında: deste (Çek), Çifte Git ve Eli Aç */}
           <div className="side-controls">
-            {/* Oyuncu profili: Eli Aç parasının altında */}
-            <div className="me-slot"><Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} /></div>
                 <button type="button" className={`deck ${nudgeDraw ? "nudge" : ""}`} disabled={!canDraw}
                   onClick={() => !suppressClickRef.current && drawDeck()}
                   onPointerDown={(e) => canDraw && startDrag(e, "deck", [])}
