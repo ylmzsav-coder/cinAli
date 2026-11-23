@@ -176,12 +176,9 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin, gender, onGender 
             </div>
             <div className="stats-row2">
               <Box label={t("stWins")} value={s.gamesWon} />
-              <Box label={t("stFinished")} value={s.gamesPlayed} />
+              <Box label={t("stLosses")} value={s.gamesLost} />
             </div>
-            <div className="stat stat-rate stat-rate-rev">
-              <div className="stat-label big-label">{t("stAvgMove")}</div>
-              <div className="rate-circle">{avgText(s)}</div>
-            </div>
+            <GamesBar s={s} />
           </div>
         )}
         {msg && <div className="toast">{msg}</div>}
@@ -197,6 +194,30 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin, gender, onGender 
             📈 {tab === "detail" ? t("summary") : t("statistics")}
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Oynanan oyun cetveli: galibiyet / beraberlik / yenilgi / teslim olma oranlı çubuk. */
+function GamesBar({ s }: { s: PlayerStats }) {
+  const total = s.gamesPlayed + s.quits;
+  const parts = [
+    { k: "win", n: s.gamesWon, label: t("stWins") },
+    { k: "draw", n: s.gamesDrawn, label: t("stDraws") },
+    { k: "loss", n: s.gamesLost, label: t("stLosses") },
+    { k: "quit", n: s.quits, label: t("stQuits") },
+  ];
+  return (
+    <div className="stat games-bar-box">
+      <div className="games-bar-head"><span className="stat-label big-label">{t("stPlayedGames")}</span><b className="games-bar-total">{formatNumber(total)}</b></div>
+      <div className="games-bar" role="img" aria-label={parts.map((p) => `${p.label} ${p.n}`).join(", ")}>
+        {total === 0 ? <span className="gb-empty" /> : parts.filter((p) => p.n > 0).map((p) => (
+          <span key={p.k} className={`gb gb-${p.k}`} style={{ flexGrow: p.n }}>{p.n}</span>
+        ))}
+      </div>
+      <div className="games-bar-legend">
+        {parts.map((p) => <span key={p.k}><i className={`gb-dot gb-${p.k}`} />{p.label} {p.n}</span>)}
       </div>
     </div>
   );

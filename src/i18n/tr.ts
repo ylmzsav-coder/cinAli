@@ -440,6 +440,7 @@ const tr = {
   totalWord: "Toplam",
   myTableScore: "Yere açtığın ve işlediğin puan: {n}",
   pairsAfterOpen: "Kelimeyle açan oyuncu çifte gidemez",
+  stPlayedGames: "Oynanan oyun",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

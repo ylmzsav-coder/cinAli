@@ -436,6 +436,7 @@ const fr: Messages = {
   totalWord: "Total",
   myTableScore: "Points posés et ajoutés : {n}",
   pairsAfterOpen: "Qui a ouvert avec des mots ne peut pas jouer les paires",
+  stPlayedGames: "Parties jouées",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

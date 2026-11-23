@@ -1340,3 +1340,13 @@ button.rules-hub { background: linear-gradient(180deg, #42a5f5, #1565c0); color:
 /* Puanlar düğmesi: simge + yazı */
 .topbar .scores-btn { width: auto; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 2px 8px; font-size: 1.05rem; line-height: 1; height: 44px; }
 .topbar .scores-btn .scores-label { font-size: 0.62rem; font-weight: 800; color: #fff; margin-top: 2px; }
+/* Profil: oynanan oyun cetveli */
+.games-bar-box { display: flex; flex-direction: column; gap: 6px; padding: 10px 14px; text-align: left; }
+.games-bar-head { display: flex; justify-content: space-between; align-items: center; }
+.games-bar-total { font-size: 1.6rem; color: var(--accent); }
+.games-bar { display: flex; height: 26px; border-radius: 13px; overflow: hidden; background: rgba(255,255,255,0.1); }
+.games-bar .gb { display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; color: #fff; min-width: 22px; }
+.games-bar .gb-empty { flex: 1; }
+.gb-win { background: #2e9d4f; } .gb-draw { background: #d9a520; } .gb-loss { background: #d0453a; } .gb-quit { background: #6d6d6d; }
+.games-bar-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.78rem; color: var(--muted); }
+.games-bar-legend .gb-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
