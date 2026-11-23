@@ -449,6 +449,7 @@ const tr = {
   ozelTitle: "Özel Oda · 2 kişilik",
   ozelDesc: "Herkese açık karşılıklı masa: sistem rastgele bir oyuncuyla eşleştirir, arkadaşını davet edebilir ya da bilgisayara karşı oynayabilirsin.",
   table_ozel2: "Özel Oda 2 Kişilik",
+  table_ozel2u: "Özel Oda 300 (2 Kişilik)",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

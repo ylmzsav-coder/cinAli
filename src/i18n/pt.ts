@@ -445,6 +445,7 @@ const pt: Messages = {
   ozelTitle: "Sala privada · 2 jogadores",
   ozelDesc: "Mesa para dois aberta a todos: adversário aleatório, convide um amigo ou jogue contra o computador.",
   table_ozel2: "Sala privada (2 jogadores)",
+  table_ozel2u: "Sala privada 300 (2 jogadores)",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

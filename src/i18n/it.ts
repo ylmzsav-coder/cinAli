@@ -445,6 +445,7 @@ const it: Messages = {
   ozelTitle: "Stanza privata · 2 giocatori",
   ozelDesc: "Tavolo a due aperto a tutti: avversario casuale, invita un amico o gioca contro il computer.",
   table_ozel2: "Stanza privata (2 giocatori)",
+  table_ozel2u: "Stanza privata 300 (2 giocatori)",
   close: "Chiudi",
   handCol: "Mano",
   totalRow: "Totale",

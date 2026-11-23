@@ -445,6 +445,7 @@ const de: Messages = {
   ozelTitle: "Privatraum · 2 Spieler",
   ozelDesc: "Tisch für zwei, offen für alle: zufälliger Gegner, Freund einladen oder gegen den Computer.",
   table_ozel2: "Privatraum (2 Spieler)",
+  table_ozel2u: "Privatraum 300 (2 Spieler)",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

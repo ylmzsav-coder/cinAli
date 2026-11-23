@@ -445,6 +445,7 @@ const en: Messages = {
   ozelTitle: "Private Room · 2 players",
   ozelDesc: "Head-to-head table open to all: get matched with a random player, invite a friend or play the computer.",
   table_ozel2: "Private Room (2 players)",
+  table_ozel2u: "Private Room 300 (2 players)",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

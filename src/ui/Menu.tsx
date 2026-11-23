@@ -50,6 +50,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [statsOpen, setStatsOpen] = useState(false);
   const [vipOpen, setVipOpen] = useState(false);
   const [ozelOpen, setOzelOpen] = useState(false);
+  const [ozelId, setOzelId] = useState<"ozel2" | "ozel2u">("ozel2");
   const ownerTaps = useRef(0);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
   const [invite, setInvite] = useState<TableInvite | null>(null);
@@ -196,10 +197,21 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <div className="modal ozel-modal" onClick={(e) => e.stopPropagation()}>
                 <h2>🎲 {t("ozelTitle")}</h2>
                 <p className="muted small">{t("ozelDesc")}</p>
-                <div className="lobby-row"><span className="muted small">{t("entry")}</span><Chips amount={tableById("ozel2")!.entry} /> · <span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(tableById("ozel2")!)} /></div>
-                <TwoPlayerChoices onRandom={() => { setOzelOpen(false); onTwo(tableById("ozel2")!, "random"); }}
-                  onFriend={() => { setOzelOpen(false); onTwo(tableById("ozel2")!, "friend"); }}
-                  onBot={() => { setOzelOpen(false); onTwo(tableById("ozel2")!, "bot"); }} />
+                <div className="muted small vip-stake-label">{t("vipStake")}</div>
+                <div className="vip-stake ozel-stake" role="radiogroup" aria-label={t("vipStake")}>
+                  {(["ozel2", "ozel2u"] as const).map((id) => {
+                    const tb = tableById(id)!;
+                    return (
+                      <button key={id} type="button" role="radio" aria-checked={ozelId === id} className={ozelId === id ? "on" : ""} onClick={() => setOzelId(id)}>
+                        <span><Chips amount={tb.entry} /></span>
+                        <span className="vip-stake-arrow">→ <Chips amount={winnerPrize(tb)} /></span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <TwoPlayerChoices onRandom={() => { setOzelOpen(false); onTwo(tableById(ozelId)!, "random"); }}
+                  onFriend={() => { setOzelOpen(false); onTwo(tableById(ozelId)!, "friend"); }}
+                  onBot={() => { setOzelOpen(false); onTwo(tableById(ozelId)!, "bot"); }} />
                 <button type="button" className="link" onClick={() => setOzelOpen(false)}>{t("close")}</button>
               </div>
             </div>

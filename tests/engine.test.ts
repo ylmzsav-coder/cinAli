@@ -248,7 +248,7 @@ import { TABLES, payout, winnerPrize } from "../src/economy/tables";
 describe("çip ödemesi (en yüksek toplam birinci)", () => {
   const t = TABLES[0]; // Çaylak: giriş 100, birinciye 300
   it("giriş 100, birinci 300 çip alır", () => {
-    expect(TABLES.filter((x) => !x.vip).map((x) => x.id)).toEqual(["caylak", "usta", "ozel2"]);
+    expect(TABLES.filter((x) => !x.vip).map((x) => x.id)).toEqual(["caylak", "usta", "ozel2", "ozel2u"]);
     const ozel = TABLES.find((x) => x.id === "ozel2")!;
     expect([ozel.players, ozel.entry, winnerPrize(ozel)]).toEqual([2, 100, 300]);
     const usta = TABLES.find((x) => x.id === "usta")!;
