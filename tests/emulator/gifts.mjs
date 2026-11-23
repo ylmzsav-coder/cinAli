@@ -42,5 +42,11 @@ check("masadaki oyuncuya hediye", (await getDocs(collection(D.db, "users", D.uid
 const chat = (await getDocs(collection(D.db, "tables", room.tableId, "chat"))).docs.map((d) => d.data());
 check("masada hediye görünür", chat.some((m) => m.kind === "gift" && m.id === `kahve:${D.uid}`));
 check("geçersiz hediye", (await errCode(A.call("sendGift", { toUid: B.uid, giftId: "uzayGemisi" }))) === "badRequest");
+// Aynı kişiye 24 saatte en fazla 3 hediye; farklı kişiye sınır yok
+const E = await client("Ece"), F = await client("Fuat"), G = await client("Gaye");
+for (const [x, y] of [[E, F], [F, E], [E, G], [G, E]]) await x.call("sendFriendRequest", { targetUid: y.uid });
+for (let i = 0; i < 3; i++) await E.call("sendGift", { toUid: F.uid, giftId: "gul" });
+check("aynı kişiye 4. hediye engellenir", (await errCode(E.call("sendGift", { toUid: F.uid, giftId: "gul" }))) === "giftLimit");
+check("farklı kişiye hediye gönderilebilir", (await E.call("sendGift", { toUid: G.uid, giftId: "gul" })).ok === true);
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);
