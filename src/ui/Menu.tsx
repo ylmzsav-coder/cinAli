@@ -254,7 +254,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           <div className="hub-row">
             <button type="button" className="big practice-hub" onClick={onPractice}>{t("practice")}</button>
             <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
-              <span className="ozel-top"><span className="duo-icons" aria-hidden><PlayerIcon /><PlayerIcon /></span> {t("ozelShort")} · {t("twoPlayers")}</span>
+              <span className="ozel-top"><span className="duo-icons" aria-hidden><PlayerIcon /><PlayerIcon /></span> {t("ozelShort")}</span>
             </button>
           </div>
           <div className="hub-row">

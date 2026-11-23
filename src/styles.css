@@ -1406,3 +1406,4 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .ozel-hub .ozel-top { white-space: nowrap; font-size: clamp(0.85em, 2.2vw, 1em); } .player-ico { width: 1.3em; height: 1.3em; }
 .hub-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; } .ozel-hub .ozel-top { font-size: clamp(0.78em, 2vw, 0.95em); gap: 6px; } .ozel-hub { padding-left: 6px !important; padding-right: 6px !important; }
 .hub .ozel-hub .ozel-top { font-size: 0.82em !important; gap: 5px; } .hub .ozel-hub .player-ico { width: 1.25em; height: 1.25em; }
+.hub .ozel-hub .ozel-top { font-size: 1em !important; gap: 8px; } .hub .ozel-hub .player-ico { width: 1.35em; height: 1.35em; } .hub .ozel-hub .duo-icons { gap: 4px; }
