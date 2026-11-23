@@ -113,6 +113,9 @@ export interface PlayerMenu {
   addFriend?(seat: number): Promise<"sent" | "friends">;
   /** Masadaki oyuncuya hediye gönder. */
   sendGift?(seat: number, giftId: string): Promise<unknown>;
+  /** Oyuncu engelli mi / engelle-kaldır. */
+  isBlocked?(seat: number): boolean;
+  toggleBlock?(seat: number): Promise<unknown>;
 }
 
 interface Props {
@@ -900,7 +903,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           {playerMenu?.available(i) ? (
             <button type="button" className="name-btn" onClick={() => setMenuSeat(menuSeat === i ? null : i)}
               aria-haspopup="menu" aria-expanded={menuSeat === i}>
-              {p.name} {playerMenu.isMuted(i) && <span aria-label={t("mutedTag")}>🔇</span>}
+              {p.name} {playerMenu.isMuted(i) && <span aria-label={t("mutedTag")}>🔇</span>}{playerMenu.isBlocked?.(i) && <span aria-label={t("blockedTag")}>🚫</span>}
             </button>
           ) : (
             <button type="button" className="name-btn" onClick={() => setProfileSeat(i)}>{p.name}</button>
@@ -920,8 +923,16 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             {canGift(i) && (
               <button type="button" role="menuitem" onClick={() => { setMenuSeat(null); setGiftSeat(i); }}>🎁 {t("giftSendShort")}</button>
             )}
-            {playerMenu.addFriend && (
+            {playerMenu.addFriend && !playerMenu.isBlocked?.(i) && (
               <button type="button" role="menuitem" onClick={() => { setMenuSeat(null); addFriendAt(i); }}>👥 {t("addFriend")}</button>
+            )}
+            {playerMenu.toggleBlock && (
+              <button type="button" role="menuitem" className="danger-item" onClick={() => {
+                setMenuSeat(null);
+                const isB = !!playerMenu.isBlocked?.(i);
+                if (!isB && !confirm(t("blockConfirm", { name: p.name }))) return;
+                playerMenu.toggleBlock!(i).then(() => setMessage({ text: t(isB ? "unblocked" : "blockedDone", { name: p.name }) }), (e) => setMessage({ text: errorText(e), error: true }));
+              }}>{playerMenu.isBlocked?.(i) ? `✅ ${t("unblock")}` : `🚫 ${t("block")}`}</button>
             )}
           </div>
         )}

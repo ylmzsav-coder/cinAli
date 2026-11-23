@@ -28,6 +28,10 @@ export const sendFriendRequest = (targetUid: string) => call<{ status: "sent" | 
 export const respondFriendRequest = (fromUid: string, accept: boolean) => call("respondFriendRequest", { fromUid, accept });
 /** Hesabı ve sunucudaki verileri kalıcı olarak siler. */
 export const deleteAccount = () => call<{ ok: boolean }>("deleteAccount");
+/** Oyuncu engelleme: mesajları gizlenir, davet/istek/hediye gönderemez, aynı masaya eşleşilmez. */
+export const blockPlayer = (targetUid: string, name: string) => call("blockPlayer", { targetUid, name });
+export const unblockPlayer = (targetUid: string) => call("unblockPlayer", { targetUid });
+export const blockedList = () => call<{ blocked: { uid: string; name: string }[] }>("blockedList");
 export const removeFriend = (friendUid: string) => call("removeFriend", { friendUid });
 
 let beat: ReturnType<typeof setInterval> | null = null;

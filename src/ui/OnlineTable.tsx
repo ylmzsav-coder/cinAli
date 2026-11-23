@@ -1,6 +1,6 @@
 import { addDoc, collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
 import { InviteSeat, shareInvite } from "./Lobby";
-import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest } from "../online/social";
+import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest, blockPlayer, blockedList, unblockPlayer } from "../online/social";
 import { Avatar } from "./Profile";
 import { sendGiftTo } from "../online/gifts";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -75,6 +75,11 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
   const [now, setNow] = useState(() => Date.now());
   const [chatRaw, setChatRaw] = useState<RawChat[]>([]);
   const [muted, setMuted] = useState<Set<string>>(loadMuted);
+  // Engellenen oyuncular (sunucuda): mesajları susturulanlar gibi gizlenir
+  const [blocked, setBlocked] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    void blockedList().then((r) => setBlocked(new Set(r.blocked.map((b) => b.uid))), () => {});
+  }, []);
 
   // Masaya otur (oturduğu masa varsa ona döner)
   useEffect(() => {
@@ -175,7 +180,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
     if (!tableId || !uid || !doc_ || !rack) return undefined;
     const events: ChatEvent[] = [];
     for (const m of chatRaw) {
-      if (muted.has(m.uid)) continue; // susturulan oyuncunun mesajları görünmez
+      if (muted.has(m.uid) || blocked.has(m.uid)) continue; // susturulan oyuncunun mesajları görünmez
       const abs = doc_.seats.findIndex((s) => s.uid === m.uid);
       const n = doc_.seats.length;
       if (abs < 0) continue;
@@ -196,7 +201,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
         ? (text: string) => call<SendTextResult>("sendText", { tableId, text, uiLang: uiLang() })
         : undefined,
     };
-  }, [chatRaw, tableId, uid, doc_, rack, muted]);
+  }, [chatRaw, tableId, uid, doc_, rack, muted, blocked]);
 
   // Oyuncu menüsü: görünümdeki koltuğu gerçek koltuğa çevirip uid bul
   const playerMenu: PlayerMenu | undefined = useMemo(() => {
@@ -225,8 +230,23 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
         if (!u) throw new Error("userNotFound");
         return (await sendFriendRequest(u)).status;
       },
+      isBlocked: (seat) => blocked.has(uidAt(seat) ?? ""),
+      toggleBlock: async (seat) => {
+        const u = uidAt(seat);
+        if (!u) return;
+        const s = doc_.seats.find((x) => x.uid === u);
+        const next = new Set(blocked);
+        if (next.has(u)) {
+          await unblockPlayer(u);
+          next.delete(u);
+        } else {
+          await blockPlayer(u, s?.name ?? "?");
+          next.add(u);
+        }
+        setBlocked(next);
+      },
     };
-  }, [doc_, rack, tableId, muted]);
+  }, [doc_, rack, tableId, muted, blocked]);
 
   const leave = async () => {
     // Onay, oyun ekranındaki "Oyundan çık" penceresinde alınır

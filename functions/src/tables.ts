@@ -36,6 +36,7 @@ import {
 } from "../../src/game/engine";
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { assertNotBanned } from "./admin";
+import { blockedWithAny } from "./blocks";
 import { TABLES, TableConfig, payout } from "../../src/economy/tables";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
@@ -343,7 +344,13 @@ export const joinTable = onCall(async (req) => {
     // (bayan bulunamazsa erkek, erkek bulunamazsa bayan); hiç yoksa yeni masa açılır,
     // 60 sn içinde kimse gelmezse bilgisayar rakip oturur.
     if (byGender && open.empty) open = await t.get(base);
-    let candidate = open.docs.find((d) => (d.data() as TableDoc).seats.length < (cfg.players ?? 4));
+    // Engel: birbirini engellemiş oyuncular aynı masaya oturtulmaz
+    const free = async (d: FirebaseFirestore.QueryDocumentSnapshot) => {
+      const tb = d.data() as TableDoc;
+      return tb.seats.length < (cfg.players ?? 4) && !tb.uids.includes(uid) && !(await blockedWithAny(uid, tb.uids));
+    };
+    let candidate: FirebaseFirestore.QueryDocumentSnapshot | undefined;
+    for (const d of open.docs) if (await free(d)) { candidate = d; break; }
     // VIP oyuncu yoksa: aynı girişli 2 kişilik Özel Odada bekleyen oyuncuyla eşleş.
     // Özel oda oyuncusundan abonelik istenmez; masa VIP masasına dönüşür (sohbetli, süresiz).
     let fromOzel = false;
@@ -352,7 +359,11 @@ export const joinTable = onCall(async (req) => {
       for (const oz of ozelTypes) {
         const os = await t.get(db.collection("tables").where("status", "==", "waiting").where("private", "==", false)
           .where("type", "==", oz).where("lang", "==", lang).where("startAt", ">", now + 500).limit(5));
-        candidate = os.docs.find((d) => (d.data() as TableDoc).seats.length < 2 && !(d.data() as TableDoc).uids.includes(uid));
+        candidate = undefined;
+        for (const d of os.docs) {
+          const tb = d.data() as TableDoc;
+          if (tb.seats.length < 2 && !tb.uids.includes(uid) && !(await blockedWithAny(uid, tb.uids))) { candidate = d; break; }
+        }
         if (candidate) {
           fromOzel = true;
           break;

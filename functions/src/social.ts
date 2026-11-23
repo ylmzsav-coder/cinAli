@@ -7,6 +7,7 @@
  *  users/{uid}/requests/{from}  { name, at }          (bekleyen arkadaşlık isteği)
  */
 import { assertNotBanned } from "./admin";
+import { blockedEither } from "./blocks";
 import { onCall } from "firebase-functions/v2/https";
 import { db, fail, uidOf } from "./common";
 import { cleanName } from "./profanity";
@@ -48,6 +49,7 @@ export const sendFriendRequest = onCall(async (req) => {
       t.get(requestRef(uid, target)),
     ]);
     if (!them.exists) return fail("userNotFound", {}, "not-found");
+    if (await blockedEither(uid, target, t)) fail("blocked", {}, "permission-denied");
     if (already.exists) return { status: "friends" };
     const myName = (me.data()?.name as string) || "?";
     const theirName = (them.data()?.name as string) || "?";
@@ -167,6 +169,7 @@ export const inviteFriend = onCall(async (req) => {
     if (!fSnap.exists) fail("notFriend", {}, "permission-denied");
     const target = await t.get(userRef(fid));
     if (target.data()?.allowInvites === false) fail("invitesOff");
+    if (await blockedEither(uid, fid, t)) fail("blocked", {}, "permission-denied");
     t.set(inviteRef(fid, id), {
       fromUid: uid,
       name: (me.data()?.name as string) || "?",

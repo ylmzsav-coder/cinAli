@@ -1,8 +1,8 @@
 import { loadSettings, type Settings } from "../storage";
-import { deleteAccount } from "../online/social";
+import { blockedList, deleteAccount, unblockPlayer } from "../online/social";
 import { CLOUD } from "../online/cloud";
 import { wallet } from "../economy/wallet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { GameState } from "../game/engine";
 import { handWinsOf, placedValue, totals, wordString } from "../game/engine";
 import { COLORS, type Tile } from "../game/tiles";
@@ -248,7 +248,36 @@ function SettingsPanel({ settings, onSettings }: { settings: Settings; onSetting
           </li>
         ))}
       </ul>
+      <BlockedList />
     </div>
+  );
+}
+
+/** Engellenen oyuncular: sunucudan listelenir, engel buradan kaldırılır. */
+function BlockedList() {
+  const [list, setList] = useState<{ uid: string; name: string }[] | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const load = () => blockedList().then((r) => setList(r.blocked), (e) => setErr(errorText(e)));
+  useEffect(() => {
+    if (CLOUD) void load();
+  }, []);
+  return (
+    <>
+      <div className="settings-head">🚫 {t("blockedTitle")}</div>
+      <p className="muted small blocked-hint">{t("blockedHint")}</p>
+      {!CLOUD ? <p className="muted small">{t("blockedLocal")}</p> : err ? <p className="login-err">{err}</p> : list === null ? <p className="muted small">…</p> : list.length === 0 ? (
+        <p className="muted small">{t("blockedEmpty")}</p>
+      ) : (
+        <ul className="settings-list">
+          {list.map((b) => (
+            <li key={b.uid}>
+              <span className="settings-label">{b.name}</span>
+              <button type="button" onClick={() => void unblockPlayer(b.uid).then(load, (e) => setErr(errorText(e)))}>{t("unblock")}</button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   );
 }
 

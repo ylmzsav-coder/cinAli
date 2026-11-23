@@ -7,6 +7,7 @@
  */
 import { FieldValue } from "firebase-admin/firestore";
 import { assertNotBanned } from "./admin";
+import { blockedEither } from "./blocks";
 import { onCall } from "firebase-functions/v2/https";
 import { convertValue, giftById, isGiftForSale } from "../../src/economy/gifts";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
@@ -26,6 +27,7 @@ export const sendGift = onCall(async (req) => {
   const gift = isGiftForSale(str(req.data?.giftId)) ? giftById(str(req.data?.giftId)) : undefined;
   const tableId = str(req.data?.tableId);
   if (!gift || !to || to === uid) fail("badRequest", {}, "invalid-argument");
+  if (await blockedEither(uid, to)) fail("blocked", {}, "permission-denied");
   return db.runTransaction(async (t) => {
     const limitRef = userRef(uid).collection("giftLimits").doc(to);
     const [me, them, friend, w, tb, lim] = await Promise.all([

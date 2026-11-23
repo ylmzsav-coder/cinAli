@@ -1458,3 +1458,5 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .switch i { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.4); transition: left 0.2s; }
 .switch.on { background: #4caf50; }
 .switch.on i { left: 27px; }
+.player-menu .danger-item { color: #ff8a80; }
+.blocked-hint { margin: 2px 4px; }
