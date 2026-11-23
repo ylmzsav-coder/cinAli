@@ -1426,3 +1426,4 @@ button.watchers-badge { cursor: pointer; border: none; font: inherit; }
 .invite-modal .danger { background: #c62828; color: #fff; }
 /* VIP üç giriş seçeneği */
 .vip-lobby .vip-stake { grid-template-columns: repeat(3, 1fr); }
+.ozel-lobby:not(.vip-lobby) .vip-stake { grid-template-columns: repeat(3, 1fr); }

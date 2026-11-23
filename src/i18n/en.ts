@@ -450,6 +450,7 @@ const en: Messages = {
   ozelDesc: "Head-to-head table open to all: get matched with a random player, invite a friend or play the computer.",
   table_ozel2: "One on One (2 players)",
   table_ozel2u: "One on One 250 (2 players)",
+  table_ozel2b: "One on One 500 (2 players)",
   watchersTitle: "Watching",
   surrender: "Surrender",
   surrenderTitle: "Do you want to surrender?",

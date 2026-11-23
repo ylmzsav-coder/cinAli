@@ -1,5 +1,5 @@
 import type { BotLevel } from "../game/bot";
-import { TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE, VIP_ORTA_ENTRY, VIP_ORTA_PRIZE, OZEL_ENTRY, OZEL_PRIZE, OZEL_USTA_ENTRY, OZEL_USTA_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
+import { TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE, VIP_ORTA_ENTRY, VIP_ORTA_PRIZE, OZEL_ENTRY, OZEL_PRIZE, OZEL_USTA_ENTRY, OZEL_USTA_PRIZE, OZEL_BUYUK_ENTRY, OZEL_BUYUK_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
 
 export interface TableConfig {
   id: string;
@@ -27,6 +27,7 @@ export const TABLES: TableConfig[] = [
   // Özel oda: herkese açık iki kişilik masa (rastgele oyuncu / arkadaş / bilgisayar)
   { id: "ozel2", name: "Teke Tek", entry: OZEL_ENTRY, hands: 1, level: "orta", prize: OZEL_PRIZE, players: 2 },
   { id: "ozel2u", name: "Teke Tek 250", entry: OZEL_USTA_ENTRY, hands: 1, level: "zor", prize: OZEL_USTA_PRIZE, players: 2 },
+  { id: "ozel2b", name: "Teke Tek 500", entry: OZEL_BUYUK_ENTRY, hands: 1, level: "zor", prize: OZEL_BUYUK_PRIZE, players: 2 },
   // VIP iki kişilik özel oda: karşılıklı, yalnızca VIP aboneler
   { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true },
   // VIP Usta: aynı oda, yüksek giriş (VIP kartındaki giriş seçiminden)

@@ -450,6 +450,7 @@ const es: Messages = {
   ozelDesc: "Mesa para dos abierta a todos: rival al azar, invita a un amigo o juega contra el ordenador.",
   table_ozel2: "Uno contra uno (2 jugadores)",
   table_ozel2u: "Uno contra uno 250 (2 jugadores)",
+  table_ozel2b: "Uno contra uno 500 (2 jugadores)",
   watchersTitle: "Espectadores",
   surrender: "Rendirse",
   surrenderTitle: "¿Quieres rendirte?",
