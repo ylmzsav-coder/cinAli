@@ -1469,3 +1469,20 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .age-gate { max-width: 420px; text-align: center; }
 .age-gate select { font-size: 1.1rem; padding: 8px 12px; border-radius: 10px; margin: 8px 0 12px; min-width: 160px; }
 .vip-modal .purchase-consent { font-size: 0.66rem; margin: 2px 0 6px; line-height: 1.3; } .vip-modal .purchase-consent input { width: 16px; height: 16px; }
+/* Dar telefonlar (≤ 800 px yatay): üst çubuk sığsın */
+@media (max-width: 800px) {
+  .okey .topbar { gap: 4px; }
+  .okey .topbar-center { gap: 4px; }
+  .okey .quit-btn, .okey .buy-btn { min-width: 0 !important; padding: 4px 7px !important; font-size: 0.72rem !important; }
+  .okey .quit-btn .door-ico { width: 12px; height: 17px; }
+  .okey .buy-btn svg { width: 16px; height: 16px; }
+  .okey .topbar-opp { max-width: 96px; }
+  .okey .topbar-opp .opp-compact { font-size: 0.72rem; }
+  .okey .topbar-actions { gap: 3px; }
+  .okey .topbar-actions .chat-room-btn { height: 30px !important; padding: 2px 8px !important; font-size: 1rem !important; }
+  .okey .topbar-actions .scores-btn { padding: 2px 4px; min-width: 0; }
+  .okey .topbar-actions .scores-label { font-size: 0.58rem; }
+  .okey .topbar .title { font-size: 0.8rem; }
+  .okey .topbar-me .avatar { width: 28px; height: 28px; font-size: 0.85rem; }
+}
+@media (max-height: 520px) { .vip-modal .vip-buy-bar { position: static; margin: 8px 0 0; padding: 6px 0 0; background: none; } .vip-terms ul { font-size: 0.72rem; gap: 2px; } .vip-terms h3 { font-size: 1rem; } }

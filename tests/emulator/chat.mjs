@@ -38,10 +38,13 @@ await B.call("joinTable", { type: "vip2", lang: "tr", name: "B", gender: "kadin"
 check("VIP odada hazır mesaj", (await addTo(A, vip, { uid: A.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "izin verildi");
 check("VIP odada emoji", (await addTo(B, vip, { uid: B.uid, kind: "emoji", id: "🔥", at: serverTimestamp() })) === "izin verildi");
 const r1 = await A.call("sendText", { tableId: vip, text: "lan bu ne biçim hamle, salak", uiLang: "tr" });
-check("VIP odada küfürlü söz de iletilir (filtre yok)", r1.ok === true, JSON.stringify(r1));
+check("VIP odada hakaret serbest (küfür değil)", r1.ok === true, JSON.stringify(r1));
 await new Promise((r) => setTimeout(r, 2100));
-const r2 = await A.call("sendText", { tableId: vip, text: "bak: https://ornek.com", uiLang: "tr" });
-check("VIP odada bağlantı da serbest", r2.ok === true);
+await new Promise((r) => setTimeout(r, 1600));
+const r2 = await A.call("sendText", { tableId: vip, text: "iyi oyunlar", uiLang: "tr" });
+check("VIP odada ikinci mesaj", r2.ok === true);
+await new Promise((r) => setTimeout(r, 1600));
+check("VIP odada bağlantı engellenir (iletişim)", (await errCode(A.call("sendText", { tableId: vip, text: "bak: https://ornek.com", uiLang: "tr" }))) === "illegalContent");
 const texts = (await getDocs(collection(B.db, "tables", vip, "chat"))).docs.map((d) => d.data()).filter((x) => x.kind === "text").map((x) => x.text);
 check("rakip mesajları okuyabilir", texts.length === 2, texts.join(" | "));
 check("başkası adına yazılamaz", (await addTo(A, vip, { uid: B.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "permission-denied");
