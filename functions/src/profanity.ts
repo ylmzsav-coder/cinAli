@@ -77,8 +77,21 @@ export function tokens(text: string, lang: string): string[] {
  */
 const TR_DOTLESS_STEMS = ["siktir", "sikeyim", "sikerim", "sikiyim", "sktr", "orospu", "amına", "amina"];
 
-/** Metin kontrol edilen dillerden herhangi birinde küfür içeriyor mu. */
-export function containsProfanity(text: string, langs: string[]): boolean {
+/**
+ * Küfür sayılmayan hakaretler (VIP odada serbest): kaba/müstehcen olmayan aşağılama
+ * sözleri. "Küfür var, hakaret yok" seçeneğinde bu köklerle başlayan kelimeler atlanır.
+ */
+export const INSULT_STEMS = [
+  "şerefsiz", "serefsiz", "çingene", "cingene",
+  "bastard", "missgeburt", "spast", "connard", "connasse", "batard", "bâtard",
+  "gilipoll", "pendej", "stronz", "coglion", "babaca",
+];
+
+/**
+ * Metin kontrol edilen dillerden herhangi birinde küfür içeriyor mu.
+ * allowInsults: true ise yalnızca küfür aranır, hakaretler (INSULT_STEMS) serbesttir.
+ */
+export function containsProfanity(text: string, langs: string[], allowInsults = false): boolean {
   for (const lang of new Set(langs)) {
     if (!(lang in LISTS)) continue;
     const l = listFor(lang as Lang);
@@ -86,6 +99,7 @@ export function containsProfanity(text: string, langs: string[]): boolean {
     const variants = toks.map((t) => [...new Set([t, fold(t), squeeze(t), squeeze(fold(t))])]);
     for (const vs of variants) {
       if (vs.some((v) => l.allow.has(v))) continue;
+      if (allowInsults && vs.some((v) => INSULT_STEMS.some((st) => v.startsWith(st) || v.startsWith(fold(st))))) continue;
       if (lang === "tr") {
         const dotted = vs.map((v) => v.replace(/ı/g, "i"));
         if (dotted.some((v) => TR_DOTLESS_STEMS.some((st) => v.startsWith(st)))) return true;

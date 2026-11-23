@@ -56,3 +56,11 @@ describe("oyuncu adları", () => {
     expect(cleanName("Çokuzunbirisimdir", "x", "tr")).toBe("Çokuzunbiris");
   });
 });
+
+describe("VIP: küfür var, hakaret yok", () => {
+  it("küfür yakalanır, hakaret serbest", () => {
+    for (const txt of ["siktir git", "amk", "orospu çocuğu", "fuck you", "va te faire enculer"]) expect([txt, containsProfanity(txt, ["tr", "en", "fr"], true)]).toEqual([txt, true]);
+    for (const txt of ["şerefsiz", "serefsiz adam", "bastard", "connard", "pendejo", "stronzo"]) expect([txt, containsProfanity(txt, ["tr", "en", "fr", "es", "it"], true)]).toEqual([txt, false]);
+    expect(containsProfanity("şerefsiz", ["tr"])).toBe(true); // diğer yerlerde (adlar) hakaret de süzülür
+  });
+});

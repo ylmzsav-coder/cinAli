@@ -8,6 +8,9 @@
  *  - aynı masada 3 küfür denemesi -> 10 dakika yazışma kapalı
  * Küfürlü mesaj masaya HİÇ gönderilmez.
  *
+ * VIP odada küfür filtresi açık (masanın dili + arayüz dili), hakaret serbest:
+ * küfürlü mesaj gönderilmez; aynı masada 3 küfür denemesi -> 10 dakika sohbet kapalı.
+ *
  * VIP odada ayrıca yasa dışı içerik filtresi (illegal.ts): uyuşturucu, silah,
  * kumar, satış teklifi ve iletişim/ödeme bilgisi içeren mesaj gönderilmez,
  * moderation koleksiyonuna kaydedilir; 2. ihlalde 24 saat, 4. ihlalde 30 gün
@@ -101,6 +104,18 @@ export const sendText = onCall(async (req) => {
       meta.windowCount = 0;
     }
     if (meta.windowCount >= PER_MINUTE) fail("tooFast", {}, "resource-exhausted");
+    // Küfür filtresi (hakaret serbest): mesaj gönderilmez, 3. denemede 10 dk susturma
+    const langs = [String(table!.lang ?? "tr"), ...(uiLang in LANGS ? [uiLang] : [])];
+    if (containsProfanity(text, langs, true)) {
+      meta.strikes += 1;
+      meta.last = now;
+      if (meta.strikes >= STRIKES_TO_MUTE) {
+        meta.strikes = 0;
+        meta.mutedUntil = now + MUTE_MS;
+      }
+      t.set(metaRef, meta);
+      return meta.mutedUntil > now ? { ok: false, muted: true } : { ok: false, blocked: true, strikesLeft: STRIKES_TO_MUTE - meta.strikes };
+    }
     meta.last = now;
     meta.windowCount += 1;
     t.set(metaRef, meta);

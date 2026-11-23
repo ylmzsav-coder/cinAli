@@ -38,15 +38,26 @@ const txt = await A.call("sendText", { tableId: ja.tableId, text: "merhaba, iyi 
 check("VIP odada serbest yazışma", !!txt && txt.ok !== false, JSON.stringify(txt));
 // Yasa dışı içerik: gönderilmez; 2. ihlalde 24 saat sohbet yasağı
 const sleepMs = (ms) => new Promise((r) => setTimeout(r, ms));
+// Küfür filtresi (hakaret serbest): B kullanır, A'nın yasa dışı testini etkilemesin
+await sleepMs(1600);
+const kf = await B.call("sendText", { tableId: ja.tableId, text: "s1kt1r git", uiLang: "tr" });
+check("VIP odada küfür gönderilmez", kf.ok === false && kf.blocked === true && kf.strikesLeft === 2, JSON.stringify(kf));
+await sleepMs(1600);
+check("VIP odada hakaret serbest", (await B.call("sendText", { tableId: ja.tableId, text: "şerefsiz hamle yaptın", uiLang: "tr" })).ok === true);
+await sleepMs(1600);
+await B.call("sendText", { tableId: ja.tableId, text: "amk", uiLang: "tr" });
+await sleepMs(1600);
+const km = await B.call("sendText", { tableId: ja.tableId, text: "orospu", uiLang: "tr" });
+check("3. küfürde 10 dk susturma", km.ok === false && km.muted === true, JSON.stringify(km));
+check("susturulmuşken yazamaz", (await errCode(B.call("sendText", { tableId: ja.tableId, text: "merhaba", uiLang: "tr" }))) === "chatMuted");
 await sleepMs(1600);
 check("uyuşturucu mesajı engellenir", (await errCode(A.call("sendText", { tableId: ja.tableId, text: "k0kain var mı", uiLang: "tr" }))) === "illegalContent");
 check("iletişim bilgisi engellenir (2. ihlal: yasak)", (await errCode(A.call("sendText", { tableId: ja.tableId, text: "telegramdan yaz 0532 123 45 67", uiLang: "tr" }))) === "illegalBanned");
 check("yasaklıyken normal mesaj da gitmez", (await errCode(A.call("sendText", { tableId: ja.tableId, text: "merhaba", uiLang: "tr" }))) === "chatBanned");
-check("rakip masum mesaj yazabilir", (await B.call("sendText", { tableId: ja.tableId, text: "iyi oyunlar", uiLang: "tr" })).ok === true);
 // Sohbet kaydı: sunucuda saklanır (2 yıl), istemciler okuyamaz
 const logs = await fetch("http://127.0.0.1:8080/v1/projects/demo-cinali/databases/(default)/documents/chatLogs?pageSize=50", { headers: { Authorization: "Bearer owner" } }).then((r) => r.json());
 const logTexts = (logs.documents ?? []).map((d) => d.fields.text.stringValue);
-check("gönderilen mesajlar kayıtta", logTexts.includes("merhaba, iyi oyunlar") && logTexts.includes("iyi oyunlar"), JSON.stringify(logTexts));
+check("gönderilen mesajlar kayıtta", logTexts.includes("merhaba, iyi oyunlar") && logTexts.includes("şerefsiz hamle yaptın") && !logTexts.includes("amk"), JSON.stringify(logTexts));
 check("engellenen mesaj sohbet kaydına girmez", !logTexts.includes("k0kain var mı"));
 const one = (logs.documents ?? [])[0]?.fields ?? {};
 const days = (Date.parse(one.expireAt?.timestampValue) - Date.now()) / 864e5;
