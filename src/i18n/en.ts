@@ -411,7 +411,7 @@ const en: Messages = {
   vipSearchM: "Find a male player",
   vipSearchingF: "Looking for a female VIP opponent…",
   vipSearchingM: "Looking for a male VIP opponent…",
-  vipPerkGender: "FIND A FEMALE / MALE PLAYER: if none is available you're matched with another VIP player, and with the computer if no one is online",
+  vipPerkGender: "FIND A FEMALE / MALE / RANDOM PLAYER: VIP players first; if none, you're matched with a player waiting in the 2-player Private Room (no subscription needed, you can chat), otherwise the computer",
   genderAsk: "What's your gender?",
   genderWhy: "Asked once for female/male matching in the VIP room; you can change it in your profile.",
   genderF: "Female",

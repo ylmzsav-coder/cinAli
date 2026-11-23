@@ -415,7 +415,7 @@ const tr = {
   vipSearchM: "Erkek oyuncu ara",
   vipSearchingF: "Bayan VIP rakip aranıyor…",
   vipSearchingM: "Erkek VIP rakip aranıyor…",
-  vipPerkGender: "BAYAN / ERKEK OYUNCU ARA: Aradığın cinsiyette oyuncu yoksa diğer VIP oyuncularla, hiç oyuncu yoksa bilgisayarla eşleşirsin",
+  vipPerkGender: "BAYAN / ERKEK / RASTGELE OYUNCU ARA: Önce VIP oyuncular aranır; VIP oyuncu yoksa 2 kişilik Özel Odada bekleyen oyuncuyla eşleşirsin (ondan abonelik istenmez, sohbet edebilirsiniz), kimse yoksa bilgisayarla",
   genderAsk: "Cinsiyetin nedir?",
   genderWhy: "VIP odada bayan/erkek oyuncu eşleşmesi için bir kez sorulur; profilinden değiştirebilirsin.",
   genderF: "Kadın",

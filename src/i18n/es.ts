@@ -411,7 +411,7 @@ const es: Messages = {
   vipSearchM: "Buscar jugador",
   vipSearchingF: "Buscando rival VIP mujer…",
   vipSearchingM: "Buscando rival VIP hombre…",
-  vipPerkGender: "BUSCAR JUGADORA / JUGADOR: si no hay, te emparejas con otro jugador VIP, y con la computadora si no hay nadie",
+  vipPerkGender: "BUSCAR JUGADORA / JUGADOR / AL AZAR: primero VIP; si no hay, un jugador que espera en la Sala privada (sin suscripción, podéis chatear), si no, la computadora",
   genderAsk: "¿Cuál es tu género?",
   genderWhy: "Se pregunta una vez para emparejar en la sala VIP; puedes cambiarlo en tu perfil.",
   genderF: "Mujer",

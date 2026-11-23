@@ -348,7 +348,22 @@ export const joinTable = onCall(async (req) => {
     // (bayan bulunamazsa erkek, erkek bulunamazsa bayan); hiç yoksa yeni masa açılır,
     // 60 sn içinde kimse gelmezse bilgisayar rakip oturur.
     if (byGender && open.empty) open = await t.get(base);
-    const candidate = open.docs.find((d) => (d.data() as TableDoc).seats.length < (cfg.players ?? 4));
+    let candidate = open.docs.find((d) => (d.data() as TableDoc).seats.length < (cfg.players ?? 4));
+    // VIP oyuncu yoksa: aynı girişli 2 kişilik Özel Odada bekleyen oyuncuyla eşleş.
+    // Özel oda oyuncusundan abonelik istenmez; masa VIP masasına dönüşür (sohbetli, süresiz).
+    let fromOzel = false;
+    if (cfg.vip && !candidate) {
+      const ozelTypes = TABLES.filter((x) => !x.vip && x.players === 2 && x.entry === cfg.entry).map((x) => x.id);
+      for (const oz of ozelTypes) {
+        const os = await t.get(db.collection("tables").where("status", "==", "waiting").where("private", "==", false)
+          .where("type", "==", oz).where("lang", "==", lang).where("startAt", ">", now + 500).limit(5));
+        candidate = os.docs.find((d) => (d.data() as TableDoc).seats.length < 2 && !(d.data() as TableDoc).uids.includes(uid));
+        if (candidate) {
+          fromOzel = true;
+          break;
+        }
+      }
+    }
 
     applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
     let id: string;
@@ -356,7 +371,11 @@ export const joinTable = onCall(async (req) => {
       id = candidate.id;
       const table = candidate.data() as TableDoc;
       const seats = [...table.seats, { uid, name, bot: false }];
-      const next: TableDoc = { ...table, seats, uids: [...table.uids, uid], version: table.version + 1 };
+      const next: TableDoc = {
+        ...table, seats, uids: [...table.uids, uid], version: table.version + 1,
+        // Özel odadan gelen eşleşmede masa VIP masası olur (izleyici yok, sohbet açık)
+        ...(fromOzel ? { type: cfg.id, watchers: [] } : {}),
+      };
       if (seats.length === (cfg.players ?? 4)) {
         const started = startGame(next, now % 1_000_000);
         await persist(t, id, started.table, started.state, new Map());
