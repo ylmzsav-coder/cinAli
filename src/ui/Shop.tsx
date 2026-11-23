@@ -9,7 +9,7 @@ import { AD_REWARD, DAILY_BONUS, wallet } from "../economy/wallet";
 import { errorText, formatNumber, t } from "../i18n";
 import { Chips } from "./Chips";
 
-export function Shop({ onBack }: { onBack: () => void }) {
+export function Shop({ onBack, notice }: { onBack: () => void; notice?: string | null }) {
   const [vipOpen, setVipOpen] = useState(false);
   const w = useWallet();
   const [busy, setBusy] = useState<string | null>(null);
@@ -53,6 +53,7 @@ export function Shop({ onBack }: { onBack: () => void }) {
         <span className="balance small-balance"><Chips amount={w.balance} loading={!w.ready} /></span>
       </div>
       <h1>{t("shop")}</h1>
+      {notice && <div className="shop-notice" role="alert">⚠️ {notice}</div>}
       {TEST_MODE && <div className="test-banner">{t("testMode")}</div>}
       {msg && <div className="toast">{msg}</div>}
 

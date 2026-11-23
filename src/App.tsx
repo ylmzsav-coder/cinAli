@@ -167,6 +167,7 @@ export function App() {
     setScreen("game");
   };
 
+  const [shopNotice, setShopNotice] = useState<string | null>(null);
   const sitAt = (tb: TableConfig, want?: Gender) => {
     // VIP oda yalnızca abonelere (Masalar sayfası da kontrol eder)
     if (tb.vip && !wallet.isVip()) return;
@@ -177,6 +178,7 @@ export function App() {
       return;
     }
     if (wallet.snapshot.balance < tb.entry) {
+      setShopNotice(t("needChipsTable", { table: t(`table_${tb.id}` as "table_vip"), need: tb.entry.toLocaleString(), have: wallet.snapshot.balance.toLocaleString() }));
       setShopBack("hub");
       setScreen("shop");
       return;
@@ -316,7 +318,7 @@ export function App() {
           onStart={startFromLobby} onLeave={() => { setLobbyTable(null); setScreen("hub"); }} />
       );
     case "shop":
-      return <Shop onBack={() => setScreen(shopBack)} />;
+      return <Shop notice={shopNotice} onBack={() => { setShopNotice(null); setScreen(shopBack); }} />;
     case "tables":
       return (
         <Tables

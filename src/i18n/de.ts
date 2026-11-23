@@ -462,6 +462,7 @@ const de: Messages = {
   inviteWaiting: "{name} wartet am Tisch {table} auf dich.",
   inviteVipFree: "Kein VIP-Abo und kein Einsatz nötig.",
   inviteAccept: "Annehmen",
+  needChipsTable: "Für {table} brauchst du {need} Chips, du hast {have}. Kaufe Chips oder spiele Übung bzw. am Teehaus-Tisch.",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

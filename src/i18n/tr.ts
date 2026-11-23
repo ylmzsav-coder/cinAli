@@ -466,6 +466,7 @@ const tr = {
   inviteWaiting: "{name} seni {table} oyun masasında bekliyor.",
   inviteVipFree: "VIP abonelik ve giriş ücreti istenmez.",
   inviteAccept: "Kabul et",
+  needChipsTable: "{table} masasına oturmak için {need} çip gerekiyor, sende {have} çip var. Çip alabilir ya da Pratik ve Çayhane masalarında oynayabilirsin.",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

@@ -462,6 +462,7 @@ const pt: Messages = {
   inviteWaiting: "{name} está te esperando na mesa {table}.",
   inviteVipFree: "Sem assinatura VIP nem entrada.",
   inviteAccept: "Aceitar",
+  needChipsTable: "Precisas de {need} fichas para te sentares em {table}; tens {have}. Compra fichas ou joga no Treino ou na Casa de chá.",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

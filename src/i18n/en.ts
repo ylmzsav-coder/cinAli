@@ -462,6 +462,7 @@ const en: Messages = {
   inviteWaiting: "{name} is waiting for you at the {table} table.",
   inviteVipFree: "No VIP subscription or entry fee needed.",
   inviteAccept: "Accept",
+  needChipsTable: "You need {need} chips to sit at {table}; you have {have}. Buy chips, or play Practice or the Tea House table.",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

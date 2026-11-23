@@ -1435,3 +1435,4 @@ button.watchers-badge { cursor: pointer; border: none; font: inherit; }
 .okey .topbar > .title { max-width: calc(100% - 110px); }
 .okey .side-controls .actions-total { display: none; }
 .title-ico { display: inline-flex; vertical-align: -0.2em; margin-right: 4px; }
+.shop-notice { background: #7a1f1f; border: 2px solid #ff8a80; color: #fff; font-weight: 700; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; text-align: center; }
