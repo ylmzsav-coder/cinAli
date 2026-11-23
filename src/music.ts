@@ -139,11 +139,31 @@ function finale(a: BaseAudioContext, out: AudioNode, t: number) {
   ["C2", "C3", "G3", "C4", "E4", "G4"].forEach((n, k) => piano(a, out, NOTE[n], t + k * 0.012, 0.9, 0.22));
 }
 
-/** Bütün ezgiyi çevrimdışı bir ses bağlamında tek seferde işler. */
+/** Hazır kayıt dosyasını (public/audio) çözer; hızlıdır, telefonda bekletmez. */
+export async function loadRecording(name: string): Promise<AudioBuffer | null> {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}audio/${name}.m4a`);
+    if (!res.ok) return null;
+    const data = await res.arrayBuffer();
+    const OAC = window.OfflineAudioContext ?? (window as unknown as { webkitOfflineAudioContext?: typeof OfflineAudioContext }).webkitOfflineAudioContext;
+    if (!OAC) return null;
+    return await new OAC(2, 1, 32000).decodeAudioData(data);
+  } catch {
+    return null;
+  }
+}
+
+/** Müziği hazırlar: önce hazır kayıt dosyası, olmazsa kod içinde sentezlenir. */
 function render(): Promise<AudioBuffer | null> {
   if (rendered) return Promise.resolve(rendered);
   if (rendering) return rendering;
   rendering = (async () => {
+    const rec = await loadRecording("intro");
+    if (rec) {
+      rendered = rec;
+      rendering = null;
+      return rec;
+    }
     try {
       const OAC = window.OfflineAudioContext ?? (window as unknown as { webkitOfflineAudioContext?: typeof OfflineAudioContext }).webkitOfflineAudioContext;
       if (!OAC) return null;

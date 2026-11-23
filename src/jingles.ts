@@ -1,3 +1,4 @@
+import { loadRecording } from "./music";
 /**
  * El/oyun sonu müzikleri: kazanan için alkış eşliğinde neşeli bir fanfar, kaybeden için hüzünlü, inen bir melodi. Tamamen kodla
  * üretilir (ses dosyası ve telif sorunu yok).
@@ -42,6 +43,13 @@ function render(kind: Kind): Promise<AudioBuffer | null> {
   if (buffers[kind]) return Promise.resolve(buffers[kind]!);
   if (pending[kind]) return pending[kind]!;
   pending[kind] = (async () => {
+    // Önce hazır kayıt dosyası (hızlı); yoksa kod içinde sentezlenir
+    const rec = await loadRecording(kind);
+    if (rec) {
+      buffers[kind] = rec;
+      delete pending[kind];
+      return rec;
+    }
     try {
       const OAC = window.OfflineAudioContext ?? (window as unknown as { webkitOfflineAudioContext?: typeof OfflineAudioContext }).webkitOfflineAudioContext;
       if (!OAC) return null;

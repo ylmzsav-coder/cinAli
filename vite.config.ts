@@ -36,7 +36,7 @@ export default defineConfig({
       includeAssets: ["icon.svg"],
       workbox: {
         // Sözlükler önceden indirilmez; yalnızca seçilen dilinki ilk kullanımda önbelleğe alınır.
-        globPatterns: ["**/*.{js,css,html,svg,png}"],
+        globPatterns: ["**/*.{js,css,html,svg,png,m4a}"],
         runtimeCaching: [
           {
             urlPattern: /\/dict\/[a-z]{2}\.txt(\?.*)?$/,
