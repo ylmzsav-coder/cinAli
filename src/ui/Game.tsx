@@ -945,7 +945,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         {/* Menü bağlantısı yalnızca "Oyundan çık" yokken (el bittiğinde, izlerken) */}
         {!(onLeave && !handOver) && <button type="button" className="link" onClick={onExit}>{t("menu")}</button>}
         <div className="title">
-          {tableId === "caylak" && <span className="title-ico"><TeaGlass size="1.25em" /></span>}{tableId === "usta" && "🏎️ "}{tableId?.startsWith("vip") && "👑 "}{tableName ?? t("practiceShort")} {state.totalHands > 1 && <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>}
+          {tableId === "caylak" && <span className="title-ico"><TeaGlass size="1.25em" /></span>}{tableId === "usta" && "🚘 "}{tableId?.startsWith("vip") && "👑 "}{tableName ?? t("practiceShort")} {state.totalHands > 1 && <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>}
           <WatchersBadge names={watchers} />
         </div>
         {/* Oyuncu profili: sol üstte, Oyundan çık'ın solunda */}
