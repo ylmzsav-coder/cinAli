@@ -51,5 +51,9 @@ check("cüzdan silindi", !(await exists(`wallets/${A.uid}`)));
 check("arkadaşlık alt koleksiyonu silindi", !(await exists(`users/${A.uid}/friends/${B.uid}`)));
 check("Bea'nın listesinden çıktı", (await B.call("friendsStatus")).friends.every((f) => f.uid !== A.uid));
 check("silme kaydı tutuldu", await exists(`deletedAccounts/${A.uid}`));
+// Yaş kapısı: 18 yaşından küçük beyanı VIP Oda'yı kapatır
+const K = await client("Genç");
+await K.call("heartbeat", { name: "Genç", adult: false });
+check("18 yaş altı VIP masaya oturamaz", (await errCode(K.call("joinTable", { type: "vip2", lang: "tr", name: "Genç" }))) === "vipAdultOnly");
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

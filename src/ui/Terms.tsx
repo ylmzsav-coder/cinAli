@@ -1,10 +1,11 @@
 import { t, uiLang } from "../i18n";
-import { acceptVipTerms, communityFor, privacyFor, termsFor } from "../terms";
+import { useState } from "react";
+import { acceptVipTerms, communityFor, licensesFor, privacyFor, salesConsented, salesFor, setSalesConsent, termsFor } from "../terms";
 
 /** Kullanım Koşulları ya da Gizlilik Politikası sayfası. */
-export type LegalKind = "terms" | "privacy" | "community";
+export type LegalKind = "terms" | "privacy" | "community" | "licenses" | "sales";
 export function Terms({ onBack, kind = "terms" }: { onBack: () => void; kind?: LegalKind }) {
-  const doc = kind === "privacy" ? privacyFor(uiLang()) : kind === "community" ? communityFor(uiLang()) : termsFor(uiLang());
+  const doc = kind === "privacy" ? privacyFor(uiLang()) : kind === "community" ? communityFor(uiLang()) : kind === "licenses" ? licensesFor(uiLang()) : kind === "sales" ? salesFor(uiLang()) : termsFor(uiLang());
   const extra = kind !== "terms" ? (doc as ReturnType<typeof privacyFor>) : null;
   return (
     <div className="page terms-page">
@@ -51,6 +52,27 @@ export function VipTermsModal({ onAccept, onClose, onRead, onPrivacy, onCommunit
           <button type="button" onClick={onClose}>{t("cancel")}</button>
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Satın alma onayı (Mesafeli Sözleşmeler Yönetmeliği): işaretlenmeden satın alma düğmeleri çalışmaz.
+ * Onay bu oturum boyunca hatırlanır.
+ */
+export function PurchaseConsent({ onChange }: { onChange?: (ok: boolean) => void }) {
+  const [ok, setOk] = useState(salesConsented);
+  const [show, setShow] = useState(false);
+  return (
+    <div className="purchase-consent">
+      <label>
+        <input type="checkbox" checked={ok} onChange={(e) => { setOk(e.target.checked); setSalesConsent(e.target.checked); onChange?.(e.target.checked); }} />
+        <span>
+          <button type="button" className="link" onClick={(e) => { e.preventDefault(); setShow(true); }}>{t("salesLink")}</button>{" "}
+          {t("salesConsent")}
+        </span>
+      </label>
+      {show && <LegalOverlay kind="sales" onClose={() => setShow(false)} />}
     </div>
   );
 }

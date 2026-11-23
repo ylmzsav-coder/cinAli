@@ -11,7 +11,7 @@ const EXAMPLE: Record<LangCode, string> = {
   tr: "KALEM", en: "TABLE", de: "TISCH", fr: "TABLE", es: "MESA", it: "TAVOLO", pt: "MESA",
 };
 
-export function Rules({ onBack }: { onBack: () => void }) {
+export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?: () => void }) {
   const lang = gameLang();
   const word = EXAMPLE[lang.code];
   const letters = [...word];
@@ -58,6 +58,7 @@ export function Rules({ onBack }: { onBack: () => void }) {
       </div>
       <p className="muted small">{t("dictSource")}</p>
       <p className="muted small">{t("copyright", { year: COPYRIGHT_YEAR })}</p>
+      {onLicenses && <button type="button" className="link small" onClick={onLicenses}>📜 {t("licensesLink")}</button>}
     </div>
   );
 }

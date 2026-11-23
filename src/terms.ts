@@ -4,6 +4,9 @@
  */
 import PRIVACY from "./legal/privacy.json";
 import COMMUNITY from "./legal/community.json";
+import LICENSES from "./legal/licenses.json";
+import SALES from "./legal/sales.json";
+import SELLER from "./legal/seller.json";
 
 
 export interface TermsDoc {
@@ -272,7 +275,7 @@ const ONLY_EN: Record<string, string> = {
 /** Gizlilik Politikası (Türkçe ve İngilizce; diğer dillerde İngilizce metin + not). */
 export function privacyFor(lang: string): PrivacyDoc {
   const docs = PRIVACY as Record<string, PrivacyDoc>;
-  return docs[lang] ?? { ...docs.en, note: ONLY_EN[lang] };
+  return fillDoc(docs[lang] ?? { ...docs.en, note: ONLY_EN[lang] }, lang);
 }
 
 const COMMUNITY_ONLY_EN: Record<string, string> = {
@@ -285,5 +288,44 @@ const COMMUNITY_ONLY_EN: Record<string, string> = {
 /** Topluluk Kuralları (Türkçe ve İngilizce; diğer dillerde İngilizce metin + not). */
 export function communityFor(lang: string): PrivacyDoc {
   const docs = COMMUNITY as Record<string, PrivacyDoc>;
-  return docs[lang] ?? { ...docs.en, note: COMMUNITY_ONLY_EN[lang] };
+  return fillDoc(docs[lang] ?? { ...docs.en, note: COMMUNITY_ONLY_EN[lang] }, lang);
+}
+
+/** Lisanslar ve atıflar (Türkçe, diğer dillerde İngilizce). */
+export function licensesFor(lang: string): PrivacyDoc {
+  const docs = LICENSES as Record<string, PrivacyDoc>;
+  return docs[lang] ?? docs.en;
+}
+
+/** Satıcı bilgileri (src/legal/seller.json): {{alan}} yer tutucularını doldurur; boşsa "[eklenecek]". */
+export function fillSeller(text: string, lang: string): string {
+  const seller = SELLER as Record<string, string>;
+  const missing = lang === "tr" ? "[eklenecek]" : "[to be added]";
+  return text.replace(/\{\{(\w+)\}\}/g, (_, k: string) => seller[k] || (k === "unvan" ? `${lang === "tr" ? "Word Okey uygulama sahibi" : "Owner of the Word Okey app"} ${missing}` : missing));
+}
+function fillDoc(d: PrivacyDoc, lang: string): PrivacyDoc {
+  const f = (x: string) => fillSeller(x, d === undefined ? lang : lang);
+  return { ...d, title: f(d.title), intro: f(d.intro), updated: f(d.updated), sections: d.sections.map((s) => ({ h: f(s.h), items: s.items.map(f) })) };
+}
+/** Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi (Türkçe; diğer dillerde İngilizce özet). */
+export function salesFor(lang: string): PrivacyDoc {
+  const docs = SALES as Record<string, PrivacyDoc>;
+  return fillDoc(docs[lang] ?? docs.en, lang === "tr" ? "tr" : "en");
+}
+const SALES_KEY = "wordokey.salesConsent";
+/** Satın alma onayı: bu cihazda bu oturumda verildi mi. */
+export function salesConsented(): boolean {
+  try {
+    return sessionStorage.getItem(SALES_KEY) === TERMS_VERSION;
+  } catch {
+    return false;
+  }
+}
+export function setSalesConsent(on: boolean) {
+  try {
+    if (on) sessionStorage.setItem(SALES_KEY, TERMS_VERSION);
+    else sessionStorage.removeItem(SALES_KEY);
+  } catch {
+    /* depolama kapalı */
+  }
 }

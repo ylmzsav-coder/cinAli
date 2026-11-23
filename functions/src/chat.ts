@@ -80,6 +80,7 @@ export const sendText = onCall(async (req) => {
   const metaRef = tableRef.collection("chatmeta").doc(uid);
   const user = (await db.collection("users").doc(uid).get()).data() ?? {};
   if (user.banned) fail("accountBanned", {}, "permission-denied");
+  if (user.adult === false) fail("vipAdultOnly", {}, "permission-denied");
   const bannedUntil = (user.chatBannedUntil as number | undefined) ?? 0;
   if (bannedUntil > Date.now()) fail("chatBanned", { h: Math.max(1, Math.ceil((bannedUntil - Date.now()) / 3_600_000)) }, "permission-denied");
   const ip = req.rawRequest?.ip ?? null;

@@ -289,6 +289,7 @@ export const joinPrivateTable = onCall(async (req) => {
     if (!w) return fail("noWallet");
     // VIP abonenin özel odasına davetle gelen misafir: abonelik şartı yok, ücretsiz oturur
     const guest = !!cfg.vip;
+    if (guest && (await t.get(userRef(uid))).data()?.adult === false) fail("vipAdultOnly", {}, "permission-denied");
     if (!guest) {
       if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
       applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
@@ -323,6 +324,7 @@ export const joinTable = onCall(async (req) => {
     }
     const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
     if (!w) return fail("noWallet");
+    if (cfg.vip && user.adult === false) fail("vipAdultOnly", {}, "permission-denied");
     requireVip(cfg, w);
     if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
 

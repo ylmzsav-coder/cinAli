@@ -1,3 +1,4 @@
+import { isAdult } from "../age";
 import { canCloseGame, closeGame } from "../exit";
 import { FEEDBACK_EMAIL, FEEDBACK_MAX, type FeedbackType, feedbackMailto, submitFeedback } from "../feedbackBox";
 import { stopMusic } from "../music";
@@ -78,7 +79,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [vipLobby, setVipLobby] = useState(false);
   const [vipTerms, setVipTerms] = useState(false);
   /** VIP Oda: kurallar kabul edilmeden açılmaz. */
-  const openVipLobby = () => (vipTermsAccepted() ? setVipLobby(true) : setVipTerms(true));
+  const openVipLobby = () => (!isAdult() ? setToast(t("vipAdultOnly")) : vipTermsAccepted() ? setVipLobby(true) : setVipTerms(true));
   const ownerTaps = useRef(0);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
   const [invite, setInvite] = useState<TableInvite | null>(null);
@@ -242,7 +243,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
         </div>
         <div className="hub-right">
           {/* Özel Oda (2 kişilik): rastgele oyuncu, arkadaş ya da bilgisayar */}
-          <button type="button" className="big vip-hub caylak-hub" onClick={() => (wallet.isVip() ? openVipLobby() : setVipOpen(true))}>
+          <button type="button" className="big vip-hub caylak-hub" onClick={() => (!isAdult() ? setToast(t("vipAdultOnly")) : wallet.isVip() ? openVipLobby() : setVipOpen(true))}>
             <span>👑 {t("vipShort")}</span>
             <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
           </button>

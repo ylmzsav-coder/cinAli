@@ -1,0 +1,111 @@
+{
+  "tr": {
+    "title": "Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi",
+    "updated": "Yürürlük tarihi: 23 Kasım 2026",
+    "intro": "Bu metin, Word Okey uygulaması içinden yapılan çip paketi ve VIP üyelik satın alımlarına uygulanır. 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca, satın alma onayından önce okunması ve kabul edilmesi gerekir.",
+    "sections": [
+      { "h": "A. ÖN BİLGİLENDİRME FORMU", "items": [] },
+      { "h": "1. Satıcı bilgileri", "items": [
+        "Ünvan / Ad Soyad: {{unvan}}",
+        "Adres: {{adres}}",
+        "E-posta: {{eposta}}",
+        "Telefon: {{telefon}}",
+        "MERSİS No: {{mersis}} · Vergi Dairesi / No: {{vergiDairesi}} / {{vergiNo}} · KEP: {{kep}}"
+      ] },
+      { "h": "2. Ürün ve hizmetlerin temel nitelikleri", "items": [
+        "Çip paketleri: Word Okey içinde masalara girmek ve hediye göndermek için kullanılan sanal oyun parası. Çipler gerçek paraya çevrilemez, başka hesaba devredilemez, satılamaz ve faiz/getiri sağlamaz.",
+        "VIP üyelik: haftalık yenilenen abonelik. Sohbetli 2 kişilik VIP Oda, misafir davet etme, bayan/erkek oyuncu arama, hamle süresi olmayan masalar ve abonelikte bir kez verilen hediye çip sağlar. Ayrıntılar satın alma ekranında gösterilir.",
+        "Satın alınan içerik yalnızca Word Okey içinde, oyun kurallarına ve Kullanım Koşulları'na uygun olarak kullanılabilir."
+      ] },
+      { "h": "3. Fiyat ve ödeme", "items": [
+        "Fiyatlar satın alma ekranında, vergiler dahil olarak Google Play veya App Store'un gösterdiği tutar üzerinden gösterilir. Mağazanın gösterdiği fiyat esastır.",
+        "Ödeme, Google Play veya App Store hesabına tanımlı ödeme yöntemiyle, ilgili mağaza aracılığıyla alınır. Kart ve ödeme bilgilerin satıcıya iletilmez.",
+        "VIP üyelik, mevcut dönem bitmeden en az 24 saat önce iptal edilmezse aynı ücretle otomatik olarak yenilenir; yenileme ücreti dönem bitmeden önceki 24 saat içinde tahsil edilir."
+      ] },
+      { "h": "4. Teslimat", "items": [
+        "Dijital içerik, ödemenin mağaza tarafından onaylanmasının hemen ardından hesabına elektronik olarak teslim edilir. Fiziksel teslimat ve kargo ücreti yoktur.",
+        "Teslimatta sorun yaşarsan uygulamadaki \"Mağaza\" ekranında \"Satın alımları geri yükle\" düğmesini kullanabilir ya da {{eposta}} adresine yazabilirsin."
+      ] },
+      { "h": "5. Cayma hakkı", "items": [
+        "Mesafeli Sözleşmeler Yönetmeliği'nin 15. maddesinin (ğ) bendi uyarınca, elektronik ortamda anında ifa edilen hizmetler ve tüketiciye anında teslim edilen gayrimaddi mallar için cayma hakkı kullanılamaz.",
+        "Satın alma onayıyla, dijital içeriğin hemen teslim edilmesine onay verdiğini ve bu nedenle cayma hakkını kaybedeceğini kabul etmiş olursun.",
+        "Bu durum, ayıplı ifa (ör. ödeme alındığı hâlde içeriğin teslim edilmemesi) hâlindeki yasal haklarını ortadan kaldırmaz."
+      ] },
+      { "h": "6. Abonelik iptali", "items": [
+        "VIP aboneliğini istediğin zaman Google Play (Play Store › Profil › Ödemeler ve abonelikler › Abonelikler) veya App Store (Ayarlar › Apple Kimliği › Abonelikler) üzerinden iptal edebilirsin.",
+        "İptal, mevcut dönemin sonunda geçerli olur; o döneme kadar VIP haklarını kullanmaya devam edersin. Kısmen kullanılmış dönem için iade yapılmaz.",
+        "Uygulamayı silmek aboneliği iptal etmez."
+      ] },
+      { "h": "7. Şikâyet ve itiraz", "items": [
+        "Şikâyet ve taleplerini uygulamadaki \"Şikayet / Öneri\" bölümünden ya da {{eposta}} adresinden iletebilirsin.",
+        "Uyuşmazlıklarda, her yıl Ticaret Bakanlığı'nca belirlenen parasal sınırlar dahilinde yerleşim yerindeki veya işlemin yapıldığı yerdeki Tüketici Hakem Heyetleri'ne, bu sınırları aşan durumlarda Tüketici Mahkemeleri'ne başvurabilirsin.",
+        "Mağaza aracılığıyla yapılan ödemelere ilişkin iade talepleri, ilgili mağazanın (Google Play / App Store) iade politikalarına göre de değerlendirilebilir."
+      ] },
+      { "h": "B. MESAFELİ SATIŞ SÖZLEŞMESİ", "items": [] },
+      { "h": "Madde 1 – Taraflar", "items": [
+        "SATICI: {{unvan}} — Adres: {{adres}} — E-posta: {{eposta}} — Telefon: {{telefon}}.",
+        "ALICI: Word Okey uygulamasında satın alma işlemini gerçekleştiren ve hesabı üzerinden tanımlanan kullanıcı."
+      ] },
+      { "h": "Madde 2 – Konu", "items": [
+        "Bu sözleşmenin konusu, ALICI'nın Word Okey uygulaması içinden elektronik ortamda satın aldığı çip paketi veya VIP üyelik hizmetinin satışı ve teslimine ilişkin olarak tarafların hak ve yükümlülüklerinin belirlenmesidir."
+      ] },
+      { "h": "Madde 3 – Ürün, bedel ve ödeme", "items": [
+        "Ürünün adı, miktarı/süresi ve vergiler dahil satış bedeli, satın alma anında ekranda ve mağaza onay penceresinde gösterilen bilgilerdir.",
+        "Ödeme, Google Play veya App Store aracılığıyla, ALICI'nın mağaza hesabındaki ödeme yöntemiyle yapılır. Mağaza fişi/faturası ilgili mağaza tarafından düzenlenir."
+      ] },
+      { "h": "Madde 4 – Teslimat", "items": [
+        "Ürün, ödemenin onaylanmasının hemen ardından ALICI'nın hesabına elektronik olarak tanımlanır.",
+        "Teknik bir aksaklık nedeniyle teslim edilemeyen ürün, aksaklığın giderilmesiyle birlikte teslim edilir ya da bedeli iade edilir."
+      ] },
+      { "h": "Madde 5 – Cayma hakkı", "items": [
+        "ALICI, Mesafeli Sözleşmeler Yönetmeliği m.15/1-(ğ) uyarınca, elektronik ortamda anında ifa edilen hizmet ve anında teslim edilen gayrimaddi mal niteliğindeki ürünler için cayma hakkının bulunmadığını; satın alma onayını vererek ifaya derhâl başlanmasını talep ettiğini kabul eder."
+      ] },
+      { "h": "Madde 6 – Abonelik", "items": [
+        "VIP üyelik haftalık dönemler hâlinde yenilenir. ALICI aboneliği dilediği zaman mağaza hesabından iptal edebilir; iptal, ödemesi yapılmış dönemin sonunda geçerli olur."
+      ] },
+      { "h": "Madde 7 – Tarafların yükümlülükleri", "items": [
+        "SATICI, satın alınan içeriği eksiksiz teslim etmekle ve hizmeti makul süreklilikte sunmakla yükümlüdür.",
+        "ALICI, satın aldığı içeriği Kullanım Koşulları'na ve Topluluk Kuralları'na uygun kullanmakla yükümlüdür. Kural ihlali nedeniyle kısıtlanan veya kapatılan hesaplardaki içerik için iade yapılmaz."
+      ] },
+      { "h": "Madde 8 – Uyuşmazlıkların çözümü", "items": [
+        "Bu sözleşmeden doğan uyuşmazlıklarda, Ticaret Bakanlığı'nca ilan edilen parasal sınırlar dahilinde Tüketici Hakem Heyetleri, aşan durumlarda Tüketici Mahkemeleri yetkilidir."
+      ] },
+      { "h": "Madde 9 – Yürürlük", "items": [
+        "ALICI, satın alma ekranındaki onay kutusunu işaretleyip satın almayı onayladığında bu sözleşmenin ve Ön Bilgilendirme Formu'nun tüm koşullarını okuduğunu ve kabul ettiğini beyan eder. Sözleşme, satın alma onayıyla birlikte yürürlüğe girer."
+      ] }
+    ]
+  },
+  "en": {
+    "title": "Pre-contract Information and Distance Sales Agreement",
+    "updated": "Effective date: 23 November 2026",
+    "intro": "This text applies to chip pack and VIP membership purchases made in the Word Okey app. Under Turkish consumer law (Law No. 6502 and the Distance Contracts Regulation) it must be read and accepted before confirming a purchase.",
+    "sections": [
+      { "h": "1. Seller", "items": [
+        "Name / company: {{unvan}} · Address: {{adres}} · E-mail: {{eposta}} · Phone: {{telefon}}"
+      ] },
+      { "h": "2. Products", "items": [
+        "Chip packs: virtual game currency used in Word Okey to join tables and send gifts. Chips cannot be exchanged for real money, transferred to another account, sold, or earn interest.",
+        "VIP membership: a weekly auto-renewing subscription giving access to the VIP Room and its features, shown on the purchase screen."
+      ] },
+      { "h": "3. Price, payment and renewal", "items": [
+        "Prices, including taxes, are those shown by Google Play or the App Store at the time of purchase. Payment is taken by the store; your card details never reach the seller.",
+        "VIP membership renews automatically at the same price unless cancelled at least 24 hours before the end of the current period; the renewal is charged within the 24 hours before the period ends."
+      ] },
+      { "h": "4. Delivery", "items": [
+        "Digital content is delivered to your account immediately after the store confirms payment. If something goes wrong, use \"Restore purchases\" in the Shop or write to {{eposta}}."
+      ] },
+      { "h": "5. Right of withdrawal", "items": [
+        "Under Article 15(1)(ğ) of the Turkish Distance Contracts Regulation, there is no right of withdrawal for services performed instantly online and intangible goods delivered instantly. By confirming the purchase you request immediate performance and acknowledge that you lose the right of withdrawal. Your statutory rights in case of non-delivery remain unaffected."
+      ] },
+      { "h": "6. Cancelling the subscription", "items": [
+        "Cancel at any time in Google Play (Play Store › Profile › Payments & subscriptions › Subscriptions) or the App Store (Settings › Apple ID › Subscriptions). Cancellation takes effect at the end of the current period; partially used periods are not refunded. Deleting the app does not cancel the subscription."
+      ] },
+      { "h": "7. Complaints and disputes", "items": [
+        "Send complaints through the in-app Feedback section or to {{eposta}}. Consumer arbitration committees and consumer courts in Turkey are competent within the limits set by law; refund requests may also be handled under the store's refund policy."
+      ] },
+      { "h": "8. Acceptance", "items": [
+        "By ticking the consent box on the purchase screen and confirming the purchase, you declare that you have read and accepted this information and agreement. The agreement takes effect when the purchase is confirmed."
+      ] }
+    ]
+  }
+}

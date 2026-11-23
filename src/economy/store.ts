@@ -86,3 +86,14 @@ export async function buyAutoPer(): Promise<void> {
     /* depolama yoksa yalnızca bu oturumda açık kalır */
   }
 }
+
+/**
+ * Satın alımları geri yükle (App Store zorunluluğu): mağazadaki aktif abonelik ve
+ * tüketilmeyen ürünleri (Otomatik Per) hesaba yeniden tanımlar. Gerçek mağaza
+ * (RevenueCat) bağlanınca burası mağazadan sorgular; test modunda cihazdakini döndürür.
+ */
+export async function restorePurchases(): Promise<{ vip: boolean; autoPer: boolean }> {
+  if (!TEST_MODE) throw Object.assign(new Error("storeSoon"), { code: "storeSoon" });
+  await wait(600);
+  return { vip: false, autoPer: ownsAutoPer() };
+}

@@ -1,3 +1,5 @@
+import { AgeGate } from "./AgeGate";
+import { birthYear, tooYoung } from "../age";
 import { LegalOverlay } from "./Terms";
 import { useState } from "react";
 import { type Account, type LoginMethod, loadAccount, saveAccount } from "../account";
@@ -20,11 +22,19 @@ export function Splash({ onStart }: { onStart: () => void }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  const finish = (a: Account) => {
-    saveAccount(a);
-    setAccount(a);
-    onStart();
+  // Yaş kapısı: doğum yılı bilinmiyorsa önce sorulur; 13 yaş altı devam edemez
+  const [ageNext, setAgeNext] = useState<null | (() => void)>(null);
+  const gated = (go: () => void) => {
+    if (tooYoung()) return setAgeNext(() => () => {});
+    if (birthYear() === null) return setAgeNext(() => go);
+    go();
   };
+  const finish = (a: Account) =>
+    gated(() => {
+      saveAccount(a);
+      setAccount(a);
+      onStart();
+    });
 
   const facebook = async () => {
     if (!CLOUD) {
@@ -65,7 +75,7 @@ export function Splash({ onStart }: { onStart: () => void }) {
   if (account && !panel)
     return (
       <div className="splash">
-        <button type="button" className="splash-hit" onClick={onStart} aria-label={t("tapToStart")}>
+        <button type="button" className="splash-hit" onClick={() => gated(onStart)} aria-label={t("tapToStart")}>
           <BrandLogo size="lg" />
           <span className="splash-tap">{t("tapToStart")}</span>
         </button>
@@ -74,6 +84,7 @@ export function Splash({ onStart }: { onStart: () => void }) {
           {" · "}
           <button type="button" className="link" onClick={() => { saveAccount(null); setAccount(null); }}>{t("changeAccount")}</button>
         </div>
+        {ageNext && <AgeGate onDone={() => { const go = ageNext; setAgeNext(null); go(); }} onClose={() => setAgeNext(null)} />}
       </div>
     );
 
@@ -103,6 +114,7 @@ export function Splash({ onStart }: { onStart: () => void }) {
         </p>
       )}
       {legal && <LegalOverlay kind={legal} onClose={() => setLegal(null)} />}
+      {ageNext && <AgeGate onDone={() => { const go = ageNext; setAgeNext(null); go(); }} onClose={() => setAgeNext(null)} />}
 
       {panel === "soon" && (
         <div className="login-panel">

@@ -1,0 +1,72 @@
+{
+  "tr": {
+    "title": "Word Okey Hesap ve Veri Silme",
+    "updated": "Yürürlük tarihi: 23 Kasım 2026",
+    "intro": "Word Okey hesabını ve hesabına bağlı verileri istediğin zaman silebilirsin. Bu sayfa, uygulama yüklü olmasa bile silme talebini nasıl iletebileceğini anlatır.",
+    "sections": [
+      { "h": "1. Uygulamadan silme (en hızlı yol)", "items": [
+        "Word Okey'i aç (Android, iOS veya web sürümü: ylmzsav-coder.github.io/cinAli).",
+        "Ana menüde \"Profilim\"e dokun, ardından \"⚙️ Ayarlar\"ı seç.",
+        "En üstteki \"Word Okey hesabını sil\" bağlantısına dokun ve \"Evet, hesabımı sil\" ile onayla.",
+        "Bir masada oturuyorsan önce masadan çıkman gerekir. Silme işlemi hemen gerçekleşir."
+      ] },
+      { "h": "2. Uygulama yüklü değilse", "items": [
+        "Web sürümünü tarayıcıda aç ve hesabını oluştururken kullandığın yöntemle (e-posta veya Facebook) giriş yap; ardından 1. bölümdeki adımları izle.",
+        "Giriş yapamıyorsan {{eposta}} adresine \"Hesap silme talebi\" konulu bir e-posta gönder. E-postada oyuncu adını ve hesabını açarken kullandığın e-posta adresini ya da giriş yöntemini belirt.",
+        "Hesabın sana ait olduğunu doğrulamak için ek bilgi isteyebiliriz. Talepler en geç 30 gün içinde ücretsiz olarak sonuçlandırılır."
+      ] },
+      { "h": "3. Silinen veriler", "items": [
+        "Hesap ve giriş bilgilerin (oyuncu adı, e-posta, giriş kimliği).",
+        "Çip bakiyen ve çip hareketlerin, hediyelerin, VIP üyeliğin ve istatistiklerin.",
+        "Arkadaş listen, arkadaşlık istekleri, masa davetleri, engellediğin oyuncular ve ayarların.",
+        "Silinen hesap geri getirilemez; çipler, hediyeler ve kalan VIP süresi iade edilmez."
+      ] },
+      { "h": "4. Bir süre saklanan veriler", "items": [
+        "VIP Oda sohbet kayıtları: 5651 sayılı Kanun kapsamındaki saklama yükümlülüğü nedeniyle 2 yıl; süre dolunca otomatik silinir.",
+        "Kural ihlali ve şikâyet kayıtları: inceleme ve olası hukuki süreçlerin zamanaşımı süresince.",
+        "Satın alma kayıtları: vergi ve ticari mevzuatın öngördüğü süre boyunca.",
+        "Cihazındaki yerel veriler uygulamadan silme sırasında temizlenir; uygulamayı kaldırmak da bunları siler."
+      ] },
+      { "h": "5. İletişim", "items": [
+        "Veri sorumlusu: {{unvan}}.",
+        "E-posta: {{eposta}}.",
+        "Ayrıntılar için Gizlilik Politikası: ylmzsav-coder.github.io/cinAli/gizlilik.html"
+      ] }
+    ]
+  },
+  "en": {
+    "title": "Word Okey Account and Data Deletion",
+    "updated": "Effective date: 23 November 2026",
+    "intro": "You can delete your Word Okey account and the data linked to it at any time. This page explains how to request deletion, even if the app is not installed.",
+    "sections": [
+      { "h": "1. Delete in the app (fastest)", "items": [
+        "Open Word Okey (Android, iOS or the web version: ylmzsav-coder.github.io/cinAli).",
+        "Tap \"My profile\" in the main menu, then choose \"⚙️ Settings\".",
+        "Tap \"Delete Word Okey account\" at the top and confirm with \"Yes, delete my account\".",
+        "If you are sitting at a table, leave it first. Deletion happens immediately."
+      ] },
+      { "h": "2. If the app is not installed", "items": [
+        "Open the web version in a browser and sign in the same way you created your account (e-mail or Facebook), then follow the steps in section 1.",
+        "If you cannot sign in, send an e-mail with the subject \"Account deletion request\" to {{eposta}}, stating your player name and the e-mail address or sign-in method you used.",
+        "We may ask for additional information to confirm the account is yours. Requests are completed free of charge within 30 days."
+      ] },
+      { "h": "3. Data that is deleted", "items": [
+        "Your account and sign-in data (player name, e-mail, sign-in ID).",
+        "Your chip balance and chip transactions, gifts, VIP membership and statistics.",
+        "Your friends list, friend requests, table invitations, blocked players and settings.",
+        "A deleted account cannot be restored; chips, gifts and remaining VIP time are not refunded."
+      ] },
+      { "h": "4. Data kept for a limited time", "items": [
+        "VIP Room chat logs: 2 years because of the retention obligation under Turkish Law No. 5651, then deleted automatically.",
+        "Rule violation and report records: for the review and the limitation period of any legal proceedings.",
+        "Purchase records: for the period required by tax and commercial law.",
+        "Local data on your device is cleared when you delete in the app; uninstalling the app also removes it."
+      ] },
+      { "h": "5. Contact", "items": [
+        "Data controller: {{unvan}}.",
+        "E-mail: {{eposta}}.",
+        "Privacy Policy: ylmzsav-coder.github.io/cinAli/privacy.html"
+      ] }
+    ]
+  }
+}

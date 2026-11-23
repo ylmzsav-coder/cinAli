@@ -31,6 +31,8 @@ export const heartbeat = onCall(async (req) => {
   if (raw.trim()) patch.name = cleanName(raw, uid, "en");
   // Profil ayarı: arkadaşlardan oyun daveti alınsın mı
   if (typeof req.data?.invites === "boolean") patch.allowInvites = req.data.invites;
+  // Yaş beyanı: 18 yaşından küçükler VIP Oda'ya (serbest sohbet) giremez
+  if (typeof req.data?.adult === "boolean") patch.adult = req.data.adult;
   await userRef(uid).set(patch, { merge: true });
   return { ok: true };
 });

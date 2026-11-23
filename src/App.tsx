@@ -26,7 +26,7 @@ import { startHeartbeat } from "./online/social";
 import { Shop } from "./ui/Shop";
 import { Tables } from "./ui/Tables";
 
-type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby" | "terms" | "privacy" | "community" | "admin";
+type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby" | "terms" | "privacy" | "community" | "licenses" | "admin";
 
 const paidGames = new Set<number>();
 
@@ -303,11 +303,13 @@ export function App() {
         );
       break;
     case "rules":
-      return <Rules onBack={() => setScreen("hub")} />;
+      return <Rules onBack={() => setScreen("hub")} onLicenses={() => setScreen("licenses")} />;
     case "admin":
       return <Admin onBack={() => setScreen("hub")} />;
     case "terms":
       return <Terms onBack={() => setScreen("hub")} />;
+    case "licenses":
+      return <Terms kind="licenses" onBack={() => setScreen("rules")} />;
     case "community":
       return <Terms kind="community" onBack={() => setScreen("hub")} />;
     case "privacy":

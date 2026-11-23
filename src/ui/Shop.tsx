@@ -3,7 +3,9 @@ import { VipModal } from "./Vip";
 import { VIP_PRODUCT } from "../economy/store";
 import { VIP_BONUS_CHIPS } from "../economy/config";
 import { useState } from "react";
-import { CHIP_PACKS, TEST_MODE, adsAvailable, buyPack, purchasesAvailable, showRewardedAd } from "../economy/store";
+import { CHIP_PACKS, TEST_MODE, adsAvailable, buyPack, purchasesAvailable, restorePurchases, showRewardedAd } from "../economy/store";
+import { PurchaseConsent } from "./Terms";
+import { salesConsented } from "../terms";
 import { useWallet } from "../economy/useWallet";
 import { AD_REWARD, DAILY_BONUS, wallet } from "../economy/wallet";
 import { errorText, formatNumber, t } from "../i18n";
@@ -15,6 +17,19 @@ export function Shop({ onBack, notice }: { onBack: () => void; notice?: string |
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const adsLeft = wallet.adsLeftToday();
+  const [consent, setConsent] = useState(salesConsented);
+  const restore = async () => {
+    setBusy("restore");
+    setMsg(null);
+    try {
+      const r = await restorePurchases();
+      setMsg(r.vip || r.autoPer ? t("restoreDone") : t("restoreNone"));
+    } catch (e) {
+      setMsg(errorText(e));
+    } finally {
+      setBusy(null);
+    }
+  };
 
   const buy = async (productId: string) => {
     const pack = CHIP_PACKS.find((p) => p.productId === productId)!;
@@ -62,20 +77,26 @@ export function Shop({ onBack, notice }: { onBack: () => void; notice?: string |
         <span className="vip-banner-text"><b>{t("vipTitle")}</b><small>{t("vipBannerSub", { n: formatNumber(VIP_BONUS_CHIPS) })}</small></span>
         <span className="vip-banner-price">{VIP_PRODUCT.testPrice}<small>/{t("vipMonth")}</small></span>
       </button>
+      <p className="muted small sub-note">{t("vipAutoRenew", { price: VIP_PRODUCT.testPrice })}</p>
       {vipOpen && <VipModal onClose={() => setVipOpen(false)} />}
+      <PurchaseConsent onChange={setConsent} />
 
       <div className="packs">
         {CHIP_PACKS.map((p) => (
           <div key={p.productId} className="pack">
             {p.badge && <span className="pack-badge">{t(p.badge)}</span>}
             <Chips amount={p.chips} big />
-            <button type="button" className="primary" disabled={!purchasesAvailable() || !!busy}
-              onClick={() => buy(p.productId)}>
+            <button type="button" className="primary" disabled={!purchasesAvailable() || !!busy || !consent}
+              title={!consent ? t("consentNeeded") : undefined} onClick={() => buy(p.productId)}>
               {busy === p.productId ? "…" : purchasesAvailable() ? p.testPrice : t("soon")}
             </button>
           </div>
         ))}
       </div>
+
+      <button type="button" className="link restore-btn" disabled={!!busy} onClick={() => void restore()}>
+        {busy === "restore" ? "…" : `↺ ${t("restorePurchases")}`}
+      </button>
 
       <GiftShop />
 

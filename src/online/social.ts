@@ -1,4 +1,5 @@
 /** Arkadaşlar ve çevrimiçi durumu (sunucu çağrıları). */
+import { isAdult } from "../age";
 import { CLOUD, call } from "./cloud";
 
 export interface FriendStatus {
@@ -39,7 +40,7 @@ let beat: ReturnType<typeof setInterval> | null = null;
 export function startHeartbeat(name: string, invites = true) {
   if (!CLOUD) return;
   const send = () => {
-    if (document.visibilityState === "visible") void call("heartbeat", { name, invites }).catch(() => {});
+    if (document.visibilityState === "visible") void call("heartbeat", { name, invites, adult: isAdult() }).catch(() => {});
   };
   if (beat) clearInterval(beat);
   send();

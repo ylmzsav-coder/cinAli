@@ -5,6 +5,8 @@ import { useWallet } from "../economy/useWallet";
 import { wallet } from "../economy/wallet";
 import { errorText, formatNumber, t } from "../i18n";
 import type { Gender } from "../storage";
+import { PurchaseConsent } from "./Terms";
+import { salesConsented } from "../terms";
 
 /** VIP abonelik penceresi: avantajlar, haftalık ücret, hediye çip ve abonelik süresi. */
 export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSubscribed?: () => void }) {
@@ -12,6 +14,7 @@ export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSub
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ text: string; error?: boolean } | null>(null);
   const active = !!w.vipUntil && w.vipUntil > Date.now();
+  const [consent, setConsent] = useState(salesConsented);
   const subscribe = async () => {
     setBusy(true);
     setMsg(null);
@@ -46,11 +49,13 @@ export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSub
         {active && <p className="vip-active">✅ {t("vipActiveUntil", { date: new Date(w.vipUntil!).toLocaleDateString() })}</p>}
         {TEST_MODE && <div className="test-banner">{t("testMode")}</div>}
         {msg && <p className={msg.error ? "error" : "toast"}>{msg.text}</p>}
-        <button type="button" className="vip-buy" disabled={busy || !purchasesAvailable()} onClick={() => void subscribe()}>
+        <PurchaseConsent onChange={setConsent} />
+        <button type="button" className="vip-buy" disabled={busy || !purchasesAvailable() || !consent} onClick={() => void subscribe()}>
           {busy ? "…" : !purchasesAvailable() ? t("soon") : active ? t("vipExtend") : t("vipSubscribe")}
         </button>
         </div>
         <p className="muted small">{t("vipNote")}</p>
+        <p className="muted small sub-note">{t("vipAutoRenew", { price: VIP_PRODUCT.testPrice })}</p>
       </div>
     </div>
   );

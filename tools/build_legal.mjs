@@ -6,8 +6,13 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const load = (f) => JSON.parse(readFileSync(new URL(`../src/legal/${f}.json`, import.meta.url), "utf8"));
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const page = (data, lang, other) => {
-  const d = data[lang];
+const seller = load("seller");
+const MISSING = { tr: "[eklenecek]", en: "[to be added]" };
+/** {{alan}} yer tutucularını satıcı bilgileriyle doldurur (boşsa "[eklenecek]"). */
+export const fill = (text, lang = "tr") => text.replace(/\{\{(\w+)\}\}/g, (_, k) => seller[k] || `${k === "unvan" ? "Word Okey uygulama sahibi" : ""} ${MISSING[lang] ?? MISSING.en}`.trim());
+const page = (raw, lang, other) => {
+  const deep = (v) => (typeof v === "string" ? fill(v, lang) : Array.isArray(v) ? v.map(deep) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, deep(x)])) : v);
+  const d = deep(raw[lang]);
   return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -45,9 +50,11 @@ ${d.sections.map((s) => `  <section>\n    <h2>${esc(s.h)}</h2>\n    <ul>\n${s.it
 `;
 };
 const out = (name, html) => writeFileSync(new URL(`../public/${name}`, import.meta.url), html);
-const privacy = load("privacy"), community = load("community");
+const privacy = load("privacy"), community = load("community"), deletion = load("deletion");
 out("gizlilik.html", page(privacy, "tr", { href: "privacy.html", lang: "en", label: "English" }));
 out("privacy.html", page(privacy, "en", { href: "gizlilik.html", lang: "tr", label: "Türkçe" }));
 out("topluluk-kurallari.html", page(community, "tr", { href: "community-guidelines.html", lang: "en", label: "English" }));
 out("community-guidelines.html", page(community, "en", { href: "topluluk-kurallari.html", lang: "tr", label: "Türkçe" }));
-console.log("gizlilik, privacy, topluluk-kurallari, community-guidelines üretildi");
+out("hesap-silme.html", page(deletion, "tr", { href: "account-deletion.html", lang: "en", label: "English" }));
+out("account-deletion.html", page(deletion, "en", { href: "hesap-silme.html", lang: "tr", label: "Türkçe" }));
+console.log("yasal sayfalar üretildi: gizlilik, privacy, topluluk-kurallari, community-guidelines, hesap-silme, account-deletion");
