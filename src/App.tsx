@@ -147,7 +147,8 @@ export function App() {
 
   const startGame = (s: Settings, table?: TableConfig, want?: Gender) => {
     setGameLang(s.gameLang);
-    const size = table?.players ?? 4;
+    // Pratik (çipsiz) iki kişilik: siz ve bir bilgisayar
+    const size = table?.players ?? 2;
     // İki kişilik VIP odada bilgisayar rakip aranan cinsiyette (bot adları: kadın, erkek, kadın)
     const bots = size === 2 && want ? [botNames()[want === "kadin" ? 0 : 1]] : botNames();
     const names = [s.name || t("defaultName"), ...bots].slice(0, size);
