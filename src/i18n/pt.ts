@@ -488,6 +488,7 @@ const pt: Messages = {
   deleteAccountAsk: "Tens a certeza de que queres eliminar a conta para sempre?",
   deleteAccountInfo: "As tuas fichas, presentes, assinatura VIP, estatísticas e amigos serão eliminados; não é reversível. Registos de chat com prazo legal de conservação ficam guardados até ao fim desse prazo.",
   deleteAccountYes: "Sim, eliminar a minha conta",
+  communityLink: "Regras da comunidade",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

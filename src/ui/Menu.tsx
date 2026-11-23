@@ -38,6 +38,7 @@ interface HubProps {
   onRules: () => void;
   onTerms: () => void;
   onPrivacy: () => void;
+  onCommunity: () => void;
   onAdmin: () => void;
   /** Arkadaşın masasını izle. */
   /** Gelen masa davetine katıl (davet kodu). */
@@ -62,7 +63,7 @@ function PlayerIcon() {
   );
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onTerms, onPrivacy, onAdmin, onJoinInvite }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onTerms, onPrivacy, onCommunity, onAdmin, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
@@ -233,7 +234,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               onPick={(tb, mode) => { setVipLobby(false); onTwo(tb, mode); }}
               onSeek={(tb, want) => { setVipLobby(false); onSitTable(tb, want); }} />
           )}
-          {vipTerms && <VipTermsModal onAccept={() => { setVipTerms(false); setVipLobby(true); }} onClose={() => setVipTerms(false)} onRead={() => { setVipTerms(false); onTerms(); }} onPrivacy={() => { setVipTerms(false); onPrivacy(); }} />}
+          {vipTerms && <VipTermsModal onAccept={() => { setVipTerms(false); setVipLobby(true); }} onClose={() => setVipTerms(false)} onRead={() => { setVipTerms(false); onTerms(); }} onPrivacy={() => { setVipTerms(false); onPrivacy(); }} onCommunity={() => { setVipTerms(false); onCommunity(); }} />}
           {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); openVipLobby(); }, 1200)} />}
           {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onJoin={onJoinInvite}
             gender={settings.gender} onGender={(g) => onSettings({ ...settings, gender: g })}
@@ -322,6 +323,8 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
       )}
       <div className="legal-links terms-link">
         <button type="button" className="link small" onClick={onTerms}>{t("termsOnly")}</button>
+        <span aria-hidden>·</span>
+        <button type="button" className="link small" onClick={onCommunity}>{t("communityLink")}</button>
         <span aria-hidden>·</span>
         <button type="button" className="link small" onClick={onPrivacy}>{t("privacyLink")}</button>
       </div>

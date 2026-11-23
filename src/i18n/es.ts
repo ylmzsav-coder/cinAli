@@ -488,6 +488,7 @@ const es: Messages = {
   deleteAccountAsk: "¿Seguro que quieres eliminar tu cuenta para siempre?",
   deleteAccountInfo: "Se borrarán tus fichas, regalos, suscripción VIP, estadísticas y amigos; no se puede deshacer. Los registros de chat con plazo legal de conservación se guardan hasta que termine.",
   deleteAccountYes: "Sí, eliminar mi cuenta",
+  communityLink: "Normas de la comunidad",
   close: "Cerrar",
   handCol: "Mano",
   totalRow: "Total",

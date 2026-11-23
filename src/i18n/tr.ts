@@ -492,6 +492,7 @@ const tr = {
   deleteAccountAsk: "Hesabını kalıcı olarak silmek istediğine emin misin?",
   deleteAccountInfo: "Çiplerin, hediyelerin, VIP üyeliğin, istatistiklerin ve arkadaş listen silinir; bu işlem geri alınamaz. Yasal saklama süresi olan sohbet kayıtları süre dolana kadar saklanır.",
   deleteAccountYes: "Evet, hesabımı sil",
+  communityLink: "Topluluk Kuralları",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

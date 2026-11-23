@@ -3,6 +3,7 @@
  * Metin genel bir çerçevedir; yayından önce bir hukukçunun gözden geçirmesi önerilir.
  */
 import PRIVACY from "./legal/privacy.json";
+import COMMUNITY from "./legal/community.json";
 
 
 export interface TermsDoc {
@@ -29,6 +30,7 @@ const TR: TermsDoc = {
       "Alım-satım teklifi, telefon numarası, IBAN, sosyal medya/mesajlaşma hesabı gibi iletişim veya ödeme bilgisi paylaşmak; oyuncuları oyun dışına çekmeye çalışmak.",
       "Tehdit, taciz, nefret söylemi, cinsel içerik; çocuklara yönelik her türlü istismar.",
       "Dolandırıcılık, hile, hesap paylaşımı veya hesap satışı, başkasının kimliğine bürünmek.",
+      "Ayrıntılı davranış kuralları Topluluk Kuralları'nda yer alır ve bu koşulların bir parçasıdır.",
     ] },
     { h: "3. Denetim ve yaptırımlar", items: [
       "Mesajlar otomatik filtreden geçer; yasaklı içerik masaya gönderilmez ve ihlal olarak kaydedilir.",
@@ -62,6 +64,7 @@ const EN: TermsDoc = {
       "Offering to buy or sell anything, or sharing contact or payment details such as phone numbers, IBANs or social/messaging accounts; trying to move players off the game.",
       "Threats, harassment, hate speech, sexual content; any form of child abuse.",
       "Fraud, cheating, sharing or selling accounts, impersonating others.",
+      "Detailed rules of conduct are set out in the Community Guidelines, which form part of these terms.",
     ] },
     { h: "3. Moderation and sanctions", items: [
       "Messages pass an automatic filter; forbidden content is not delivered and is recorded as a violation.",
@@ -270,4 +273,17 @@ const ONLY_EN: Record<string, string> = {
 export function privacyFor(lang: string): PrivacyDoc {
   const docs = PRIVACY as Record<string, PrivacyDoc>;
   return docs[lang] ?? { ...docs.en, note: ONLY_EN[lang] };
+}
+
+const COMMUNITY_ONLY_EN: Record<string, string> = {
+  de: "Die Community-Richtlinien sind derzeit auf Englisch verfügbar.",
+  fr: "Les règles de la communauté sont actuellement disponibles en anglais.",
+  es: "Las normas de la comunidad están disponibles por ahora en inglés.",
+  it: "Le regole della community sono al momento disponibili in inglese.",
+  pt: "As regras da comunidade estão, por agora, disponíveis em inglês.",
+};
+/** Topluluk Kuralları (Türkçe ve İngilizce; diğer dillerde İngilizce metin + not). */
+export function communityFor(lang: string): PrivacyDoc {
+  const docs = COMMUNITY as Record<string, PrivacyDoc>;
+  return docs[lang] ?? { ...docs.en, note: COMMUNITY_ONLY_EN[lang] };
 }

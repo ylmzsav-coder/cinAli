@@ -488,6 +488,7 @@ const fr: Messages = {
   deleteAccountAsk: "Veux-tu vraiment supprimer définitivement ton compte ?",
   deleteAccountInfo: "Tes jetons, cadeaux, abonnement VIP, statistiques et amis seront supprimés ; c’est irréversible. Les journaux de chat soumis à une durée légale de conservation sont gardés jusqu’à son terme.",
   deleteAccountYes: "Oui, supprimer mon compte",
+  communityLink: "Règles de la communauté",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

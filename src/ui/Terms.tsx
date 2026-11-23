@@ -1,10 +1,11 @@
 import { t, uiLang } from "../i18n";
-import { acceptVipTerms, privacyFor, termsFor } from "../terms";
+import { acceptVipTerms, communityFor, privacyFor, termsFor } from "../terms";
 
 /** Kullanım Koşulları ya da Gizlilik Politikası sayfası. */
-export function Terms({ onBack, kind = "terms" }: { onBack: () => void; kind?: "terms" | "privacy" }) {
-  const doc = kind === "privacy" ? privacyFor(uiLang()) : termsFor(uiLang());
-  const extra = kind === "privacy" ? (doc as ReturnType<typeof privacyFor>) : null;
+export type LegalKind = "terms" | "privacy" | "community";
+export function Terms({ onBack, kind = "terms" }: { onBack: () => void; kind?: LegalKind }) {
+  const doc = kind === "privacy" ? privacyFor(uiLang()) : kind === "community" ? communityFor(uiLang()) : termsFor(uiLang());
+  const extra = kind !== "terms" ? (doc as ReturnType<typeof privacyFor>) : null;
   return (
     <div className="page terms-page">
       <button type="button" className="link" onClick={onBack}>{t("back")}</button>
@@ -24,11 +25,11 @@ export function Terms({ onBack, kind = "terms" }: { onBack: () => void; kind?: "
 
 /** VIP Oda'ya ilk girişte gösterilen kurallar ve kayıt uyarısı: kabul edilmeden oda açılmaz. */
 /** Tam ekran yasal metin (giriş ekranından açılır). */
-export function LegalOverlay({ kind, onClose }: { kind: "terms" | "privacy"; onClose: () => void }) {
+export function LegalOverlay({ kind, onClose }: { kind: LegalKind; onClose: () => void }) {
   return <div className="legal-overlay"><Terms kind={kind} onBack={onClose} /></div>;
 }
 
-export function VipTermsModal({ onAccept, onClose, onRead, onPrivacy }: { onAccept: () => void; onClose: () => void; onRead: () => void; onPrivacy?: () => void }) {
+export function VipTermsModal({ onAccept, onClose, onRead, onPrivacy, onCommunity }: { onAccept: () => void; onClose: () => void; onRead: () => void; onPrivacy?: () => void; onCommunity?: () => void }) {
   return (
     <div className="modal-bg" onClick={onClose}>
       <div className="modal vip-terms" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label={t("vipTermsTitle")}>
@@ -42,6 +43,7 @@ export function VipTermsModal({ onAccept, onClose, onRead, onPrivacy }: { onAcce
         </ul>
         <div className="legal-links">
           <button type="button" className="link" onClick={onRead}>{t("termsOnly")}</button>
+          {onCommunity && <button type="button" className="link" onClick={onCommunity}>{t("communityLink")}</button>}
           {onPrivacy && <button type="button" className="link" onClick={onPrivacy}>{t("privacyLink")}</button>}
         </div>
         <div className="modal-actions">

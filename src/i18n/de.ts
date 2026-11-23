@@ -488,6 +488,7 @@ const de: Messages = {
   deleteAccountAsk: "Willst du dein Konto wirklich dauerhaft löschen?",
   deleteAccountInfo: "Chips, Geschenke, VIP-Mitgliedschaft, Statistiken und Freundesliste werden gelöscht; das kann nicht rückgängig gemacht werden. Chatprotokolle mit gesetzlicher Aufbewahrungsfrist bleiben bis zu deren Ende gespeichert.",
   deleteAccountYes: "Ja, Konto löschen",
+  communityLink: "Community-Richtlinien",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

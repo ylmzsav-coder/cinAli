@@ -488,6 +488,7 @@ const it: Messages = {
   deleteAccountAsk: "Vuoi davvero eliminare per sempre il tuo account?",
   deleteAccountInfo: "Gettoni, regali, abbonamento VIP, statistiche e amici verranno eliminati; l’operazione è irreversibile. I registri della chat con obbligo legale di conservazione restano fino alla scadenza.",
   deleteAccountYes: "Sì, elimina il mio account",
+  communityLink: "Regole della community",
   close: "Chiudi",
   handCol: "Mano",
   totalRow: "Totale",

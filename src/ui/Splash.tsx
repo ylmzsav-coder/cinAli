@@ -13,7 +13,7 @@ import { BrandLogo } from "./BrandLogo";
 export function Splash({ onStart }: { onStart: () => void }) {
   const [account, setAccount] = useState<Account | null>(loadAccount);
   const [panel, setPanel] = useState<null | "email" | "soon">(null);
-  const [legal, setLegal] = useState<null | "terms" | "privacy">(null);
+  const [legal, setLegal] = useState<null | "terms" | "privacy" | "community">(null);
   const [soonMethod, setSoonMethod] = useState<LoginMethod>("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -98,6 +98,7 @@ export function Splash({ onStart }: { onStart: () => void }) {
         <p className="login-agree">
           {t("loginAgree")}{" "}
           <button type="button" className="link" onClick={() => setLegal("terms")}>{t("termsOnly")}</button>{" · "}
+          <button type="button" className="link" onClick={() => setLegal("community")}>{t("communityLink")}</button>{" · "}
           <button type="button" className="link" onClick={() => setLegal("privacy")}>{t("privacyLink")}</button>
         </p>
       )}

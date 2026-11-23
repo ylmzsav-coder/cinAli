@@ -1,12 +1,12 @@
-// Gizlilik Politikası'nın herkese açık web sayfalarını üretir (mağaza kayıtları için adres):
-//   public/gizlilik.html (Türkçe), public/privacy.html (İngilizce)
-// Kaynak: src/legal/privacy.json (uygulama içindeki sayfa da aynı metni kullanır).
+// Gizlilik Politikası ve Topluluk Kuralları'nın herkese açık web sayfalarını üretir:
+//   public/gizlilik.html, privacy.html, topluluk-kurallari.html, community-guidelines.html
+// Kaynak: src/legal/*.json (uygulama içindeki sayfa da aynı metni kullanır).
 // Kullanım: node tools/build_legal.mjs  (npm run build bunu otomatik çalıştırır)
 import { readFileSync, writeFileSync } from "node:fs";
 
-const data = JSON.parse(readFileSync(new URL("../src/legal/privacy.json", import.meta.url), "utf8"));
+const load = (f) => JSON.parse(readFileSync(new URL(`../src/legal/${f}.json`, import.meta.url), "utf8"));
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const page = (lang, other) => {
+const page = (data, lang, other) => {
   const d = data[lang];
   return `<!doctype html>
 <html lang="${lang}">
@@ -44,6 +44,10 @@ ${d.sections.map((s) => `  <section>\n    <h2>${esc(s.h)}</h2>\n    <ul>\n${s.it
 </html>
 `;
 };
-writeFileSync(new URL("../public/gizlilik.html", import.meta.url), page("tr", { href: "privacy.html", lang: "en", label: "English" }));
-writeFileSync(new URL("../public/privacy.html", import.meta.url), page("en", { href: "gizlilik.html", lang: "tr", label: "Türkçe" }));
-console.log("gizlilik.html ve privacy.html üretildi");
+const out = (name, html) => writeFileSync(new URL(`../public/${name}`, import.meta.url), html);
+const privacy = load("privacy"), community = load("community");
+out("gizlilik.html", page(privacy, "tr", { href: "privacy.html", lang: "en", label: "English" }));
+out("privacy.html", page(privacy, "en", { href: "gizlilik.html", lang: "tr", label: "Türkçe" }));
+out("topluluk-kurallari.html", page(community, "tr", { href: "community-guidelines.html", lang: "en", label: "English" }));
+out("community-guidelines.html", page(community, "en", { href: "topluluk-kurallari.html", lang: "tr", label: "Türkçe" }));
+console.log("gizlilik, privacy, topluluk-kurallari, community-guidelines üretildi");

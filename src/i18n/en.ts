@@ -488,6 +488,7 @@ const en: Messages = {
   deleteAccountAsk: "Are you sure you want to delete your account permanently?",
   deleteAccountInfo: "Your chips, gifts, VIP membership, statistics and friends list will be deleted; this cannot be undone. Chat logs with a legal retention period are kept until it ends.",
   deleteAccountYes: "Yes, delete my account",
+  communityLink: "Community Guidelines",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",
