@@ -114,7 +114,7 @@ export function TwoLobby({ vip = false, name, gender, onGender, onClose, onPick,
   /** VIP: aranan cinsiyette oyuncu. */
   onSeek?: (tb: TableConfig, want: Gender) => void;
 }) {
-  const ids = vip ? (["vip2", "vip2u"] as const) : (["ozel2", "ozel2u"] as const);
+  const ids = vip ? (["vip2", "vip2m", "vip2u"] as const) : (["ozel2", "ozel2u"] as const);
   const [id, setId] = useState<string>(ids[0]);
   const [askFor, setAskFor] = useState<Gender | null>(null);
   const tb = tableById(id)!;

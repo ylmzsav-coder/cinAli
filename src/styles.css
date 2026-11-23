@@ -1424,3 +1424,5 @@ button.watchers-badge { cursor: pointer; border: none; font: inherit; }
 .invite-modal .modal-actions { display: flex; gap: 10px; justify-content: center; }
 .invite-modal .modal-actions button { flex: 1; padding: 10px; font-weight: 800; }
 .invite-modal .danger { background: #c62828; color: #fff; }
+/* VIP üç giriş seçeneği */
+.vip-lobby .vip-stake { grid-template-columns: repeat(3, 1fr); }

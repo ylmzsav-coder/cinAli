@@ -13,7 +13,10 @@ export const OZEL_USTA_ENTRY = 250;
 export const OZEL_USTA_PRIZE = 500;
 /** VIP Usta oda (2 kişi): giriş ve kazanana ödül. */
 export const VIP_USTA_ENTRY = 500;
-export const VIP_USTA_PRIZE = 1_500;
+export const VIP_USTA_PRIZE = 1_000;
+/** VIP orta masa: giriş 250, kazanana 500. */
+export const VIP_ORTA_ENTRY = 250;
+export const VIP_ORTA_PRIZE = 500;
 /** Yeni oyuncuya hoş geldin hediyesi: 5 oyunluk çip. */
 export const WELCOME_GAMES = 5;
 export const WELCOME_CHIPS = 500;
@@ -24,7 +27,7 @@ export const VIP_DAYS = 7;
 export const VIP_MS = VIP_DAYS * 86_400_000;
 /** VIP iki kişilik masa: giriş ve birinciye ödenen çip. */
 export const VIP_ENTRY = 100;
-export const VIP_PRIZE = 300;
+export const VIP_PRIZE = 200;
 /** Çipi biten oyuncuya hediye: bakiye masa girişinin altına düşünce 12 saat sonra. */
 export const REFILL_CHIPS = 300;
 export const REFILL_HOURS = 12;

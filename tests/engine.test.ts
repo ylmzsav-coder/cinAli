@@ -258,7 +258,7 @@ describe("çip ödemesi (en yüksek toplam birinci)", () => {
     const vip = TABLES.find((x) => x.vip)!;
     expect(vip.players).toBe(2);
     expect(vip.entry).toBe(100);
-    expect(winnerPrize(vip)).toBe(300);
+    expect(winnerPrize(vip)).toBe(200);
     expect(t.entry).toBe(100);
     expect(winnerPrize(t)).toBe(400);
     expect(payout(t, [300, 50, 200, 30], 0, 0)).toBe(400);

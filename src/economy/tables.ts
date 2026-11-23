@@ -1,5 +1,5 @@
 import type { BotLevel } from "../game/bot";
-import { TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE, OZEL_ENTRY, OZEL_PRIZE, OZEL_USTA_ENTRY, OZEL_USTA_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
+import { TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE, VIP_ORTA_ENTRY, VIP_ORTA_PRIZE, OZEL_ENTRY, OZEL_PRIZE, OZEL_USTA_ENTRY, OZEL_USTA_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
 
 export interface TableConfig {
   id: string;
@@ -30,6 +30,7 @@ export const TABLES: TableConfig[] = [
   // VIP iki kişilik özel oda: karşılıklı, yalnızca VIP aboneler
   { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true },
   // VIP Usta: aynı oda, yüksek giriş (VIP kartındaki giriş seçiminden)
+  { id: "vip2m", name: "VIP 250", entry: VIP_ORTA_ENTRY, hands: 1, level: "zor", prize: VIP_ORTA_PRIZE, players: 2, vip: true },
   { id: "vip2u", name: "VIP Usta", entry: VIP_USTA_ENTRY, hands: 1, level: "zor", prize: VIP_USTA_PRIZE, players: 2, vip: true },
 ];
 
