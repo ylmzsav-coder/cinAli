@@ -84,7 +84,15 @@ function write(key: string, v: unknown) {
 }
 
 export function loadStats(): PlayerStats {
-  return { ...emptyStats(), ...(read<Partial<PlayerStats>>(KEY) ?? {}) };
+  const s = { ...emptyStats(), ...(read<Partial<PlayerStats>>(KEY) ?? {}) };
+  // Eski "teslim olma" kayıtları artık yenilgi sayılır (bir kez taşınır)
+  if (s.quits > 0) {
+    s.gamesPlayed += s.quits;
+    s.gamesLost += s.quits;
+    s.quits = 0;
+    write(KEY, s);
+  }
+  return s;
 }
 
 /** İşlenmiş el ve oyunlar: "seed:el" ve "seed:oyun". */
@@ -147,14 +155,15 @@ export function recordProgress(state: GameState, payout?: number) {
   write(DONE_KEY, [...done].slice(-400));
 }
 
-/** Oyun bitmeden bırakıldı (teslim olma). Aynı oyun bir kez sayılır. */
+/** Oyun bitmeden bırakıldı: oyundan çıkan oyuncu yenilmiş sayılır. Aynı oyun bir kez sayılır. */
 export function recordQuit(state: GameState) {
   const done = new Set(loadDone());
   const key = `${state.seed}:oyun`;
   if (done.has(key) || state.phase === "gameOver") return;
   done.add(key);
   const s = loadStats();
-  s.quits++;
+  s.gamesPlayed++;
+  s.gamesLost++;
   write(KEY, s);
   write(DONE_KEY, [...done].slice(-400));
 }

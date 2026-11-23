@@ -94,7 +94,6 @@ function StatsDetail({ s }: { s: PlayerStats }) {
         <div className="stat"><div className="stat-label">{t("stDraws")}</div><Pie part={s.gamesDrawn} total={finished} color="#F2B33D" /><div className="stat-value">{formatNumber(s.gamesDrawn)}</div></div>
       </div>
       <Box cls="stat-line" label={t("stFinished")} value={finished} />
-      <Box cls="stat-line" label={t("stQuits")} value={s.quits} />
       <Box cls="stat-line stat-hl" label={t("stAvgMove")} value={avgText(s)} />
       <div className="stats-row3">
         <Box label={t("stBestGame")} value={s.bestGame} />
@@ -199,14 +198,13 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin, gender, onGender 
   );
 }
 
-/** Oynanan oyun cetveli: galibiyet / beraberlik / yenilgi / teslim olma oranlı çubuk. */
+/** Oynanan oyun cetveli: galibiyet / beraberlik / yenilgi oranlı çubuk (oyundan çıkmak yenilgidir). */
 function GamesBar({ s }: { s: PlayerStats }) {
-  const total = s.gamesPlayed + s.quits;
+  const total = s.gamesPlayed;
   const parts = [
     { k: "win", n: s.gamesWon, label: t("stWins") },
     { k: "draw", n: s.gamesDrawn, label: t("stDraws") },
     { k: "loss", n: s.gamesLost, label: t("stLosses") },
-    { k: "quit", n: s.quits, label: t("stQuits") },
   ];
   return (
     <div className="stat games-bar-box">
