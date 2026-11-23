@@ -92,10 +92,6 @@ function StatsDetail({ s }: { s: PlayerStats }) {
         <div className="stat"><div className="stat-label">{t("stLosses")}</div><Pie part={s.gamesLost} total={finished} color="#E53935" /><div className="stat-value">{formatNumber(s.gamesLost)}</div></div>
       </div>
       <Box cls="stat-line" label={t("stFinished")} value={finished} />
-      <div className="stats-row2">
-        <Box label={t("stWords")} value={s.wordsLaid} />
-        <Box label={t("stChipsWon")} value={s.chipsWon} />
-      </div>
       {/* Rekor kelimeler: kalıcıdır, yalnızca daha iyisi bulununca değişir */}
       <div className="stat stat-hl">
         <div className="stat-label">{t("stBestWord")}</div>
