@@ -1370,3 +1370,7 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 /* VIP Oda en üstte geniş; Özel Oda Pratik'in yanında */
 .hub-right > .vip-hub { width: 100%; }
 .hub-row > .ozel-hub .ozel-top { font-size: 1em; }
+/* Ana menü: VIP Oda pembe, Özel Oda sarı */
+.hub button.vip-hub { background: linear-gradient(180deg, #ff6fb1, #d81b60) !important; color: #fff !important; border: 2px solid #ad1457 !important; text-shadow: 0 1px 1px rgba(0,0,0,0.35); }
+.hub button.vip-hub .caylak-sub { color: #fff; }
+.hub button.ozel-hub { background: var(--accent) !important; color: #2a1f00 !important; border: 1px solid rgba(0,0,0,0.15) !important; }
