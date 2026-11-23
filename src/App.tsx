@@ -1,3 +1,4 @@
+import { BACK_EVENT, setupBackButton } from "./backButton";
 import { useCallback, useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { TableConfig, payout, tableById } from "./economy/tables";
@@ -239,6 +240,19 @@ export function App() {
 
   // Müzik: menülerde çalar, oyunda susar
   const inGame = screen === "game" || screen === "online";
+  // Android geri tuşu: oyunda Game, menüde Hub karşılar; diğer ekranlar menüye döner
+  useEffect(() => {
+    void setupBackButton();
+  }, []);
+  useEffect(() => {
+    const onBack = () => {
+      if (screen === "game" || screen === "online" || screen === "hub") return;
+      if (screen === "licenses") setScreen("rules");
+      else setScreen("hub");
+    };
+    window.addEventListener(BACK_EVENT, onBack);
+    return () => window.removeEventListener(BACK_EVENT, onBack);
+  }, [screen]);
   // Çevrimiçi durumu (arkadaş listesindeki yeşil nokta)
   useEffect(() => {
     if (started) startHeartbeat(settings.name, settings.invites !== false);

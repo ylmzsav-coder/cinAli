@@ -1,3 +1,4 @@
+import { BACK_EVENT } from "../backButton";
 import { TeaGlass } from "./GiftIcon";
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { CartIcon } from "./CartIcon";
@@ -682,6 +683,12 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
 
   // ---- Oyundan çıkış (onaylı) ----
   const [quitAsk, setQuitAsk] = useState(false);
+  // Android geri tuşu oyunda: çıkış onayı (masa yoksa menüye)
+  useEffect(() => {
+    const onBack = () => (onLeave && !handOver ? setQuitAsk(true) : onExit());
+    window.addEventListener(BACK_EVENT, onBack);
+    return () => window.removeEventListener(BACK_EVENT, onBack);
+  });
   const [surrenderAsk, setSurrenderAsk] = useState(false);
 
   // ---- Kelime anlamı: yerdeki kelimeye dokununca Vikisözlük'ten ----

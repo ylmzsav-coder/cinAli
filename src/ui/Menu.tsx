@@ -1,3 +1,4 @@
+import { BACK_EVENT } from "../backButton";
 import { isAdult } from "../age";
 import { canCloseGame, closeGame } from "../exit";
 import { FEEDBACK_EMAIL, FEEDBACK_MAX, type FeedbackType, feedbackMailto, submitFeedback } from "../feedbackBox";
@@ -76,6 +77,17 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [vipOpen, setVipOpen] = useState(false);
   const [ozelOpen, setOzelOpen] = useState(false);
   const [sosyeteOpen, setSosyeteOpen] = useState(false);
+  // Android geri tuşu menüde: açık oda ekranı varsa kapat, yoksa "Oyunu kapat" onayı
+  useEffect(() => {
+    const onBack = () => {
+      if (sosyeteOpen) setSosyeteOpen(false);
+      else if (ozelOpen) setOzelOpen(false);
+      else if (vipLobby) setVipLobby(false);
+      else setCloseAsk(true);
+    };
+    window.addEventListener(BACK_EVENT, onBack);
+    return () => window.removeEventListener(BACK_EVENT, onBack);
+  });
   const [vipLobby, setVipLobby] = useState(false);
   const [vipTerms, setVipTerms] = useState(false);
   /** VIP Oda: kurallar kabul edilmeden açılmaz. */

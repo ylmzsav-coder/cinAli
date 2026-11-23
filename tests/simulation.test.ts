@@ -1,4 +1,4 @@
-// Tüm dillerde 2 ve 4 kişilik bilgisayar oyunları: taş sayısı korunur, yerdeki kelimeler geçerli, oyun sonsuz döngüye girmez.
+// Tüm dillerde 2 ve 4 kişilik bilgisayar oyunları: taş sayısı korunur, her taş tek yerde, yerdeki kelimeler geçerli, oyun sonsuz döngüye girmez.
 import { readFileSync } from "node:fs";
 import { it, expect } from "vitest";
 import { botStep } from "../src/game/bot";
@@ -22,6 +22,8 @@ for (const code of LANG_ORDER.filter((c) => LANGS[c].playable)) {
         const tot = s.deck.length + s.players.reduce((a, p) => a + p.rack.length, 0) + s.discards.flat().length + s.table.reduce((a, w) => a + w.tiles.length, 0);
         if (tot !== total0) { probs.push(`${code} n${n} ${lvl} s${seed}: taş sayısı ${tot}≠${total0} adım ${steps}`); break; }
         for (const w of s.table) if (!w.pair && !dict.has(w.tiles.map((t) => t.letter).join(""))) { probs.push(`${code} geçersiz yer kelimesi ${w.tiles.map((t)=>t.letter).join("")}`); }
+        const ids = [...s.deck, ...s.players.flatMap((p) => p.rack), ...s.discards.flat(), ...s.table.flatMap((w) => w.tiles.map((x) => x.tile))].map((t) => t.id);
+        if (new Set(ids).size !== ids.length) { probs.push(`${code} n${n} ${lvl} s${seed}: aynı taş iki yerde (adım ${steps})`); break; }
         if (++steps > 4000) { probs.push(`${code} n${n} ${lvl} s${seed}: sonsuz döngü`); break; }
       }
       const tt = totals(s);
