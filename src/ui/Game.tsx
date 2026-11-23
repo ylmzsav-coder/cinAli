@@ -980,13 +980,9 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           )}
         </div>
         <div className="topbar-actions">
-          {chatRoom ? (
-            <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
-              aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬<span className="chat-room-label"> {t("chatNow")}</span></button>
-          ) : (
-            <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
-              aria-label={t("chatOpen")} aria-expanded={chatOpen}>😊</button>
-          )}
+          {/* Sarı mesaj düğmesi: bütün masalarda aynı (VIP'te serbest yazı, diğerlerinde hazır mesaj ve emoji) */}
+          <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
+            aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬<span className="chat-room-label"> {t("chatNow")}</span></button>
           {onLeave && !handOver && (
             <button type="button" className="scores-btn surrender-btn" onClick={() => setSurrenderAsk(true)} title={t("surrender")}>🏳️<span className="scores-label">{t("surrender")}</span></button>
           )}
