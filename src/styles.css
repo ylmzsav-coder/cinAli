@@ -1415,3 +1415,4 @@ button.watchers-badge { cursor: pointer; border: none; font: inherit; }
 .watchers-head { font-weight: 800; font-size: 0.85rem; color: var(--accent); margin-bottom: 4px; white-space: nowrap; }
 .watchers-list ul { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow: auto; }
 .watchers-list li { padding: 3px 0; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.08); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar .surrender-btn { background: rgba(255,255,255,0.12); }

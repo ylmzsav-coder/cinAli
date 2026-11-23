@@ -677,6 +677,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
 
   // ---- Oyundan çıkış (onaylı) ----
   const [quitAsk, setQuitAsk] = useState(false);
+  const [surrenderAsk, setSurrenderAsk] = useState(false);
 
   // ---- Kelime anlamı: yerdeki kelimeye dokununca Vikisözlük'ten ----
   const [meaning, setMeaning] = useState<{ word: string; status: "loading" | "ok" | "none" | "error"; data?: Meaning } | null>(null);
@@ -972,6 +973,9 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             <button type="button" className={`chat-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
               aria-label={t("chatOpen")} aria-expanded={chatOpen}>😊</button>
           )}
+          {onLeave && !handOver && (
+            <button type="button" className="scores-btn surrender-btn" onClick={() => setSurrenderAsk(true)} title={t("surrender")}>🏳️<span className="scores-label">{t("surrender")}</span></button>
+          )}
           <button type="button" className="scores-btn" onClick={() => setShowScores(true)} title={t("scores")}>📊<span className="scores-label">{t("scores")}</span></button>
         </div>
       </header>
@@ -1210,6 +1214,19 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
       {drag?.active && (
         <div className="drag-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden>
           {drag.kind === "tile" ? dragTiles.map((x) => <TileView key={x.id} tile={x} />) : <span className="tile tile-back" />}
+        </div>
+      )}
+
+      {surrenderAsk && onLeave && (
+        <div className="modal-bg" onClick={() => setSurrenderAsk(false)}>
+          <div className="modal quit-modal" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label={t("surrenderTitle")}>
+            <h3>🏳️ {t("surrenderTitle")}</h3>
+            <p>{remote ? t("surrenderOnline") : tableName ? t("surrenderChip") : t("surrenderPractice")}</p>
+            <div className="modal-actions">
+              <button type="button" className="danger" onClick={() => { setSurrenderAsk(false); onLeave(); }}>🏳️ {t("surrenderYes")}</button>
+              <button type="button" onClick={() => setSurrenderAsk(false)}>{t("cancel")}</button>
+            </div>
+          </div>
         </div>
       )}
 
