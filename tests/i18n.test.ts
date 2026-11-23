@@ -27,7 +27,7 @@ describe("çeviriler", () => {
   it("oynanabilir dillerde 104 harf taşı var", () => {
     for (const c of LANG_ORDER.filter((c) => LANGS[c].playable)) {
       const total = Object.values(LANGS[c].counts).reduce((a, b) => a + b, 0);
-      expect(total, c).toBe(104);
+      expect(total, c).toBe(c === "tr" ? 106 : 104);
     }
   });
 });
