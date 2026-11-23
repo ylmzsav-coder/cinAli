@@ -965,29 +965,7 @@ button.avatar { cursor: pointer; min-height: 0; }
 .presence.on { background: #3ddc6a; }
 .small-btn { padding: 5px 10px; font-size: 0.8rem; min-height: 0; }
 /* İzleyici sayısı rozeti */
-.watchers-badge { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: rgba(0, 0, 0, 0.35); font-size: 0.8rem; font-weight: 800; }
 /* ---- İzleyici ekranı ---- */
-.spectator { max-width: 980px; margin: 0 auto; padding: max(8px, env(safe-area-inset-top)) 12px 10px; display: flex; flex-direction: column; gap: 8px; min-height: 100dvh; }
-.spectator .center { text-align: center; margin: 0; }
-.spec-board {
-  flex: 1; display: grid; gap: 8px; grid-template-columns: 1fr 3fr 1fr; grid-template-rows: auto 1fr auto;
-  grid-template-areas: ". s2 ." "s3 tb s1" ". s0 .";
-}
-.spec-seat-0 { grid-area: s0; } .spec-seat-1 { grid-area: s1; } .spec-seat-2 { grid-area: s2; } .spec-seat-3 { grid-area: s3; }
-.spec-seat {
-  background: rgba(0, 0, 0, 0.25); border-radius: 12px; padding: 8px; display: grid; gap: 4px; justify-items: center; text-align: center;
-  border: 2px solid transparent; align-content: center;
-}
-.spec-seat.active { border-color: var(--accent); }
-.spec-seat.vacant { border: 2px dashed var(--accent); animation: pulse 1.2s infinite; }
-.spec-name { font-weight: 800; display: flex; align-items: center; gap: 6px; }
-.spec-table {
-  grid-area: tb; background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.15)); border-radius: 14px;
-  padding: 10px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 8px; position: relative; min-height: 120px;
-}
-.spec-word { display: flex; align-items: flex-end; gap: 1px; background: rgba(0, 0, 0, 0.18); border-radius: 8px; padding: 4px; }
-.spec-word small { margin-left: 4px; font-size: 0.65rem; }
-.spec-deck { position: absolute; right: 8px; bottom: 6px; font-weight: 800; font-size: 0.8rem; opacity: 0.8; }
 
 /* ---- VIP ---- */
 .vip-modal { max-width: 440px; text-align: center; position: relative; max-height: 92vh; overflow-y: auto; }
@@ -1407,36 +1385,3 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .hub-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; } .ozel-hub .ozel-top { font-size: clamp(0.78em, 2vw, 0.95em); gap: 6px; } .ozel-hub { padding-left: 6px !important; padding-right: 6px !important; }
 .hub .ozel-hub .ozel-top { font-size: 0.82em !important; gap: 5px; } .hub .ozel-hub .player-ico { width: 1.25em; height: 1.25em; }
 .hub .ozel-hub .ozel-top { font-size: 1em !important; gap: 8px; } .hub .ozel-hub .player-ico { width: 1.35em; height: 1.35em; } .hub .ozel-hub .duo-icons { gap: 4px; }
-/* İzleyici listesi */
-.watchers-wrap { position: relative; display: inline-flex; }
-button.watchers-badge { cursor: pointer; border: none; font: inherit; }
-.watchers-list { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 40; min-width: 150px; max-width: 240px;
-  background: #0f2f20; border: 1px solid rgba(255,213,79,0.5); border-radius: 12px; padding: 8px 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.5); text-align: left; }
-.watchers-head { font-weight: 800; font-size: 0.85rem; color: var(--accent); margin-bottom: 4px; white-space: nowrap; }
-.watchers-list ul { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow: auto; }
-.watchers-list li { padding: 3px 0; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.08); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.topbar .surrender-btn { background: rgba(255,255,255,0.12); }
-/* Gelen oyun daveti penceresi */
-.invite-modal { max-width: 420px; text-align: center; }
-.invite-modal .invite-icon { font-size: 2.6rem; }
-.invite-modal h3 { margin: 4px 0; }
-.invite-modal .invite-text { font-size: 1.1rem; font-weight: 700; margin: 6px 0 10px; }
-.invite-modal .modal-actions { display: flex; gap: 10px; justify-content: center; }
-.invite-modal .modal-actions button { flex: 1; padding: 10px; font-weight: 800; }
-.invite-modal .danger { background: #c62828; color: #fff; }
-/* VIP üç giriş seçeneği */
-.vip-lobby .vip-stake { grid-template-columns: repeat(3, 1fr); }
-.ozel-lobby:not(.vip-lobby) .vip-stake { grid-template-columns: repeat(3, 1fr); }
-/* Oyuncu profili üst çubukta (Oyundan çık'ın solunda); sağda yalnızca Eli Aç */
-.topbar-me { display: flex; align-items: center; flex: none; }
-.topbar-me .avatar { width: 34px; height: 34px; font-size: 1rem; border-width: 2px; cursor: pointer; }
-.okey .side-controls > .rack-actions > .primary { grid-row: 1 / -1 !important; align-self: center; height: auto !important; width: 100% !important; max-height: 100%; }
-.okey .topbar > .topbar-me { grid-column: 1; grid-row: 1; justify-self: end; }
-.okey .topbar > .title { max-width: calc(100% - 110px); }
-.okey .side-controls .actions-total { display: none; }
-.title-ico { display: inline-flex; vertical-align: -0.2em; margin-right: 4px; }
-.shop-notice { background: #7a1f1f; border: 2px solid #ff8a80; color: #fff; font-weight: 700; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; text-align: center; }
-.sosyete-lobby .vip-stake { grid-template-columns: repeat(3, 1fr); }
-.sosyete-sit { width: 100%; margin-top: 8px; }
-.sosyete-lobby .lobby-info > .sosyete-sit { grid-column: 1 / -1; width: 100%; }
-.sosyete-lobby button.sosyete-sit { max-width: none; }

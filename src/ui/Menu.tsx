@@ -35,7 +35,6 @@ interface HubProps {
   onShop: () => void;
   onRules: () => void;
   /** Arkadaşın masasını izle. */
-  onWatch?: (tableId: string) => void;
   /** Gelen masa davetine katıl (davet kodu). */
   onJoinInvite?: (code: string) => void;
 }
@@ -58,7 +57,7 @@ function PlayerIcon() {
   );
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onWatch, onJoinInvite }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
@@ -227,7 +226,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               onSeek={(tb, want) => { setVipLobby(false); onSitTable(tb, want); }} />
           )}
           {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); setVipLobby(true); }, 1200)} />}
-          {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onWatch={onWatch} onJoin={onJoinInvite}
+          {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onJoin={onJoinInvite}
             gender={settings.gender} onGender={(g) => onSettings({ ...settings, gender: g })} />}
         </div>
         <div className="hub-right">

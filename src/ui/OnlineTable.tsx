@@ -4,7 +4,6 @@ import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest } fro
 import { Avatar } from "./Profile";
 import { sendGiftTo } from "../online/gifts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { watcherNamesOf } from "./Watchers";
 import { isVipType, tableById, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
 import { setGameLang, type LangCode } from "../game/lang";
@@ -47,9 +46,6 @@ interface TableDoc {
   deadline: number | null;
   view: string | null;
   payouts?: Record<string, number>;
-  watchers?: string[];
-  watcherNames?: Record<string, string>;
-  vacant?: { seat: number; until: number }[];
 }
 
 /** Masaya nasıl girildiği. */
@@ -160,20 +156,6 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       startedRef.current = false;
     });
   }, [now, doc_, tableId]);
-
-  // Boşalan koltuğun 10 sn'lik süresi dolunca bilgisayara geçmesi için sunucuya bildir
-  const vacantClaimRef = useRef(0);
-  useEffect(() => {
-    const vs = doc_?.vacant ?? [];
-    if (!tableId || doc_?.status !== "playing" || !vs.length) return;
-    const until = Math.min(...vs.map((v) => v.until));
-    const id = setTimeout(() => {
-      if (vacantClaimRef.current === until) return;
-      vacantClaimRef.current = until;
-      call("claimTimeout", { tableId }).catch(() => { vacantClaimRef.current = 0; });
-    }, Math.max(0, until - Date.now()) + 600);
-    return () => clearTimeout(id);
-  }, [doc_?.vacant, doc_?.status, tableId]);
 
   const remote: RemoteControl | null = useMemo(
     () =>
@@ -332,7 +314,6 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       onChatEnabled={onChat}
       chatRoom={isVipType(doc_.type)}
       playerMenu={playerMenu}
-      watchers={watcherNamesOf(doc_)}
       dict={dict}
       state={state}
       level={cfg.level}

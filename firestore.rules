@@ -34,7 +34,7 @@ service cloud.firestore {
     match /tables/{tableId} {
       // Masanın herkese açık görünümü (ıstakalar hariç): masadaki oyunculara açık
       allow read: if request.auth != null
-        && (request.auth.uid in resource.data.uids || request.auth.uid in resource.data.get("watchers", []));
+        && request.auth.uid in resource.data.uids;
       allow write: if false;
       // Her oyuncunun ıstakası yalnızca kendisine açık
       match /hands/{uid} {

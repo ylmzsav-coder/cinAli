@@ -5,17 +5,14 @@
  *  users/{uid}                  { name, activeTable, lastSeen }
  *  users/{uid}/friends/{fid}    { name, since }       (iki tarafa da sunucu yazar)
  *  users/{uid}/requests/{from}  { name, at }          (bekleyen arkadaşlık isteği)
- *  tables/{id}.watchers         masayı izleyen arkadaşların uid listesi
  */
 import { onCall } from "firebase-functions/v2/https";
 import { db, fail, uidOf } from "./common";
 import { cleanName } from "./profanity";
-import { allowsWatchers } from "./tables";
 
 /** Son görülme bundan yeniyse çevrimiçi sayılır (istemci dakikada bir bildirir). */
 export const ONLINE_MS = 2.5 * 60_000;
 /** Bir masayı aynı anda izleyebilecek en fazla kişi. */
-export const MAX_WATCHERS = 30;
 
 const userRef = (uid: string) => db.collection("users").doc(uid);
 const friendRef = (uid: string, fid: string) => userRef(uid).collection("friends").doc(fid);
@@ -97,10 +94,7 @@ export interface FriendStatus {
   uid: string;
   name: string;
   online: boolean;
-  /** Oynadığı (izlenebilir) masa. */
-  tableId: string | null;
   tableStatus: "waiting" | "playing" | null;
-  watchers: number;
 }
 
 /**
@@ -128,13 +122,11 @@ export const friendsStatus = onCall(async (req) => {
       uid: d.id,
       name: (u.name as string) || (d.data().name as string) || "?",
       online: typeof u.lastSeen === "number" && now - u.lastSeen < ONLINE_MS,
-      tableId: st && allowsWatchers(tb?.type as string) ? tid : null,
       tableStatus: st,
-      watchers: st ? ((tb?.watchers as string[] | undefined) ?? []).length : 0,
     };
   });
   // Çevrimiçi olanlar ve masada oynayanlar önce
-  list.sort((a, b) => Number(!!b.tableId) - Number(!!a.tableId) || Number(b.online) - Number(a.online) || a.name.localeCompare(b.name));
+  list.sort((a, b) => Number(!!b.tableStatus) - Number(!!a.tableStatus) || Number(b.online) - Number(a.online) || a.name.localeCompare(b.name));
   return {
     friends: list,
     requests: requests.docs.map((r) => ({ uid: r.id, name: (r.data().name as string) || "?" })),
@@ -145,29 +137,6 @@ export const friendsStatus = onCall(async (req) => {
   };
 });
 
-/** Arkadaşının masasını izleyici olarak açar (yalnızca masada oturan bir arkadaş varsa). */
-export const watchTable = onCall(async (req) => {
-  const uid = uidOf(req);
-  const id = str(req.data?.tableId);
-  if (!id) fail("badRequest", {}, "invalid-argument");
-  return db.runTransaction(async (t) => {
-    const [snap, me] = await Promise.all([t.get(tableRef(id)), t.get(userRef(uid))]);
-    if (!snap.exists) return fail("tableNotFound", {}, "not-found");
-    const table = snap.data()!;
-    if (table.status !== "playing" && table.status !== "waiting") fail("tableOver");
-    if (!allowsWatchers(table.type as string)) fail("noWatchersVip", {}, "permission-denied");
-    const uids = (table.uids as string[]) ?? [];
-    if (uids.includes(uid)) return { ok: true, seated: true };
-    const friendSnaps = await Promise.all(uids.map((u) => t.get(friendRef(uid, u))));
-    if (!friendSnaps.some((s) => s.exists)) fail("notFriendTable", {}, "permission-denied");
-    const watchers = ((table.watchers as string[] | undefined) ?? []).filter((w) => w !== uid);
-    if (watchers.length >= MAX_WATCHERS) fail("tooManyWatchers");
-    // İzleyicinin adı masadaki oyunculara listelenir
-    const names = { ...((table.watcherNames as Record<string, string> | undefined) ?? {}), [uid]: (me.data()?.name as string) || "?" };
-    t.update(tableRef(id), { watchers: [...watchers, uid], watcherNames: names });
-    return { ok: true, seated: false };
-  });
-});
 
 /** Masa daveti geçerlilik süresi. */
 export const INVITE_MS = 15 * 60_000;
@@ -207,19 +176,3 @@ export const declineInvite = onCall(async (req) => {
   return { ok: true };
 });
 
-/** İzlemeyi bırak. */
-export const stopWatching = onCall(async (req) => {
-  const uid = uidOf(req);
-  const id = str(req.data?.tableId);
-  if (!id) return { ok: true };
-  await db.runTransaction(async (t) => {
-    const snap = await t.get(tableRef(id));
-    if (!snap.exists) return;
-    const watchers = ((snap.data()!.watchers as string[] | undefined) ?? []).filter((w) => w !== uid);
-    // İzleyici çıkınca adı listeden silinir
-    const names = { ...((snap.data()!.watcherNames as Record<string, string> | undefined) ?? {}) };
-    delete names[uid];
-    t.update(tableRef(id), { watchers, watcherNames: names });
-  });
-  return { ok: true };
-});

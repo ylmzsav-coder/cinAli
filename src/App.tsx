@@ -20,12 +20,11 @@ import { recordProgress, recordQuit } from "./stats";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Rules } from "./ui/Rules";
 import { TableLobby } from "./ui/Lobby";
-import { Spectator } from "./ui/Spectator";
 import { startHeartbeat } from "./online/social";
 import { Shop } from "./ui/Shop";
 import { Tables } from "./ui/Tables";
 
-type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby" | "watch";
+type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby";
 
 const paidGames = new Set<number>();
 
@@ -62,7 +61,6 @@ export function App() {
   /** Mağazadan geri dönülecek ekran (oyundan açılınca oyuna döner). */
   const [shopBack, setShopBack] = useState<Screen>("hub");
   /** İzlenen arkadaş masası. */
-  const [watchId, setWatchId] = useState<string | null>(null);
   /** Bekleme masasındaki (oyun başlamadan önce) masa. */
   const [lobbyTable, setLobbyTable] = useState<TableConfig | null>(null);
   /** VIP bekleme masasında aranan rakip cinsiyeti (cihazda bilgisayar rakibin adı buna göre). */
@@ -304,13 +302,6 @@ export function App() {
       break;
     case "rules":
       return <Rules onBack={() => setScreen("hub")} />;
-    case "watch":
-      if (!watchId) return null;
-      return (
-        <Spectator tableId={watchId} name={settings.name || t("defaultName")}
-          onLeave={() => { setWatchId(null); setScreen("hub"); }}
-          onSeated={(cfg) => { setWatchId(null); setOnline({ kind: "public", table: cfg }); setScreen("online"); }} />
-      );
     case "lobby":
       if (!lobbyTable) return null;
       return (
@@ -378,7 +369,6 @@ export function App() {
   }
   return (
     <Hub
-      onWatch={CLOUD ? (id) => { setWatchId(id); setScreen("watch"); } : undefined}
       onJoinInvite={CLOUD ? (code) => { setOnline({ kind: "join", code }); setScreen("online"); } : undefined}
       settings={settings}
       onSettings={changeSettings}

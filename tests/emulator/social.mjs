@@ -1,4 +1,4 @@
-// Emülatöre karşı arkadaşlar / izleme / boşalan koltuk testi: node tests/emulator/social.mjs
+// Emülatöre karşı arkadaşlar testi (izleme özelliği kaldırıldı): node tests/emulator/social.mjs
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, signInAnonymously } from "firebase/auth";
 import { connectFirestoreEmulator, doc, getDoc, getDocs, collection, getFirestore } from "firebase/firestore";
@@ -36,7 +36,6 @@ const readT = async (c) => (await getDoc(doc(c.db, "tables", id))).data();
 check("masa oynanıyor", (await readT(A)).status === "playing");
 
 // Arkadaşlık: Can masadaki Ali'ye istek gönderir, Ali kabul eder
-check("arkadaş olmadan izlenemez", (await errCode(C.call("watchTable", { tableId: id }))) === "notFriendTable");
 check("istek gönderildi", (await C.call("sendFriendRequest", { targetUid: A.uid })).status === "sent");
 const fa = await A.call("friendsStatus");
 check("Ali'nin bekleyen isteği", fa.requests.length === 1 && fa.requests[0].name === "Can", JSON.stringify(fa.requests));
@@ -45,45 +44,18 @@ check("başkasının arkadaş listesi okunamaz", (await getDocs(collection(C.db,
 await A.call("respondFriendRequest", { fromUid: C.uid, accept: true });
 const fc = await C.call("friendsStatus");
 const ali = fc.friends.find((f) => f.uid === A.uid);
-check("Can'ın listesinde Ali çevrimiçi ve masada", !!ali && ali.online && ali.tableId === id && ali.tableStatus === "playing", JSON.stringify(ali));
+check("Can'ın listesinde Ali çevrimiçi ve masada", !!ali && ali.online && ali.tableStatus === "playing", JSON.stringify(ali));
 
-// Can izlemeye başlar; izleyici sayısı herkes tarafından görülür
-check("Can masayı izleyebilir", (await C.call("watchTable", { tableId: id })).ok === true);
-check("izleyici masayı okuyabilir", !!(await readT(C)).view);
-check("izleyici ıstaka okuyamaz", (await getDoc(doc(C.db, "tables", id, "hands", A.uid)).then(() => "EVET", (e) => e.code)) === "permission-denied");
-check("oyuncular izleyici sayısını görür", ((await readT(B)).watchers ?? []).length === 1);
-check("oyuncular izleyicinin adını görür", Object.values((await readT(B)).watcherNames ?? {}).includes("Can"), JSON.stringify((await readT(B)).watcherNames));
-check("arkadaşın listesinde izleyici sayısı", (await C.call("friendsStatus")).friends[0].watchers === 1);
+// İzleme yok: masada oturmayan masayı okuyamaz, izleme çağrısı yoktur
+check("arkadaş da masayı okuyamaz", (await getDoc(doc(C.db, "tables", id)).then(() => "EVET", (e) => e.code)) === "permission-denied");
+check("izleme işlevi kaldırıldı", (await errCode(C.call("watchTable", { tableId: id }))) !== "BAŞARI");
+check("listede izleyici bilgisi yok", (await C.call("friendsStatus")).friends.every((f) => !("watchers" in f) && !("tableId" in f)));
 
-// Bea kalkar: koltuk 10 sn boş kalır
+// Bea kalkar: koltuk beklemeden bilgisayara geçer
 const beaSeat = (await readT(A)).seats.findIndex((s) => s.uid === B.uid);
 await B.call("leaveTable", { tableId: id });
-let tb = await readT(A);
-check("boşalan koltuk açık", (tb.vacant ?? []).some((v) => v.seat === beaSeat) && !tb.seats[beaSeat].bot && !tb.seats[beaSeat].uid);
-const before = await C.balance();
-check("izleyici olmayan oturamaz", (await errCode(D.call("takeSeat", { tableId: id, seat: beaSeat, name: "Dio" }))) === "notWatching");
-check("Can boşalan koltuğa oturur", (await C.call("takeSeat", { tableId: id, seat: beaSeat, name: "Can" })).ok === true);
-tb = await readT(A);
-check("koltuk Can'ın, izleyici listesinden çıktı", tb.seats[beaSeat].uid === C.uid && !(tb.watchers ?? []).includes(C.uid) && !(tb.vacant ?? []).length);
-check("giriş ücreti alındı", (await C.balance()) === before - 100, `${before} → ${await C.balance()}`);
-const hand = (await getDoc(doc(C.db, "tables", id, "hands", C.uid))).data();
-check("Can koltuğun taşlarını devraldı", hand && hand.seat === beaSeat && hand.rack.length > 0, `taş: ${hand?.rack.length}`);
-
-// Süre dolarsa bota geçer: Dio Ali'nin arkadaşı olup izler, Can kalkar, kimse oturmaz
-await D.call("sendFriendRequest", { targetUid: A.uid });
-await A.call("sendFriendRequest", { targetUid: D.uid }); // karşılıklı istek: hemen arkadaş
-await D.call("watchTable", { tableId: id });
-await C.call("leaveTable", { tableId: id });
-tb = await readT(A);
-check("ikinci boşalma açık", (tb.vacant ?? []).some((v) => v.seat === beaSeat));
-await sleep(10_800);
-await A.call("claimTimeout", { tableId: id });
-tb = await readT(A);
-check("10 sn sonra bilgisayara geçti", tb.seats[beaSeat].bot === true && !(tb.vacant ?? []).length);
-check("süre dolunca oturulamaz", (await errCode(D.call("takeSeat", { tableId: id, seat: beaSeat, name: "Dio" }))) === "seatGone");
-await D.call("stopWatching", { tableId: id });
-check("izlemeyi bırakınca sayı düşer", ((await readT(A)).watchers ?? []).length === 0);
-check("izleyici çıkınca adı listeden silinir", !Object.keys((await readT(A)).watcherNames ?? {}).includes(D.uid));
+const tb = await readT(A);
+check("kalkan oyuncunun yerine hemen bilgisayar", tb.seats[beaSeat].bot === true && !("vacant" in tb) , JSON.stringify(tb.seats[beaSeat]));
 
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

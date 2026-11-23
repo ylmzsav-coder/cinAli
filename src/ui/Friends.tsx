@@ -9,7 +9,7 @@ import { Avatar } from "./Profile";
  * Profildeki arkadaş listesi: bekleyen istekler, çevrimiçi durum ve masada
  * oynayan arkadaşın masasını izleme.
  */
-export function FriendsPanel({ onJoin }: { onWatch?: (tableId: string) => void; onJoin?: (code: string) => void }) {
+export function FriendsPanel({ onJoin }: { onJoin?: (code: string) => void }) {
   const [friends, setFriends] = useState<FriendStatus[] | null>(null);
   const [requests, setRequests] = useState<FriendRequest[]>([]);
   const [invites, setInvites] = useState<TableInvite[]>([]);

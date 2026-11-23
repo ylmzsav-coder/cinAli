@@ -128,8 +128,6 @@ interface Props {
   chatRoom?: boolean;
   playerMenu?: PlayerMenu;
   /** Masayı izleyen kişi sayısı (çevrimiçi). */
-  /** İzleyicilerin adları. */
-  watchers?: string[];
   dict: Dictionary;
   state: GameState;
   level: BotLevel;

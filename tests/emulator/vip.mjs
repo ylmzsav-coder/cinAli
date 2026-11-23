@@ -31,11 +31,9 @@ const t1 = (await getDoc(doc(A.db, "tables", ja.tableId))).data();
 check("iki VIP aynı masada, oyun hemen başladı", ja.tableId === jb.tableId && t1.status === "playing" && t1.seats.length === 2 && t1.seats.every((s) => !s.bot), t1.seats.map((s) => s.name).join(" vs "));
 check("VIP odada hamle süresi yok", t1.deadline === null, String(t1.deadline));
 check("giriş 100 çip alındı", (await A.wallet()).balance === wa.balance - 100);
-// Arkadaş olsalar bile VIP oda izlenemez
 await C.call("sendFriendRequest", { targetUid: A.uid }); await A.call("sendFriendRequest", { targetUid: C.uid });
-check("VIP oda izlenemez", (await errCode(C.call("watchTable", { tableId: ja.tableId }))) === "noWatchersVip");
 const fs = (await C.call("friendsStatus")).friends.find((f) => f.uid === A.uid);
-check("arkadaş listesinde İzle yok", fs && fs.tableStatus === "playing" && fs.tableId === null);
+check("arkadaş listesinde masada görünür", fs && fs.tableStatus === "playing");
 const txt = await A.call("sendText", { tableId: ja.tableId, text: "merhaba, iyi oyunlar", uiLang: "tr" });
 check("VIP odada serbest yazışma", !!txt && txt.ok !== false, JSON.stringify(txt));
 // Misafir: VIP abone arkadaşını davet eder; misafirden abonelik ve ücret istenmez
