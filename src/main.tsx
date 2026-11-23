@@ -38,6 +38,8 @@ if (Capacitor.isNativePlatform()) {
 unlockAudio();
 // Giriş müziğini önceden işle: dokunulunca takılmadan çalar
 import("./music").then((m) => m.prepareMusic()).catch(() => {});
+// El sonu müziklerini de önceden işle (giriş müziğinden sonra, boşta)
+setTimeout(() => void import("./jingles").then((m) => m.prepareJingles()).catch(() => {}), 9000);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

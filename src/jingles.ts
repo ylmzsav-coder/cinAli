@@ -31,27 +31,70 @@ export function stopJingle() {
   setTimeout(() => g.disconnect(), 500);
 }
 
-function begin(vol: number): { a: AudioContext; out: GainNode; t0: number } | null {
+type Kind = "win" | "lose";
+/** Müzikler önceden (çevrimdışı) bir kez işlenir; çalarken takılma/cızırtı olmaz. */
+const buffers: Partial<Record<Kind, AudioBuffer>> = {};
+const pending: Partial<Record<Kind, Promise<AudioBuffer | null>>> = {};
+const LENGTH: Record<Kind, number> = { win: 7, lose: 5 };
+const VOL: Record<Kind, number> = { win: 0.6, lose: 2.2 };
+
+function render(kind: Kind): Promise<AudioBuffer | null> {
+  if (buffers[kind]) return Promise.resolve(buffers[kind]!);
+  if (pending[kind]) return pending[kind]!;
+  pending[kind] = (async () => {
+    try {
+      const OAC = window.OfflineAudioContext ?? (window as unknown as { webkitOfflineAudioContext?: typeof OfflineAudioContext }).webkitOfflineAudioContext;
+      if (!OAC) return null;
+      const sr = 32000;
+      const a = new OAC(2, Math.ceil(sr * LENGTH[kind]), sr);
+      // Sınırlayıcı: üst üste binen sesler patlamasın
+      const comp = a.createDynamicsCompressor();
+      comp.threshold.value = -10;
+      comp.knee.value = 6;
+      comp.ratio.value = 12;
+      comp.attack.value = 0.003;
+      comp.release.value = 0.2;
+      comp.connect(a.destination);
+      const out = a.createGain();
+      out.gain.value = VOL[kind];
+      out.connect(comp);
+      (kind === "win" ? composeWin : composeLose)(a, out, 0.05);
+      const buf = await a.startRendering();
+      buffers[kind] = buf;
+      return buf;
+    } catch {
+      return null;
+    } finally {
+      delete pending[kind];
+    }
+  })();
+  return pending[kind]!;
+}
+
+/** El sonu müziklerini önceden hazırlar. */
+export function prepareJingles() {
+  (window as unknown as { __jinglesReady?: Promise<unknown> }).__jinglesReady = render("win").then(() => render("lose")).then(() => [buffers.win, buffers.lose]);
+}
+
+function play(kind: Kind) {
   const a = audio();
-  if (!a) return null;
+  if (!a) return;
   stopJingle();
-  // Sınırlayıcı: üst üste binen sesler patlamasın
-  const comp = a.createDynamicsCompressor();
-  comp.threshold.value = -10;
-  comp.knee.value = 6;
-  comp.ratio.value = 12;
-  comp.attack.value = 0.003;
-  comp.release.value = 0.2;
-  comp.connect(a.destination);
-  const out = a.createGain();
-  out.gain.value = vol;
-  out.connect(comp);
-  current = out;
-  return { a, out, t0: a.currentTime + 0.05 };
+  const g = a.createGain();
+  g.connect(a.destination);
+  current = g;
+  void render(kind).then((buf) => {
+    if (!buf || current !== g) return;
+    const src = a.createBufferSource();
+    src.buffer = buf;
+    src.connect(g);
+    src.onended = () => g.disconnect();
+    src.start();
+  });
 }
 
 let noiseBuf: AudioBuffer | null = null;
-function noise(a: AudioContext): AudioBuffer {
+function noise(a: BaseAudioContext): AudioBuffer {
   if (noiseBuf && noiseBuf.sampleRate === a.sampleRate) return noiseBuf;
   const len = a.sampleRate * 2;
   noiseBuf = a.createBuffer(1, len, a.sampleRate);
@@ -61,7 +104,7 @@ function noise(a: AudioContext): AudioBuffer {
 }
 
 /** Bakır nefesli benzeri nota (fanfar / trombon). */
-function brass(a: AudioContext, out: AudioNode, freq: number, t: number, dur: number, vol: number, opts: { bend?: number; vibrato?: number; bright?: number } = {}) {
+function brass(a: BaseAudioContext, out: AudioNode, freq: number, t: number, dur: number, vol: number, opts: { bend?: number; vibrato?: number; bright?: number } = {}) {
   const o = a.createOscillator();
   const o2 = a.createOscillator();
   o.type = "sawtooth";
@@ -106,7 +149,7 @@ function brass(a: AudioContext, out: AudioNode, freq: number, t: number, dur: nu
 }
 
 /** Tek bir el çırpması. */
-function clap(a: AudioContext, out: AudioNode, t: number, vol: number) {
+function clap(a: BaseAudioContext, out: AudioNode, t: number, vol: number) {
   const src = a.createBufferSource();
   src.buffer = noise(a);
   const bp = a.createBiquadFilter();
@@ -121,7 +164,7 @@ function clap(a: AudioContext, out: AudioNode, t: number, vol: number) {
 }
 
 /** Kalabalık alkışı: kabaran, sonra azalan yüzlerce el çırpması. */
-function applause(a: AudioContext, out: AudioNode, t: number, dur: number) {
+function applause(a: BaseAudioContext, out: AudioNode, t: number, dur: number) {
   const n = Math.floor(dur * 55);
   for (let i = 0; i < n; i++) {
     const x = Math.random();
@@ -147,7 +190,7 @@ function applause(a: AudioContext, out: AudioNode, t: number, dur: number) {
 }
 
 /** Basit davul vuruşu (fanfara tempo verir). */
-function boom(a: AudioContext, out: AudioNode, t: number, vol: number) {
+function boom(a: BaseAudioContext, out: AudioNode, t: number, vol: number) {
   const o = a.createOscillator();
   const g = a.createGain();
   o.frequency.setValueAtTime(150, t);
@@ -163,9 +206,10 @@ const hz = (midi: number) => 440 * Math.pow(2, (midi - 69) / 12);
 
 /** Kazanan: fanfar + alkış (~5 sn). */
 export function playWin() {
-  const s = begin(0.6);
-  if (!s) return;
-  const { a, out, t0 } = s;
+  play("win");
+}
+
+function composeWin(a: BaseAudioContext, out: AudioNode, t0: number) {
   const q = 0.16; // on altılık
   // Do majör fanfar: ta-ta-ta-taaa, ta-ta-taaaa
   const fan: [number, number][] = [
@@ -189,9 +233,10 @@ export function playWin() {
 
 /** Kaybeden: hüzünlü, inen trombon "vah vah vah vaaah" ve minör kapanış (~4 sn). */
 export function playLose() {
-  const s = begin(2.2);
-  if (!s) return;
-  const { a, out, t0 } = s;
+  play("lose");
+}
+
+function composeLose(a: BaseAudioContext, out: AudioNode, t0: number) {
   // Inen yarım tonlar: Sol, Fa#, Fa, Mi (uzun, titreşimli, sonda düşüş)
   const notes = [55, 54, 53];
   let t = t0;
