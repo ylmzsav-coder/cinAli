@@ -75,9 +75,56 @@ function HappyCoffee({ size }: { size: string }) {
   );
 }
 
+/** İnce belli cam çay bardağı: tabakta kaşık ve iki kesme şeker (özgün çizim). */
+function TeaGlass({ size }: { size: string }) {
+  const glass = "M18 8 C18 18 24 22 24 28 C24 34 19 38 19 45 C19 51 25 53 32 53 C39 53 45 51 45 45 C45 38 40 34 40 28 C40 22 46 18 46 8 Z";
+  return (
+    <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden className="gift-svg">
+      <defs>
+        <linearGradient id="tgTea" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#5a0a06" />
+          <stop offset="0.4" stopColor="#a3170c" />
+          <stop offset="0.7" stopColor="#c0261a" />
+          <stop offset="1" stopColor="#6a0c06" />
+        </linearGradient>
+        <clipPath id="tgClip"><path d={glass} /></clipPath>
+      </defs>
+      {/* beyaz tabak */}
+      <ellipse cx="32" cy="55" rx="29" ry="7" fill="#eef0f2" stroke="#3a3a3a" strokeWidth="1.2" />
+      <ellipse cx="32" cy="54" rx="21" ry="4.2" fill="#ffffff" stroke="#c9cdd1" strokeWidth="0.8" />
+      {/* iki kesme şeker */}
+      <g stroke="#3a3a3a" strokeWidth="0.9" strokeLinejoin="round">
+        <path d="M7 52 L13 50 L18 52 L12 54.5 Z" fill="#ffffff" />
+        <path d="M7 52 V46.5 L13 44.5 V50 Z" fill="#f2f4f6" />
+        <path d="M13 50 V44.5 L18 46.5 V52 Z" fill="#dfe3e7" />
+        <path d="M7 46.5 L13 44.5 L18 46.5 L12 48.8 Z" fill="#ffffff" />
+        <path d="M14 53.5 L19 51.5 L24 53.5 L19 55.6 Z" fill="#ffffff" />
+      </g>
+      {/* çay */}
+      <g clipPath="url(#tgClip)">
+        <rect x="10" y="14" width="44" height="42" fill="url(#tgTea)" />
+        <ellipse cx="32" cy="14.2" rx="13.6" ry="2" fill="#d23a22" />
+        {/* kaşık sapı çayın içinde */}
+        <path d="M40 4 L27 46" stroke="#e7e9ec" strokeWidth="2.4" strokeLinecap="round" opacity="0.75" />
+        <ellipse cx="26.5" cy="47" rx="3" ry="4.2" fill="#e7e9ec" opacity="0.6" transform="rotate(18 26.5 47)" />
+      </g>
+      {/* kaşığın dışarıdaki ucu */}
+      <path d="M46.5 0.5 L40 15" stroke="#c4c8cd" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M46.5 0.5 L40 15" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.8" />
+      {/* cam */}
+      <path d={glass} fill="rgba(255,255,255,0.1)" stroke="#2f2f2f" strokeWidth="1.3" />
+      <ellipse cx="32" cy="8" rx="14" ry="2.3" fill="rgba(255,255,255,0.55)" stroke="#2f2f2f" strokeWidth="1.1" />
+      <path d="M18.5 9.5 H45.5 V13 C45 15 19 15 18.5 13 Z" fill="rgba(255,255,255,0.75)" />
+      <path d="M22 17 C22.5 21 25 24 25.5 28" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.7" />
+      <path d="M22 40 C21.5 44 22.5 48 25 50" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.5" />
+    </svg>
+  );
+}
+
 /** Hediye simgesi: çizilmiş özel simge varsa o, yoksa emoji. */
 export function GiftIcon({ id, size = "1em" }: { id: string; size?: string }) {
   if (id === "parfum_e") return <PerfumeBottle size={size} />;
   if (id === "gul") return <HappyCoffee size={size} />;
+  if (id === "cay") return <TeaGlass size={size} />;
   return <span className="gift-emoji-inline" style={{ fontSize: size }}>{giftById(id)?.emoji ?? "🎁"}</span>;
 }

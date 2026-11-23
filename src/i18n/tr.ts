@@ -368,6 +368,7 @@ const tr = {
   gift_gitar: "Gitar",
   gift_saat: "Kol saati",
   gift_araba: "Spor araba",
+  gift_cay: "Çay",
   gift_gul: "Kahve",
   gift_cikolata: "Çikolata",
   gift_buket: "Çiçek buketi",

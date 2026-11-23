@@ -18,9 +18,9 @@ export interface Gift {
 export const GIFTS: Gift[] = [
   // Erkeklere özel
   { id: "abakus", emoji: "🧮", category: "erkek", value: 100, joke: true },
-  { id: "sapka", emoji: "🎩", category: "erkek", value: 150 },
+  { id: "cay", emoji: "🍵", category: "erkek", value: 150 },
   { id: "top", emoji: "⚽", category: "erkek", value: 200 },
-  { id: "gozluk", emoji: "🕶️", category: "erkek", value: 300 },
+  { id: "sapka", emoji: "🎩", category: "erkek", value: 300 },
   { id: "parfum_e", emoji: "🧴", category: "erkek", value: 400 },
   { id: "gitar", emoji: "🎸", category: "erkek", value: 500 },
   { id: "saat", emoji: "⌚", category: "erkek", value: 750 },
@@ -46,5 +46,9 @@ export const GIFTS: Gift[] = [
 /** Hediye çipe dönüştürülünce değerin bu oranı verilir. */
 export const GIFT_CONVERT_RATE = 0.8;
 
-export const giftById = (id: string): Gift | undefined => GIFTS.find((g) => g.id === id);
+/** Mağazadan kaldırılan hediyeler: önceden alınmış olanlar görünmeye ve çipe dönüşmeye devam eder. */
+const RETIRED_GIFTS: Gift[] = [{ id: "gozluk", emoji: "🕶️", category: "erkek", value: 300 }];
+export const giftById = (id: string): Gift | undefined => GIFTS.find((g) => g.id === id) ?? RETIRED_GIFTS.find((g) => g.id === id);
+/** Gönderilebilir (mağazada satılan) hediye mi? */
+export const isGiftForSale = (id: string) => GIFTS.some((g) => g.id === id);
 export const convertValue = (g: Gift | { value: number }) => Math.floor(g.value * GIFT_CONVERT_RATE);

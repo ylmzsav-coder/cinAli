@@ -364,6 +364,7 @@ const de: Messages = {
   gift_gitar: "Gitarre",
   gift_saat: "Armbanduhr",
   gift_araba: "Sportwagen",
+  gift_cay: "Tee",
   gift_gul: "Kaffee",
   gift_cikolata: "Schokolade",
   gift_buket: "Blumenstrauß",

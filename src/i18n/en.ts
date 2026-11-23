@@ -364,6 +364,7 @@ const en: Messages = {
   gift_gitar: "Guitar",
   gift_saat: "Wristwatch",
   gift_araba: "Sports car",
+  gift_cay: "Tea",
   gift_gul: "Coffee",
   gift_cikolata: "Chocolate",
   gift_buket: "Bouquet",

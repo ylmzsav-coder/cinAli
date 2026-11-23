@@ -7,7 +7,7 @@
  */
 import { FieldValue } from "firebase-admin/firestore";
 import { onCall } from "firebase-functions/v2/https";
-import { convertValue, giftById } from "../../src/economy/gifts";
+import { convertValue, giftById, isGiftForSale } from "../../src/economy/gifts";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 
 const userRef = (uid: string) => db.collection("users").doc(uid);
@@ -17,7 +17,7 @@ const str = (v: unknown) => (typeof v === "string" ? v.slice(0, 128) : "");
 export const sendGift = onCall(async (req) => {
   const uid = uidOf(req);
   const to = str(req.data?.toUid);
-  const gift = giftById(str(req.data?.giftId));
+  const gift = isGiftForSale(str(req.data?.giftId)) ? giftById(str(req.data?.giftId)) : undefined;
   const tableId = str(req.data?.tableId);
   if (!gift || !to || to === uid) fail("badRequest", {}, "invalid-argument");
   return db.runTransaction(async (t) => {
