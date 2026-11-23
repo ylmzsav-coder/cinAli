@@ -61,7 +61,7 @@ export const LANGS: Record<LangCode, LangPack> = {
     code: "tr", name: "Türkçe", locale: "tr-TR", playable: true,
     alphabet: split("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ"),
     //               A B C Ç D E F G Ğ H I İ J K L M N O Ö P R S Ş T U Ü V Y Z
-    counts: counts("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ", [6, 4, 2, 2, 5, 5, 1, 2, 1, 2, 4, 5, 1, 8, 6, 5, 6, 3, 1, 2, 6, 5, 2, 6, 3, 2, 2, 5, 2]),
+    counts: counts("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ", [6, 4, 2, 2, 5, 5, 1, 2, 1, 2, 4, 6, 1, 8, 6, 5, 6, 3, 1, 2, 6, 5, 2, 6, 3, 2, 2, 5, 2]),
   },
   en: {
     code: "en", name: "English", locale: "en-US", playable: true,
