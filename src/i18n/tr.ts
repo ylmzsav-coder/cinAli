@@ -273,7 +273,7 @@ const tr = {
   stBestGame: "En yüksek oyun puanı",
   stBestMove: "En yüksek puanlı hamle",
   stBestWordPts: "En yüksek puanlı kelime",
-  shareStats: "{name} Word Okey'de %{rate} başarıyla oynuyor: {games} oyunda {wins} galibiyet, ortalama hamle puanı {avg}. Sen de oyna!",
+  shareStats: "{name} Word Okey'de %{rate} başarıyla oynuyor: {games} oyunda {wins} galibiyet. Sen de oyna!",
   changePhoto: "Fotoğrafı değiştir",
   share: "Paylaş",
   summary: "Özet",

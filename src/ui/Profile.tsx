@@ -3,7 +3,7 @@ import type { GameState } from "../game/engine";
 import { handWinsOf, placedValue, totals, wordString } from "../game/engine";
 import { COLORS, type Tile } from "../game/tiles";
 import { formatNumber, t } from "../i18n";
-import { avgMove, loadStats, winRate, type PlayerStats } from "../stats";
+import { loadStats, winRate, type PlayerStats } from "../stats";
 import { TileView } from "./TileView";
 import { FriendsPanel } from "./Friends";
 import { MyGiftsPanel } from "./Gifts";
@@ -81,9 +81,8 @@ function WordTiles({ word }: { word: string }) {
   return <div className="word-tiles">{tiles.map((tl) => <TileView key={tl.id} tile={tl} size="sm" />)}</div>;
 }
 
-const avgText = (s: PlayerStats) => avgMove(s).toFixed(2);
 
-/** Ayrıntılı istatistikler (galibiyet/yenilgi grafikleri, rekorlar, en uzun kelime). */
+/** Ayrıntılı istatistikler: galibiyet/yenilgi, kelime sayısı, kazanılan çip, en uzun kelime (oyun puanları karta işlenmez). */
 function StatsDetail({ s }: { s: PlayerStats }) {
   const finished = s.gamesPlayed;
   return (
@@ -93,24 +92,10 @@ function StatsDetail({ s }: { s: PlayerStats }) {
         <div className="stat"><div className="stat-label">{t("stLosses")}</div><Pie part={s.gamesLost} total={finished} color="#E53935" /><div className="stat-value">{formatNumber(s.gamesLost)}</div></div>
       </div>
       <Box cls="stat-line" label={t("stFinished")} value={finished} />
-      <Box cls="stat-line stat-hl" label={t("stAvgMove")} value={avgText(s)} />
-      <div className="stats-row3">
-        <Box label={t("stBestGame")} value={s.bestGame} />
-        <Box label={t("stBestMove")} value={s.bestMove} />
+      <div className="stats-row2">
         <Box label={t("stWords")} value={s.wordsLaid} />
-      </div>
-      <div className="stats-row3">
-        <Box label={t("stHandsWon")} value={`${formatNumber(s.handsWon)} / ${formatNumber(s.handsPlayed)}`} />
-        <Box label={t("stColorWins")} value={s.colorWins} />
         <Box label={t("stChipsWon")} value={s.chipsWon} />
       </div>
-      {s.bestWord && (
-        <div className="stat stat-hl">
-          <div className="stat-label">{t("stBestWord")}</div>
-          <WordTiles word={s.bestWord.word} />
-          <div className="stat-value">{t("pointsN", { n: s.bestWord.value })}</div>
-        </div>
-      )}
       <div className="stat">
         <div className="stat-label">{t("stLongestWord")}</div>
         {s.longestWord ? <WordTiles word={s.longestWord} /> : <div className="stat-value">–</div>}
@@ -128,7 +113,7 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin, gender, onGender 
   const [msg, setMsg] = useState<string | null>(null);
   const rate = winRate(s.gamesWon, s.gamesPlayed);
   const share = async () => {
-    const text = t("shareStats", { name: shown, rate, wins: s.gamesWon, games: s.gamesPlayed, avg: avgText(s) });
+    const text = t("shareStats", { name: shown, rate, wins: s.gamesWon, games: s.gamesPlayed });
     try {
       if (navigator.share) await navigator.share({ title: "Word Okey", text });
       else {

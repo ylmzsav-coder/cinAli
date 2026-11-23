@@ -269,7 +269,7 @@ const de: Messages = {
   stBestGame: "Bestes Spiel",
   stBestMove: "Bester Zug",
   stBestWordPts: "Bestes Wort",
-  shareStats: "{name} spielt Word Okey mit {rate} % Siegquote: {wins} Siege in {games} Spielen, Durchschnitt pro Zug {avg}. Spiel mit!",
+  shareStats: "{name} spielt Word Okey mit {rate}% Siegquote: {wins} Siege in {games} Spielen. Spiel mit!",
   changePhoto: "Foto ändern",
   share: "Teilen",
   summary: "Übersicht",
