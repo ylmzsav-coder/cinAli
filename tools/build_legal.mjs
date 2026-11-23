@@ -11,7 +11,9 @@ const MISSING = { tr: "[eklenecek]", en: "[to be added]" };
 /** {{alan}} yer tutucularını satıcı bilgileriyle doldurur (boşsa "[eklenecek]"). */
 export const fill = (text, lang = "tr") => text.replace(/\{\{(\w+)\}\}/g, (_, k) => seller[k] || `${k === "unvan" ? "Word Okey uygulama sahibi" : ""} ${MISSING[lang] ?? MISSING.en}`.trim());
 const page = (raw, lang, other) => {
-  const deep = (v) => (typeof v === "string" ? fill(v, lang) : Array.isArray(v) ? v.map(deep) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, deep(x)])) : v);
+  const OPTIONAL = ["mersis", "vergiDairesi", "vergiNo", "kep"];
+  const hidden = (x) => typeof x === "string" && OPTIONAL.some((k) => x.includes(`{{${k}}}`)) && OPTIONAL.every((k) => !seller[k]);
+  const deep = (v) => (typeof v === "string" ? fill(v, lang) : Array.isArray(v) ? v.filter((x) => !hidden(x)).map(deep) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, deep(x)])) : v);
   const d = deep(raw[lang]);
   return `<!doctype html>
 <html lang="${lang}">

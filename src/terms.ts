@@ -303,9 +303,12 @@ export function fillSeller(text: string, lang: string): string {
   const missing = lang === "tr" ? "[eklenecek]" : "[to be added]";
   return text.replace(/\{\{(\w+)\}\}/g, (_, k: string) => seller[k] || (k === "unvan" ? `${lang === "tr" ? "Word Okey uygulama sahibi" : "Owner of the Word Okey app"} ${missing}` : missing));
 }
+/** Şirket bilgileri (MERSİS, vergi, KEP) boşsa o satır hiç gösterilmez (şahıs satıcı). */
+const OPTIONAL = ["mersis", "vergiDairesi", "vergiNo", "kep"];
+const hiddenLine = (x: string) => OPTIONAL.some((k) => x.includes(`{{${k}}}`)) && OPTIONAL.every((k) => !(SELLER as Record<string, string>)[k]);
 function fillDoc(d: PrivacyDoc, lang: string): PrivacyDoc {
-  const f = (x: string) => fillSeller(x, d === undefined ? lang : lang);
-  return { ...d, title: f(d.title), intro: f(d.intro), updated: f(d.updated), sections: d.sections.map((s) => ({ h: f(s.h), items: s.items.map(f) })) };
+  const f = (x: string) => fillSeller(x, lang);
+  return { ...d, title: f(d.title), intro: f(d.intro), updated: f(d.updated), sections: d.sections.map((s) => ({ h: f(s.h), items: s.items.filter((x) => !hiddenLine(x)).map(f) })) };
 }
 /** Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi (Türkçe; diğer dillerde İngilizce özet). */
 export function salesFor(lang: string): PrivacyDoc {
