@@ -1364,3 +1364,6 @@ button.ozel-hub .ozel-top + span { font-size: 0.7em; opacity: 0.95; }
 .hub-top .daily-slot:empty { display: none; }
 button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !important; color: #fff !important; border: 1px solid #0d47a1; padding: 6px 16px !important; font-size: 0.95rem !important; width: auto; }
 .hub-top .daily-slot .refill-wait { margin: 0; font-size: 0.75rem; }
+/* VIP penceresi: fiyat ve Abone ol düğmesi altta hep görünür */
+.vip-modal .vip-buy-bar { position: sticky; bottom: -16px; margin: 8px -16px -16px; padding: 8px 16px 12px; background: linear-gradient(180deg, rgba(16,58,38,0.85), #103a26 30%); border-top: 1px solid rgba(255,213,79,0.35); z-index: 2; }
+.vip-modal .vip-buy-bar .vip-price { margin: 0 0 4px; }

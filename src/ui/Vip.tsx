@@ -42,6 +42,7 @@ export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSub
           <li className="vip-perk-hl">🪙 {t("vipPerkTable", { entry: VIP_ENTRY, prize: VIP_PRIZE, entry2: formatNumber(VIP_USTA_ENTRY), prize2: formatNumber(VIP_USTA_PRIZE) })}</li>
           <li>🎁 {t("vipPerkGift", { n: formatNumber(VIP_BONUS_CHIPS) })}</li>
         </ul>
+        <div className="vip-buy-bar">
         <div className="vip-price">{VIP_PRODUCT.testPrice} <small>/ {t("vipMonth")}</small></div>
         {active && <p className="vip-active">✅ {t("vipActiveUntil", { date: new Date(w.vipUntil!).toLocaleDateString() })}</p>}
         {TEST_MODE && <div className="test-banner">{t("testMode")}</div>}
@@ -49,6 +50,7 @@ export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSub
         <button type="button" className="vip-buy" disabled={busy || !purchasesAvailable()} onClick={() => void subscribe()}>
           {busy ? "…" : !purchasesAvailable() ? t("soon") : active ? t("vipExtend") : t("vipSubscribe")}
         </button>
+        </div>
         <p className="muted small">{t("vipNote")}</p>
       </div>
     </div>
