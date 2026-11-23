@@ -23,7 +23,7 @@ export const PLAYERS_PER_TABLE = 4;
 export const TABLES: TableConfig[] = [
   { id: "caylak", name: "Çayhane", entry: TABLE_ENTRY, hands: 1, level: "orta", prize: TABLE_PRIZE },
   // Usta: yüksek girişli dört kişilik masa (2.000 çiplik pottan 500'ü kasaya)
-  { id: "usta", name: "Usta", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE },
+  { id: "usta", name: "Sosyete", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE },
   // Özel oda: herkese açık iki kişilik masa (rastgele oyuncu / arkadaş / bilgisayar)
   { id: "ozel2", name: "Özel Oda", entry: OZEL_ENTRY, hands: 1, level: "orta", prize: OZEL_PRIZE, players: 2 },
   { id: "ozel2u", name: "Özel Oda 300", entry: OZEL_USTA_ENTRY, hands: 1, level: "zor", prize: OZEL_USTA_PRIZE, players: 2 },

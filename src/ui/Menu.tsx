@@ -227,7 +227,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               const tb = tableById(id)!;
               return (
                 <button key={id} type="button" className={`${canResume ? "big" : "primary big"} caylak-hub ${id}-hub`} onClick={() => onSitTable(tb)}>
-                  <span>{id === "caylak" ? "🫖 " : "🏆 "}{t(id === "caylak" ? "playCaylak" : "playUsta")}</span>
+                  <span>{id === "caylak" ? "🫖 " : "🏎️ "}{t(id === "caylak" ? "playCaylak" : "playUsta")}</span>
                   <span className="caylak-sub">{t("entry")} <Chips amount={tb.entry} /> · {t("toWinner")} <Chips amount={winnerPrize(tb)} /></span>
                 </button>
               );
