@@ -88,10 +88,9 @@ function StatsDetail({ s }: { s: PlayerStats }) {
   const finished = s.gamesPlayed;
   return (
     <div className="stats-detail">
-      <div className="stats-row3">
+      <div className="stats-row2">
         <div className="stat"><div className="stat-label">{t("stWins")}</div><Pie part={s.gamesWon} total={finished} color="#4CAF50" /><div className="stat-value">{formatNumber(s.gamesWon)}</div></div>
         <div className="stat"><div className="stat-label">{t("stLosses")}</div><Pie part={s.gamesLost} total={finished} color="#E53935" /><div className="stat-value">{formatNumber(s.gamesLost)}</div></div>
-        <div className="stat"><div className="stat-label">{t("stDraws")}</div><Pie part={s.gamesDrawn} total={finished} color="#F2B33D" /><div className="stat-value">{formatNumber(s.gamesDrawn)}</div></div>
       </div>
       <Box cls="stat-line" label={t("stFinished")} value={finished} />
       <Box cls="stat-line stat-hl" label={t("stAvgMove")} value={avgText(s)} />
@@ -198,12 +197,11 @@ export function MyStatsModal({ name, onClose, onWatch, onJoin, gender, onGender 
   );
 }
 
-/** Oynanan oyun cetveli: galibiyet / beraberlik / yenilgi oranlı çubuk (oyundan çıkmak yenilgidir). */
+/** Oynanan oyun cetveli: galibiyet / yenilgi oranlı; beraberlik galibiyettir çubuk (oyundan çıkmak yenilgidir). */
 function GamesBar({ s }: { s: PlayerStats }) {
   const total = s.gamesPlayed;
   const parts = [
     { k: "win", n: s.gamesWon, label: t("stWins") },
-    { k: "draw", n: s.gamesDrawn, label: t("stDraws") },
     { k: "loss", n: s.gamesLost, label: t("stLosses") },
   ];
   return (

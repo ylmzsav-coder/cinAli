@@ -86,10 +86,13 @@ function write(key: string, v: unknown) {
 export function loadStats(): PlayerStats {
   const s = { ...emptyStats(), ...(read<Partial<PlayerStats>>(KEY) ?? {}) };
   // Eski "teslim olma" kayıtları artık yenilgi sayılır (bir kez taşınır)
-  if (s.quits > 0) {
+  // Eski beraberlikler artık galibiyet sayılır (bir kez taşınır)
+  if (s.quits > 0 || s.gamesDrawn > 0) {
     s.gamesPlayed += s.quits;
     s.gamesLost += s.quits;
     s.quits = 0;
+    s.gamesWon += s.gamesDrawn;
+    s.gamesDrawn = 0;
     write(KEY, s);
   }
   return s;
@@ -145,8 +148,7 @@ export function recordProgress(state: GameState, payout?: number) {
     s.gamesPlayed++;
     const winners = gameWinners(state);
     if (!winners.includes(0)) s.gamesLost++;
-    else if (winners.length > 1) s.gamesDrawn++;
-    else s.gamesWon++;
+    else s.gamesWon++; // berabere biten oyun da kazanılmış sayılır
     s.bestGame = Math.max(s.bestGame, totals(state)[0]);
     if (payout && payout > 0) s.chipsWon += payout;
   }
