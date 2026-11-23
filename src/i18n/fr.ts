@@ -499,6 +499,7 @@ const fr: Messages = {
   "err.illegalBanned": "Message non envoyé, nouvelle infraction : ton chat est désactivé pendant {h} heures.",
   "err.chatBanned": "Ton chat est désactivé pour infraction aux règles (encore {h} h).",
   "err.accountBanned": "Ton compte a été bloqué pour infraction aux règles.",
+  "err.adminOnly": "Réservé à l’administrateur.",
   "err.dailyClaimed": "Vous avez déjà récupéré le bonus du jour.",
   "err.refillNotReady": "Vos jetons offerts ne sont pas encore prêts.",
   "err.adLimit": "Limite de publicités atteinte pour aujourd'hui.",

@@ -35,6 +35,7 @@ import {
   colorWinsOf,
 } from "../../src/game/engine";
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
+import { assertNotBanned } from "./admin";
 import { TABLES, TableConfig, payout } from "../../src/economy/tables";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
@@ -230,6 +231,7 @@ async function activeTableOf(t: Transaction, uid: string): Promise<string | null
 /** Arkadaşlarla oynamak için özel masa kurar; giriş ücretini alır, davet kodu döndürür. */
 export const createPrivateTable = onCall(async (req) => {
   const uid = uidOf(req);
+  await assertNotBanned(uid);
   const cfg = configFor(req.data?.type);
   const lang = langOf(req.data?.lang);
   const name = cleanName(req.data?.name, uid, lang);
@@ -264,6 +266,7 @@ export const createPrivateTable = onCall(async (req) => {
 /** Davet koduyla özel masaya oturur. */
 export const joinPrivateTable = onCall(async (req) => {
   const uid = uidOf(req);
+  await assertNotBanned(uid);
   const code = String(req.data?.code ?? "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
   const rawName = req.data?.name;
   if (code.length !== 6) fail("codeNotFound", {}, "not-found");
@@ -302,6 +305,7 @@ export const joinPrivateTable = onCall(async (req) => {
 /** Masaya otur: giriş ücretini alır; uygun bekleyen masa yoksa yenisini açar. */
 export const joinTable = onCall(async (req) => {
   const uid = uidOf(req);
+  await assertNotBanned(uid);
   const cfg = configFor(req.data?.type);
   const lang = langOf(req.data?.lang);
   const name = cleanName(req.data?.name, uid, lang);

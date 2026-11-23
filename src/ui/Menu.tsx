@@ -37,6 +37,7 @@ interface HubProps {
   onShop: () => void;
   onRules: () => void;
   onTerms: () => void;
+  onAdmin: () => void;
   /** Arkadaşın masasını izle. */
   /** Gelen masa davetine katıl (davet kodu). */
   onJoinInvite?: (code: string) => void;
@@ -60,7 +61,7 @@ function PlayerIcon() {
   );
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onTerms, onJoinInvite }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onTerms, onAdmin, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
@@ -318,6 +319,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
         </div>
       )}
       <button type="button" className="link small terms-link" onClick={onTerms}>{t("termsLink")}</button>
+      {isOwner() && <button type="button" className="link small terms-link" onClick={onAdmin}>🛡️ Yönetici paneli</button>}
       <p className="muted small legal" onClick={() => {
         // Sahip (kontrol) modu: sürüm yazısına 7 kez dokun
         const n = (ownerTaps.current = ownerTaps.current + 1);

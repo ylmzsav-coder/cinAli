@@ -504,6 +504,7 @@ const tr = {
   "err.illegalBanned": "Mesaj gönderilmedi ve kurallar tekrar ihlal edildi: sohbetin {h} saat kapatıldı.",
   "err.chatBanned": "Kural ihlali nedeniyle sohbetin kapalı ({h} saat kaldı).",
   "err.accountBanned": "Hesabın kural ihlali nedeniyle engellendi.",
+  "err.adminOnly": "Bu işlem yalnızca yöneticiye açık.",
   "err.dailyClaimed": "Günlük ödülü bugün zaten aldınız.",
   "err.refillNotReady": "Hediye çip henüz hazır değil.",
   "err.adLimit": "Bugünkü reklam hakkınız doldu.",

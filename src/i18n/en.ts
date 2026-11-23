@@ -499,6 +499,7 @@ const en: Messages = {
   "err.illegalBanned": "Message not sent and the rules were broken again: your chat is disabled for {h} hours.",
   "err.chatBanned": "Your chat is disabled for breaking the rules ({h} hours left).",
   "err.accountBanned": "Your account has been blocked for breaking the rules.",
+  "err.adminOnly": "Only an administrator can do this.",
   "err.dailyClaimed": "You already claimed today's reward.",
   "err.refillNotReady": "Your free chips are not ready yet.",
   "err.adLimit": "You've reached today's ad limit.",

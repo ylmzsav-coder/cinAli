@@ -6,6 +6,7 @@
  *  users/{uid}/gifts/{id}  { giftId, value, fromUid, fromName, at, converted }
  */
 import { FieldValue } from "firebase-admin/firestore";
+import { assertNotBanned } from "./admin";
 import { onCall } from "firebase-functions/v2/https";
 import { convertValue, giftById, isGiftForSale } from "../../src/economy/gifts";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
@@ -20,6 +21,7 @@ const GIFT_WINDOW_MS = 24 * 3_600_000;
 /** Hediye gönder: çip göndericiden düşülür, hediye alıcının kutusuna eklenir. */
 export const sendGift = onCall(async (req) => {
   const uid = uidOf(req);
+  await assertNotBanned(uid);
   const to = str(req.data?.toUid);
   const gift = isGiftForSale(str(req.data?.giftId)) ? giftById(str(req.data?.giftId)) : undefined;
   const tableId = str(req.data?.tableId);

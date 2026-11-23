@@ -499,6 +499,7 @@ const de: Messages = {
   "err.illegalBanned": "Nachricht nicht gesendet, erneuter Regelverstoß: dein Chat ist für {h} Stunden gesperrt.",
   "err.chatBanned": "Dein Chat ist wegen eines Regelverstoßes gesperrt (noch {h} Std.).",
   "err.accountBanned": "Dein Konto wurde wegen Regelverstößen gesperrt.",
+  "err.adminOnly": "Nur ein Administrator darf das.",
   "err.dailyClaimed": "Du hast den Tagesbonus heute schon abgeholt.",
   "err.refillNotReady": "Deine Gratis-Chips sind noch nicht bereit.",
   "err.adLimit": "Das heutige Werbelimit ist erreicht.",

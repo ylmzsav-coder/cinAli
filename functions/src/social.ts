@@ -6,6 +6,7 @@
  *  users/{uid}/friends/{fid}    { name, since }       (iki tarafa da sunucu yazar)
  *  users/{uid}/requests/{from}  { name, at }          (bekleyen arkadaşlık isteği)
  */
+import { assertNotBanned } from "./admin";
 import { onCall } from "firebase-functions/v2/https";
 import { db, fail, uidOf } from "./common";
 import { cleanName } from "./profanity";
@@ -34,6 +35,7 @@ export const heartbeat = onCall(async (req) => {
 /** Masadaki oyuncuya arkadaşlık isteği gönderir; karşı taraf da istemişse hemen arkadaş olunur. */
 export const sendFriendRequest = onCall(async (req) => {
   const uid = uidOf(req);
+  await assertNotBanned(uid);
   const target = str(req.data?.targetUid);
   if (!target || target === uid) fail("badRequest", {}, "invalid-argument");
   return db.runTransaction(async (t) => {

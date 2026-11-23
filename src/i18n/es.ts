@@ -499,6 +499,7 @@ const es: Messages = {
   "err.illegalBanned": "Mensaje no enviado y nueva infracción: tu chat queda desactivado {h} horas.",
   "err.chatBanned": "Tu chat está desactivado por infringir las normas (quedan {h} h).",
   "err.accountBanned": "Tu cuenta ha sido bloqueada por infringir las normas.",
+  "err.adminOnly": "Solo un administrador puede hacerlo.",
   "err.dailyClaimed": "Ya recogiste el premio de hoy.",
   "err.refillNotReady": "Tus fichas de regalo aún no están listas.",
   "err.adLimit": "Has alcanzado el límite de anuncios de hoy.",

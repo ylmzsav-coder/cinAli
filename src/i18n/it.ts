@@ -499,6 +499,7 @@ const it: Messages = {
   "err.illegalBanned": "Messaggio non inviato, nuova violazione: la tua chat è disattivata per {h} ore.",
   "err.chatBanned": "La tua chat è disattivata per violazione delle regole (mancano {h} ore).",
   "err.accountBanned": "Il tuo account è stato bloccato per violazione delle regole.",
+  "err.adminOnly": "Solo un amministratore può farlo.",
   "err.dailyClaimed": "Hai già ritirato il premio di oggi.",
   "err.refillNotReady": "Le fiches in regalo non sono ancora pronte.",
   "err.adLimit": "Hai raggiunto il limite di pubblicità di oggi.",
