@@ -2,9 +2,9 @@ import { canCloseGame, closeGame } from "../exit";
 import { FEEDBACK_EMAIL, FEEDBACK_MAX, type FeedbackType, feedbackMailto, submitFeedback } from "../feedbackBox";
 import { stopMusic } from "../music";
 import { buzz, tileSound } from "../feedback";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useWallet } from "../economy/useWallet";
-import { DAILY_BONUS, REFILL_CHIPS, WELCOME_CHIPS, WELCOME_GAMES, wallet } from "../economy/wallet";
+import { DAILY_BONUS, REFILL_CHIPS, WELCOME_CHIPS, WELCOME_GAMES, isOwner, setOwner, wallet } from "../economy/wallet";
 import type { BotLevel } from "../game/bot";
 import { LANGS, LANG_ORDER, LangCode, PLAYABLE_LANGS } from "../game/lang";
 import { errorText, formatNumber, t } from "../i18n";
@@ -50,6 +50,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [statsOpen, setStatsOpen] = useState(false);
   const [vipOpen, setVipOpen] = useState(false);
   const [ozelOpen, setOzelOpen] = useState(false);
+  const ownerTaps = useRef(0);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
   const [invite, setInvite] = useState<TableInvite | null>(null);
   useEffect(() => {
@@ -279,7 +280,15 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </div>
         </div>
       )}
-      <p className="muted small legal">{t("legal")} {t("copyright", { year: COPYRIGHT_YEAR })}{typeof __APP_VERSION__ !== "undefined" && ` · v ${__APP_VERSION__}`}</p>
+      <p className="muted small legal" onClick={() => {
+        // Sahip (kontrol) modu: sürüm yazısına 7 kez dokun
+        const n = (ownerTaps.current = ownerTaps.current + 1);
+        if (n < 7) return;
+        ownerTaps.current = 0;
+        const on = !isOwner();
+        setOwner(on);
+        setToast(on ? "🔓 Sahip modu açık: bütün masalar ve VIP açık, çip bitmez (yalnızca bu cihaz)" : "🔒 Sahip modu kapalı");
+      }}>{t("legal")} {t("copyright", { year: COPYRIGHT_YEAR })}{typeof __APP_VERSION__ !== "undefined" && ` · v ${__APP_VERSION__}`}{isOwner() && " · 🔓 Sahip modu"}</p>
     </div>
   );
 }

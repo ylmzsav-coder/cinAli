@@ -81,7 +81,7 @@ abstract class Base {
   }
 
   isVip(): boolean {
-    return !!this.data.vipUntil && this.data.vipUntil > Date.now();
+    return isOwner() || (!!this.data.vipUntil && this.data.vipUntil > Date.now());
   }
 
   canClaimRefill(): boolean {
@@ -92,6 +92,31 @@ abstract class Base {
   adsLeftToday(): number {
     return this.data.adsDay === dayKey() ? Math.max(0, AD_DAILY_LIMIT - this.data.adsToday) : AD_DAILY_LIMIT;
   }
+}
+
+// ---- Sahip (kontrol) modu -------------------------------------------------
+/**
+ * Oyun sahibinin kendi cihazında bütün masaları denemesi için: VIP açık ve çip
+ * hiç bitmez. Yalnızca bu cihazda (cihaz cüzdanı) geçerlidir; sunucu cüzdanını
+ * etkilemez. Ana menüde sürüm yazısına 7 kez dokunarak açılıp kapanır.
+ */
+const OWNER_KEY = "wordokey.owner";
+const OWNER_CHIPS = 10_000;
+export function isOwner(): boolean {
+  try {
+    return localStorage.getItem(OWNER_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+export function setOwner(on: boolean) {
+  try {
+    if (on) localStorage.setItem(OWNER_KEY, "1");
+    else localStorage.removeItem(OWNER_KEY);
+  } catch {
+    /* yok say */
+  }
+  wallet.ownerTopUp?.();
 }
 
 // ---- Cihaz modu ---------------------------------------------------------
@@ -145,7 +170,14 @@ class LocalWallet extends Base implements WalletApi {
     if (amount > 0) this.commit(amount);
   }
 
+  /** Sahip modunda çip hiç bitmez. */
+  ownerTopUp() {
+    if (isOwner() && this.data.balance < OWNER_CHIPS) this.commit(OWNER_CHIPS - this.data.balance);
+    else this.emit({ ...this.data });
+  }
+
   spend(amount: number): boolean {
+    if (isOwner() && amount > this.data.balance) this.ownerTopUp();
     if (amount > this.data.balance) return false;
     this.commit(-amount);
     return true;
@@ -231,4 +263,4 @@ class CloudWallet extends Base implements WalletApi {
   }
 }
 
-export const wallet: WalletApi & { start?: (name?: string) => void } = CLOUD ? new CloudWallet() : new LocalWallet();
+export const wallet: WalletApi & { start?: (name?: string) => void; ownerTopUp?: () => void } = CLOUD ? new CloudWallet() : new LocalWallet();

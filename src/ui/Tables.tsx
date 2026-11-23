@@ -3,6 +3,7 @@ import { TABLES, TableConfig, winnerPrize } from "../economy/tables";
 import { CLOUD } from "../online/cloud";
 import { TABLE_ENTRY, TABLE_PRIZE } from "../economy/config";
 import { useWallet } from "../economy/useWallet";
+import { wallet } from "../economy/wallet";
 import { t } from "../i18n";
 import { Chips } from "./Chips";
 import { GenderModal, VipModal } from "./Vip";
@@ -50,7 +51,7 @@ export function Tables({ onPick, onTwo, gender, onGender, onCreatePrivate, onJoi
           if (tb.vip) tb = vipTables.find((x) => x.id === vipId) ?? tb;
           const afford = w.balance >= tb.entry;
           if (tb.vip) {
-            const isVip = !!w.vipUntil && w.vipUntil > Date.now();
+            const isVip = wallet.isVip();
             return (
               <div key="vip" className="table-card tc-vip2">
                 <div className="tc-name">👑 {t("table_vip2")}</div>
