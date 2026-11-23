@@ -89,6 +89,6 @@ export const testSubscribeVip = onCall(async (req) => {
     const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
     if (!w) return fail("noWallet");
     const from = Math.max(Date.now(), w.vipUntil ?? 0);
-    return view(applyTx(t, uid, w, VIP_BONUS_CHIPS, "vip", "wordokey_vip_aylik", { vipUntil: from + VIP_MS }));
+    return view(applyTx(t, uid, w, VIP_BONUS_CHIPS, "vip", "wordokey_vip_haftalik", { vipUntil: from + VIP_MS }));
   });
 });

@@ -23,7 +23,7 @@ check("abone olmayan VIP masaya oturamaz", (await errCode(A.call("joinTable", { 
 const before = (await A.wallet()).balance;
 await A.call("testSubscribeVip"); await B.call("testSubscribeVip");
 const wa = await A.wallet();
-check("abonelik: +1000 çip ve 30 gün", wa.balance === before + 1000 && Math.round((wa.vipUntil - Date.now()) / 864e5) === 30, `${before} → ${wa.balance}`);
+check("abonelik: +1000 çip ve 7 gün", wa.balance === before + 1000 && Math.round((wa.vipUntil - Date.now()) / 864e5) === 7, `${before} → ${wa.balance}`);
 // Ali (erkek) bayan arıyor, Bea (kadın) erkek arıyor: karşılıklı uyar
 const ja = await A.call("joinTable", { type, lang, name: "Ali", gender: "erkek", want: "kadin" });
 const jb = await B.call("joinTable", { type, lang, name: "Bea", gender: "kadin", want: "erkek" });

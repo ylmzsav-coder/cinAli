@@ -6,7 +6,7 @@ import { wallet } from "../economy/wallet";
 import { errorText, formatNumber, t } from "../i18n";
 import type { Gender } from "../storage";
 
-/** VIP abonelik penceresi: avantajlar, aylık ücret, hediye çip ve abonelik süresi. */
+/** VIP abonelik penceresi: avantajlar, haftalık ücret, hediye çip ve abonelik süresi. */
 export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSubscribed?: () => void }) {
   const w = useWallet();
   const [busy, setBusy] = useState(false);

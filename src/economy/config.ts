@@ -18,9 +18,9 @@ export const VIP_USTA_PRIZE = 1_500;
 export const WELCOME_GAMES = 5;
 export const WELCOME_CHIPS = 500;
 export const DAILY_BONUS = 100;
-/** VIP abonelik: aylık, abone olana hediye çip; VIP masa yalnızca abonelere açık. */
+/** VIP abonelik: haftalık, abone olana hediye çip; VIP masa yalnızca abonelere açık. */
 export const VIP_BONUS_CHIPS = 1_000;
-export const VIP_DAYS = 30;
+export const VIP_DAYS = 7;
 export const VIP_MS = VIP_DAYS * 86_400_000;
 /** VIP iki kişilik masa: giriş ve birinciye ödenen çip. */
 export const VIP_ENTRY = 100;

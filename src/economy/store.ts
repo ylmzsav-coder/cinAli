@@ -27,10 +27,10 @@ export const CHIP_PACKS: ChipPack[] = [
 ];
 
 /**
- * VIP abonelik: aylık yenilenen abonelik ürünü. Play Console / App Store Connect'te
- * "wordokey_vip_aylik" kimliğiyle, aylık 299 TL fiyatla oluşturulacak.
+ * VIP abonelik: haftalık yenilenen abonelik ürünü. Play Console / App Store Connect'te
+ * "wordokey_vip_haftalik" kimliğiyle, haftalık 299 TL fiyatla oluşturulacak.
  */
-export const VIP_PRODUCT = { productId: "wordokey_vip_aylik", testPrice: "₺ 299" };
+export const VIP_PRODUCT = { productId: "wordokey_vip_haftalik", testPrice: "₺ 299" };
 
 /** Geliştirme sunucusu ve test yapıları (GitHub Pages, debug APK) taklit mağaza kullanır. */
 export const TEST_MODE = import.meta.env.DEV || import.meta.env.VITE_TEST_STORE === "1";
