@@ -471,6 +471,8 @@ const tr = {
   vipTerms5: "VIP Oda sohbeti 18 yaşından büyükler içindir.",
   vipTermsAccept: "Okudum, kabul ediyorum",
   chatLogged: "Mesajlar kayıt altındadır · yasa dışı içerik ve iletişim bilgisi yasaktır",
+  vipBadge: "VIP Üye",
+  vipUntilDate: "{date} tarihine kadar",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

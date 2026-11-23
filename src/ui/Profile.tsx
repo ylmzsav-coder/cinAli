@@ -1,8 +1,9 @@
+import { wallet } from "../economy/wallet";
 import { useState } from "react";
 import type { GameState } from "../game/engine";
 import { handWinsOf, placedValue, totals, wordString } from "../game/engine";
 import { COLORS, type Tile } from "../game/tiles";
-import { formatNumber, t } from "../i18n";
+import { formatNumber, t, uiLocale } from "../i18n";
 import { loadStats, winRate, type PlayerStats } from "../stats";
 import { TileView } from "./TileView";
 import { FriendsPanel } from "./Friends";
@@ -46,17 +47,21 @@ function savePhoto(file: File): Promise<string> {
 }
 
 /** Profil resmi: fotoğraf (sizin için) ya da adın baş harfi. Dokununca profil açılır. */
-export function Avatar({ name, seat, size = "md", onClick, photo }: { name: string; seat: number; size?: "sm" | "md" | "lg"; onClick?: () => void; photo?: string | null }) {
+/** VIP rozeti: üyelik sürerken avatarda altın çerçeve ve taç; üyelik bitince kendiliğinden kalkar. */
+export const vipActive = (until: number | null | undefined) => !!until && until > Date.now();
+
+export function Avatar({ name, seat, size = "md", onClick, photo, vip = false }: { name: string; seat: number; size?: "sm" | "md" | "lg"; onClick?: () => void; photo?: string | null; vip?: boolean }) {
   const pic = photo !== undefined ? photo : seat === 0 ? loadPhoto() : null;
   const letter = ([...name.trim()][0] ?? "?").toLocaleUpperCase();
   const style = pic ? { backgroundImage: `url(${pic})` } : { background: AVATAR_COLORS[seat % AVATAR_COLORS.length] };
-  const cls = `avatar avatar-${size} ${pic ? "avatar-photo" : ""}`;
+  const cls = `avatar avatar-${size} ${pic ? "avatar-photo" : ""} ${vip ? "avatar-vip" : ""}`;
+  const crown = vip ? <span className="vip-crown" title={t("vipBadge")}>👑</span> : null;
   return onClick ? (
-    <button type="button" className={cls} style={style} onClick={onClick} aria-label={t("profileOf", { name })}>
-      {pic ? "" : letter}
+    <button type="button" className={cls} style={style} onClick={onClick} aria-label={t("profileOf", { name }) + (vip ? ` · ${t("vipBadge")}` : "")}>
+      {pic ? "" : letter}{crown}
     </button>
   ) : (
-    <span className={cls} style={style} aria-hidden>{pic ? "" : letter}</span>
+    <span className={cls} style={style} aria-hidden>{pic ? "" : letter}{crown}</span>
   );
 }
 
@@ -131,7 +136,7 @@ export function MyStatsModal({ name, onClose, onJoin, gender, onGender }: { name
         <button type="button" className="profile-close" onClick={onClose} aria-label={t("close")}>✕</button>
         <div className="profile-banner">
           <label className="photo-pick" title={t("changePhoto")}>
-            <Avatar name={shown} seat={0} size="lg" photo={photo} />
+            <Avatar name={shown} seat={0} size="lg" photo={photo} vip={wallet.isVip()} />
             <span className="photo-edit" aria-hidden>📷</span>
             <input type="file" accept="image/*" hidden onChange={async (e) => {
               const f = e.target.files?.[0];
@@ -139,6 +144,7 @@ export function MyStatsModal({ name, onClose, onJoin, gender, onGender }: { name
             }} />
           </label>
           <div className="profile-name">{shown}</div>
+          {wallet.isVip() && <div className="vip-badge-line">👑 {t("vipBadge")}{wallet.snapshot.vipUntil && wallet.snapshot.vipUntil > Date.now() ? ` · ${t("vipUntilDate", { date: new Date(wallet.snapshot.vipUntil).toLocaleDateString(uiLocale()) })}` : ""}</div>}
           {onGender && (
             <div className="gender-toggle" role="radiogroup" aria-label={t("genderLabel")}>
               <button type="button" role="radio" aria-checked={gender === "kadin"} className={gender === "kadin" ? "on" : ""} onClick={() => onGender("kadin")}>👩 {t("genderF")}</button>
@@ -206,7 +212,7 @@ function GamesBar({ s }: { s: PlayerStats }) {
 }
 
 /** Masadaki bir oyuncunun bu oyundaki istatistikleri. */
-export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift }: { state: GameState; seat: number; onClose: () => void; onAddFriend?: () => void; onGift?: () => void }) {
+export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip = false }: { state: GameState; seat: number; onClose: () => void; onAddFriend?: () => void; onGift?: () => void; vip?: boolean }) {
   if (seat === 0) return <MyStatsModal name={state.players[0].name} onClose={onClose} />;
   const p = state.players[seat];
   const sums = totals(state);
@@ -224,8 +230,9 @@ export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift }: { 
       <div className="modal profile-modal" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="profile-close" onClick={onClose} aria-label={t("close")}>✕</button>
         <div className="profile-banner">
-          <Avatar name={p.name} seat={seat} size="lg" />
+          <Avatar name={p.name} seat={seat} size="lg" vip={vip} />
           <div className="profile-name">{p.name}</div>
+          {vip && <div className="vip-badge-line">👑 {t("vipBadge")}</div>}
           <div className="muted small">{p.isBot ? t("computerPlayer") : t("thisGame")}</div>
         </div>
         <div className="profile-summary">

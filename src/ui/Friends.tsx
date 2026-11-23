@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { errorText, t } from "../i18n";
 import { CLOUD } from "../online/cloud";
 import { type FriendRequest, type FriendStatus, type TableInvite, declineInvite, friendsStatus, removeFriend, respondFriendRequest } from "../online/social";
-import { Avatar } from "./Profile";
+import { Avatar, vipActive } from "./Profile";
 
 /**
  * Profildeki arkadaş listesi: bekleyen istekler, çevrimiçi durum ve masada
@@ -94,7 +94,7 @@ export function FriendsPanel({ onJoin }: { onJoin?: (code: string) => void }) {
           {friends.map((f, i) => (
             <div key={f.uid} className="friend-row">
               <span className="friend-ava">
-                <Avatar name={f.name} seat={(i % 5) + 1} size="sm" />
+                <Avatar name={f.name} seat={(i % 5) + 1} size="sm" vip={vipActive(f.vipUntil)} />
                 <i className={`presence ${f.online ? "on" : ""}`} aria-hidden />
               </span>
               <span className="friend-name">

@@ -354,6 +354,7 @@ export function App() {
           <Game
             dict={dict}
             state={saved.state}
+            vipSeats={[wallet.isVip()]}
             level={saved.settings.level}
             speed={settings.speed}
             turnSeconds={activeTable?.vip ? 0 : saved.tableId ? TABLE_TURN_SECONDS : settings.turnSeconds}

@@ -210,7 +210,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           <p className="muted tagline">{t("tagline")}</p>
           <div className="hub-me">
             <button type="button" className="profile-chip" onClick={() => setStatsOpen(true)} aria-label={t("myProfile")}>
-              <Avatar name={settings.name || t("defaultName")} seat={0} size="md" />
+              <Avatar name={settings.name || t("defaultName")} seat={0} size="md" vip={wallet.isVip()} />
               <span>{t("myProfile")}</span>
             </button>
             <button type="button" className="balance" onClick={onShop} aria-label={t("balanceAria")}>

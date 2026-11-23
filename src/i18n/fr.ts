@@ -467,6 +467,8 @@ const fr: Messages = {
   vipTerms5: "Le chat du salon VIP est réservé aux 18 ans et plus.",
   vipTermsAccept: "J’ai lu et j’accepte",
   chatLogged: "Messages enregistrés · contenus illégaux et coordonnées interdits",
+  vipBadge: "Membre VIP",
+  vipUntilDate: "jusqu’au {date}",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

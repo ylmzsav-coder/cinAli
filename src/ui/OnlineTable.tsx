@@ -314,6 +314,10 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       onChatEnabled={onChat}
       chatRoom={isVipType(doc_.type)}
       playerMenu={playerMenu}
+      vipSeats={doc_.seats.map((_, i) => {
+        const s = doc_.seats[(i + rack.seat) % doc_.seats.length];
+        return !s?.bot && !!s?.vipUntil && s.vipUntil > Date.now();
+      })}
       dict={dict}
       state={state}
       level={cfg.level}

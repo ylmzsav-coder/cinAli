@@ -30,6 +30,7 @@ const jb = await B.call("joinTable", { type, lang, name: "Bea", gender: "kadin",
 const t1 = (await getDoc(doc(A.db, "tables", ja.tableId))).data();
 check("iki VIP aynı masada, oyun hemen başladı", ja.tableId === jb.tableId && t1.status === "playing" && t1.seats.length === 2 && t1.seats.every((s) => !s.bot), t1.seats.map((s) => s.name).join(" vs "));
 check("VIP odada hamle süresi yok", t1.deadline === null, String(t1.deadline));
+check("VIP üyelerin koltuğunda rozet (bitiş anı)", t1.seats.every((x) => x.vipUntil > Date.now()), JSON.stringify(t1.seats.map((x) => x.vipUntil)));
 check("giriş 100 çip alındı", (await A.wallet()).balance === wa.balance - 100);
 await C.call("sendFriendRequest", { targetUid: A.uid }); await A.call("sendFriendRequest", { targetUid: C.uid });
 const fs = (await C.call("friendsStatus")).friends.find((f) => f.uid === A.uid);

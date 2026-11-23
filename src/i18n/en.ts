@@ -467,6 +467,8 @@ const en: Messages = {
   vipTerms5: "VIP Room chat is for people aged 18 and over.",
   vipTermsAccept: "I have read and accept",
   chatLogged: "Messages are logged · illegal content and contact details are forbidden",
+  vipBadge: "VIP Member",
+  vipUntilDate: "until {date}",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

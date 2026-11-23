@@ -6,6 +6,8 @@ export interface FriendStatus {
   name: string;
   online: boolean;
   tableStatus: "waiting" | "playing" | null;
+  /** VIP üyeliğin bittiği an (rozet). */
+  vipUntil?: number | null;
 }
 export interface FriendRequest {
   uid: string;

@@ -112,6 +112,9 @@ function requireVip(cfg: TableConfig, w: WalletDoc) {
 }
 
 
+/** Oturan oyuncunun VIP rozeti: üyelik sürüyorsa bitiş anı koltuğa yazılır (istemci süreye göre gösterir). */
+const vipOf = (w: WalletDoc | undefined): { vipUntil?: number } => (w?.vipUntil && w.vipUntil > Date.now() ? { vipUntil: w.vipUntil } : {});
+
 function langOf(v: unknown): LangCode {
   if (typeof v === "string" && v in LANGS && LANGS[v as LangCode].playable) return v as LangCode;
   return fail("badRequest", {}, "invalid-argument");
@@ -252,7 +255,7 @@ export const createPrivateTable = onCall(async (req) => {
       const now = Date.now();
       const table: TableDoc = {
         type: cfg.id, private: true, code, lang, status: "waiting",
-        seats: [{ uid, name, bot: false }], uids: [uid],
+        seats: [{ uid, name, bot: false, ...vipOf(w) }], uids: [uid],
         createdAt: now, startAt: now + 24 * 3600_000, deadline: null, version: 0, view: null,
       };
       t.set(tableRef(id), table);
@@ -293,7 +296,7 @@ export const joinPrivateTable = onCall(async (req) => {
     t.delete(userRef(uid).collection("invites").doc(snap.id));
     t.set(tableRef(snap.id), {
       ...table,
-      seats: [...table.seats, { uid, name, bot: false, ...(guest ? { guest: true } : {}) }],
+      seats: [...table.seats, { uid, name, bot: false, ...(guest ? { guest: true } : {}), ...vipOf(w) }],
       uids: [...table.uids, uid],
       version: table.version + 1,
     });
@@ -362,7 +365,7 @@ export const joinTable = onCall(async (req) => {
     if (candidate) {
       id = candidate.id;
       const table = candidate.data() as TableDoc;
-      const seats = [...table.seats, { uid, name, bot: false }];
+      const seats = [...table.seats, { uid, name, bot: false, ...vipOf(w) }];
       const next: TableDoc = {
         ...table, seats, uids: [...table.uids, uid], version: table.version + 1,
         // Özel odadan gelen eşleşmede masa VIP masası olur (izleyici yok, sohbet açık)
@@ -378,7 +381,7 @@ export const joinTable = onCall(async (req) => {
       id = db.collection("tables").doc().id;
       const table: TableDoc = {
         type: cfg.id, private: false, code: null, lang, status: "waiting",
-        seats: [{ uid, name, bot: false }], uids: [uid],
+        seats: [{ uid, name, bot: false, ...vipOf(w) }], uids: [uid],
         createdAt: now, startAt: now + (cfg.vip || cfg.players === 2 ? VIP_WAIT_MS : WAIT_MS), deadline: null, version: 0, view: null,
         ...(byGender ? { hostGender: gender!, seekGender: want! } : {}),
       };

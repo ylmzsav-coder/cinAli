@@ -146,13 +146,15 @@ interface Props {
   onShop?: () => void;
   /** Çipli masa adı (pratikte boş). */
   tableName?: string;
+  /** Oturan oyuncuların VIP rozeti (gösterilen koltuk sırasıyla). */
+  vipSeats?: boolean[];
   /** Masa kimliği: başlıkta simge (Çayhane çay, Sosyete araba) */
   tableId?: string;
   /** Oyun sonunda kazanılan çip. */
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, tableId, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, tableId, vipSeats = [], payout }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -894,7 +896,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         style={timerStyle(i)}>
         {bubbleFor(i)}
         <div className="opp-name">
-          <Avatar name={p.name} seat={i} size="sm" onClick={() => setProfileSeat(i)} />{" "}
+          <Avatar name={p.name} seat={i} size="sm" vip={!!vipSeats[i]} onClick={() => setProfileSeat(i)} />{" "}
           {playerMenu?.available(i) ? (
             <button type="button" className="name-btn" onClick={() => setMenuSeat(menuSeat === i ? null : i)}
               aria-haspopup="menu" aria-expanded={menuSeat === i}>
@@ -945,7 +947,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           {tableId === "caylak" && <span className="title-ico"><TeaGlass size="1.25em" /></span>}{tableId?.startsWith("usta") && "🚘 "}{tableId?.startsWith("vip") && "👑 "}{tableName ?? t("practiceShort")} {state.totalHands > 1 && <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>}
         </div>
         {/* Oyuncu profili: sol üstte, Oyundan çık'ın solunda */}
-        <div className="me-slot topbar-me"><Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} /></div>
+        <div className="me-slot topbar-me"><Avatar name={me.name} seat={ME} size="sm" vip={!!vipSeats[ME]} onClick={() => setProfileSeat(ME)} /></div>
         <div className="topbar-center">
           {onLeave && !handOver && (
             <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}><svg className="door-ico" viewBox="0 0 40 56" aria-hidden>
@@ -981,7 +983,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         </div>
       </header>
       {profileSeat !== null && (
-        <SeatStatsModal state={state} seat={profileSeat} onClose={() => setProfileSeat(null)}
+        <SeatStatsModal state={state} seat={profileSeat} vip={!!vipSeats[profileSeat]} onClose={() => setProfileSeat(null)}
           onAddFriend={playerMenu?.addFriend && playerMenu.available(profileSeat) ? () => addFriendAt(profileSeat) : undefined}
           onGift={canGift(profileSeat) ? () => setGiftSeat(profileSeat) : undefined} />
       )}

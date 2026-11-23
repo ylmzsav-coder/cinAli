@@ -97,6 +97,7 @@ export interface FriendStatus {
   name: string;
   online: boolean;
   tableStatus: "waiting" | "playing" | null;
+  vipUntil: number | null;
 }
 
 /**
@@ -112,6 +113,7 @@ export const friendsStatus = onCall(async (req) => {
   ]);
   const now = Date.now();
   const users = friends.empty ? [] : await db.getAll(...friends.docs.map((d) => userRef(d.id)));
+  const wallets = friends.empty ? [] : await db.getAll(...friends.docs.map((d) => db.collection("wallets").doc(d.id)));
   const tableIds = [...new Set(users.map((u) => u.data()?.activeTable as string | undefined).filter((x): x is string => !!x))];
   const tables = tableIds.length ? await db.getAll(...tableIds.map(tableRef)) : [];
   const tableById = new Map(tables.map((s) => [s.id, s.data()]));
@@ -125,6 +127,8 @@ export const friendsStatus = onCall(async (req) => {
       name: (u.name as string) || (d.data().name as string) || "?",
       online: typeof u.lastSeen === "number" && now - u.lastSeen < ONLINE_MS,
       tableStatus: st,
+      // VIP rozeti: üyelik sürüyorsa bitiş anı
+      vipUntil: ((wallets[i]?.data()?.vipUntil as number | undefined) ?? 0) > now ? (wallets[i]!.data()!.vipUntil as number) : null,
     };
   });
   // Çevrimiçi olanlar ve masada oynayanlar önce

@@ -23,6 +23,8 @@ export interface SeatInfo {
   bot: boolean;
   /** VIP odaya davetle gelen misafir (abonelik ve giriş ücreti yok). */
   guest?: boolean;
+  /** VIP üyeliğin bittiği an: rozet bu ana kadar gösterilir. */
+  vipUntil?: number;
 }
 
 export interface PublicView extends Omit<GameState, "players" | "deck"> {

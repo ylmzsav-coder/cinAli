@@ -467,6 +467,8 @@ const es: Messages = {
   vipTerms5: "El chat de la Sala VIP es para mayores de 18 años.",
   vipTermsAccept: "He leído y acepto",
   chatLogged: "Los mensajes se registran · prohibido contenido ilegal y datos de contacto",
+  vipBadge: "Miembro VIP",
+  vipUntilDate: "hasta el {date}",
   close: "Cerrar",
   handCol: "Mano",
   totalRow: "Total",
