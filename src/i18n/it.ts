@@ -28,7 +28,7 @@ const it: Messages = {
   legal: "Le fiches sono valuta di gioco virtuale; non sono convertibili in denaro reale né trasferibili.",
 
   practiceTitle: "Allenamento",
-  practiceDesc: "Gioca contro il computer senza spendere fiches.",
+  practiceDesc: "Tavolo di allenamento per principianti: in due, solo contro il computer, senza fiches. I giocatori reali non possono unirsi.",
   yourName: "Il tuo nome",
   handCount: "Numero di mani",
   opponentLevel: "Livello avversari",

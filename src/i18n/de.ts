@@ -28,7 +28,7 @@ const de: Messages = {
   legal: "Chips sind virtuelles Spielgeld; sie können nicht in echtes Geld getauscht oder übertragen werden.",
 
   practiceTitle: "Training",
-  practiceDesc: "Spiele gegen den Computer, ohne Chips einzusetzen.",
+  practiceDesc: "Trainingstisch für Anfänger: zu zweit, nur gegen den Computer, ohne Chips. Echte Spieler können nicht beitreten.",
   yourName: "Dein Name",
   handCount: "Anzahl der Runden",
   opponentLevel: "Gegnerstärke",
