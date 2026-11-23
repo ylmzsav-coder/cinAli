@@ -11,7 +11,8 @@ import { errorText, formatNumber, t } from "../i18n";
 import { Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { CartIcon } from "./CartIcon";
-import { TwoPlayerChoices, type TwoMode } from "./TwoPlayer";
+import { type TwoMode } from "./TwoPlayer";
+import { OzelLobby } from "./Lobby";
 import { Chips } from "./Chips";
 import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
@@ -50,7 +51,6 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [statsOpen, setStatsOpen] = useState(false);
   const [vipOpen, setVipOpen] = useState(false);
   const [ozelOpen, setOzelOpen] = useState(false);
-  const [ozelId, setOzelId] = useState<"ozel2" | "ozel2u">("ozel2");
   const ownerTaps = useRef(0);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
   const [invite, setInvite] = useState<TableInvite | null>(null);
@@ -193,28 +193,8 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             </button>
           </div>
           {ozelOpen && (
-            <div className="modal-bg" onClick={() => setOzelOpen(false)}>
-              <div className="modal ozel-modal" onClick={(e) => e.stopPropagation()}>
-                <h2>🎲 {t("ozelTitle")}</h2>
-                <p className="muted small">{t("ozelDesc")}</p>
-                <div className="muted small vip-stake-label">{t("vipStake")}</div>
-                <div className="vip-stake ozel-stake" role="radiogroup" aria-label={t("vipStake")}>
-                  {(["ozel2", "ozel2u"] as const).map((id) => {
-                    const tb = tableById(id)!;
-                    return (
-                      <button key={id} type="button" role="radio" aria-checked={ozelId === id} className={ozelId === id ? "on" : ""} onClick={() => setOzelId(id)}>
-                        <span><Chips amount={tb.entry} /></span>
-                        <span className="vip-stake-arrow">→ <Chips amount={winnerPrize(tb)} /></span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <TwoPlayerChoices onRandom={() => { setOzelOpen(false); onTwo(tableById(ozelId)!, "random"); }}
-                  onFriend={() => { setOzelOpen(false); onTwo(tableById(ozelId)!, "friend"); }}
-                  onBot={() => { setOzelOpen(false); onTwo(tableById(ozelId)!, "bot"); }} />
-                <button type="button" className="link" onClick={() => setOzelOpen(false)}>{t("close")}</button>
-              </div>
-            </div>
+            <OzelLobby name={settings.name || t("defaultName")} onClose={() => setOzelOpen(false)}
+              onPick={(tb, mode) => { setOzelOpen(false); onTwo(tb, mode); }} />
           )}
           {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); onTables(); }, 1200)} />}
           {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onWatch={onWatch} onJoin={onJoinInvite}

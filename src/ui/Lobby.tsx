@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { TableConfig } from "../economy/tables";
-import { winnerPrize } from "../economy/tables";
+import { tableById, winnerPrize } from "../economy/tables";
+import { TwoPlayerChoices, type TwoMode } from "./TwoPlayer";
 import { formatNumber, t } from "../i18n";
 import { Avatar } from "./Profile";
 import { Chips } from "./Chips";
@@ -89,6 +90,46 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
             )}
             <button type="button" className="primary" onClick={onStart}>{table.vip ? `🤖 ${t("vipPlayBotNow")}` : t("startNow")}</button>
             {msg && <div className="toast">{msg}</div>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Özel Oda (2 kişilik) giriş ekranı: Çaylak/Usta bekleme masasıyla aynı görünüm.
+ * Karşıda rakip koltuğu, ortada giriş seçimi (100 → 300 / 300 → 900) ve
+ * Rastgele oyuncu / Arkadaşla oyna / Bilgisayara karşı oyna düğmeleri.
+ */
+export function OzelLobby({ name, onClose, onPick }: { name: string; onClose: () => void; onPick: (tb: TableConfig, mode: TwoMode) => void }) {
+  const [id, setId] = useState<"ozel2" | "ozel2u">("ozel2");
+  const tb = tableById(id)!;
+  return (
+    <div className="lobby ozel-lobby">
+      <div className="lobby-felt">
+        <button type="button" className="leave-round" onClick={onClose}>{t("leaveTableShort")}</button>
+        <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>🎲</span></span> {t("ozelTitle")}</div>
+        <div className="lobby-me">
+          <Avatar name={name} seat={0} size="md" />
+          <span>{name}</span>
+        </div>
+        <div className="lobby-panel">
+          <div className="lobby-info">
+            <div className="vip-stake ozel-stake" role="radiogroup" aria-label={t("vipStake")}>
+              {(["ozel2", "ozel2u"] as const).map((k) => {
+                const x = tableById(k)!;
+                return (
+                  <button key={k} type="button" role="radio" aria-checked={id === k} className={id === k ? "on" : ""} onClick={() => setId(k)}>
+                    <span><Chips amount={x.entry} /></span>
+                    <span className="vip-stake-arrow">→ <Chips amount={winnerPrize(x)} /></span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="lobby-row"><span className="muted small">{t("entry")}</span><Chips amount={tb.entry} /></div>
+            <div className="lobby-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(tb)} /></div>
+            <TwoPlayerChoices onRandom={() => onPick(tb, "random")} onFriend={() => onPick(tb, "friend")} onBot={() => onPick(tb, "bot")} />
           </div>
         </div>
       </div>

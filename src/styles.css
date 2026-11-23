@@ -1380,3 +1380,8 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .ozel-modal .two-choices { grid-template-columns: repeat(3, 1fr); }
 .ozel-modal .two-choices button { font-size: 0.82rem; padding: 8px 4px; }
 @media (max-height: 500px) { .ozel-modal p { margin: 0; font-size: 0.8rem; } .ozel-modal h2 { font-size: 1.2rem; } }
+/* Özel Oda giriş ekranı: bekleme masası görünümü, tam ekran */
+.ozel-lobby { position: fixed; inset: 0; z-index: 30; background: var(--bg, #0f3d26); }
+.ozel-lobby .two-choices { grid-template-columns: repeat(3, 1fr); }
+.ozel-lobby .two-choices button { font-size: 0.85rem; padding: 9px 4px; }
+.ozel-lobby .vip-stake button { padding: 4px; }
