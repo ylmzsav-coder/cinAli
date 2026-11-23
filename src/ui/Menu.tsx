@@ -40,6 +40,24 @@ interface HubProps {
   onJoinInvite?: (code: string) => void;
 }
 
+/** Gülen oyuncu simgesi (koyu daire içinde gülen yüz ve omuzlar; özgün çizim). */
+function PlayerIcon() {
+  return (
+    <svg viewBox="0 0 64 64" className="player-ico">
+      <defs><clipPath id="piClip"><circle cx="32" cy="32" r="30" /></clipPath></defs>
+      <circle cx="32" cy="32" r="30" fill="#3a3a3a" />
+      <g clipPath="url(#piClip)">
+        <ellipse cx="32" cy="64" rx="24" ry="20" fill="#ffffff" />
+      </g>
+      <circle cx="32" cy="25" r="12" fill="#ffffff" />
+      <circle cx="27.5" cy="23" r="1.9" fill="#3a3a3a" />
+      <circle cx="36.5" cy="23" r="1.9" fill="#3a3a3a" />
+      <path d="M26.5 28 Q32 34.5 37.5 28 Z" fill="#3a3a3a" />
+      <circle cx="32" cy="32" r="30" fill="none" stroke="#2a2a2a" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
 export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onWatch, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
@@ -236,7 +254,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           <div className="hub-row">
             <button type="button" className="big practice-hub" onClick={onPractice}>{t("practice")}</button>
             <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
-              <span className="ozel-top">{t("ozelShort")} · {t("twoPlayers")}</span>
+              <span className="ozel-top"><span className="duo-icons" aria-hidden><PlayerIcon /><PlayerIcon /></span> {t("ozelShort")} · {t("twoPlayers")}</span>
             </button>
           </div>
           <div className="hub-row">

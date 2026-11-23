@@ -1399,3 +1399,10 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .okey .side-controls .actions-total { grid-column: 2; grid-row: 2 !important; align-self: start; z-index: 3; }
 .okey .side-controls > .me-slot .avatar { width: auto !important; height: 100% !important; max-width: 100%; aspect-ratio: 1 / 1; font-size: clamp(1rem, 4vh, 1.8rem) !important; border-width: 3px; }
 .gift-emoji .gift-svg { width: 1.45em; height: 1.45em; margin: -0.15em 0; }
+/* Teke Tek düğmesinde iki oyuncu simgesi */
+.ozel-hub .ozel-top { display: inline-flex; align-items: center; gap: 8px; }
+.duo-icons { display: inline-flex; gap: 3px; }
+.player-ico { width: 1.5em; height: 1.5em; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3)); }
+.ozel-hub .ozel-top { white-space: nowrap; font-size: clamp(0.85em, 2.2vw, 1em); } .player-ico { width: 1.3em; height: 1.3em; }
+.hub-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; } .ozel-hub .ozel-top { font-size: clamp(0.78em, 2vw, 0.95em); gap: 6px; } .ozel-hub { padding-left: 6px !important; padding-right: 6px !important; }
+.hub .ozel-hub .ozel-top { font-size: 0.82em !important; gap: 5px; } .hub .ozel-hub .player-ico { width: 1.25em; height: 1.25em; }
