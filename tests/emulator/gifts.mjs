@@ -37,10 +37,10 @@ const room = await C.call("createPrivateTable", { type: "caylak", lang: "tr", na
 const D = await client("Dio");
 await D.call("joinPrivateTable", { code: room.code, name: "Dio" });
 await C.call("startTable", { tableId: room.tableId });
-await C.call("sendGift", { toUid: D.uid, giftId: "kahve", tableId: room.tableId });
+await C.call("sendGift", { toUid: D.uid, giftId: "abakus_h", tableId: room.tableId });
 check("masadaki oyuncuya hediye", (await getDocs(collection(D.db, "users", D.uid, "gifts"))).size === 1);
 const chat = (await getDocs(collection(D.db, "tables", room.tableId, "chat"))).docs.map((d) => d.data());
-check("masada hediye görünür", chat.some((m) => m.kind === "gift" && m.id === `kahve:${D.uid}`));
+check("masada hediye görünür", chat.some((m) => m.kind === "gift" && m.id === `abakus_h:${D.uid}`));
 check("geçersiz hediye", (await errCode(A.call("sendGift", { toUid: B.uid, giftId: "uzayGemisi" }))) === "badRequest");
 // Aynı kişiye 24 saatte en fazla 3 hediye; farklı kişiye sınır yok
 const E = await client("Ece"), F = await client("Fuat"), G = await client("Gaye");

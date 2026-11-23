@@ -36,7 +36,7 @@ export const GIFTS: Gift[] = [
   { id: "kolye", emoji: "📿", category: "kadin", value: 750 },
   { id: "yuzuk", emoji: "💍", category: "kadin", value: 1000 },
   // Herkese
-  { id: "kahve", emoji: "☕", category: "herkes", value: 100 },
+  { id: "abakus_h", emoji: "🧮", category: "herkes", value: 100, joke: true },
   { id: "pasta", emoji: "🎂", category: "herkes", value: 200 },
   { id: "ayicik", emoji: "🧸", category: "herkes", value: 250 },
   { id: "kupa", emoji: "🏆", category: "herkes", value: 500 },
@@ -47,7 +47,10 @@ export const GIFTS: Gift[] = [
 export const GIFT_CONVERT_RATE = 0.8;
 
 /** Mağazadan kaldırılan hediyeler: önceden alınmış olanlar görünmeye ve çipe dönüşmeye devam eder. */
-const RETIRED_GIFTS: Gift[] = [{ id: "gozluk", emoji: "🕶️", category: "erkek", value: 300 }];
+const RETIRED_GIFTS: Gift[] = [
+  { id: "gozluk", emoji: "🕶️", category: "erkek", value: 300 },
+  { id: "kahve", emoji: "☕", category: "herkes", value: 100 },
+];
 export const giftById = (id: string): Gift | undefined => GIFTS.find((g) => g.id === id) ?? RETIRED_GIFTS.find((g) => g.id === id);
 /** Gönderilebilir (mağazada satılan) hediye mi? */
 export const isGiftForSale = (id: string) => GIFTS.some((g) => g.id === id);
