@@ -4,6 +4,7 @@
  */
 import type { GameState } from "./game/engine";
 import { gameWinners, placedValue, totals, wordString } from "./game/engine";
+import { wordValue } from "./game/tiles";
 
 export interface PlayerStats {
   /** Biten oyun (sonuna kadar oynanan). */
@@ -86,6 +87,16 @@ function write(key: string, v: unknown) {
 export function loadStats(): PlayerStats {
   const s = { ...emptyStats(), ...(read<Partial<PlayerStats>>(KEY) ?? {}) };
   // Eski "teslim olma" kayıtları artık yenilgi sayılır (bir kez taşınır)
+  // En uzun kelime, en yüksek puanlı kelimeden daha değerliyse o da rekor puanlı kelimedir
+  // (aynı kelime iki rekorda birden görünür)
+  if (s.longestWord) {
+    try {
+      const v = wordValue(s.longestWord);
+      if (v > 0 && (!s.bestWord || v > s.bestWord.value)) s.bestWord = { word: s.longestWord, value: v };
+    } catch {
+      /* başka dilin harfleri: atla */
+    }
+  }
   // Eski beraberlikler artık galibiyet sayılır (bir kez taşınır)
   if (s.quits > 0 || s.gamesDrawn > 0) {
     s.gamesPlayed += s.quits;
