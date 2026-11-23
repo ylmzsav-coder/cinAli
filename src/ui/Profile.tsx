@@ -96,6 +96,11 @@ function StatsDetail({ s }: { s: PlayerStats }) {
         <Box label={t("stWords")} value={s.wordsLaid} />
         <Box label={t("stChipsWon")} value={s.chipsWon} />
       </div>
+      {/* Rekor kelimeler: kalıcıdır, yalnızca daha iyisi bulununca değişir */}
+      <div className="stat stat-hl">
+        <div className="stat-label">{t("stBestWord")}</div>
+        {s.bestWord ? <><WordTiles word={s.bestWord.word} /><div className="stat-value">{t("pointsN", { n: s.bestWord.value })}</div></> : <div className="stat-value">–</div>}
+      </div>
       <div className="stat">
         <div className="stat-label">{t("stLongestWord")}</div>
         {s.longestWord ? <WordTiles word={s.longestWord} /> : <div className="stat-value">–</div>}
