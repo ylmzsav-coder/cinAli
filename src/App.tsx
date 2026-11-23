@@ -368,7 +368,7 @@ export function App() {
             onNewGame={finishGame}
             onLeave={finishGame}
             onShop={() => { setShopBack("game"); setScreen("shop"); }}
-            tableName={activeTable ? t("tableTitle", { name: t(`table_${activeTable.id}` as "table_vip") }) : undefined}
+            tableName={activeTable ? (activeTable.id === "usta" ? "🏎️ " : "") + t(`table_${activeTable.id}` as "table_vip") : undefined}
             payout={saved.payout}
           />
         );
