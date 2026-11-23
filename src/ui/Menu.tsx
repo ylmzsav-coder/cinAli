@@ -211,7 +211,6 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           {/* Özel Oda (2 kişilik): rastgele oyuncu, arkadaş ya da bilgisayar */}
           <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
             <span className="ozel-top">{t("ozelShort")} · {t("twoPlayers")}</span>
-            <span>🎲 {t("tpRandom")} · 👥 · 🤖</span>
           </button>
           {invite && onJoinInvite && (
             <div className="invite-banner">
