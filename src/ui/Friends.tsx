@@ -101,7 +101,6 @@ export function FriendsPanel({ onJoin }: { onWatch?: (tableId: string) => void; 
                 {f.name}
                 <small className="muted">
                   {f.tableStatus === "playing" ? t("friendPlaying") : f.tableStatus === "waiting" ? t("friendWaiting") : f.online ? t("online") : t("offline")}
-                  {f.watchers > 0 && ` · 👁 ${f.watchers}`}
                 </small>
               </span>
               <button type="button" className="link small-btn" aria-label={t("removeFriend")} title={t("removeFriend")}

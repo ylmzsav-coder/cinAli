@@ -1,7 +1,6 @@
 import { TeaGlass } from "./GiftIcon";
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { CartIcon } from "./CartIcon";
-import { WatchersBadge } from "./Watchers";
 import { BOT_PROFILES, BotLevel, botStep } from "../game/bot";
 import { Dictionary } from "../game/dictionary";
 import {
@@ -155,7 +154,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, watchers = [], dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, tableId, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, tableId, payout }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -946,7 +945,6 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         {!(onLeave && !handOver) && <button type="button" className="link" onClick={onExit}>{t("menu")}</button>}
         <div className="title">
           {tableId === "caylak" && <span className="title-ico"><TeaGlass size="1.25em" /></span>}{tableId?.startsWith("usta") && "🚘 "}{tableId?.startsWith("vip") && "👑 "}{tableName ?? t("practiceShort")} {state.totalHands > 1 && <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>}
-          <WatchersBadge names={watchers} />
         </div>
         {/* Oyuncu profili: sol üstte, Oyundan çık'ın solunda */}
         <div className="me-slot topbar-me"><Avatar name={me.name} seat={ME} size="sm" onClick={() => setProfileSeat(ME)} /></div>

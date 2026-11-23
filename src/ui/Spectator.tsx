@@ -1,5 +1,4 @@
 import { doc, onSnapshot } from "firebase/firestore";
-import { WatchersBadge, watcherNamesOf } from "./Watchers";
 import { useEffect, useState } from "react";
 import { tableById } from "../economy/tables";
 import { errorText, t } from "../i18n";
@@ -111,7 +110,6 @@ export function Spectator({ tableId, name, onLeave, onSeated }: { tableId: strin
       <header className="topbar">
         <button type="button" className="link" onClick={onLeave}>{t("stopWatchingBtn")}</button>
         <div className="title">👁 {t("spectating")} {cfg ? `· ${t(`table_${cfg.id}` as "table_vip")}` : ""}</div>
-        <WatchersBadge names={watcherNamesOf(data)} />
       </header>
       {data.status === "waiting" && <p className="muted center">{t("waitingTitle")}</p>}
       {(data.status === "finished" || data.status === "abandoned") && <p className="center">{t("tableOverMsg")}</p>}
