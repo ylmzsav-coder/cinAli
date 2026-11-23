@@ -9,7 +9,7 @@ import { Avatar } from "./Profile";
  * Profildeki arkadaş listesi: bekleyen istekler, çevrimiçi durum ve masada
  * oynayan arkadaşın masasını izleme.
  */
-export function FriendsPanel({ onWatch, onJoin }: { onWatch?: (tableId: string) => void; onJoin?: (code: string) => void }) {
+export function FriendsPanel({ onJoin }: { onWatch?: (tableId: string) => void; onJoin?: (code: string) => void }) {
   const [friends, setFriends] = useState<FriendStatus[] | null>(null);
   const [requests, setRequests] = useState<FriendRequest[]>([]);
   const [invites, setInvites] = useState<TableInvite[]>([]);
@@ -104,9 +104,6 @@ export function FriendsPanel({ onWatch, onJoin }: { onWatch?: (tableId: string) 
                   {f.watchers > 0 && ` · 👁 ${f.watchers}`}
                 </small>
               </span>
-              {f.tableId && onWatch && (
-                <button type="button" className="primary small-btn" onClick={() => onWatch(f.tableId!)}>👁 {t("watch")}</button>
-              )}
               <button type="button" className="link small-btn" aria-label={t("removeFriend")} title={t("removeFriend")}
                 onClick={() => { if (confirm(t("removeFriendAsk", { name: f.name }))) void removeFriend(f.uid).then(load); }}>✕</button>
             </div>
