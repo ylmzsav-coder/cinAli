@@ -36,6 +36,13 @@ const fs = (await C.call("friendsStatus")).friends.find((f) => f.uid === A.uid);
 check("arkadaş listesinde masada görünür", fs && fs.tableStatus === "playing");
 const txt = await A.call("sendText", { tableId: ja.tableId, text: "merhaba, iyi oyunlar", uiLang: "tr" });
 check("VIP odada serbest yazışma", !!txt && txt.ok !== false, JSON.stringify(txt));
+// Yasa dışı içerik: gönderilmez; 2. ihlalde 24 saat sohbet yasağı
+const sleepMs = (ms) => new Promise((r) => setTimeout(r, ms));
+await sleepMs(1600);
+check("uyuşturucu mesajı engellenir", (await errCode(A.call("sendText", { tableId: ja.tableId, text: "k0kain var mı", uiLang: "tr" }))) === "illegalContent");
+check("iletişim bilgisi engellenir (2. ihlal: yasak)", (await errCode(A.call("sendText", { tableId: ja.tableId, text: "telegramdan yaz 0532 123 45 67", uiLang: "tr" }))) === "illegalBanned");
+check("yasaklıyken normal mesaj da gitmez", (await errCode(A.call("sendText", { tableId: ja.tableId, text: "merhaba", uiLang: "tr" }))) === "chatBanned");
+check("rakip masum mesaj yazabilir", (await B.call("sendText", { tableId: ja.tableId, text: "iyi oyunlar", uiLang: "tr" })).ok === true);
 // Misafir: VIP abone arkadaşını davet eder; misafirden abonelik ve ücret istenmez
 const G = await client("Gül");
 await A.call("leaveTable", { tableId: ja.tableId });

@@ -7,6 +7,11 @@
  *  - hız sınırı: en az 1,5 sn arayla, dakikada en fazla 15 mesaj
  *  - aynı masada 3 küfür denemesi -> 10 dakika yazışma kapalı
  * Küfürlü mesaj masaya HİÇ gönderilmez.
+ *
+ * VIP odada ayrıca yasa dışı içerik filtresi (illegal.ts): uyuşturucu, silah,
+ * kumar, satış teklifi ve iletişim/ödeme bilgisi içeren mesaj gönderilmez,
+ * moderation koleksiyonuna kaydedilir; 2. ihlalde 24 saat, 4. ihlalde 30 gün
+ * sohbet yasağı gelir ve hesap yönetici incelemesine düşer.
  */
 import { FieldValue } from "firebase-admin/firestore";
 import { onCall } from "firebase-functions/v2/https";
@@ -14,12 +19,38 @@ import { LANGS } from "../../src/game/lang";
 import { isVipType } from "../../src/economy/tables";
 import { db, fail, uidOf } from "./common";
 import { containsLink, containsProfanity } from "./profanity";
+import { illegalCategory } from "./illegal";
 
 export const MAX_TEXT = 120;
 const MIN_GAP_MS = 1500;
 const PER_MINUTE = 15;
 const STRIKES_TO_MUTE = 3;
 const MUTE_MS = 10 * 60_000;
+const DAY = 24 * 60 * 60_000;
+/** İhlal sayısına göre sohbet yasağı: 2 -> 1 gün, 4 -> 30 gün. */
+const banFor = (strikes: number) => (strikes >= 4 ? 30 * DAY : strikes >= 2 ? DAY : 0);
+
+/** Yasa dışı içerik denemesini kaydeder, gerekirse sohbet yasağı koyar ve hata döndürür. */
+async function flagIllegal(uid: string, tableId: string, text: string, category: string, ip: string | null): Promise<never> {
+  const userRef = db.collection("users").doc(uid);
+  const strikes = await db.runTransaction(async (t) => {
+    const u = (await t.get(userRef)).data() ?? {};
+    const n = ((u.modStrikes as number | undefined) ?? 0) + 1;
+    const ban = banFor(n);
+    t.set(userRef, {
+      modStrikes: n,
+      ...(ban ? { chatBannedUntil: Date.now() + ban } : {}),
+      ...(n >= 4 ? { modReview: true } : {}),
+    }, { merge: true });
+    t.create(db.collection("moderation").doc(), {
+      uid, name: (u.name as string) || "?", tableId, text, category, ip, strikes: n, at: FieldValue.serverTimestamp(), status: "open",
+    });
+    return n;
+  });
+  const ban = banFor(strikes);
+  if (ban) fail("illegalBanned", { h: Math.round(ban / 3_600_000) }, "permission-denied");
+  return fail("illegalContent", {}, "permission-denied");
+}
 
 interface ChatMeta {
   last: number;
@@ -39,6 +70,17 @@ export const sendText = onCall(async (req) => {
 
   const tableRef = db.collection("tables").doc(tableId);
   const metaRef = tableRef.collection("chatmeta").doc(uid);
+  const user = (await db.collection("users").doc(uid).get()).data() ?? {};
+  if (user.banned) fail("accountBanned", {}, "permission-denied");
+  const bannedUntil = (user.chatBannedUntil as number | undefined) ?? 0;
+  if (bannedUntil > Date.now()) fail("chatBanned", { h: Math.max(1, Math.ceil((bannedUntil - Date.now()) / 3_600_000)) }, "permission-denied");
+  const ip = req.rawRequest?.ip ?? null;
+  const category = illegalCategory(text);
+  if (category) {
+    const table = (await tableRef.get()).data();
+    if (table && (table.uids as string[]).includes(uid)) await flagIllegal(uid, tableId, text, category, ip);
+    fail("notAtTable", {}, "permission-denied");
+  }
   return db.runTransaction(async (t) => {
     const [tSnap, mSnap] = await Promise.all([t.get(tableRef), t.get(metaRef)]);
     const table = tSnap.data();
