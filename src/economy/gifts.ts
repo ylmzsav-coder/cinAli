@@ -17,8 +17,7 @@ export interface Gift {
 
 export const GIFTS: Gift[] = [
   // Erkeklere özel
-  { id: "abakus", emoji: "🧮", category: "erkek", value: 100, joke: true },
-  { id: "cay", emoji: "🍵", category: "erkek", value: 150 },
+  { id: "cay", emoji: "🍵", category: "erkek", value: 100 },
   { id: "top", emoji: "⚽", category: "erkek", value: 200 },
   { id: "sapka", emoji: "🎩", category: "erkek", value: 300 },
   { id: "parfum_e", emoji: "🧴", category: "erkek", value: 400 },
@@ -50,6 +49,7 @@ export const GIFT_CONVERT_RATE = 0.8;
 const RETIRED_GIFTS: Gift[] = [
   { id: "gozluk", emoji: "🕶️", category: "erkek", value: 300 },
   { id: "kahve", emoji: "☕", category: "herkes", value: 100 },
+  { id: "abakus", emoji: "🧮", category: "erkek", value: 100, joke: true },
 ];
 export const giftById = (id: string): Gift | undefined => GIFTS.find((g) => g.id === id) ?? RETIRED_GIFTS.find((g) => g.id === id);
 /** Gönderilebilir (mağazada satılan) hediye mi? */
