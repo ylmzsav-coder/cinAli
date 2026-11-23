@@ -26,7 +26,7 @@ const TR: TermsDoc = {
     { h: "2. Yasak davranışlar", items: [
       "Uyuşturucu, silah, yasa dışı bahis/kumar veya başka bir suçla ilgili içerik paylaşmak, bunların alım-satımını teklif etmek.",
       "Alım-satım teklifi, telefon numarası, IBAN, sosyal medya/mesajlaşma hesabı gibi iletişim veya ödeme bilgisi paylaşmak; oyuncuları oyun dışına çekmeye çalışmak.",
-      "Hakaret, tehdit, taciz, nefret söylemi, cinsel içerik; çocuklara yönelik her türlü istismar.",
+      "Tehdit, taciz, nefret söylemi, cinsel içerik; çocuklara yönelik her türlü istismar.",
       "Dolandırıcılık, hile, hesap paylaşımı veya hesap satışı, başkasının kimliğine bürünmek.",
     ] },
     { h: "3. Denetim ve yaptırımlar", items: [
@@ -67,7 +67,7 @@ const EN: TermsDoc = {
     { h: "2. Forbidden behaviour", items: [
       "Sharing content about drugs, weapons, illegal betting/gambling or any other crime, or offering to buy or sell them.",
       "Offering to buy or sell anything, or sharing contact or payment details such as phone numbers, IBANs or social/messaging accounts; trying to move players off the game.",
-      "Insults, threats, harassment, hate speech, sexual content; any form of child abuse.",
+      "Threats, harassment, hate speech, sexual content; any form of child abuse.",
       "Fraud, cheating, sharing or selling accounts, impersonating others.",
     ] },
     { h: "3. Moderation and sanctions", items: [
@@ -106,7 +106,7 @@ const DE: TermsDoc = {
     { h: "2. Verbotenes Verhalten", items: [
       "Inhalte zu Drogen, Waffen, illegalen Wetten/Glücksspiel oder anderen Straftaten teilen oder deren Kauf/Verkauf anbieten.",
       "Kauf-/Verkaufsangebote oder das Teilen von Kontakt- und Zahlungsdaten (Telefonnummer, IBAN, Social-Media-/Messenger-Konten); Spieler aus dem Spiel locken.",
-      "Beleidigungen, Drohungen, Belästigung, Hassrede, sexuelle Inhalte; jede Form von Kindesmissbrauch.",
+      "Drohungen, Belästigung, Hassrede, sexuelle Inhalte; jede Form von Kindesmissbrauch.",
       "Betrug, Schummeln, Teilen oder Verkaufen von Konten, Identitätsmissbrauch.",
     ] },
     { h: "3. Moderation und Sanktionen", items: [
@@ -145,7 +145,7 @@ const FR: TermsDoc = {
     { h: "2. Comportements interdits", items: [
       "Partager des contenus liés aux drogues, aux armes, aux paris/jeux d’argent illégaux ou à tout autre délit, ou proposer d’en acheter ou d’en vendre.",
       "Proposer un achat/une vente ou partager des coordonnées ou moyens de paiement (téléphone, IBAN, comptes de réseaux sociaux/messagerie) ; attirer les joueurs hors du jeu.",
-      "Insultes, menaces, harcèlement, discours de haine, contenu sexuel ; toute forme d’abus envers les enfants.",
+      "Menaces, harcèlement, discours de haine, contenu sexuel ; toute forme d’abus envers les enfants.",
       "Fraude, triche, partage ou vente de comptes, usurpation d’identité.",
     ] },
     { h: "3. Modération et sanctions", items: [
@@ -184,7 +184,7 @@ const ES: TermsDoc = {
     { h: "2. Conductas prohibidas", items: [
       "Compartir contenido sobre drogas, armas, apuestas/juego ilegal u otros delitos, u ofrecer comprarlos o venderlos.",
       "Ofrecer compraventa o compartir datos de contacto o pago (teléfono, IBAN, cuentas de redes sociales/mensajería); intentar sacar a los jugadores del juego.",
-      "Insultos, amenazas, acoso, discurso de odio, contenido sexual; cualquier forma de abuso infantil.",
+      "Amenazas, acoso, discurso de odio, contenido sexual; cualquier forma de abuso infantil.",
       "Fraude, trampas, compartir o vender cuentas, suplantar identidades.",
     ] },
     { h: "3. Moderación y sanciones", items: [
@@ -223,7 +223,7 @@ const IT: TermsDoc = {
     { h: "2. Comportamenti vietati", items: [
       "Condividere contenuti su droghe, armi, scommesse/gioco illegale o altri reati, o proporne l’acquisto o la vendita.",
       "Proporre compravendite o condividere contatti o dati di pagamento (telefono, IBAN, account social/messaggistica); portare i giocatori fuori dal gioco.",
-      "Insulti, minacce, molestie, incitamento all’odio, contenuti sessuali; qualsiasi forma di abuso su minori.",
+      "Minacce, molestie, incitamento all’odio, contenuti sessuali; qualsiasi forma di abuso su minori.",
       "Frode, imbrogli, condivisione o vendita di account, furto d’identità.",
     ] },
     { h: "3. Moderazione e sanzioni", items: [
@@ -262,7 +262,7 @@ const PT: TermsDoc = {
     { h: "2. Comportamentos proibidos", items: [
       "Partilhar conteúdo sobre drogas, armas, apostas/jogo ilegal ou outros crimes, ou oferecer a sua compra ou venda.",
       "Oferecer compra/venda ou partilhar contactos ou dados de pagamento (telefone, IBAN, contas de redes sociais/mensagens); tentar levar jogadores para fora do jogo.",
-      "Insultos, ameaças, assédio, discurso de ódio, conteúdo sexual; qualquer forma de abuso de menores.",
+      "Ameaças, assédio, discurso de ódio, conteúdo sexual; qualquer forma de abuso de menores.",
       "Fraude, batota, partilha ou venda de contas, usurpação de identidade.",
     ] },
     { h: "3. Moderação e sanções", items: [
