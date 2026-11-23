@@ -250,7 +250,7 @@ describe("çip ödemesi (en yüksek toplam birinci)", () => {
   it("giriş 100, birinci 300 çip alır", () => {
     expect(TABLES.filter((x) => !x.vip).map((x) => x.id)).toEqual(["caylak", "usta", "ozel2"]);
     const ozel = TABLES.find((x) => x.id === "ozel2")!;
-    expect([ozel.players, ozel.entry, winnerPrize(ozel)]).toEqual([2, 100, 150]);
+    expect([ozel.players, ozel.entry, winnerPrize(ozel)]).toEqual([2, 100, 300]);
     const usta = TABLES.find((x) => x.id === "usta")!;
     expect([usta.entry, winnerPrize(usta)]).toEqual([500, 1500]);
     expect(payout(usta, [80, 120, 120, 40], 1, 0)).toBe(750);
