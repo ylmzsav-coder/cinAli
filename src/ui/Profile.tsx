@@ -1,9 +1,12 @@
+import { loadSettings, type Settings } from "../storage";
+import { deleteAccount } from "../online/social";
+import { CLOUD } from "../online/cloud";
 import { wallet } from "../economy/wallet";
 import { useState } from "react";
 import type { GameState } from "../game/engine";
 import { handWinsOf, placedValue, totals, wordString } from "../game/engine";
 import { COLORS, type Tile } from "../game/tiles";
-import { formatNumber, t, uiLocale } from "../i18n";
+import { errorText, formatNumber, t, uiLocale } from "../i18n";
 import { loadStats, winRate, type PlayerStats } from "../stats";
 import { TileView } from "./TileView";
 import { FriendsPanel } from "./Friends";
@@ -14,6 +17,7 @@ const PHOTO_KEY = "wordokey.avatar";
 
 /** Sizin profil fotoğrafınız (cihazda saklanır, küçültülmüş). */
 export function loadPhoto(): string | null {
+  if (loadSettings().showPhoto === false) return null;
   try {
     return localStorage.getItem(PHOTO_KEY);
   } catch {
@@ -111,11 +115,11 @@ function StatsDetail({ s }: { s: PlayerStats }) {
 }
 
 /** Sizin profil kartınız: fotoğraf, başarı yüzdesi, özet ve ayrıntılı istatistikler. */
-export function MyStatsModal({ name, onClose, onJoin, gender, onGender }: { name: string; onClose: () => void; onJoin?: (code: string) => void; gender?: "erkek" | "kadin"; onGender?: (g: "erkek" | "kadin") => void }) {
+export function MyStatsModal({ name, onClose, onJoin, gender, onGender, settings, onSettings }: { name: string; onClose: () => void; onJoin?: (code: string) => void; gender?: "erkek" | "kadin"; onGender?: (g: "erkek" | "kadin") => void; settings?: Settings; onSettings?: (s: Settings) => void }) {
   const s = loadStats();
   const shown = name || t("defaultName");
   const [photo, setPhoto] = useState(loadPhoto);
-  const [tab, setTab] = useState<"summary" | "detail" | "friends" | "gifts">("summary");
+  const [tab, setTab] = useState<"summary" | "detail" | "friends" | "gifts" | "settings">("summary");
   const [msg, setMsg] = useState<string | null>(null);
   const rate = winRate(s.gamesWon, s.gamesPlayed);
   const share = async () => {
@@ -136,7 +140,7 @@ export function MyStatsModal({ name, onClose, onJoin, gender, onGender }: { name
         <button type="button" className="profile-close" onClick={onClose} aria-label={t("close")}>✕</button>
         <div className="profile-banner">
           <label className="photo-pick" title={t("changePhoto")}>
-            <Avatar name={shown} seat={0} size="lg" photo={photo} vip={wallet.isVip()} />
+            <Avatar name={shown} seat={0} size="lg" photo={settings?.showPhoto === false ? null : photo} vip={wallet.isVip()} />
             <span className="photo-edit" aria-hidden>📷</span>
             <input type="file" accept="image/*" hidden onChange={async (e) => {
               const f = e.target.files?.[0];
@@ -152,7 +156,9 @@ export function MyStatsModal({ name, onClose, onJoin, gender, onGender }: { name
             </div>
           )}
         </div>
-        {tab === "gifts" ? (
+        {tab === "settings" && settings && onSettings ? (
+          <SettingsPanel settings={settings} onSettings={onSettings} />
+        ) : tab === "gifts" ? (
           <MyGiftsPanel />
         ) : tab === "friends" ? (
           <FriendsPanel onJoin={onJoin && ((c) => { onClose(); onJoin(c); })} />
@@ -172,8 +178,13 @@ export function MyStatsModal({ name, onClose, onJoin, gender, onGender }: { name
           </div>
         )}
         {msg && <div className="toast">{msg}</div>}
-        <div className="profile-actions four">
+        <div className={`profile-actions ${settings && onSettings ? "five" : "four"}`}>
           <button type="button" onClick={share}>🔗 {t("share")}</button>
+          {settings && onSettings && (
+            <button type="button" className={tab === "settings" ? "primary" : ""} onClick={() => setTab(tab === "settings" ? "summary" : "settings")}>
+              ⚙️ {tab === "settings" ? t("summary") : t("settingsTitle")}
+            </button>
+          )}
           <button type="button" className={tab === "gifts" ? "primary" : ""} onClick={() => setTab(tab === "gifts" ? "summary" : "gifts")}>
             🎁 {tab === "gifts" ? t("summary") : t("myGifts")}
           </button>
@@ -187,6 +198,68 @@ export function MyStatsModal({ name, onClose, onJoin, gender, onGender }: { name
       </div>
     </div>
   );
+}
+
+/** Profildeki ayarlar: fotoğraf, davetler, sohbet, ses ve hesabı silme. */
+function SettingsPanel({ settings, onSettings }: { settings: Settings; onSettings: (s: Settings) => void }) {
+  const [ask, setAsk] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const rows: { key: keyof Settings; label: string; hint: string; on: boolean }[] = [
+    { key: "showPhoto", label: t("setShowPhoto"), hint: t("setShowPhotoHint"), on: settings.showPhoto !== false },
+    { key: "invites", label: t("setInvites"), hint: t("setInvitesHint"), on: settings.invites !== false },
+    { key: "chatInvite", label: t("setChatInvite"), hint: t("setChatInviteHint"), on: settings.chatInvite !== false },
+    { key: "chat", label: t("setChatRandom"), hint: t("setChatRandomHint"), on: settings.chat },
+    { key: "sound", label: t("setSound"), hint: t("setSoundHint"), on: settings.sound },
+  ];
+  const remove = async () => {
+    setBusy(true);
+    setErr(null);
+    try {
+      if (CLOUD) await deleteAccount();
+      wipeLocalData();
+      location.reload();
+    } catch (e) {
+      setErr(errorText(e));
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="settings-panel">
+      <button type="button" className="link delete-account" onClick={() => setAsk(true)}>{t("deleteAccount")}</button>
+      {ask && (
+        <div className="delete-ask" role="alertdialog" aria-label={t("deleteAccount")}>
+          <p><b>⚠️ {t("deleteAccountAsk")}</b></p>
+          <p className="muted small">{t("deleteAccountInfo")}</p>
+          {err && <p className="login-err">{err}</p>}
+          <div className="modal-actions">
+            <button type="button" className="danger" disabled={busy} onClick={() => void remove()}>{t("deleteAccountYes")}</button>
+            <button type="button" disabled={busy} onClick={() => setAsk(false)}>{t("cancel")}</button>
+          </div>
+        </div>
+      )}
+      <div className="settings-head">{t("setGameSection")}</div>
+      <ul className="settings-list">
+        {rows.map((r) => (
+          <li key={r.key}>
+            <span className="settings-label">{r.label}<small>{r.hint}</small></span>
+            <button type="button" role="switch" aria-checked={r.on} aria-label={r.label} className={`switch ${r.on ? "on" : ""}`}
+              onClick={() => onSettings({ ...settings, [r.key]: !r.on })}><i /></button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Cihazdaki bütün oyun verilerini siler (hesap silinince). */
+function wipeLocalData() {
+  try {
+    for (const k of Object.keys(localStorage)) if (k.startsWith("wordokey.") || k.startsWith("cinali.")) localStorage.removeItem(k);
+    sessionStorage.clear();
+  } catch {
+    /* depolama kapalı */
+  }
 }
 
 /** Oynanan oyun cetveli: galibiyet / yenilgi oranlı; beraberlik galibiyettir çubuk (oyundan çıkmak yenilgidir). */

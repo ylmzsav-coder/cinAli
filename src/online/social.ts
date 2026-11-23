@@ -26,14 +26,16 @@ export const inviteFriend = (tableId: string, friendUid: string) => call("invite
 export const declineInvite = (tableId: string) => call("declineInvite", { tableId });
 export const sendFriendRequest = (targetUid: string) => call<{ status: "sent" | "friends" }>("sendFriendRequest", { targetUid });
 export const respondFriendRequest = (fromUid: string, accept: boolean) => call("respondFriendRequest", { fromUid, accept });
+/** Hesabı ve sunucudaki verileri kalıcı olarak siler. */
+export const deleteAccount = () => call<{ ok: boolean }>("deleteAccount");
 export const removeFriend = (friendUid: string) => call("removeFriend", { friendUid });
 
 let beat: ReturnType<typeof setInterval> | null = null;
 /** Uygulama açıkken dakikada bir "çevrimiçiyim" bildirir (arkadaş listesindeki yeşil nokta). */
-export function startHeartbeat(name: string) {
+export function startHeartbeat(name: string, invites = true) {
   if (!CLOUD) return;
   const send = () => {
-    if (document.visibilityState === "visible") void call("heartbeat", { name }).catch(() => {});
+    if (document.visibilityState === "visible") void call("heartbeat", { name, invites }).catch(() => {});
   };
   if (beat) clearInterval(beat);
   send();

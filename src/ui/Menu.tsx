@@ -82,12 +82,12 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
   const [invite, setInvite] = useState<TableInvite | null>(null);
   useEffect(() => {
-    if (!CLOUD || !onJoinInvite) return;
+    if (!CLOUD || !onJoinInvite || settings.invites === false) return;
     const check = () => friendsStatus().then((r) => setInvite(r.invites?.[0] ?? null), () => {});
     check();
     const id = setInterval(check, 10_000);
     return () => clearInterval(id);
-  }, [onJoinInvite]);
+  }, [onJoinInvite, settings.invites]);
   // Çipi biten oyuncunun hediye sayacı (dakikada bir güncellenir)
   const refillAt = w.ready ? wallet.refillAt() : null;
   const [now, setNow] = useState(() => Date.now());
@@ -236,7 +236,8 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           {vipTerms && <VipTermsModal onAccept={() => { setVipTerms(false); setVipLobby(true); }} onClose={() => setVipTerms(false)} onRead={() => { setVipTerms(false); onTerms(); }} onPrivacy={() => { setVipTerms(false); onPrivacy(); }} />}
           {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); openVipLobby(); }, 1200)} />}
           {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onJoin={onJoinInvite}
-            gender={settings.gender} onGender={(g) => onSettings({ ...settings, gender: g })} />}
+            gender={settings.gender} onGender={(g) => onSettings({ ...settings, gender: g })}
+            settings={settings} onSettings={onSettings} />}
         </div>
         <div className="hub-right">
           {/* Özel Oda (2 kişilik): rastgele oyuncu, arkadaş ya da bilgisayar */}

@@ -58,7 +58,7 @@ interface Props {
   entry: OnlineEntry;
   settings: Settings;
   /** Sohbet balonlarını aç/kapat. */
-  onChat?: (on: boolean) => void;
+  onChat?: (on: boolean, privateTable: boolean) => void;
   /** Menüye dön (masa sürmeye devam eder; tekrar girince kaldığı yerden). */
   onExit: () => void;
   /** Oyun bitti ya da masadan kalkıldı. */
@@ -310,8 +310,8 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
     <Game
       remote={remote}
       chat={chat}
-      chatEnabled={settings.chat}
-      onChatEnabled={onChat}
+      chatEnabled={doc_.private ? settings.chatInvite !== false : settings.chat}
+      onChatEnabled={onChat && ((on) => onChat(on, !!doc_.private))}
       chatRoom={isVipType(doc_.type)}
       playerMenu={playerMenu}
       vipSeats={doc_.seats.map((_, i) => {

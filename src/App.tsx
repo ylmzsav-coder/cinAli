@@ -241,8 +241,8 @@ export function App() {
   const inGame = screen === "game" || screen === "online";
   // Çevrimiçi durumu (arkadaş listesindeki yeşil nokta)
   useEffect(() => {
-    if (started) startHeartbeat(settings.name);
-  }, [started, settings.name]);
+    if (started) startHeartbeat(settings.name, settings.invites !== false);
+  }, [started, settings.name, settings.invites]);
 
   // Yenilemeden sonra tam ekran ve müzik ilk dokunuşta geri gelir (tarayıcı dokunuş ister)
   useEffect(() => {
@@ -293,7 +293,7 @@ export function App() {
           <OnlineTable
             entry={online}
             settings={settings}
-            onChat={(on) => changeSettings({ ...settings, chat: on })}
+            onChat={(on, priv) => changeSettings(priv ? { ...settings, chatInvite: on } : { ...settings, chat: on })}
             onExit={() => setScreen("hub")}
             onDone={() => {
               setOnline(null);

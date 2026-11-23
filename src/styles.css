@@ -1442,3 +1442,19 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .login-agree { font-size: 0.78rem; opacity: 0.85; text-align: center; margin: 8px 0 0; }
 .login-agree .link { font-size: inherit; padding: 0; }
 .legal-overlay { position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: var(--bg, #0f3d26); }
+/* Profil > Ayarlar */
+.profile-actions.five { grid-template-columns: repeat(5, 1fr); }
+.profile-actions.five button { font-size: 0.82rem; padding-left: 4px; padding-right: 4px; }
+.settings-panel { display: grid; gap: 6px; }
+.settings-panel .delete-account { justify-self: center; font-style: italic; font-weight: 800; }
+.delete-ask { background: rgba(122, 31, 31, 0.55); border: 1px solid #ff8a80; border-radius: 12px; padding: 8px 12px; text-align: center; }
+.delete-ask p { margin: 4px 0; }
+.settings-head { background: rgba(0, 0, 0, 0.3); font-weight: 900; font-size: 1.1rem; padding: 8px 12px; border-radius: 10px; }
+.settings-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.settings-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.settings-label { display: grid; font-weight: 800; text-align: left; }
+.settings-label small { font-weight: 500; opacity: 0.7; font-size: 0.75rem; }
+.switch { flex: none; width: 54px; height: 30px; border-radius: 999px; background: #6b6b6b; border: none; padding: 0; position: relative; cursor: pointer; transition: background 0.2s; min-height: 0; }
+.switch i { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.4); transition: left 0.2s; }
+.switch.on { background: #4caf50; }
+.switch.on i { left: 27px; }

@@ -304,7 +304,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
     }
   };
   const [menuSeat, setMenuSeat] = useState<number | null>(null);
-  const textHistory = chatEvents.filter((e) => e.kind === "text").sort((a, b) => a.at - b.at).slice(-8);
+  const textHistory = chatEvents.filter((e) => e.kind === "text" && (e.seat === ME || chatEnabled)).sort((a, b) => a.at - b.at).slice(-8);
 
   const sendChat = (kind: "msg" | "emoji", id: string) => {
     if (Date.now() - lastSentRef.current < CHAT_COOLDOWN_MS) return;

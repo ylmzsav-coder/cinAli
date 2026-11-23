@@ -28,6 +28,8 @@ export const heartbeat = onCall(async (req) => {
   const patch: Record<string, unknown> = { lastSeen: Date.now() };
   const raw = str(req.data?.name, 40);
   if (raw.trim()) patch.name = cleanName(raw, uid, "en");
+  // Profil ayarı: arkadaşlardan oyun daveti alınsın mı
+  if (typeof req.data?.invites === "boolean") patch.allowInvites = req.data.invites;
   await userRef(uid).set(patch, { merge: true });
   return { ok: true };
 });
@@ -163,6 +165,8 @@ export const inviteFriend = onCall(async (req) => {
     if (!table || !(table.uids as string[]).includes(uid)) return fail("notAtTable", {}, "permission-denied");
     if (!table.private || table.status !== "waiting" || !table.code) fail("notNow");
     if (!fSnap.exists) fail("notFriend", {}, "permission-denied");
+    const target = await t.get(userRef(fid));
+    if (target.data()?.allowInvites === false) fail("invitesOff");
     t.set(inviteRef(fid, id), {
       fromUid: uid,
       name: (me.data()?.name as string) || "?",

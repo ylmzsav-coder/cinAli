@@ -27,6 +27,12 @@ export interface Settings {
   chat: boolean;
   /** Menülerde giriş müziği. */
   music: boolean;
+  /** Profil fotoğrafı gösterilsin mi (kapalıysa baş harf). */
+  showPhoto?: boolean;
+  /** Arkadaşlardan oyun daveti alınsın mı. */
+  invites?: boolean;
+  /** Davetle kurulan (özel) masalarda sohbet. `chat` ise rastgele masalardaki sohbettir. */
+  chatInvite?: boolean;
 }
 
 /** Çipli masalarda sabit hamle süresi. */
@@ -42,7 +48,7 @@ function deviceLang(): LangCode {
 
 export function defaultSettings(): Settings {
   const ui = deviceLang();
-  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 45, timerV: 2, sound: true, vibration: true, chat: true, music: true };
+  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 45, timerV: 2, sound: true, vibration: true, chat: true, music: true, showPhoto: true, invites: true, chatInvite: true };
 }
 
 const KEY_SETTINGS = "cinali.settings";
