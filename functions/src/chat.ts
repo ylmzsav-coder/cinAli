@@ -13,7 +13,7 @@
  * moderation koleksiyonuna kaydedilir; 2. ihlalde 24 saat, 4. ihlalde 30 gün
  * sohbet yasağı gelir ve hesap yönetici incelemesine düşer.
  */
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { onCall } from "firebase-functions/v2/https";
 import { LANGS } from "../../src/game/lang";
 import { isVipType } from "../../src/economy/tables";
@@ -27,6 +27,11 @@ const PER_MINUTE = 15;
 const STRIKES_TO_MUTE = 3;
 const MUTE_MS = 10 * 60_000;
 const DAY = 24 * 60 * 60_000;
+/**
+ * Sohbet kaydı saklama süresi (5651 sayılı Kanun kapsamındaki saklama yükümlülüğü için).
+ * Süre dolunca Firestore TTL kaydı kendiliğinden siler (firestore.indexes.json: chatLogs.expireAt).
+ */
+export const CHAT_LOG_DAYS = 730;
 /** İhlal sayısına göre sohbet yasağı: 2 -> 1 gün, 4 -> 30 gün. */
 const banFor = (strikes: number) => (strikes >= 4 ? 30 * DAY : strikes >= 2 ? DAY : 0);
 
@@ -100,6 +105,12 @@ export const sendText = onCall(async (req) => {
     meta.windowCount += 1;
     t.set(metaRef, meta);
     t.create(tableRef.collection("chat").doc(), { uid, kind: "text", id: "", text, at: FieldValue.serverTimestamp() });
+    // Kalıcı sohbet kaydı: yalnızca sunucu ve yönetici okuyabilir (istemciye kapalı)
+    const seat = ((table!.seats as { uid: string | null; name: string }[]) ?? []).find((x) => x.uid === uid);
+    t.create(db.collection("chatLogs").doc(), {
+      uid, name: seat?.name ?? (user.name as string) ?? "?", tableId, tableType: table!.type, uids: table!.uids, text, ip,
+      at: FieldValue.serverTimestamp(), expireAt: Timestamp.fromMillis(now + CHAT_LOG_DAYS * DAY),
+    });
     return { ok: true };
   });
 });

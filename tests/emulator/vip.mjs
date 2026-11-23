@@ -1,7 +1,7 @@
 // Emülatöre karşı VIP oda testi: node tests/emulator/vip.mjs
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, signInAnonymously } from "firebase/auth";
-import { connectFirestoreEmulator, doc, getDoc, getFirestore } from "firebase/firestore";
+import { collection, connectFirestoreEmulator, doc, getDoc, getDocs, getFirestore } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from "firebase/functions";
 async function client(name) {
   const app = initializeApp({ projectId: "demo-cinali", apiKey: "demo-key" }, name);
@@ -43,6 +43,18 @@ check("uyuşturucu mesajı engellenir", (await errCode(A.call("sendText", { tabl
 check("iletişim bilgisi engellenir (2. ihlal: yasak)", (await errCode(A.call("sendText", { tableId: ja.tableId, text: "telegramdan yaz 0532 123 45 67", uiLang: "tr" }))) === "illegalBanned");
 check("yasaklıyken normal mesaj da gitmez", (await errCode(A.call("sendText", { tableId: ja.tableId, text: "merhaba", uiLang: "tr" }))) === "chatBanned");
 check("rakip masum mesaj yazabilir", (await B.call("sendText", { tableId: ja.tableId, text: "iyi oyunlar", uiLang: "tr" })).ok === true);
+// Sohbet kaydı: sunucuda saklanır (2 yıl), istemciler okuyamaz
+const logs = await fetch("http://127.0.0.1:8080/v1/projects/demo-cinali/databases/(default)/documents/chatLogs?pageSize=50", { headers: { Authorization: "Bearer owner" } }).then((r) => r.json());
+const logTexts = (logs.documents ?? []).map((d) => d.fields.text.stringValue);
+check("gönderilen mesajlar kayıtta", logTexts.includes("merhaba, iyi oyunlar") && logTexts.includes("iyi oyunlar"), JSON.stringify(logTexts));
+check("engellenen mesaj sohbet kaydına girmez", !logTexts.includes("k0kain var mı"));
+const one = (logs.documents ?? [])[0]?.fields ?? {};
+const days = (Date.parse(one.expireAt?.timestampValue) - Date.now()) / 864e5;
+check("kayıt 2 yıl saklanır (TTL)", days > 728 && days < 731, String(days));
+check("kayıtta gönderen, masa ve IP alanı", !!one.uid && !!one.tableId && "ip" in one);
+const mods = await fetch("http://127.0.0.1:8080/v1/projects/demo-cinali/databases/(default)/documents/moderation", { headers: { Authorization: "Bearer owner" } }).then((r) => r.json());
+check("ihlaller denetim kaydında", (mods.documents ?? []).length === 2, String((mods.documents ?? []).length));
+check("istemci sohbet kaydını okuyamaz", (await getDocs(collection(B.db, "chatLogs")).then(() => "EVET", (e) => e.code)) === "permission-denied");
 // Misafir: VIP abone arkadaşını davet eder; misafirden abonelik ve ücret istenmez
 const G = await client("Gül");
 await A.call("leaveTable", { tableId: ja.tableId });
