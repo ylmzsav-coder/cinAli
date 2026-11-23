@@ -8,11 +8,13 @@
  */
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
-let bus: GainNode | null = null;
-let timer: ReturnType<typeof setInterval> | null = null;
-let nextTime = 0;
-let step = 0;
-let ended = false;
+let source: AudioBufferSourceNode | null = null;
+/** Müzik önceden (çevrimdışı) bir kez işlenir; telefonda takılma/cızırtı olmaz. */
+let rendered: AudioBuffer | null = null;
+let rendering: Promise<AudioBuffer | null> | null = null;
+/** Kullanıcı müziği istiyor mu (işleme bitince çalınsın mı). */
+let wanted = false;
+let playing = false;
 
 /** Müziğin toplam süresi (saniye). */
 export const MUSIC_SECONDS = 19;
@@ -73,7 +75,7 @@ function audio(): AudioContext | null {
 }
 
 /** Kısa oda yankısı için yapay dürtü yanıtı. */
-function reverbImpulse(a: AudioContext, seconds = 1.6): AudioBuffer {
+function reverbImpulse(a: BaseAudioContext, seconds = 1.6): AudioBuffer {
   const len = Math.floor(a.sampleRate * seconds);
   const buf = a.createBuffer(2, len, a.sampleRate);
   for (let ch = 0; ch < 2; ch++) {
@@ -84,7 +86,7 @@ function reverbImpulse(a: AudioContext, seconds = 1.6): AudioBuffer {
 }
 
 let noiseBuf: AudioBuffer | null = null;
-function noise(a: AudioContext): AudioBuffer {
+function noise(a: BaseAudioContext): AudioBuffer {
   if (noiseBuf && noiseBuf.sampleRate === a.sampleRate) return noiseBuf;
   const len = Math.floor(a.sampleRate * 0.05);
   noiseBuf = a.createBuffer(1, len, a.sampleRate);
@@ -94,7 +96,7 @@ function noise(a: AudioContext): AudioBuffer {
 }
 
 /** Tek bir piyano notası. */
-function piano(a: AudioContext, out: AudioNode, midi: number, t: number, hold: number, vel: number) {
+function piano(a: BaseAudioContext, out: AudioNode, midi: number, t: number, hold: number, vel: number) {
   const f0 = hz(midi);
   const decay = 1.2 + Math.max(0, (84 - midi) / 24) * 2.2;
   const end = t + Math.max(hold, 0.1) + 0.3;
@@ -132,97 +134,126 @@ function piano(a: AudioContext, out: AudioNode, midi: number, t: number, hold: n
   src.start(t);
 }
 
-/** Kapanış: Do majör akor ve zil; müzik 19. saniyede susar. */
-function finale(a: AudioContext, out: GainNode, t: number) {
+/** Kapanış: Do majör akor. */
+function finale(a: BaseAudioContext, out: AudioNode, t: number) {
   ["C2", "C3", "G3", "C4", "E4", "G4"].forEach((n, k) => piano(a, out, NOTE[n], t + k * 0.012, 0.9, 0.22));
-  const m = master;
-  const ms = Math.max(0, (t + 1.05 - a.currentTime) * 1000);
-  setTimeout(() => {
-    if (master === m) {
-      if (timer) clearInterval(timer);
-      timer = null;
-      m?.disconnect();
-      master = null;
-      bus = null;
-    }
-  }, ms);
 }
 
-function schedule() {
-  const a = ctx;
-  if (!a || !bus) return;
-  while (!ended && nextTime < a.currentTime + 0.3) {
-    if (step >= MELODY.length) {
-      ended = true;
-      finale(a, bus, nextTime);
-      break;
+/** Bütün ezgiyi çevrimdışı bir ses bağlamında tek seferde işler. */
+function render(): Promise<AudioBuffer | null> {
+  if (rendered) return Promise.resolve(rendered);
+  if (rendering) return rendering;
+  rendering = (async () => {
+    try {
+      const OAC = window.OfflineAudioContext ?? (window as unknown as { webkitOfflineAudioContext?: typeof OfflineAudioContext }).webkitOfflineAudioContext;
+      if (!OAC) return null;
+      const sr = 32000;
+      const a = new OAC(2, Math.ceil(sr * (MUSIC_SECONDS + 0.6)), sr);
+      const comp = a.createDynamicsCompressor();
+      comp.threshold.value = -8;
+      comp.knee.value = 6;
+      comp.ratio.value = 10;
+      comp.attack.value = 0.003;
+      comp.release.value = 0.25;
+      const mix = a.createGain();
+      mix.connect(comp).connect(a.destination);
+      const bus = a.createGain();
+      const verb = a.createConvolver();
+      verb.buffer = reverbImpulse(a);
+      const wet = a.createGain();
+      wet.gain.value = 0.25;
+      bus.connect(mix);
+      bus.connect(verb).connect(wet).connect(mix);
+      let t = 0.05;
+      for (let i = 0; i < MELODY.length; i++) {
+        // Sağ el: ezgi, kalın ve dolgun (bir oktav aşağıda, oktav katlamalı)
+        const note = MELODY[i];
+        if (note !== "-" && note !== ".") {
+          let len = 1;
+          while (MELODY[i + len] === "-") len++;
+          const accent = i % 8 === 0 ? 1 : 0.85;
+          const m = NOTE[note] - 12;
+          piano(a, bus, m, t, STEP * len * 0.92, 0.32 * accent);
+          piano(a, bus, m - 12, t, STEP * len * 0.92, 0.14 * accent);
+        }
+        // Sol el: "pam-pa" (vuruşta bas, ara vuruşta akor)
+        const [r, third, fifth] = CHORDS[Math.floor(i / 4)].map((n) => NOTE[n]);
+        if (i % 4 === 0) piano(a, bus, r - 12, t, STEP * 1.6, 0.22);
+        if (i % 4 === 2) [r, third, fifth].forEach((m) => piano(a, bus, m, t, STEP * 0.8, 0.11));
+        t += STEP;
+      }
+      finale(a, bus, t);
+      rendered = await a.startRendering();
+      return rendered;
+    } catch {
+      return null;
+    } finally {
+      rendering = null;
     }
-    const i = step;
-    // Sağ el: ezgi, kalın ve dolgun (bir oktav aşağıda, oktav katlamalı)
-    const note = MELODY[i];
-    if (note !== "-" && note !== ".") {
-      let len = 1;
-      while (MELODY[i + len] === "-") len++;
-      const accent = i % 8 === 0 ? 1 : 0.85;
-      const m = NOTE[note] - 12;
-      piano(a, bus, m, nextTime, STEP * len * 0.92, 0.32 * accent);
-      piano(a, bus, m - 12, nextTime, STEP * len * 0.92, 0.14 * accent);
-    }
-    // Sol el: "pam-pa" (vuruşta bas, ara vuruşta akor)
-    const [r, third, fifth] = CHORDS[Math.floor(i / 4)].map((n) => NOTE[n]);
-    if (i % 4 === 0) piano(a, bus, r - 12, nextTime, STEP * 1.6, 0.22);
-    if (i % 4 === 2) [r, third, fifth].forEach((m) => piano(a, bus!, m, nextTime, STEP * 0.8, 0.11));
-    nextTime += STEP;
-    step++;
-  }
+  })();
+  return rendering;
+}
+
+/** Müziği önceden hazırlar (açılış ekranında; dokunuş gerekmez). */
+export function prepareMusic() {
+  (window as unknown as { __musicReady?: Promise<AudioBuffer | null> }).__musicReady = render();
 }
 
 /** Müziği başlatır (yalnızca bir kullanıcı dokunuşundan sonra çalabilir). */
 export function startMusic() {
   const a = audio();
-  if (!a || timer) return;
-  const comp = a.createDynamicsCompressor();
-  comp.threshold.value = -8;
-  comp.knee.value = 6;
-  comp.ratio.value = 10;
-  comp.attack.value = 0.003;
-  comp.release.value = 0.25;
-  const t0 = a.currentTime;
-  master = a.createGain();
-  master.gain.setValueAtTime(0.0001, t0);
-  master.gain.exponentialRampToValueAtTime(VOLUME, t0 + 0.6);
-  // Son 5 saniyede kademeli azalma
-  master.gain.setValueAtTime(VOLUME, t0 + 0.05 + MUSIC_SECONDS - FADE_SECONDS);
-  master.gain.linearRampToValueAtTime(0.0001, t0 + 0.05 + MUSIC_SECONDS);
-  const out = a.createGain();
-  out.gain.value = OUTPUT;
-  master.connect(comp).connect(out).connect(a.destination);
-  bus = a.createGain();
-  const verb = a.createConvolver();
-  verb.buffer = reverbImpulse(a);
-  const wet = a.createGain();
-  wet.gain.value = 0.25;
-  bus.connect(master);
-  bus.connect(verb).connect(wet).connect(master);
-  nextTime = t0 + 0.05;
-  step = 0;
-  ended = false;
-  timer = setInterval(schedule, 60);
-  schedule();
+  if (!a || playing) return;
+  wanted = true;
+  playing = true;
+  void render().then((buf) => {
+    if (!buf || !wanted || !playing || source) {
+      if (!buf) playing = false;
+      return;
+    }
+    const t0 = a.currentTime;
+    const g = a.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(VOLUME, t0 + 0.6);
+    // Son 5 saniyede kademeli azalma
+    g.gain.setValueAtTime(VOLUME, t0 + MUSIC_SECONDS - FADE_SECONDS);
+    g.gain.linearRampToValueAtTime(0.0001, t0 + MUSIC_SECONDS);
+    const out = a.createGain();
+    out.gain.value = OUTPUT;
+    const src = a.createBufferSource();
+    src.buffer = buf;
+    src.connect(g).connect(out).connect(a.destination);
+    src.onended = () => {
+      if (source === src) {
+        source = null;
+        master = null;
+        playing = false;
+        out.disconnect();
+      }
+    };
+    src.start(t0);
+    src.stop(t0 + MUSIC_SECONDS + 0.1);
+    source = src;
+    master = g;
+  });
 }
 
 /** Müziği yavaşça kısarak durdurur. */
 export function stopMusic(fadeSec = 0.8) {
-  if (!timer || !ctx || !master) return;
-  clearInterval(timer);
-  timer = null;
+  wanted = false;
+  playing = false;
+  if (!ctx || !master || !source) return;
   const g = master;
+  const src = source;
   g.gain.cancelScheduledValues(ctx.currentTime);
   g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), ctx.currentTime);
   g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + fadeSec);
-  setTimeout(() => g.disconnect(), fadeSec * 1000 + 100);
+  try {
+    src.stop(ctx.currentTime + fadeSec + 0.05);
+  } catch {
+    /* zaten durdu */
+  }
   master = null;
-  bus = null;
+  source = null;
 }
 
-export const isMusicPlaying = () => timer !== null;
+export const isMusicPlaying = () => playing;

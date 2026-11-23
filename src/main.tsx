@@ -36,6 +36,8 @@ if (Capacitor.isNativePlatform()) {
 }
 
 unlockAudio();
+// Giriş müziğini önceden işle: dokunulunca takılmadan çalar
+import("./music").then((m) => m.prepareMusic()).catch(() => {});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
