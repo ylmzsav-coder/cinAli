@@ -247,7 +247,7 @@ describe("bot simülasyonu", () => {
 
 import { TABLES, payout, winnerPrize } from "../src/economy/tables";
 describe("çip ödemesi (en yüksek toplam birinci)", () => {
-  const t = TABLES[0]; // Çaylak: giriş 100, birinciye 300
+  const t = TABLES[0]; // Çayhane: giriş 100, birinciye 400
   it("giriş 100, birinci 300 çip alır", () => {
     expect(TABLES.filter((x) => !x.vip).map((x) => x.id)).toEqual(["caylak", "usta", "ozel2", "ozel2u"]);
     const ozel = TABLES.find((x) => x.id === "ozel2")!;
@@ -260,17 +260,17 @@ describe("çip ödemesi (en yüksek toplam birinci)", () => {
     expect(vip.entry).toBe(100);
     expect(winnerPrize(vip)).toBe(300);
     expect(t.entry).toBe(100);
-    expect(winnerPrize(t)).toBe(300);
-    expect(payout(t, [300, 50, 200, 30], 0, 0)).toBe(300);
+    expect(winnerPrize(t)).toBe(400);
+    expect(payout(t, [300, 50, 200, 30], 0, 0)).toBe(400);
   });
   it("birinci değilse 0, eşitlikte paylaşılır", () => {
     expect(payout(t, [10, -100, 200, 30], 0, 0)).toBe(0);
-    expect(payout(t, [250, 250, 200, 30], 0, 0)).toBe(150);
-    // Üç kişi berabere: 300 / 3 = 100'er çip
-    expect(payout(t, [250, 250, 250, 30], 2, 0)).toBe(100);
+    expect(payout(t, [250, 250, 200, 30], 0, 0)).toBe(200);
+    // Üç kişi berabere: 400 / 3 = 133'er çip
+    expect(payout(t, [250, 250, 250, 30], 2, 0)).toBe(133);
   });
   it("Renk Bitirme ikramiyesi giriş ücreti kadar", () => {
-    expect(payout(t, [400, 50, 200, 30], 0, 1)).toBe(300 + 100);
+    expect(payout(t, [400, 50, 200, 30], 0, 1)).toBe(400 + 100);
     expect(payout(t, [100, 400, 50, 30], 0, 0)).toBe(0);
   });
 });

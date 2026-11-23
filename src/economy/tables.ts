@@ -21,7 +21,7 @@ export const PLAYERS_PER_TABLE = 4;
 
 /** Oynanabilen masalar: Çaylak 100 → 300, Usta 500 → 1.500. */
 export const TABLES: TableConfig[] = [
-  { id: "caylak", name: "Çaylak", entry: TABLE_ENTRY, hands: 1, level: "orta", prize: TABLE_PRIZE },
+  { id: "caylak", name: "Çayhane", entry: TABLE_ENTRY, hands: 1, level: "orta", prize: TABLE_PRIZE },
   // Usta: yüksek girişli dört kişilik masa (2.000 çiplik pottan 500'ü kasaya)
   { id: "usta", name: "Usta", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE },
   // Özel oda: herkese açık iki kişilik masa (rastgele oyuncu / arkadaş / bilgisayar)

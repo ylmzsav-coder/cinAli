@@ -1,7 +1,7 @@
 /** Çip ekonomisi sabitleri: istemci ve sunucu (functions/) aynı değerleri kullanır. */
 /** Masa giriş ücreti ve birinciye ödenen çip. */
 export const TABLE_ENTRY = 100;
-export const TABLE_PRIZE = 300;
+export const TABLE_PRIZE = 400;
 /** Usta masa: giriş ve birinciye ödül. */
 export const USTA_ENTRY = 500;
 export const USTA_PRIZE = 1_500;
