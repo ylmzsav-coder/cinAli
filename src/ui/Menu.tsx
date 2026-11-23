@@ -210,8 +210,9 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
         </div>
         <div className="hub-right">
           {/* Özel Oda (2 kişilik): rastgele oyuncu, arkadaş ya da bilgisayar */}
-          <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
-            <span className="ozel-top">{t("ozelShort")} · {t("twoPlayers")}</span>
+          <button type="button" className="big vip-hub caylak-hub" onClick={() => (wallet.isVip() ? onTables() : setVipOpen(true))}>
+            <span>👑 {t("vipShort")}</span>
+            <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
           </button>
           {invite && onJoinInvite && (
             <div className="invite-banner">
@@ -235,9 +236,8 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </div>
           <div className="hub-row">
             <button type="button" className="big practice-hub" onClick={onPractice}>{t("practice")}</button>
-            <button type="button" className="big vip-hub caylak-hub" onClick={() => (wallet.isVip() ? onTables() : setVipOpen(true))}>
-              <span>👑 {t("vipShort")}</span>
-              <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
+            <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
+              <span className="ozel-top">{t("ozelShort")} · {t("twoPlayers")}</span>
             </button>
           </div>
           <div className="hub-row">
