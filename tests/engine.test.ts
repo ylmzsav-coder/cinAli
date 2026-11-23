@@ -459,3 +459,137 @@ describe("iki harfli Türkçe kelimeler", () => {
     for (const w of ["ÇZ", "XQ", "İĞ"]) expect(dict.has(w)).toBe(false);
   });
 });
+
+describe("işleme (yerdeki kelimeye harf ekleme) denetimi", () => {
+  const start = () => newGame(["A", "B", "C", "D"], [false, true, true, true], 1, 11);
+  /** A oyuncusu KALEM + ÇAY + TUZ ile açar (değeri 163), sonra ıstakasında `extra` kalır. */
+  const opened = (extra: Tile[]) => {
+    const g = start();
+    const s = structuredClone(g);
+    s.phase = "play";
+    const kalem = tiles("KALEM"), cay = tiles("ÇAY"), tuz = tiles("TUZ");
+    s.players[s.current].rack = [...kalem, ...cay, ...tuz, ...extra, t("B")];
+    const o = openHand(dict, s, [kalem, cay, tuz].map((w) => ({ tileIds: w.map((x) => x.id) })));
+    return o;
+  };
+  const wordOf = (o: GameState, i: number) => o.table[i].tiles.map((x) => x.letter).join("");
+
+  it("sona harf eklenir: KALEM + Lİ → KALEMLİ; puan ekleyene yazılır", () => {
+    const li = tiles("Lİ");
+    const o = opened(li);
+    const me = o.current;
+    const before = o.players[me].points ?? 0;
+    const k = o.table.findIndex((w) => wordOf(o, o.table.indexOf(w)) === "KALEM");
+    const o2 = extendWord(dict, o, o.table[k].id, "end", { tileIds: li.map((x) => x.id) });
+    expect(wordOf(o2, k)).toBe("KALEMLİ");
+    expect(o2.players[me].points).toBe(before + wordValue("Lİ"));
+    expect(o2.players[me].rack.some((x) => li.some((y) => y.id === x.id))).toBe(false);
+    expect(o2.table[k].owner).toBe(o.table[k].owner);
+  });
+
+  it("başa harf eklenir: TUZ → ATUZ yok, reddedilir ve hiçbir şey değişmez", () => {
+    const a = tiles("A");
+    const o = opened(a);
+    const k = o.table.findIndex((w) => w.tiles.map((x) => x.letter).join("") === "TUZ");
+    const snap = JSON.stringify(o);
+    expectErr(() => extendWord(dict, o, o.table[k].id, "start", { tileIds: [a[0].id] }), "notInDict", { word: "ATUZ" });
+    expect(JSON.stringify(o)).toBe(snap);
+  });
+
+  it("başa ekleme geçerli kelimede kabul edilir: ÇAY → ÇAYIR değil, AY başına harf: KAY? sözlükte yoksa reddedilir", () => {
+    const o = opened(tiles("S"));
+    const k = o.table.findIndex((w) => w.tiles.map((x) => x.letter).join("") === "TUZ");
+    const s = o.players[o.current].rack.find((x) => x.letter === "S")!;
+    // STUZ geçersiz
+    expectErr(() => extendWord(dict, o, o.table[k].id, "start", { tileIds: [s.id] }), "notInDict");
+  });
+
+  it("joker başa eklenerek işlenir ve jokerin harfi seçilir: joker + TUZ → OTUZ", () => {
+    const j = t(null);
+    const o = opened([j]);
+    const k = o.table.findIndex((w) => w.tiles.map((x) => x.letter).join("") === "TUZ");
+    const opts = jokerOptions(dict, [null, "T", "U", "Z"]);
+    expect(opts).toContainEqual(["O"]);
+    const o2 = extendWord(dict, o, o.table[k].id, "start", { tileIds: [j.id], jokerLetters: ["O"] });
+    expect(o2.table[k].tiles.map((x) => x.letter).join("")).toBe("OTUZ");
+    expect(o2.table[k].tiles[0].tile.letter).toBe(null);
+  });
+
+  it("joker harfi verilmeden işlenemez", () => {
+    const j = t(null);
+    const o = opened([j]);
+    const k = o.table.findIndex((w) => w.tiles.map((x) => x.letter).join("") === "TUZ");
+    expect(() => extendWord(dict, o, o.table[k].id, "start", { tileIds: [j.id] })).toThrow(GameError);
+  });
+
+  it("elde son taş kalmalı: son taşla işleme yapılamaz", () => {
+    const g = start();
+    const s = structuredClone(g);
+    s.phase = "play";
+    const kalem = tiles("KALEM"), cay = tiles("ÇAY"), tuz = tiles("TUZ"), li = tiles("Lİ");
+    s.players[s.current].rack = [...kalem, ...cay, ...tuz, ...li, t("B")];
+    let o = openHand(dict, s, [kalem, cay, tuz].map((w) => ({ tileIds: w.map((x) => x.id) })));
+    // ıstakada Lİ + B: Lİ eklenince B kalır (geçerli); B'yi de eklemeye çalışınca taş kalmaz
+    const k = o.table.findIndex((w) => w.tiles.map((x) => x.letter).join("") === "KALEM");
+    o.players[o.current].rack = o.players[o.current].rack.filter((x) => x.letter !== "B");
+    expectErr(() => extendWord(dict, o, o.table[k].id, "end", { tileIds: li.map((x) => x.id) }), "keepOne");
+  });
+
+  it("eli açmamış oyuncu işleyemez", () => {
+    const g = start();
+    const s = structuredClone(g);
+    s.phase = "play";
+    const o = opened(tiles("Lİ"));
+    // sıradaki oyuncuya geç ve onun açmamış olduğunu doğrula
+    const other = structuredClone(o);
+    other.current = (o.current + 1) % 4;
+    other.phase = "play";
+    other.players[other.current].opened = false;
+    const li = tiles("Lİ");
+    other.players[other.current].rack = [...li, t("B")];
+    expectErr(() => extendWord(dict, other, o.table[0].id, "end", { tileIds: li.map((x) => x.id) }), "mustOpenFirst");
+  });
+
+  it("başkasının kelimesine eklenen puan ekleyene yazılır, kelimenin sahibine değil", () => {
+    const o = opened(tiles("Lİ"));
+    const owner = o.current;
+    const other = structuredClone(o);
+    other.current = (owner + 1) % 4;
+    other.phase = "play";
+    other.players[other.current].opened = true;
+    const li = tiles("Lİ");
+    other.players[other.current].rack = [...li, t("B")];
+    const ownerPts = other.players[owner].points ?? 0;
+    const k = other.table.findIndex((w) => w.tiles.map((x) => x.letter).join("") === "KALEM");
+    const o2 = extendWord(dict, other, other.table[k].id, "end", { tileIds: li.map((x) => x.id) });
+    expect(o2.players[other.current].points).toBe(wordValue("Lİ"));
+    expect(o2.players[owner].points).toBe(ownerPts);
+    expect(o2.table[k].owner).toBe(owner);
+  });
+
+  it("sırası olmayan ya da taş çekmemiş oyuncu işleyemez", () => {
+    const o = opened(tiles("Lİ"));
+    const s = structuredClone(o);
+    s.phase = "draw";
+    const li = o.players[o.current].rack.filter((x) => x.letter === "L" || x.letter === "İ");
+    expect(() => extendWord(dict, s, o.table[0].id, "end", { tileIds: li.map((x) => x.id) })).toThrow(GameError);
+  });
+
+  it("yerdeki jokerli kelimeye işleme: jokerin harfi korunur", () => {
+    const g = start();
+    const s = structuredClone(g);
+    s.phase = "play";
+    const j = t(null);
+    const kalem = [t("K"), j, t("L"), t("E"), t("M")], cay = tiles("ÇAY"), tuz = tiles("TUZ"), li = tiles("Lİ");
+    s.players[s.current].rack = [...kalem, ...cay, ...tuz, ...li, t("B")];
+    let o = openHand(dict, s, [
+      { tileIds: kalem.map((x) => x.id), jokerLetters: ["A"] },
+      { tileIds: cay.map((x) => x.id) },
+      { tileIds: tuz.map((x) => x.id) },
+    ]);
+    const k = o.table.findIndex((w) => w.tiles.map((x) => x.letter).join("") === "KALEM");
+    o = extendWord(dict, o, o.table[k].id, "end", { tileIds: li.map((x) => x.id) });
+    expect(o.table[k].tiles.map((x) => x.letter).join("")).toBe("KALEMLİ");
+    expect(o.table[k].tiles[1].tile.letter).toBe(null);
+  });
+});
