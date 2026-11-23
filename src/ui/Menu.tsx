@@ -8,11 +8,11 @@ import { DAILY_BONUS, REFILL_CHIPS, WELCOME_CHIPS, WELCOME_GAMES, isOwner, setOw
 import type { BotLevel } from "../game/bot";
 import { LANGS, LANG_ORDER, LangCode, PLAYABLE_LANGS } from "../game/lang";
 import { errorText, formatNumber, t } from "../i18n";
-import { Settings } from "../storage";
+import { type Gender, Settings } from "../storage";
 import { BrandLogo } from "./BrandLogo";
 import { CartIcon } from "./CartIcon";
 import { type TwoMode } from "./TwoPlayer";
-import { OzelLobby } from "./Lobby";
+import { TwoLobby } from "./Lobby";
 import { Chips } from "./Chips";
 import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
@@ -28,7 +28,7 @@ interface HubProps {
   onResume: () => void;
   onTables: () => void;
   /** Masaya doğrudan otur (Çaylak / Usta). */
-  onSitTable: (tb: TableConfig) => void;
+  onSitTable: (tb: TableConfig, want?: Gender) => void;
   /** İki kişilik oda: rastgele oyuncu, arkadaşla ya da bilgisayara karşı. */
   onTwo: (tb: TableConfig, mode: TwoMode) => void;
   onPractice: () => void;
@@ -51,6 +51,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [statsOpen, setStatsOpen] = useState(false);
   const [vipOpen, setVipOpen] = useState(false);
   const [ozelOpen, setOzelOpen] = useState(false);
+  const [vipLobby, setVipLobby] = useState(false);
   const ownerTaps = useRef(0);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
   const [invite, setInvite] = useState<TableInvite | null>(null);
@@ -193,16 +194,22 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             </button>
           </div>
           {ozelOpen && (
-            <OzelLobby name={settings.name || t("defaultName")} onClose={() => setOzelOpen(false)}
+            <TwoLobby name={settings.name || t("defaultName")} onClose={() => setOzelOpen(false)}
               onPick={(tb, mode) => { setOzelOpen(false); onTwo(tb, mode); }} />
           )}
-          {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); onTables(); }, 1200)} />}
+          {vipLobby && (
+            <TwoLobby vip name={settings.name || t("defaultName")} gender={settings.gender}
+              onGender={(g) => onSettings({ ...settings, gender: g })} onClose={() => setVipLobby(false)}
+              onPick={(tb, mode) => { setVipLobby(false); onTwo(tb, mode); }}
+              onSeek={(tb, want) => { setVipLobby(false); onSitTable(tb, want); }} />
+          )}
+          {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); setVipLobby(true); }, 1200)} />}
           {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onWatch={onWatch} onJoin={onJoinInvite}
             gender={settings.gender} onGender={(g) => onSettings({ ...settings, gender: g })} />}
         </div>
         <div className="hub-right">
           {/* Özel Oda (2 kişilik): rastgele oyuncu, arkadaş ya da bilgisayar */}
-          <button type="button" className="big vip-hub caylak-hub" onClick={() => (wallet.isVip() ? onTables() : setVipOpen(true))}>
+          <button type="button" className="big vip-hub caylak-hub" onClick={() => (wallet.isVip() ? setVipLobby(true) : setVipOpen(true))}>
             <span>👑 {t("vipShort")}</span>
             <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
           </button>

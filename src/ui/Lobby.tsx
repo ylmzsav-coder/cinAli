@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { TableConfig } from "../economy/tables";
 import { tableById, winnerPrize } from "../economy/tables";
 import { TwoPlayerChoices, type TwoMode } from "./TwoPlayer";
+import { GenderModal } from "./Vip";
+import type { Gender } from "../storage";
 import { formatNumber, t } from "../i18n";
 import { Avatar } from "./Profile";
 import { Chips } from "./Chips";
@@ -98,26 +100,39 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
 }
 
 /**
- * Özel Oda (2 kişilik) giriş ekranı: Çaylak/Usta bekleme masasıyla aynı görünüm.
- * Karşıda rakip koltuğu, ortada giriş seçimi (100 → 300 / 300 → 900) ve
- * Rastgele oyuncu / Arkadaşla oyna / Bilgisayara karşı oyna düğmeleri.
+ * İki kişilik oda giriş ekranı (Özel Oda ve VIP): Çaylak/Usta bekleme masasıyla
+ * aynı görünüm. Ortada giriş seçimi ve Rastgele oyuncu / Arkadaşla oyna /
+ * Bilgisayara karşı oyna düğmeleri; VIP'te ayrıca Bayan / Erkek oyuncu ara.
  */
-export function OzelLobby({ name, onClose, onPick }: { name: string; onClose: () => void; onPick: (tb: TableConfig, mode: TwoMode) => void }) {
-  const [id, setId] = useState<"ozel2" | "ozel2u">("ozel2");
+export function TwoLobby({ vip = false, name, gender, onGender, onClose, onPick, onSeek }: {
+  vip?: boolean;
+  name: string;
+  gender?: Gender;
+  onGender?: (g: Gender) => void;
+  onClose: () => void;
+  onPick: (tb: TableConfig, mode: TwoMode) => void;
+  /** VIP: aranan cinsiyette oyuncu. */
+  onSeek?: (tb: TableConfig, want: Gender) => void;
+}) {
+  const ids = vip ? (["vip2", "vip2u"] as const) : (["ozel2", "ozel2u"] as const);
+  const [id, setId] = useState<string>(ids[0]);
+  const [askFor, setAskFor] = useState<Gender | null>(null);
   const tb = tableById(id)!;
+  const seek = (want: Gender) => (gender ? onSeek?.(tb, want) : setAskFor(want));
   return (
-    <div className="lobby ozel-lobby">
-      <div className="lobby-felt">
+    <div className={`lobby ozel-lobby ${vip ? "vip-lobby" : ""}`}>
+      <div className={`lobby-felt ${vip ? "vip" : ""}`}>
         <button type="button" className="leave-round" onClick={onClose}>{t("leaveTableShort")}</button>
-        <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>🎲</span></span> {t("ozelTitle")}</div>
+        <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>{vip ? "👑" : "🎲"}</span></span> {vip ? t("table_vip2") : t("ozelTitle")}</div>
         <div className="lobby-me">
           <Avatar name={name} seat={0} size="md" />
           <span>{name}</span>
         </div>
         <div className="lobby-panel">
           <div className="lobby-info">
+            {vip && <div className="vip-chat-tag">💬 {t("vipChatGame")}</div>}
             <div className="vip-stake ozel-stake" role="radiogroup" aria-label={t("vipStake")}>
-              {(["ozel2", "ozel2u"] as const).map((k) => {
+              {ids.map((k) => {
                 const x = tableById(k)!;
                 return (
                   <button key={k} type="button" role="radio" aria-checked={id === k} className={id === k ? "on" : ""} onClick={() => setId(k)}>
@@ -127,12 +142,19 @@ export function OzelLobby({ name, onClose, onPick }: { name: string; onClose: ()
                 );
               })}
             </div>
-            <div className="lobby-row"><span className="muted small">{t("entry")}</span><Chips amount={tb.entry} /></div>
-            <div className="lobby-row"><span className="muted small">{t("toWinner")}</span><Chips amount={winnerPrize(tb)} /></div>
+            {vip && (
+              <div className="vip-search-row">
+                <button type="button" className="primary vip-search-btn vip-f" onClick={() => seek("kadin")}>👩 {t("vipSearchF")}</button>
+                <button type="button" className="primary vip-search-btn vip-m" onClick={() => seek("erkek")}>👨 {t("vipSearchM")}</button>
+              </div>
+            )}
             <TwoPlayerChoices onRandom={() => onPick(tb, "random")} onFriend={() => onPick(tb, "friend")} onBot={() => onPick(tb, "bot")} />
           </div>
         </div>
       </div>
+      {askFor && (
+        <GenderModal onClose={() => setAskFor(null)} onPick={(g) => { onGender?.(g); const w = askFor; setAskFor(null); onSeek?.(tb, w); }} />
+      )}
     </div>
   );
 }
