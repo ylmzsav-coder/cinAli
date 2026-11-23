@@ -1434,3 +1434,4 @@ button.watchers-badge { cursor: pointer; border: none; font: inherit; }
 .okey .topbar > .topbar-me { grid-column: 1; grid-row: 1; justify-self: end; }
 .okey .topbar > .title { max-width: calc(100% - 110px); }
 .okey .side-controls .actions-total { display: none; }
+.title-ico { display: inline-flex; vertical-align: -0.2em; margin-right: 4px; }

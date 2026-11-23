@@ -76,7 +76,7 @@ function HappyCoffee({ size }: { size: string }) {
 }
 
 /** İnce belli cam çay bardağı: tabakta kaşık ve iki kesme şeker (özgün çizim). */
-function TeaGlass({ size }: { size: string }) {
+export function TeaGlass({ size }: { size: string }) {
   const glass = "M18 8 C18 18 24 22 24 28 C24 34 19 38 19 45 C19 51 25 53 32 53 C39 53 45 51 45 45 C45 38 40 34 40 28 C40 22 46 18 46 8 Z";
   return (
     <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden className="gift-svg">

@@ -344,7 +344,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       onExit={onExit}
       onNewGame={onDone}
       onLeave={doc_.status === "playing" ? leave : undefined}
-      tableName={(cfg.id === "usta" ? "🏎️ " : "") + t(`table_${cfg.id}` as "table_vip")}
+      tableName={t(`table_${cfg.id}` as "table_vip")} tableId={cfg.id}
       payout={doc_.payouts?.[uid]}
     />
   );

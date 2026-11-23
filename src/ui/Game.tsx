@@ -1,3 +1,4 @@
+import { TeaGlass } from "./GiftIcon";
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { CartIcon } from "./CartIcon";
 import { WatchersBadge } from "./Watchers";
@@ -148,11 +149,13 @@ interface Props {
   onShop?: () => void;
   /** Çipli masa adı (pratikte boş). */
   tableName?: string;
+  /** Masa kimliği: başlıkta simge (Çayhane çay, Sosyete araba) */
+  tableId?: string;
   /** Oyun sonunda kazanılan çip. */
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, watchers = [], dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, watchers = [], dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, tableId, payout }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -942,7 +945,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         {/* Menü bağlantısı yalnızca "Oyundan çık" yokken (el bittiğinde, izlerken) */}
         {!(onLeave && !handOver) && <button type="button" className="link" onClick={onExit}>{t("menu")}</button>}
         <div className="title">
-          {tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
+          {tableId === "caylak" && <span className="title-ico"><TeaGlass size="1.25em" /></span>}{tableId === "usta" && "🏎️ "}{tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
           <WatchersBadge names={watchers} />
         </div>
         {/* Oyuncu profili: sol üstte, Oyundan çık'ın solunda */}
