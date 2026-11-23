@@ -90,6 +90,8 @@ export interface TableDoc {
   payouts?: Record<string, number>;
   /** Masayı izleyenler (arkadaşlar). */
   watchers?: string[];
+  /** İzleyicilerin adları (uid → ad); izleyici çıkınca silinir. */
+  watcherNames?: Record<string, string>;
   /** VIP eşleşme: masayı açanın cinsiyeti ve aradığı rakibin cinsiyeti. */
   hostGender?: Gender;
   seekGender?: Gender;
@@ -374,7 +376,7 @@ export const joinTable = onCall(async (req) => {
       const next: TableDoc = {
         ...table, seats, uids: [...table.uids, uid], version: table.version + 1,
         // Özel odadan gelen eşleşmede masa VIP masası olur (izleyici yok, sohbet açık)
-        ...(fromOzel ? { type: cfg.id, watchers: [] } : {}),
+        ...(fromOzel ? { type: cfg.id, watchers: [], watcherNames: {} } : {}),
       };
       if (seats.length === (cfg.players ?? 4)) {
         const started = startGame(next, now % 1_000_000);
@@ -583,6 +585,7 @@ export const takeSeat = onCall(async (req) => {
       seats,
       uids: [...table.uids, uid],
       watchers: (table.watchers ?? []).filter((x) => x !== uid),
+      watcherNames: Object.fromEntries(Object.entries(table.watcherNames ?? {}).filter(([k]) => k !== uid)),
       vacant: (table.vacant ?? []).filter((x) => x.seat !== seat),
     };
     t.set(userRef(uid), { activeTable: id }, { merge: true });

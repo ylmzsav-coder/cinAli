@@ -1,4 +1,5 @@
 import { doc, onSnapshot } from "firebase/firestore";
+import { WatchersBadge, watcherNamesOf } from "./Watchers";
 import { useEffect, useState } from "react";
 import { tableById } from "../economy/tables";
 import { errorText, t } from "../i18n";
@@ -15,6 +16,7 @@ interface WatchedTable {
   seats: SeatInfo[];
   view: string | null;
   watchers?: string[];
+  watcherNames?: Record<string, string>;
   vacant?: { seat: number; until: number }[];
 }
 
@@ -62,7 +64,6 @@ export function Spectator({ tableId, name, onLeave, onSeated }: { tableId: strin
 
   const cfg = tableById(data.type);
   const view = data.view ? (JSON.parse(data.view) as PublicView) : null;
-  const watchers = data.watchers?.length ?? 0;
   const vacantAt = (seat: number) => (data.vacant ?? []).find((v) => v.seat === seat && v.until > now);
   const totalOf = (i: number) => (view ? view.history.reduce((s, h) => s + h[i], 0) + (view.phase === "draw" || view.phase === "play" ? view.players[i].points ?? 0 : 0) : 0);
 
@@ -110,7 +111,7 @@ export function Spectator({ tableId, name, onLeave, onSeated }: { tableId: strin
       <header className="topbar">
         <button type="button" className="link" onClick={onLeave}>{t("stopWatchingBtn")}</button>
         <div className="title">👁 {t("spectating")} {cfg ? `· ${t(`table_${cfg.id}` as "table_vip")}` : ""}</div>
-        <span className="watchers-badge">👁 {watchers}</span>
+        <WatchersBadge names={watcherNamesOf(data)} />
       </header>
       {data.status === "waiting" && <p className="muted center">{t("waitingTitle")}</p>}
       {(data.status === "finished" || data.status === "abandoned") && <p className="center">{t("tableOverMsg")}</p>}

@@ -52,6 +52,7 @@ check("Can masayı izleyebilir", (await C.call("watchTable", { tableId: id })).o
 check("izleyici masayı okuyabilir", !!(await readT(C)).view);
 check("izleyici ıstaka okuyamaz", (await getDoc(doc(C.db, "tables", id, "hands", A.uid)).then(() => "EVET", (e) => e.code)) === "permission-denied");
 check("oyuncular izleyici sayısını görür", ((await readT(B)).watchers ?? []).length === 1);
+check("oyuncular izleyicinin adını görür", Object.values((await readT(B)).watcherNames ?? {}).includes("Can"), JSON.stringify((await readT(B)).watcherNames));
 check("arkadaşın listesinde izleyici sayısı", (await C.call("friendsStatus")).friends[0].watchers === 1);
 
 // Bea kalkar: koltuk 10 sn boş kalır
@@ -82,6 +83,7 @@ check("10 sn sonra bilgisayara geçti", tb.seats[beaSeat].bot === true && !(tb.v
 check("süre dolunca oturulamaz", (await errCode(D.call("takeSeat", { tableId: id, seat: beaSeat, name: "Dio" }))) === "seatGone");
 await D.call("stopWatching", { tableId: id });
 check("izlemeyi bırakınca sayı düşer", ((await readT(A)).watchers ?? []).length === 0);
+check("izleyici çıkınca adı listeden silinir", !Object.keys((await readT(A)).watcherNames ?? {}).includes(D.uid));
 
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

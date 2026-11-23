@@ -151,7 +151,7 @@ export const watchTable = onCall(async (req) => {
   const id = str(req.data?.tableId);
   if (!id) fail("badRequest", {}, "invalid-argument");
   return db.runTransaction(async (t) => {
-    const snap = await t.get(tableRef(id));
+    const [snap, me] = await Promise.all([t.get(tableRef(id)), t.get(userRef(uid))]);
     if (!snap.exists) return fail("tableNotFound", {}, "not-found");
     const table = snap.data()!;
     if (table.status !== "playing" && table.status !== "waiting") fail("tableOver");
@@ -162,7 +162,9 @@ export const watchTable = onCall(async (req) => {
     if (!friendSnaps.some((s) => s.exists)) fail("notFriendTable", {}, "permission-denied");
     const watchers = ((table.watchers as string[] | undefined) ?? []).filter((w) => w !== uid);
     if (watchers.length >= MAX_WATCHERS) fail("tooManyWatchers");
-    t.update(tableRef(id), { watchers: [...watchers, uid] });
+    // İzleyicinin adı masadaki oyunculara listelenir
+    const names = { ...((table.watcherNames as Record<string, string> | undefined) ?? {}), [uid]: (me.data()?.name as string) || "?" };
+    t.update(tableRef(id), { watchers: [...watchers, uid], watcherNames: names });
     return { ok: true, seated: false };
   });
 });
@@ -214,7 +216,10 @@ export const stopWatching = onCall(async (req) => {
     const snap = await t.get(tableRef(id));
     if (!snap.exists) return;
     const watchers = ((snap.data()!.watchers as string[] | undefined) ?? []).filter((w) => w !== uid);
-    t.update(tableRef(id), { watchers });
+    // İzleyici çıkınca adı listeden silinir
+    const names = { ...((snap.data()!.watcherNames as Record<string, string> | undefined) ?? {}) };
+    delete names[uid];
+    t.update(tableRef(id), { watchers, watcherNames: names });
   });
   return { ok: true };
 });

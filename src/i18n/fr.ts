@@ -447,6 +447,7 @@ const fr: Messages = {
   ozelDesc: "Table à deux ouverte à tous : adversaire au hasard, invitez un ami ou jouez contre l'ordinateur.",
   table_ozel2: "Face à face (2 joueurs)",
   table_ozel2u: "Face à face 250 (2 joueurs)",
+  watchersTitle: "Spectateurs",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

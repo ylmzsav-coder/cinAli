@@ -1407,3 +1407,11 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .hub-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; } .ozel-hub .ozel-top { font-size: clamp(0.78em, 2vw, 0.95em); gap: 6px; } .ozel-hub { padding-left: 6px !important; padding-right: 6px !important; }
 .hub .ozel-hub .ozel-top { font-size: 0.82em !important; gap: 5px; } .hub .ozel-hub .player-ico { width: 1.25em; height: 1.25em; }
 .hub .ozel-hub .ozel-top { font-size: 1em !important; gap: 8px; } .hub .ozel-hub .player-ico { width: 1.35em; height: 1.35em; } .hub .ozel-hub .duo-icons { gap: 4px; }
+/* İzleyici listesi */
+.watchers-wrap { position: relative; display: inline-flex; }
+button.watchers-badge { cursor: pointer; border: none; font: inherit; }
+.watchers-list { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 40; min-width: 150px; max-width: 240px;
+  background: #0f2f20; border: 1px solid rgba(255,213,79,0.5); border-radius: 12px; padding: 8px 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.5); text-align: left; }
+.watchers-head { font-weight: 800; font-size: 0.85rem; color: var(--accent); margin-bottom: 4px; white-space: nowrap; }
+.watchers-list ul { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow: auto; }
+.watchers-list li { padding: 3px 0; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.08); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

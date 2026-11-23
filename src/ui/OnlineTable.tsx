@@ -4,6 +4,7 @@ import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest } fro
 import { Avatar } from "./Profile";
 import { sendGiftTo } from "../online/gifts";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { watcherNamesOf } from "./Watchers";
 import { isVipType, tableById, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
 import { setGameLang, type LangCode } from "../game/lang";
@@ -47,6 +48,7 @@ interface TableDoc {
   view: string | null;
   payouts?: Record<string, number>;
   watchers?: string[];
+  watcherNames?: Record<string, string>;
   vacant?: { seat: number; until: number }[];
 }
 
@@ -330,7 +332,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       onChatEnabled={onChat}
       chatRoom={isVipType(doc_.type)}
       playerMenu={playerMenu}
-      watchers={doc_.watchers?.length ?? 0}
+      watchers={watcherNamesOf(doc_)}
       dict={dict}
       state={state}
       level={cfg.level}

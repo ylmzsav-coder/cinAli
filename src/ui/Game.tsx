@@ -1,5 +1,6 @@
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import { CartIcon } from "./CartIcon";
+import { WatchersBadge } from "./Watchers";
 import { BOT_PROFILES, BotLevel, botStep } from "../game/bot";
 import { Dictionary } from "../game/dictionary";
 import {
@@ -127,7 +128,8 @@ interface Props {
   chatRoom?: boolean;
   playerMenu?: PlayerMenu;
   /** Masayı izleyen kişi sayısı (çevrimiçi). */
-  watchers?: number;
+  /** İzleyicilerin adları. */
+  watchers?: string[];
   dict: Dictionary;
   state: GameState;
   level: BotLevel;
@@ -150,7 +152,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, watchers = 0, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, watchers = [], dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, payout }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -940,7 +942,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         {!(onLeave && !handOver) && <button type="button" className="link" onClick={onExit}>{t("menu")}</button>}
         <div className="title">
           {tableName ?? t("practiceShort")} <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>
-          {watchers > 0 && <span className="watchers-badge" title={t("watchersN", { n: watchers })}>👁 {watchers}</span>}
+          <WatchersBadge names={watchers} />
         </div>
         <div className="topbar-center">
           {onLeave && !handOver && (

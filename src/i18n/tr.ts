@@ -451,6 +451,7 @@ const tr = {
   ozelDesc: "Herkese açık karşılıklı masa: sistem rastgele bir oyuncuyla eşleştirir, arkadaşını davet edebilir ya da bilgisayara karşı oynayabilirsin.",
   table_ozel2: "Teke Tek (2 kişilik)",
   table_ozel2u: "Teke Tek 250 (2 kişilik)",
+  watchersTitle: "İzleyenler",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",
