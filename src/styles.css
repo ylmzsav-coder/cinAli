@@ -1486,3 +1486,9 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
   .okey .topbar-me .avatar { width: 28px; height: 28px; font-size: 0.85rem; }
 }
 @media (max-height: 520px) { .vip-modal .vip-buy-bar { position: static; margin: 8px 0 0; padding: 6px 0 0; background: none; } .vip-terms ul { font-size: 0.72rem; gap: 2px; } .vip-terms h3 { font-size: 1rem; } }
+/* Oyuncu kartı (profil ve ayarlar): yeşil degrade */
+.modal.profile-modal { background: linear-gradient(135deg, #2d7e31 0%, #378c3b 50%, #3e9a43 100%); }
+.profile-modal .settings-list li { border-bottom-color: rgba(255, 255, 255, 0.18); }
+.profile-modal .settings-head { background: rgba(0, 0, 0, 0.22); }
+.profile-modal .muted { color: rgba(255, 255, 255, 0.82); }
+.profile-modal .switch { box-shadow: 0 0 0 2px rgba(255,255,255,0.55); } .profile-modal .switch.on { background: #1b5e20; }
