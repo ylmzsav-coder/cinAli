@@ -54,7 +54,7 @@ const tr = {
   leaveConfirm: "Masadan kalkarsanız yerinize bilgisayar oynar ve giriş ücreti iade edilmez. Emin misiniz?",
   quitGame: "Oyundan çık",
   quitTitle: "Oyundan çıkılsın mı?",
-  quitPractice: "Oyun bitmeden çıkarsanız bu oyun silinir ve ana menüye dönersiniz. Oyundan çıkmak yenilgi sayılır.",
+  quitPractice: "Oyun bitmeden çıkarsanız bu oyun silinir ve ana menüye dönersiniz. Pratik masa eğitim amaçlıdır; sonuç istatistiklere işlenmez.",
   quitChip: "Oyun bitmeden masadan kalkarsanız giriş ücreti iade edilmez ve oyun silinir. Oyundan çıkmak yenilgi sayılır.",
   quitYes: "Evet, çık",
   feedback: "Şikayet / Öneri",

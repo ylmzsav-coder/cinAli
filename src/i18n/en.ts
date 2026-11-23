@@ -53,7 +53,7 @@ const en: Messages = {
   leaveConfirm: "If you leave, the computer takes your seat and the entry fee is not refunded. Are you sure?",
   quitGame: "Quit game",
   quitTitle: "Quit the game?",
-  quitPractice: "If you quit before the game ends, this game will be deleted and you'll return to the main menu. Leaving counts as a loss.",
+  quitPractice: "If you quit before the game ends, this game will be deleted and you'll return to the main menu. Practice is for training; results are not recorded in your stats.",
   quitChip: "If you leave the table before the game ends, your entry fee won't be refunded and the game will be deleted. Leaving counts as a loss.",
   quitYes: "Yes, quit",
   feedback: "Feedback",

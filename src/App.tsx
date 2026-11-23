@@ -139,7 +139,8 @@ export function App() {
     setSaved((prev) => {
       if (!prev) return prev;
       const next = settle({ ...prev, state: s });
-      recordProgress(next.state, next.payout);
+      // Pratik (çipsiz) masa eğitim amaçlıdır: istatistik kartına işlenmez
+      if (next.tableId) recordProgress(next.state, next.payout);
       saveGame(next);
       return next;
     });
@@ -224,8 +225,8 @@ export function App() {
   };
 
   const finishGame = () => {
-    // Oyun bitmeden çıkıldıysa "teslim olma" sayılır
-    if (saved) recordQuit(saved.state);
+    // Çipli masada oyun bitmeden çıkılırsa yenilgi sayılır (Pratik masa işlenmez)
+    if (saved?.tableId) recordQuit(saved.state);
     setSaved(null);
     saveGame(null);
     setScreen("hub");

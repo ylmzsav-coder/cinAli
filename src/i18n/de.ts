@@ -53,7 +53,7 @@ const de: Messages = {
   leaveConfirm: "Wenn du gehst, übernimmt der Computer deinen Platz und der Einsatz wird nicht erstattet. Bist du sicher?",
   quitGame: "Spiel verlassen",
   quitTitle: "Spiel verlassen?",
-  quitPractice: "Wenn du vor Spielende gehst, wird dieses Spiel gelöscht und du kehrst zum Hauptmenü zurück. Das Verlassen zählt als Niederlage.",
+  quitPractice: "Wenn du vor Spielende gehst, wird dieses Spiel gelöscht und du kehrst zum Hauptmenü zurück. Das Training zählt nicht für deine Statistik.",
   quitChip: "Wenn du den Tisch vor Spielende verlässt, wird die Teilnahmegebühr nicht erstattet und das Spiel gelöscht. Das Verlassen zählt als Niederlage.",
   quitYes: "Ja, verlassen",
   feedback: "Feedback",

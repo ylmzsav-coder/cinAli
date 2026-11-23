@@ -53,7 +53,7 @@ const pt: Messages = {
   leaveConfirm: "Se você sair, o computador assume seu lugar e a entrada não é devolvida. Tem certeza?",
   quitGame: "Sair do jogo",
   quitTitle: "Sair do jogo?",
-  quitPractice: "Se você sair antes do fim, esta partida será apagada e você voltará ao menu principal. Sair conta como derrota.",
+  quitPractice: "Se você sair antes do fim, esta partida será apagada e você voltará ao menu principal. O treino não conta nas suas estatísticas.",
   quitChip: "Se você sair da mesa antes do fim, a entrada não será devolvida e a partida será apagada. Sair conta como derrota.",
   quitYes: "Sim, sair",
   feedback: "Reclamações / Sugestões",

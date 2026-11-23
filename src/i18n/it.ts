@@ -53,7 +53,7 @@ const it: Messages = {
   leaveConfirm: "Se esci, il computer prende il tuo posto e la quota non viene rimborsata. Sei sicuro?",
   quitGame: "Esci dal gioco",
   quitTitle: "Uscire dal gioco?",
-  quitPractice: "Se esci prima della fine, questa partita verrà eliminata e tornerai al menu principale. Uscire conta come sconfitta.",
+  quitPractice: "Se esci prima della fine, questa partita verrà eliminata e tornerai al menu principale. L'allenamento non conta nelle statistiche.",
   quitChip: "Se lasci il tavolo prima della fine, la quota d'ingresso non verrà rimborsata e la partita sarà eliminata. Uscire conta come sconfitta.",
   quitYes: "Sì, esci",
   feedback: "Reclami / Suggerimenti",
