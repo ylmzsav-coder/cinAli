@@ -25,8 +25,8 @@ export const TABLES: TableConfig[] = [
   // Usta: yüksek girişli dört kişilik masa (2.000 çiplik pottan 500'ü kasaya)
   { id: "usta", name: "Sosyete", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE },
   // Özel oda: herkese açık iki kişilik masa (rastgele oyuncu / arkadaş / bilgisayar)
-  { id: "ozel2", name: "Özel Oda", entry: OZEL_ENTRY, hands: 1, level: "orta", prize: OZEL_PRIZE, players: 2 },
-  { id: "ozel2u", name: "Özel Oda 300", entry: OZEL_USTA_ENTRY, hands: 1, level: "zor", prize: OZEL_USTA_PRIZE, players: 2 },
+  { id: "ozel2", name: "Teke Tek", entry: OZEL_ENTRY, hands: 1, level: "orta", prize: OZEL_PRIZE, players: 2 },
+  { id: "ozel2u", name: "Teke Tek 250", entry: OZEL_USTA_ENTRY, hands: 1, level: "zor", prize: OZEL_USTA_PRIZE, players: 2 },
   // VIP iki kişilik özel oda: karşılıklı, yalnızca VIP aboneler
   { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true },
   // VIP Usta: aynı oda, yüksek giriş (VIP kartındaki giriş seçiminden)

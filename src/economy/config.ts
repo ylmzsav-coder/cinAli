@@ -7,10 +7,10 @@ export const USTA_ENTRY = 500;
 export const USTA_PRIZE = 2_000;
 /** Özel oda (2 kişi, herkese açık): giriş ve kazanana ödül. */
 export const OZEL_ENTRY = 100;
-export const OZEL_PRIZE = 300;
-/** Özel Oda yüksek giriş: giriş 300, kazanana 900. */
-export const OZEL_USTA_ENTRY = 300;
-export const OZEL_USTA_PRIZE = 900;
+export const OZEL_PRIZE = 200;
+/** Teke Tek yüksek giriş: giriş 250, kazanana 500. */
+export const OZEL_USTA_ENTRY = 250;
+export const OZEL_USTA_PRIZE = 500;
 /** VIP Usta oda (2 kişi): giriş ve kazanana ödül. */
 export const VIP_USTA_ENTRY = 500;
 export const VIP_USTA_PRIZE = 1_500;
