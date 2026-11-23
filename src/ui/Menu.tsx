@@ -77,7 +77,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
     if (!CLOUD || !onJoinInvite) return;
     const check = () => friendsStatus().then((r) => setInvite(r.invites?.[0] ?? null), () => {});
     check();
-    const id = setInterval(check, 30_000);
+    const id = setInterval(check, 10_000);
     return () => clearInterval(id);
   }, [onJoinInvite]);
   // Çipi biten oyuncunun hediye sayacı (dakikada bir güncellenir)
@@ -232,10 +232,17 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
           </button>
           {invite && onJoinInvite && (
-            <div className="invite-banner">
-              <span>📨 {t(isVipType(invite.type) ? "inviteBannerVip" : "inviteBanner", { name: invite.name })}</span>
-              <button type="button" className="primary small-btn" onClick={() => onJoinInvite(invite.code)}>{t("joinFree")}</button>
-              <button type="button" className="link small-btn" aria-label={t("decline")} onClick={() => { void declineInvite(invite.tableId); setInvite(null); }}>✕</button>
+            <div className="modal-bg">
+              <div className="modal invite-modal" role="alertdialog" aria-label={t("inviteTitle")}>
+                <div className="invite-icon" aria-hidden>{isVipType(invite.type) ? "👑" : "🎲"}</div>
+                <h3>{t("inviteTitle")}</h3>
+                <p className="invite-text">{t("inviteWaiting", { name: invite.name, table: isVipType(invite.type) ? t("vipShort") : invite.type.startsWith("ozel") ? t("ozelShort") : t(`table_${invite.type}` as "table_vip") })}</p>
+                {isVipType(invite.type) && <p className="muted small">{t("inviteVipFree")}</p>}
+                <div className="modal-actions">
+                  <button type="button" className="primary" onClick={() => { const c = invite.code; setInvite(null); onJoinInvite(c); }}>✅ {t("inviteAccept")}</button>
+                  <button type="button" className="danger" onClick={() => { void declineInvite(invite.tableId); setInvite(null); }}>✖ {t("decline")}</button>
+                </div>
+              </div>
             </div>
           )}
           {toast && <div className="toast">{toast}</div>}

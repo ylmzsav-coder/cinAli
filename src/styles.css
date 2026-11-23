@@ -1416,3 +1416,11 @@ button.watchers-badge { cursor: pointer; border: none; font: inherit; }
 .watchers-list ul { list-style: none; margin: 0; padding: 0; max-height: 40vh; overflow: auto; }
 .watchers-list li { padding: 3px 0; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.08); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .topbar .surrender-btn { background: rgba(255,255,255,0.12); }
+/* Gelen oyun daveti penceresi */
+.invite-modal { max-width: 420px; text-align: center; }
+.invite-modal .invite-icon { font-size: 2.6rem; }
+.invite-modal h3 { margin: 4px 0; }
+.invite-modal .invite-text { font-size: 1.1rem; font-weight: 700; margin: 6px 0 10px; }
+.invite-modal .modal-actions { display: flex; gap: 10px; justify-content: center; }
+.invite-modal .modal-actions button { flex: 1; padding: 10px; font-weight: 800; }
+.invite-modal .danger { background: #c62828; color: #fff; }
