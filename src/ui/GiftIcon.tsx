@@ -92,6 +92,19 @@ function TeaGlass({ size }: { size: string }) {
       {/* beyaz tabak */}
       <ellipse cx="32" cy="55" rx="29" ry="7" fill="#eef0f2" stroke="#3a3a3a" strokeWidth="1.2" />
       <ellipse cx="32" cy="54" rx="21" ry="4.2" fill="#ffffff" stroke="#c9cdd1" strokeWidth="0.8" />
+      {/* kenarda kırmızı benekler ve aralarında altın süsler (geleneksel çay tabağı) */}
+      {Array.from({ length: 10 }, (_, k) => {
+        const a = (k / 10) * Math.PI * 2 + Math.PI / 10;
+        const x = 32 + Math.cos(a) * 25;
+        const y = 55 + Math.sin(a) * 5.6;
+        const g = a + Math.PI / 10;
+        return (
+          <g key={k}>
+            <ellipse cx={x} cy={y} rx="2.9" ry="1.3" fill="#e8322b" transform={`rotate(${Math.cos(a) * -12} ${x} ${y})`} />
+            <circle cx={32 + Math.cos(g) * 25} cy={55 + Math.sin(g) * 5.6} r="0.7" fill="#c9a227" />
+          </g>
+        );
+      })}
       {/* iki kesme şeker */}
       <g stroke="#3a3a3a" strokeWidth="0.9" strokeLinejoin="round">
         <path d="M7 52 L13 50 L18 52 L12 54.5 Z" fill="#ffffff" />
