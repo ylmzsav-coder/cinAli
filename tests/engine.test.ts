@@ -49,11 +49,11 @@ const t = (letter: Tile["letter"], color: Tile["color"] = "siyah"): Tile => ({ i
 const tiles = (word: string, color: Tile["color"] = "siyah") => [...word].map((l) => t(l as Tile["letter"], color));
 
 describe("taş seti", () => {
-  it("Türkçe: 104 harf + 2 joker = 106 taş; A 6, E 5, I 4, İ 6, O 3 adet; renkler dengeli", () => {
+  it("Türkçe: 104 harf + 2 joker = 106 taş; A 7, E 5, I 4, İ 6, O 3, N 5 adet; renkler dengeli", () => {
     const set = createTileSet();
     expect(set.length).toBe(106);
     expect(set.filter((x) => x.letter === null).length).toBe(2);
-    for (const [l, n] of [["A", 6], ["E", 5]] as const) {
+    for (const [l, n] of [["A", 7], ["E", 5]] as const) {
       const tilesOf = set.filter((x) => x.letter === l);
       expect(tilesOf.length).toBe(n);
       expect(new Set(tilesOf.map((x) => x.color)).size).toBe(4);
@@ -62,7 +62,7 @@ describe("taş seti", () => {
     expect([count("İ"), count("K"), count("O"), count("T")]).toEqual([6, 8, 3, 6]);
     expect(count("I")).toBe(4);
     const vowels = [..."AEIİOÖUÜ"].reduce((n, l) => n + count(l), 0);
-    expect(vowels).toBe(30); // A 6, E 5, I 4, İ 6, O 3, Ö 1, U 3, Ü 2
+    expect(vowels).toBe(31); // A 7, E 5, I 4, İ 6, O 3, Ö 1, U 3, Ü 2
     const perColor = ["kirmizi", "mavi", "sari", "siyah"].map((c) => set.filter((x) => x.letter && x.color === c).length);
     expect(Math.max(...perColor) - Math.min(...perColor)).toBeLessThanOrEqual(1);
   });
