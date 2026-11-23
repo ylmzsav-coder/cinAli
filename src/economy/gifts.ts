@@ -26,7 +26,8 @@ export const GIFTS: Gift[] = [
   { id: "saat", emoji: "⌚", category: "erkek", value: 750 },
   { id: "araba", emoji: "🏎️", category: "erkek", value: 1000 },
   // Kadınlara özel
-  { id: "gul", emoji: "🌹", category: "kadin", value: 100 },
+  // Kimlik "gul" korunur (eski hediyeler bozulmasın); artık gülen kahve fincanı
+  { id: "gul", emoji: "☕", category: "kadin", value: 100 },
   { id: "cikolata", emoji: "🍫", category: "kadin", value: 150 },
   { id: "buket", emoji: "💐", category: "kadin", value: 200 },
   { id: "ruj", emoji: "💄", category: "kadin", value: 300 },
