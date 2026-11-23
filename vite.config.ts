@@ -62,6 +62,15 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    // Kütüphaneler ayrı dosyada: oyun güncellenince yalnızca oyunun kendi kodu yeniden indirilir
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => (id.includes("node_modules/firebase") || id.includes("node_modules/@firebase") ? "firebase" : id.includes("node_modules/react") ? "react" : undefined),
+      },
+    },
+  },
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
