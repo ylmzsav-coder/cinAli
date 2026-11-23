@@ -1384,4 +1384,10 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .ozel-hub .ozel-top { white-space: nowrap; font-size: clamp(0.85em, 2.2vw, 1em); } .player-ico { width: 1.3em; height: 1.3em; }
 .hub-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; } .ozel-hub .ozel-top { font-size: clamp(0.78em, 2vw, 0.95em); gap: 6px; } .ozel-hub { padding-left: 6px !important; padding-right: 6px !important; }
 .hub .ozel-hub .ozel-top { font-size: 0.82em !important; gap: 5px; } .hub .ozel-hub .player-ico { width: 1.25em; height: 1.25em; }
-.hub .ozel-hub .ozel-top { font-size: 1em !important; gap: 8px; } .hub .ozel-hub .player-ico { width: 1.35em; height: 1.35em; } .hub .ozel-hub .duo-icons { gap: 4px; }
+.hub .ozel-hub .ozel-top { font-size: 1em !important; gap: 8px; } .hub .ozel-hub .player-ico { width: 1.35em; height: 1.35em; } .hub .ozel-hub .duo-icons { gap: 4px; }.terms-link { display: block; margin: 6px auto 0; font-size: 0.8rem; opacity: 0.85; }
+.terms-page h2 { font-size: 1.05rem; margin: 14px 0 4px; }
+.vip-terms { max-width: 560px; text-align: left; }
+.vip-terms ul { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; font-size: 0.92rem; }
+.vip-terms .link { display: block; margin: 4px 0 8px; }
+.chat-logged { font-size: 0.7rem; opacity: 0.75; text-align: center; margin: 2px 0; }
+.vip-terms { max-height: 94vh; overflow-y: auto; padding-top: 10px; padding-bottom: 10px; } .vip-terms h3 { margin: 0 0 4px; } @media (max-height: 500px) { .vip-terms ul { font-size: 0.8rem; gap: 3px; margin: 4px 0; } .vip-terms .link { margin: 2px 0 4px; } }

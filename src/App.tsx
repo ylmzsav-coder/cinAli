@@ -18,13 +18,14 @@ import { startMusic, stopMusic } from "./music";
 import { flushFeedback } from "./feedbackBox";
 import { recordProgress, recordQuit } from "./stats";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
+import { Terms } from "./ui/Terms";
 import { Rules } from "./ui/Rules";
 import { TableLobby } from "./ui/Lobby";
 import { startHeartbeat } from "./online/social";
 import { Shop } from "./ui/Shop";
 import { Tables } from "./ui/Tables";
 
-type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby";
+type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby" | "terms";
 
 const paidGames = new Set<number>();
 
@@ -302,6 +303,8 @@ export function App() {
       break;
     case "rules":
       return <Rules onBack={() => setScreen("hub")} />;
+    case "terms":
+      return <Terms onBack={() => setScreen("hub")} />;
     case "lobby":
       if (!lobbyTable) return null;
       return (
@@ -391,6 +394,7 @@ export function App() {
       onPractice={() => setScreen("practice")}
       onShop={() => { setShopBack("hub"); setScreen("shop"); }}
       onRules={() => setScreen("rules")}
+      onTerms={() => setScreen("terms")}
     />
   );
   }

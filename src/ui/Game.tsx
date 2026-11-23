@@ -1077,6 +1077,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                     <button type="submit" className="primary" disabled={!draft.trim()}>{t("send")}</button>
                   </form>
                   {chatNote && <div className="chat-note" role="alert">{chatNote}</div>}
+                  <p className="chat-logged">🗂️ {t("chatLogged")}</p>
                 </>
               )}
             </section>

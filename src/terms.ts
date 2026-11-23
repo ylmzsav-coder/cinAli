@@ -1,0 +1,309 @@
+/**
+ * Kullanım Koşulları ve KVKK / gizlilik aydınlatma metni (7 dil).
+ * Metin genel bir çerçevedir; yayından önce bir hukukçunun gözden geçirmesi önerilir.
+ */
+
+
+export interface TermsDoc {
+  title: string;
+  updated: string;
+  sections: { h: string; items: string[] }[];
+}
+
+/** Sohbet kayıtlarının saklama süresi (functions/src/chat.ts CHAT_LOG_DAYS ile aynı). */
+export const CHAT_LOG_YEARS = 2;
+export const TERMS_VERSION = "2026-11-24";
+
+const TR: TermsDoc = {
+  title: "Kullanım Koşulları ve Gizlilik",
+  updated: "Son güncelleme: 24.11.2026",
+  sections: [
+    { h: "1. Hizmet", items: [
+      "Word Okey, harf taşlarıyla oynanan bir kelime oyunudur.",
+      "Çipler sanal oyun parasıdır; gerçek paraya çevrilemez, devredilemez, satılamaz. Oyun kumar değildir ve gerçek para kazandırmaz.",
+      "Uygulamayı kullanarak bu koşulları kabul etmiş olursun.",
+    ] },
+    { h: "2. Yasak davranışlar", items: [
+      "Uyuşturucu, silah, yasa dışı bahis/kumar veya başka bir suçla ilgili içerik paylaşmak, bunların alım-satımını teklif etmek.",
+      "Alım-satım teklifi, telefon numarası, IBAN, sosyal medya/mesajlaşma hesabı gibi iletişim veya ödeme bilgisi paylaşmak; oyuncuları oyun dışına çekmeye çalışmak.",
+      "Hakaret, tehdit, taciz, nefret söylemi, cinsel içerik; çocuklara yönelik her türlü istismar.",
+      "Dolandırıcılık, hile, hesap paylaşımı veya hesap satışı, başkasının kimliğine bürünmek.",
+    ] },
+    { h: "3. Denetim ve yaptırımlar", items: [
+      "Mesajlar otomatik filtreden geçer; yasaklı içerik masaya gönderilmez ve ihlal olarak kaydedilir.",
+      "İkinci ihlalde sohbet 24 saat, dördüncü ihlalde 30 gün kapatılır ve hesap incelemeye alınır.",
+      "Ağır veya tekrarlanan ihlallerde hesap, uyarı yapılmadan kalıcı olarak engellenebilir; hesaptaki çipler iade edilmez.",
+      "Oyuncuları profillerinden şikâyet edebilirsin; şikâyetler yönetici tarafından incelenir.",
+    ] },
+    { h: "4. Sohbet kayıtları ve yetkili makamlar", items: [
+      `VIP Oda'daki mesajlar; gönderen hesap, oyuncu adı, masa, zaman ve IP adresiyle birlikte ${CHAT_LOG_YEARS} yıl saklanır, süre sonunda otomatik silinir.`,
+      "Bu kayıtlar yalnızca yönetici tarafından ve şikâyet/ihlal incelemesi için görülür.",
+      "5651 sayılı Kanun ve ilgili mevzuat gereği, mahkeme, savcılık veya yetkili kurumların talebi üzerine bu kayıtlar ilgili makamlarla paylaşılır.",
+    ] },
+    { h: "5. KVKK aydınlatma metni", items: [
+      "Veri sorumlusu: Word Okey uygulama sahibi. Başvuru için uygulamadaki \"Şikayet / Öneri\" bölümünü kullanabilirsin.",
+      "İşlenen veriler: oyuncu adı, hesap kimliği, cinsiyet tercihi (isteğe bağlı), oyun istatistikleri, çip ve hediye hareketleri, arkadaş listesi, sohbet mesajları, IP adresi ve bağlantı zamanları, satın alma kayıtları.",
+      "Amaçlar: oyunun sunulması ve eşleştirme, hesap güvenliği, hile ve kötüye kullanımın önlenmesi, şikâyetlerin incelenmesi, yasal yükümlülüklerin yerine getirilmesi.",
+      "Hukuki sebepler: sözleşmenin kurulması ve ifası, hukuki yükümlülük (5651 sayılı Kanun), veri sorumlusunun meşru menfaati (KVKK m.5/2-c, ç, f).",
+      "Aktarım: veriler Google Firebase altyapısında (Avrupa Birliği, Frankfurt) barındırılır; yetkili kurum ve makamlarla yalnızca yasal talep üzerine paylaşılır.",
+      "Saklama: hesap verileri hesap silinene kadar, sohbet kayıtları 2 yıl, ihlal kayıtları inceleme ve olası hukuki süreçler boyunca saklanır.",
+      "Hakların (KVKK m.11): verilerinin işlenip işlenmediğini öğrenme, bilgi isteme, düzeltme, silme, itiraz ve zararın giderilmesini isteme. Başvurularını \"Şikayet / Öneri\" bölümünden iletebilirsin.",
+    ] },
+    { h: "6. Yaş", items: [
+      "VIP Oda sohbeti 18 yaşından büyükler içindir. 18 yaşından küçükler uygulamayı ebeveyn izniyle kullanmalıdır.",
+    ] },
+  ],
+};
+
+const EN: TermsDoc = {
+  title: "Terms of Use and Privacy",
+  updated: "Last updated: 24 Nov 2026",
+  sections: [
+    { h: "1. The service", items: [
+      "Word Okey is a word game played with letter tiles.",
+      "Chips are virtual game currency; they cannot be exchanged for real money, transferred or sold. The game is not gambling and pays no real money.",
+      "By using the app you accept these terms.",
+    ] },
+    { h: "2. Forbidden behaviour", items: [
+      "Sharing content about drugs, weapons, illegal betting/gambling or any other crime, or offering to buy or sell them.",
+      "Offering to buy or sell anything, or sharing contact or payment details such as phone numbers, IBANs or social/messaging accounts; trying to move players off the game.",
+      "Insults, threats, harassment, hate speech, sexual content; any form of child abuse.",
+      "Fraud, cheating, sharing or selling accounts, impersonating others.",
+    ] },
+    { h: "3. Moderation and sanctions", items: [
+      "Messages pass an automatic filter; forbidden content is not delivered and is recorded as a violation.",
+      "On the second violation chat is disabled for 24 hours, on the fourth for 30 days, and the account is reviewed.",
+      "Serious or repeated violations may lead to a permanent ban without warning; chips on the account are not refunded.",
+      "You can report players from their profile; reports are reviewed by an administrator.",
+    ] },
+    { h: "4. Chat logs and authorities", items: [
+      `Messages in the VIP Room are stored for ${CHAT_LOG_YEARS} years with the sending account, player name, table, time and IP address, then deleted automatically.`,
+      "These logs are seen only by the administrator, for reviewing reports and violations.",
+      "Where required by law (including Turkish Law No. 5651), logs are shared with courts, prosecutors or competent authorities on their request.",
+    ] },
+    { h: "5. Privacy notice", items: [
+      "Data controller: the owner of the Word Okey app. Use the in-app \"Feedback\" section to contact us.",
+      "Data processed: player name, account ID, gender preference (optional), game statistics, chip and gift transactions, friends list, chat messages, IP address and connection times, purchase records.",
+      "Purposes: providing the game and matchmaking, account security, preventing cheating and abuse, reviewing reports, meeting legal obligations.",
+      "Legal grounds: performance of a contract, legal obligation, legitimate interest.",
+      "Transfers: data is hosted on Google Firebase (European Union, Frankfurt) and shared with authorities only on lawful request.",
+      "Retention: account data until the account is deleted, chat logs for 2 years, violation records for the review and any legal proceedings.",
+      "Your rights: access, information, correction, deletion, objection and compensation. Send requests through the \"Feedback\" section.",
+    ] },
+    { h: "6. Age", items: ["VIP Room chat is for people aged 18 and over. Under-18s should use the app with parental consent."] },
+  ],
+};
+
+const DE: TermsDoc = {
+  title: "Nutzungsbedingungen und Datenschutz",
+  updated: "Stand: 24.11.2026",
+  sections: [
+    { h: "1. Der Dienst", items: [
+      "Word Okey ist ein Wortspiel mit Buchstabensteinen.",
+      "Chips sind virtuelles Spielgeld; sie können nicht in echtes Geld umgetauscht, übertragen oder verkauft werden. Das Spiel ist kein Glücksspiel und zahlt kein echtes Geld aus.",
+      "Mit der Nutzung der App akzeptierst du diese Bedingungen.",
+    ] },
+    { h: "2. Verbotenes Verhalten", items: [
+      "Inhalte zu Drogen, Waffen, illegalen Wetten/Glücksspiel oder anderen Straftaten teilen oder deren Kauf/Verkauf anbieten.",
+      "Kauf-/Verkaufsangebote oder das Teilen von Kontakt- und Zahlungsdaten (Telefonnummer, IBAN, Social-Media-/Messenger-Konten); Spieler aus dem Spiel locken.",
+      "Beleidigungen, Drohungen, Belästigung, Hassrede, sexuelle Inhalte; jede Form von Kindesmissbrauch.",
+      "Betrug, Schummeln, Teilen oder Verkaufen von Konten, Identitätsmissbrauch.",
+    ] },
+    { h: "3. Moderation und Sanktionen", items: [
+      "Nachrichten durchlaufen einen automatischen Filter; verbotene Inhalte werden nicht zugestellt und als Verstoß gespeichert.",
+      "Beim zweiten Verstoß wird der Chat für 24 Stunden gesperrt, beim vierten für 30 Tage, und das Konto wird geprüft.",
+      "Bei schweren oder wiederholten Verstößen kann das Konto ohne Warnung dauerhaft gesperrt werden; Chips werden nicht erstattet.",
+      "Du kannst Spieler über ihr Profil melden; Meldungen werden von einem Administrator geprüft.",
+    ] },
+    { h: "4. Chatprotokolle und Behörden", items: [
+      `Nachrichten im VIP-Raum werden mit Konto, Spielername, Tisch, Zeit und IP-Adresse ${CHAT_LOG_YEARS} Jahre gespeichert und danach automatisch gelöscht.`,
+      "Nur der Administrator sieht diese Protokolle, zur Prüfung von Meldungen und Verstößen.",
+      "Soweit gesetzlich vorgeschrieben (u. a. türkisches Gesetz Nr. 5651), werden die Protokolle auf Anfrage an Gerichte, Staatsanwaltschaften oder zuständige Behörden weitergegeben.",
+    ] },
+    { h: "5. Datenschutzhinweis", items: [
+      "Verantwortlicher: der Betreiber der App Word Okey. Kontakt über den Bereich „Feedback“ in der App.",
+      "Verarbeitete Daten: Spielername, Konto-ID, Geschlechtsangabe (optional), Spielstatistiken, Chip- und Geschenkbewegungen, Freundesliste, Chatnachrichten, IP-Adresse und Verbindungszeiten, Kaufbelege.",
+      "Zwecke: Bereitstellung des Spiels und Matchmaking, Kontosicherheit, Verhinderung von Betrug und Missbrauch, Prüfung von Meldungen, Erfüllung gesetzlicher Pflichten.",
+      "Rechtsgrundlagen: Vertragserfüllung, rechtliche Verpflichtung, berechtigtes Interesse.",
+      "Übermittlung: Hosting bei Google Firebase (EU, Frankfurt); Weitergabe an Behörden nur auf rechtmäßige Anfrage.",
+      "Speicherdauer: Kontodaten bis zur Löschung des Kontos, Chatprotokolle 2 Jahre, Verstoßdaten für die Dauer der Prüfung und etwaiger Verfahren.",
+      "Deine Rechte: Auskunft, Berichtigung, Löschung, Widerspruch und Schadenersatz. Anfragen über den Bereich „Feedback“.",
+    ] },
+    { h: "6. Alter", items: ["Der Chat im VIP-Raum ist für Personen ab 18 Jahren. Minderjährige nutzen die App mit Zustimmung der Eltern."] },
+  ],
+};
+
+const FR: TermsDoc = {
+  title: "Conditions d’utilisation et confidentialité",
+  updated: "Mise à jour : 24/11/2026",
+  sections: [
+    { h: "1. Le service", items: [
+      "Word Okey est un jeu de mots joué avec des tuiles de lettres.",
+      "Les jetons sont une monnaie virtuelle ; ils ne peuvent être ni convertis en argent réel, ni transférés, ni vendus. Le jeu n’est pas un jeu d’argent.",
+      "En utilisant l’application, tu acceptes ces conditions.",
+    ] },
+    { h: "2. Comportements interdits", items: [
+      "Partager des contenus liés aux drogues, aux armes, aux paris/jeux d’argent illégaux ou à tout autre délit, ou proposer d’en acheter ou d’en vendre.",
+      "Proposer un achat/une vente ou partager des coordonnées ou moyens de paiement (téléphone, IBAN, comptes de réseaux sociaux/messagerie) ; attirer les joueurs hors du jeu.",
+      "Insultes, menaces, harcèlement, discours de haine, contenu sexuel ; toute forme d’abus envers les enfants.",
+      "Fraude, triche, partage ou vente de comptes, usurpation d’identité.",
+    ] },
+    { h: "3. Modération et sanctions", items: [
+      "Les messages passent par un filtre automatique ; un contenu interdit n’est pas envoyé et est enregistré comme infraction.",
+      "À la deuxième infraction le chat est désactivé 24 heures, à la quatrième 30 jours, et le compte est examiné.",
+      "En cas d’infraction grave ou répétée, le compte peut être bloqué définitivement sans avertissement ; les jetons ne sont pas remboursés.",
+      "Tu peux signaler un joueur depuis son profil ; les signalements sont examinés par un administrateur.",
+    ] },
+    { h: "4. Journaux de chat et autorités", items: [
+      `Les messages du salon VIP sont conservés ${CHAT_LOG_YEARS} ans avec le compte, le nom, la table, l’heure et l’adresse IP, puis supprimés automatiquement.`,
+      "Seul l’administrateur consulte ces journaux, pour examiner les signalements et infractions.",
+      "Lorsque la loi l’exige (notamment la loi turque n° 5651), ils sont transmis aux tribunaux, parquets ou autorités compétentes sur demande.",
+    ] },
+    { h: "5. Confidentialité", items: [
+      "Responsable du traitement : le propriétaire de l’application Word Okey. Contact via la section « Avis » de l’application.",
+      "Données traitées : nom de joueur, identifiant de compte, genre (facultatif), statistiques, mouvements de jetons et de cadeaux, liste d’amis, messages, adresse IP et heures de connexion, achats.",
+      "Finalités : fournir le jeu, sécurité des comptes, prévention de la triche et des abus, examen des signalements, obligations légales.",
+      "Bases légales : exécution du contrat, obligation légale, intérêt légitime.",
+      "Transferts : hébergement sur Google Firebase (UE, Francfort) ; communication aux autorités uniquement sur demande légale.",
+      "Conservation : données de compte jusqu’à suppression du compte, journaux de chat 2 ans, infractions pendant l’examen et les procédures éventuelles.",
+      "Tes droits : accès, rectification, effacement, opposition et réparation. Demandes via la section « Avis ».",
+    ] },
+    { h: "6. Âge", items: ["Le chat du salon VIP est réservé aux 18 ans et plus. Les mineurs utilisent l’application avec l’accord parental."] },
+  ],
+};
+
+const ES: TermsDoc = {
+  title: "Condiciones de uso y privacidad",
+  updated: "Actualizado: 24/11/2026",
+  sections: [
+    { h: "1. El servicio", items: [
+      "Word Okey es un juego de palabras con fichas de letras.",
+      "Las fichas de juego son moneda virtual; no se pueden cambiar por dinero real, transferir ni vender. El juego no es de apuestas.",
+      "Al usar la aplicación aceptas estas condiciones.",
+    ] },
+    { h: "2. Conductas prohibidas", items: [
+      "Compartir contenido sobre drogas, armas, apuestas/juego ilegal u otros delitos, u ofrecer comprarlos o venderlos.",
+      "Ofrecer compraventa o compartir datos de contacto o pago (teléfono, IBAN, cuentas de redes sociales/mensajería); intentar sacar a los jugadores del juego.",
+      "Insultos, amenazas, acoso, discurso de odio, contenido sexual; cualquier forma de abuso infantil.",
+      "Fraude, trampas, compartir o vender cuentas, suplantar identidades.",
+    ] },
+    { h: "3. Moderación y sanciones", items: [
+      "Los mensajes pasan un filtro automático; el contenido prohibido no se envía y se registra como infracción.",
+      "En la segunda infracción el chat se desactiva 24 horas, en la cuarta 30 días, y la cuenta se revisa.",
+      "Las infracciones graves o repetidas pueden suponer un bloqueo permanente sin aviso; las fichas no se reembolsan.",
+      "Puedes denunciar a un jugador desde su perfil; un administrador revisa las denuncias.",
+    ] },
+    { h: "4. Registros de chat y autoridades", items: [
+      `Los mensajes de la Sala VIP se guardan ${CHAT_LOG_YEARS} años con la cuenta, el nombre, la mesa, la hora y la IP, y luego se borran automáticamente.`,
+      "Solo el administrador ve estos registros, para revisar denuncias e infracciones.",
+      "Cuando la ley lo exija (incluida la Ley turca n.º 5651), se comparten con tribunales, fiscalías o autoridades competentes a petición de estas.",
+    ] },
+    { h: "5. Privacidad", items: [
+      "Responsable: el propietario de la aplicación Word Okey. Contacto a través de la sección «Sugerencias».",
+      "Datos tratados: nombre de jugador, ID de cuenta, género (opcional), estadísticas, movimientos de fichas y regalos, amigos, mensajes, IP y horas de conexión, compras.",
+      "Finalidades: ofrecer el juego, seguridad de la cuenta, prevenir trampas y abusos, revisar denuncias, obligaciones legales.",
+      "Bases legales: ejecución del contrato, obligación legal, interés legítimo.",
+      "Transferencias: alojamiento en Google Firebase (UE, Fráncfort); comunicación a autoridades solo bajo requerimiento legal.",
+      "Conservación: datos de cuenta hasta su eliminación, registros de chat 2 años, infracciones durante la revisión y posibles procedimientos.",
+      "Tus derechos: acceso, rectificación, supresión, oposición e indemnización. Solicitudes en la sección «Sugerencias».",
+    ] },
+    { h: "6. Edad", items: ["El chat de la Sala VIP es para mayores de 18 años. Los menores deben usar la aplicación con permiso de sus padres."] },
+  ],
+};
+
+const IT: TermsDoc = {
+  title: "Condizioni d’uso e privacy",
+  updated: "Aggiornato: 24/11/2026",
+  sections: [
+    { h: "1. Il servizio", items: [
+      "Word Okey è un gioco di parole con tessere di lettere.",
+      "I gettoni sono moneta virtuale; non si possono convertire in denaro reale, trasferire né vendere. Il gioco non è gioco d’azzardo.",
+      "Usando l’app accetti queste condizioni.",
+    ] },
+    { h: "2. Comportamenti vietati", items: [
+      "Condividere contenuti su droghe, armi, scommesse/gioco illegale o altri reati, o proporne l’acquisto o la vendita.",
+      "Proporre compravendite o condividere contatti o dati di pagamento (telefono, IBAN, account social/messaggistica); portare i giocatori fuori dal gioco.",
+      "Insulti, minacce, molestie, incitamento all’odio, contenuti sessuali; qualsiasi forma di abuso su minori.",
+      "Frode, imbrogli, condivisione o vendita di account, furto d’identità.",
+    ] },
+    { h: "3. Moderazione e sanzioni", items: [
+      "I messaggi passano un filtro automatico; i contenuti vietati non vengono inviati e sono registrati come violazione.",
+      "Alla seconda violazione la chat viene disattivata per 24 ore, alla quarta per 30 giorni, e l’account viene esaminato.",
+      "Violazioni gravi o ripetute possono comportare il blocco permanente senza preavviso; i gettoni non sono rimborsati.",
+      "Puoi segnalare un giocatore dal suo profilo; le segnalazioni sono esaminate da un amministratore.",
+    ] },
+    { h: "4. Registri della chat e autorità", items: [
+      `I messaggi della Sala VIP sono conservati ${CHAT_LOG_YEARS} anni con account, nome, tavolo, ora e indirizzo IP, poi cancellati automaticamente.`,
+      "Solo l’amministratore vede questi registri, per esaminare segnalazioni e violazioni.",
+      "Quando la legge lo richiede (inclusa la legge turca n. 5651), sono condivisi con tribunali, procure o autorità competenti su loro richiesta.",
+    ] },
+    { h: "5. Privacy", items: [
+      "Titolare: il proprietario dell’app Word Okey. Contatti tramite la sezione «Suggerimenti».",
+      "Dati trattati: nome del giocatore, ID account, genere (facoltativo), statistiche, movimenti di gettoni e regali, amici, messaggi, indirizzo IP e orari di connessione, acquisti.",
+      "Finalità: fornire il gioco, sicurezza dell’account, prevenzione di imbrogli e abusi, esame delle segnalazioni, obblighi di legge.",
+      "Basi giuridiche: esecuzione del contratto, obbligo legale, legittimo interesse.",
+      "Trasferimenti: hosting su Google Firebase (UE, Francoforte); comunicazione alle autorità solo su richiesta legittima.",
+      "Conservazione: dati dell’account fino alla sua cancellazione, registri chat 2 anni, violazioni per la durata dell’esame e di eventuali procedimenti.",
+      "I tuoi diritti: accesso, rettifica, cancellazione, opposizione e risarcimento. Richieste tramite la sezione «Suggerimenti».",
+    ] },
+    { h: "6. Età", items: ["La chat della Sala VIP è riservata ai maggiori di 18 anni. I minori usano l’app con il consenso dei genitori."] },
+  ],
+};
+
+const PT: TermsDoc = {
+  title: "Termos de utilização e privacidade",
+  updated: "Atualizado: 24/11/2026",
+  sections: [
+    { h: "1. O serviço", items: [
+      "Word Okey é um jogo de palavras com peças de letras.",
+      "As fichas são moeda virtual; não podem ser trocadas por dinheiro real, transferidas nem vendidas. O jogo não é jogo de azar.",
+      "Ao usar a aplicação aceitas estes termos.",
+    ] },
+    { h: "2. Comportamentos proibidos", items: [
+      "Partilhar conteúdo sobre drogas, armas, apostas/jogo ilegal ou outros crimes, ou oferecer a sua compra ou venda.",
+      "Oferecer compra/venda ou partilhar contactos ou dados de pagamento (telefone, IBAN, contas de redes sociais/mensagens); tentar levar jogadores para fora do jogo.",
+      "Insultos, ameaças, assédio, discurso de ódio, conteúdo sexual; qualquer forma de abuso de menores.",
+      "Fraude, batota, partilha ou venda de contas, usurpação de identidade.",
+    ] },
+    { h: "3. Moderação e sanções", items: [
+      "As mensagens passam por um filtro automático; o conteúdo proibido não é enviado e fica registado como infração.",
+      "Na segunda infração o chat é desativado por 24 horas, na quarta por 30 dias, e a conta é analisada.",
+      "Infrações graves ou repetidas podem levar ao bloqueio permanente sem aviso; as fichas não são reembolsadas.",
+      "Podes denunciar um jogador a partir do perfil; as denúncias são analisadas por um administrador.",
+    ] },
+    { h: "4. Registos do chat e autoridades", items: [
+      `As mensagens da Sala VIP são guardadas ${CHAT_LOG_YEARS} anos com a conta, o nome, a mesa, a hora e o IP, sendo depois apagadas automaticamente.`,
+      "Só o administrador vê estes registos, para analisar denúncias e infrações.",
+      "Quando a lei o exigir (incluindo a Lei turca n.º 5651), são partilhados com tribunais, Ministério Público ou autoridades competentes a pedido destes.",
+    ] },
+    { h: "5. Privacidade", items: [
+      "Responsável: o proprietário da aplicação Word Okey. Contacto através da secção «Sugestões».",
+      "Dados tratados: nome de jogador, ID de conta, género (opcional), estatísticas, movimentos de fichas e presentes, amigos, mensagens, IP e horas de ligação, compras.",
+      "Finalidades: fornecer o jogo, segurança da conta, prevenir batota e abusos, analisar denúncias, obrigações legais.",
+      "Fundamentos: execução do contrato, obrigação legal, interesse legítimo.",
+      "Transferências: alojamento no Google Firebase (UE, Frankfurt); comunicação a autoridades apenas mediante pedido legal.",
+      "Conservação: dados da conta até à sua eliminação, registos de chat 2 anos, infrações durante a análise e eventuais processos.",
+      "Os teus direitos: acesso, retificação, apagamento, oposição e indemnização. Pedidos através da secção «Sugestões».",
+    ] },
+    { h: "6. Idade", items: ["O chat da Sala VIP é para maiores de 18 anos. Os menores devem usar a aplicação com autorização dos pais."] },
+  ],
+};
+
+const DOCS: Record<string, TermsDoc> = { tr: TR, en: EN, de: DE, fr: FR, es: ES, it: IT, pt: PT };
+export const termsFor = (lang: string): TermsDoc => DOCS[lang] ?? EN;
+
+const VIP_KEY = "wordokey.vipTerms";
+export function vipTermsAccepted(): boolean {
+  try {
+    return localStorage.getItem(VIP_KEY) === TERMS_VERSION;
+  } catch {
+    return false;
+  }
+}
+export function acceptVipTerms() {
+  try {
+    localStorage.setItem(VIP_KEY, TERMS_VERSION);
+  } catch {
+    /* gizli sekme vb. */
+  }
+}

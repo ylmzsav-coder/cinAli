@@ -13,6 +13,8 @@ import { BrandLogo } from "./BrandLogo";
 import { CartIcon } from "./CartIcon";
 import { type TwoMode } from "./TwoPlayer";
 import { SosyeteLobby, TwoLobby } from "./Lobby";
+import { VipTermsModal } from "./Terms";
+import { vipTermsAccepted } from "../terms";
 import { Chips } from "./Chips";
 import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
@@ -34,6 +36,7 @@ interface HubProps {
   onPractice: () => void;
   onShop: () => void;
   onRules: () => void;
+  onTerms: () => void;
   /** Arkadaşın masasını izle. */
   /** Gelen masa davetine katıl (davet kodu). */
   onJoinInvite?: (code: string) => void;
@@ -57,7 +60,7 @@ function PlayerIcon() {
   );
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onJoinInvite }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onTerms, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
@@ -70,6 +73,9 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [ozelOpen, setOzelOpen] = useState(false);
   const [sosyeteOpen, setSosyeteOpen] = useState(false);
   const [vipLobby, setVipLobby] = useState(false);
+  const [vipTerms, setVipTerms] = useState(false);
+  /** VIP Oda: kurallar kabul edilmeden açılmaz. */
+  const openVipLobby = () => (vipTermsAccepted() ? setVipLobby(true) : setVipTerms(true));
   const ownerTaps = useRef(0);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
   const [invite, setInvite] = useState<TableInvite | null>(null);
@@ -225,13 +231,14 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               onPick={(tb, mode) => { setVipLobby(false); onTwo(tb, mode); }}
               onSeek={(tb, want) => { setVipLobby(false); onSitTable(tb, want); }} />
           )}
-          {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); setVipLobby(true); }, 1200)} />}
+          {vipTerms && <VipTermsModal onAccept={() => { setVipTerms(false); setVipLobby(true); }} onClose={() => setVipTerms(false)} onRead={() => { setVipTerms(false); onTerms(); }} />}
+          {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); openVipLobby(); }, 1200)} />}
           {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onJoin={onJoinInvite}
             gender={settings.gender} onGender={(g) => onSettings({ ...settings, gender: g })} />}
         </div>
         <div className="hub-right">
           {/* Özel Oda (2 kişilik): rastgele oyuncu, arkadaş ya da bilgisayar */}
-          <button type="button" className="big vip-hub caylak-hub" onClick={() => (wallet.isVip() ? setVipLobby(true) : setVipOpen(true))}>
+          <button type="button" className="big vip-hub caylak-hub" onClick={() => (wallet.isVip() ? openVipLobby() : setVipOpen(true))}>
             <span>👑 {t("vipShort")}</span>
             <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
           </button>
@@ -310,6 +317,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </div>
         </div>
       )}
+      <button type="button" className="link small terms-link" onClick={onTerms}>{t("termsLink")}</button>
       <p className="muted small legal" onClick={() => {
         // Sahip (kontrol) modu: sürüm yazısına 7 kez dokun
         const n = (ownerTaps.current = ownerTaps.current + 1);
