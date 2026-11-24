@@ -30,17 +30,18 @@ export function LegalOverlay({ kind, onClose }: { kind: LegalKind; onClose: () =
   return <div className="legal-overlay"><Terms kind={kind} onBack={onClose} /></div>;
 }
 
-export function VipTermsModal({ onAccept, onClose, onRead, onPrivacy, onCommunity }: { onAccept: () => void; onClose: () => void; onRead: () => void; onPrivacy?: () => void; onCommunity?: () => void }) {
+export function VipTermsModal({ onAccept, onClose, onRead, onPrivacy, onCommunity, room = "vip" }: { onAccept: () => void; onClose: () => void; onRead: () => void; onPrivacy?: () => void; onCommunity?: () => void; room?: "vip" | "sosyete" }) {
+  const title = room === "sosyete" ? t("sosyeteTermsTitle") : t("vipTermsTitle");
   return (
     <div className="modal-bg" onClick={onClose}>
-      <div className="modal vip-terms" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label={t("vipTermsTitle")}>
-        <h3>⚠️ {t("vipTermsTitle")}</h3>
+      <div className="modal vip-terms" onClick={(e) => e.stopPropagation()} role="alertdialog" aria-label={title}>
+        <h3>⚠️ {title}</h3>
         <ul>
           <li>🚫 {t("vipTerms1")}</li>
           <li>📵 {t("vipTerms2")}</li>
           <li>🗂️ {t("vipTerms3")}</li>
           <li>⛔ {t("vipTerms4")}</li>
-          <li>🔞 {t("vipTerms5")}</li>
+          <li>🔞 {room === "sosyete" ? t("sosyeteTerms5") : t("vipTerms5")}</li>
         </ul>
         <div className="legal-links">
           <button type="button" className="link" onClick={onRead}>{t("termsOnly")}</button>

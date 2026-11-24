@@ -292,7 +292,7 @@ const TABLES = [
     const kb = await p.evaluate(() => { const el = document.querySelector(".kumbara-balance"); return { icon: !!el?.querySelector(".kumbara-icon"), label: el?.querySelector(".kumbara-label")?.textContent ?? "" }; });
     const KB = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" };
     check(`Menü (${lang}): çipler kumbarada — resim ve "${KB[lang]}" yazısı`, kb.icon && kb.label === KB[lang], JSON.stringify(kb));
-    check(`Kurallar (${lang}): 16 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 16 && !r.hscroll && !r.raw, JSON.stringify(r));
+    check(`Kurallar (${lang}): 17 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 17 && !r.hscroll && !r.raw, JSON.stringify(r));
     await p.context().close();
   }
 
@@ -334,6 +334,46 @@ const TABLES = [
     await TABLES[0].open(p); await W(p, 1000);
     check("yeni oyuncu Çayhane'ye oturabilir", (await game(p))?.tableId === "caylak");
     await p.context().close();
+  }
+
+  console.log("\n== 8. Sosyete sohbetli masa (ücretsiz, küfür filtreli)");
+  const CHAT = { tr: "Ücretsiz sohbet", en: "Free chat", de: "Gratis-Chat", fr: "Chat gratuit", es: "Chat gratis", it: "Chat gratis", pt: "Chat grátis" };
+  for (const lang of LANGS) {
+    const p = await fresh(browser, "Pixel 7 landscape", { lang });
+    const tag = await p.locator(".usta-hub .chat-tag").innerText().catch(() => "");
+    check(`Sosyete düğmesi (${lang}): "${CHAT[lang]}" etiketi`, tag.toLowerCase().includes(CHAT[lang].toLowerCase()), tag);
+    await p.context().close();
+  }
+  {
+    // Yetişkin: ilk girişte sohbet kuralları onayı; oyunda serbest yazı kutusu
+    const p = await fresh(browser, "Pixel 7 landscape");
+    await p.evaluate(() => localStorage.removeItem("wordokey.vipTerms"));
+    await p.locator(".usta-hub").tap(); await W(p, 400);
+    check("Sosyete ilk girişte sohbet kuralları penceresi", (await p.locator(".vip-terms").count()) === 1 && /Sosyete/.test(await p.locator(".vip-terms h3").innerText()));
+    await p.locator(".vip-terms .primary").tap(); await W(p, 300);
+    check("lobide 'Sohbetli oyun · ücretsiz' etiketi", /Sohbetli oyun/.test(await p.locator(".sosyete-lobby .vip-chat-tag").innerText().catch(() => "")));
+    await p.locator(".sosyete-sit").tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); await W(p, 1500);
+    await p.locator(".chat-room-btn").first().tap(); await W(p, 400);
+    check("Sosyete oyununda serbest yazı kutusu var (yetişkin)", (await p.locator(".chat-panel input, .chat-text input, input[type=text]").count()) > 0);
+    check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
+    await p.context().close();
+    // Teke Tek ve Çayhane'de serbest yazı yok (yalnızca hazır mesaj ve emoji)
+    for (const tb of [TABLES.find((x) => x.name === "Teke Tek 100"), TABLES[0]]) {
+      const q = await fresh(browser, "Pixel 7 landscape");
+      await tb.open(q); await W(q, 1500);
+      await q.locator(".chat-room-btn").first().tap().catch(() => {}); await W(q, 400);
+      check(`${tb.name}: serbest yazı kutusu yok`, (await q.locator("input[type=text]").count()) === 0);
+      await q.context().close();
+    }
+    // 18 yaş altı: Sosyete'de oynar ama yazamaz
+    const m = await fresh(browser, "Pixel 7 landscape");
+    await m.evaluate(() => localStorage.setItem("wordokey.birthYear", "2012")); await m.reload(); await W(m, 600);
+    if (await m.locator(".splash-hit").count()) await m.locator(".splash-hit").tap(); await W(m, 400);
+    await m.locator(".usta-hub").tap(); await W(m, 400);
+    await m.locator(".sosyete-sit").tap(); await W(m, 300); await m.locator(".lobby-panel .primary").tap(); await W(m, 1500);
+    await m.locator(".chat-room-btn").first().tap().catch(() => {}); await W(m, 400);
+    check("18 yaş altı Sosyete'de oynar ama serbest yazamaz", (await game(m))?.tableId === "usta" && (await m.locator("input[type=text]").count()) === 0);
+    await m.context().close();
   }
 
   await browser.close();

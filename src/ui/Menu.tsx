@@ -92,6 +92,9 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [vipLobby, setVipLobby] = useState(false);
   const [vipTerms, setVipTerms] = useState(false);
   /** VIP Oda: kurallar kabul edilmeden açılmaz. */
+  // Sosyete sohbetli masa: yetişkin oyuncu ilk girişte sohbet kurallarını onaylar (VIP ile aynı kurallar)
+  const [sosyeteTerms, setSosyeteTerms] = useState(false);
+  const openSosyete = () => (isAdult() && !vipTermsAccepted() ? setSosyeteTerms(true) : setSosyeteOpen(true));
   const openVipLobby = () => (!isAdult() ? setToast(t("vipAdultOnly")) : vipTermsAccepted() ? setVipLobby(true) : setVipTerms(true));
   const ownerTaps = useRef(0);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
@@ -252,6 +255,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               onPick={(tb, mode) => { setVipLobby(false); onTwo(tb, mode); }}
               onSeek={(tb, want) => { setVipLobby(false); onSitTable(tb, want); }} />
           )}
+          {sosyeteTerms && <VipTermsModal room="sosyete" onAccept={() => { setSosyeteTerms(false); setSosyeteOpen(true); }} onClose={() => setSosyeteTerms(false)} onRead={() => { setSosyeteTerms(false); onTerms(); }} onPrivacy={() => { setSosyeteTerms(false); onPrivacy(); }} onCommunity={() => { setSosyeteTerms(false); onCommunity(); }} />}
           {vipTerms && <VipTermsModal onAccept={() => { setVipTerms(false); setVipLobby(true); }} onClose={() => setVipTerms(false)} onRead={() => { setVipTerms(false); onTerms(); }} onPrivacy={() => { setVipTerms(false); onPrivacy(); }} onCommunity={() => { setVipTerms(false); onCommunity(); }} />}
           {vipOpen && <VipModal onClose={() => setVipOpen(false)} onSubscribed={() => setTimeout(() => { setVipOpen(false); openVipLobby(); }, 1200)} />}
           {statsOpen && <MyStatsModal name={settings.name} onClose={() => setStatsOpen(false)} onJoin={onJoinInvite}
@@ -291,10 +295,13 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             {(["caylak", "usta"] as const).map((id) => {
               const tb = tableById(id)!;
               return (
-                <button key={id} type="button" className={`${canResume ? "big" : "primary big"} caylak-hub ${id}-hub`} onClick={() => (id === "usta" ? setSosyeteOpen(true) : onSitTable(tb))}>
-                  <span>{id === "caylak" ? "🫖 " : "🚘 "}{t(id === "caylak" ? "playCaylak" : "playUsta")}{id === "usta" && <small className="pro-tag">{t("proLabel")}</small>}</span>
+                <button key={id} type="button" className={`${canResume ? "big" : "primary big"} caylak-hub ${id}-hub`} onClick={() => (id === "usta" ? openSosyete() : onSitTable(tb))}>
+                  <span>{id === "caylak" ? "🫖 " : "🚘 "}{t(id === "caylak" ? "playCaylak" : "playUsta")}</span>
                   {id === "usta"
-                    ? <span className="caylak-sub">{t("entry")} <Chips amount={tb.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
+                    ? <>
+                        <span className="sosyete-tags"><small className="pro-tag">{t("proLabel")}</small><small className="pro-tag chat-tag">💬 {t("sosyeteChatTag")}</small></span>
+                        <span className="caylak-sub">{t("entry")} <Chips amount={tb.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
+                      </>
                     : <span className="caylak-sub">{t("entry")} <Chips amount={tb.entry} /> · {t("toWinner")} <Chips amount={winnerPrize(tb)} /></span>}
                 </button>
               );

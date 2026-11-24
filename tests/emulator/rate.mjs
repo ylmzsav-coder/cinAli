@@ -82,5 +82,37 @@ const { setDoc } = await import("firebase/firestore");
 const w = await setDoc(doc(L.db, "users", L.uid), { gamesPlayed: 1, gamesWon: 1 }, { merge: true }).then(() => "YAZILDI!", (e) => e.code);
 check("oyuncu başarı sayılarını kendisi yazamaz", w === "permission-denied", w);
 
+// 7) Sosyete sohbetli masa: %76+ oyuncular ücretsiz yazışır (VIP gerekmez), küfür filtresi uygulanır
+{
+  const S = await client("Selim"), T = await client("Tuba");
+  for (const c of [S, T]) { await c.call("testSetStats", { played: 10, won: 9 }); await c.call("heartbeat", { name: "x", adult: true }); }
+  const sj = await S.call("joinTable", { type: "usta", lang: "it", name: "Selim" });
+  const tj = await T.call("joinTable", { type: "usta", lang: "it", name: "Tuba" });
+  await S.call("startTable", { tableId: sj.tableId });
+  const w = (await getDoc(doc(S.db, "wallets", S.uid))).data();
+  check("Sosyete'deki iki oyuncu aynı masada, VIP değiller", sj.tableId === tj.tableId && !(w.vipUntil > Date.now()));
+  const r1 = await S.call("sendText", { tableId: sj.tableId, text: "merhaba, iyi oyunlar", uiLang: "tr" });
+  check("Sosyete'de VIP olmadan serbest yazışma", r1.ok === true, JSON.stringify(r1));
+  const r2 = await T.call("sendText", { tableId: sj.tableId, text: "siktir git", uiLang: "tr" });
+  check("Sosyete'de küfür filtresi: mesaj gönderilmez", r2.ok === false && r2.blocked === true, JSON.stringify(r2));
+  const r3 = await err(T.call("sendText", { tableId: sj.tableId, text: "ot satıyorum, ucuz esrar", uiLang: "tr" }));
+  check("Sosyete'de yasa dışı içerik engellenir", r3.code !== "BAŞARI", JSON.stringify(r3));
+  // 18 yaş altı oyuncu Sosyete'de oynar ama yazamaz
+  const K = await client("Kaan");
+  await K.call("testSetStats", { played: 10, won: 9 }); await K.call("heartbeat", { name: "Kaan", adult: false });
+  const kj = await K.call("joinTable", { type: "usta", lang: "pt", name: "Kaan" });
+  await K.call("startTable", { tableId: kj.tableId });
+  const r4 = await err(K.call("sendText", { tableId: kj.tableId, text: "merhaba", uiLang: "tr" }));
+  check("18 yaş altı Sosyete'de oynar ama yazamaz", !!kj.tableId && r4.code === "vipAdultOnly", JSON.stringify(r4));
+  // Çayhane ve Teke Tek'te serbest yazışma yok
+  for (const type of ["caylak", "ozel2"]) {
+    const C = await client("Cem" + type);
+    await C.call("heartbeat", { name: "Cem", adult: true });
+    const cj = await C.call("joinTable", { type, lang: "fr", name: "Cem" });
+    await C.call("startTable", { tableId: cj.tableId });
+    const r = await err(C.call("sendText", { tableId: cj.tableId, text: "merhaba", uiLang: "tr" }));
+    check(`${type === "caylak" ? "Çayhane'de" : "Teke Tek'te"} serbest yazışma yok`, r.code === "chatVipOnly", JSON.stringify(r));
+  }
+}
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

@@ -125,6 +125,7 @@ export function SosyeteLobby({ name, onClose, onPick }: { name: string; onClose:
         </div>
         <div className="lobby-panel">
           <div className="lobby-info">
+            <div className="vip-chat-tag">💬 {t("sosyeteChat")}</div>
             <div className="vip-stake ozel-stake" role="radiogroup" aria-label={t("vipStake")}>
               {ids.map((k) => {
                 const x = tableById(k)!;

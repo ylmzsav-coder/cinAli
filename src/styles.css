@@ -1655,3 +1655,14 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
   .sosyete-lobby .rate-block b { font-size: 0.82rem; }
   .sosyete-lobby .ozel-stake button { padding: 3px; }
 }
+
+.sosyete-chat-sub { font-weight: 800; }
+.sosyete-chat-sub .pro-tag { margin-left: 0; margin-right: 4px; font-size: 0.78em; }
+.sosyete-chat-sub { white-space: normal; font-size: 0.82em; line-height: 1.25; max-width: 100%; }
+
+/* Sosyete düğmesi: PROFESYONEL ve ÜCRETSİZ SOHBET etiketleri yan yana (dar ekranda alt alta) */
+.sosyete-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; max-width: 100%; min-width: 0; }
+.sosyete-tags .pro-tag { margin: 0; font-size: 0.6em; white-space: nowrap; }
+.pro-tag.chat-tag { background: #1b5e20; color: #e8f5e9; border-color: rgba(165, 214, 167, 0.8); }
+.usta-hub { min-width: 0; }
+.sosyete-tags .pro-tag { max-width: 100%; white-space: normal; text-align: center; }

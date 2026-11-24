@@ -4,7 +4,8 @@ import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest, bloc
 import { Avatar } from "./Profile";
 import { sendGiftTo } from "../online/gifts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { isVipType, tableById, winnerPrize, type TableConfig } from "../economy/tables";
+import { isChatType, tableById, winnerPrize, type TableConfig } from "../economy/tables";
+import { isAdult } from "../age";
 import type { Dictionary } from "../game/dictionary";
 import { setGameLang, type LangCode } from "../game/lang";
 import { errorText, t, uiLang } from "../i18n";
@@ -198,9 +199,8 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
     return {
       events,
       send: (kind, id) => addDoc(collection(firestore(), "tables", tableId, "chat"), { uid, kind, id, at: serverTimestamp() }),
-      // Serbest yazışma yalnızca arkadaş masalarında
-      // Oyuncular arası sohbet yalnızca VIP odada (filtresiz)
-      sendText: isVipType(doc_.type)
+      // Oyuncular arası serbest sohbet: VIP Oda ve Sosyete (küfür filtresi sunucuda); 18 yaş altına kapalı
+      sendText: isChatType(doc_.type) && isAdult()
         ? (text: string) => call<SendTextResult>("sendText", { tableId, text, uiLang: uiLang() })
         : undefined,
     };
@@ -335,7 +335,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       chat={chat}
       chatEnabled={doc_.private ? settings.chatInvite !== false : settings.chat}
       onChatEnabled={onChat && ((on) => onChat(on, !!doc_.private))}
-      chatRoom={isVipType(doc_.type)}
+      chatRoom={isChatType(doc_.type) && isAdult()}
       playerMenu={playerMenu}
       vipSeats={doc_.seats.map((_, i) => {
         const s = doc_.seats[(i + rack.seat) % doc_.seats.length];

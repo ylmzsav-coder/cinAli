@@ -18,6 +18,7 @@ import type { TwoMode } from "./ui/TwoPlayer";
 import { enterFullscreenLandscape } from "./display";
 import { startMusic, stopMusic } from "./music";
 import { flushFeedback } from "./feedbackBox";
+import { isAdult } from "./age";
 import { myRate, recordProgress, recordQuit, setServerCounts } from "./stats";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Terms } from "./ui/Terms";
@@ -460,7 +461,7 @@ export function App() {
             vibration={settings.vibration}
             chatEnabled={settings.chat}
             onChatEnabled={(on) => changeSettings({ ...settings, chat: on })}
-            chatRoom={!!activeTable?.vip}
+            chatRoom={!!(activeTable?.vip || activeTable?.chat) && isAdult()}
             onChange={update}
             onExit={() => setScreen("hub")}
             onNewGame={finishGame}

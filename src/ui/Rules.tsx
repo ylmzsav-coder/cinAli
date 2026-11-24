@@ -36,6 +36,7 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
     t("rule_nowinner"),
     t("rule_pro"),
     t("rule_rate"),
+    t("rule_sosyete_chat"),
   ];
   return (
     <div className="page">

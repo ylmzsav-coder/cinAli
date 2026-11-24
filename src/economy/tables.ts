@@ -17,6 +17,8 @@ export interface TableConfig {
   minWord?: number;
   /** Masaya oturmak için gereken en düşük başarı oranı (yüzde). Sosyete: 76. */
   minRate?: number;
+  /** Oyuncular arası serbest sohbet (küfür filtreli). VIP'te abonelikle, Sosyete'de ücretsiz. */
+  chat?: boolean;
 }
 
 /** Sosyete (profesyonel masa) giriş şartı: başarı oranı en az yüzde 76. */
@@ -49,9 +51,9 @@ export const PLAYERS_PER_TABLE = 4;
 export const TABLES: TableConfig[] = [
   { id: "caylak", name: "Çayhane", entry: TABLE_ENTRY, hands: 1, level: "orta", prize: TABLE_PRIZE },
   // Sosyete: dört kişilik profesyonel masalar (100 → 400, 1.000 → 4.000, 10.000 → 40.000)
-  { id: "usta", name: "Sosyete", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE },
-  { id: "usta2", name: "Sosyete 1000", entry: SOSYETE_ORTA_ENTRY, hands: 1, level: "zor", prize: SOSYETE_ORTA_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE },
-  { id: "usta5", name: "Sosyete 10000", entry: SOSYETE_BUYUK_ENTRY, hands: 1, level: "zor", prize: SOSYETE_BUYUK_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE },
+  { id: "usta", name: "Sosyete", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true },
+  { id: "usta2", name: "Sosyete 1000", entry: SOSYETE_ORTA_ENTRY, hands: 1, level: "zor", prize: SOSYETE_ORTA_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true },
+  { id: "usta5", name: "Sosyete 10000", entry: SOSYETE_BUYUK_ENTRY, hands: 1, level: "zor", prize: SOSYETE_BUYUK_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true },
   // Özel oda: herkese açık iki kişilik masa (rastgele oyuncu / arkadaş / bilgisayar).
   // İki harfli kelime yalnızca Çayhane ve Pratik masada geçerli; diğer masalarda en az 3 harf.
   { id: "ozel2", name: "Teke Tek", entry: OZEL_ENTRY, hands: 1, level: "orta", prize: OZEL_PRIZE, players: 2, minWord: 3 },
@@ -64,6 +66,9 @@ export const TABLES: TableConfig[] = [
 
 /** VIP oda türü mü (serbest sohbet, izleyici yok, süre yok). */
 export const isVipType = (type: string | undefined) => !!tableById(type)?.vip;
+
+/** Oyuncular arası serbest sohbet açık mı: VIP Oda ve Sosyete (küfür filtreli). */
+export const isChatType = (type: string | undefined) => { const tb = tableById(type); return !!(tb?.vip || tb?.chat); };
 
 /** Eski masalar: yalnızca önceki sürümde başlamış oyunların ödemesi için. */
 const LEGACY_TABLES: TableConfig[] = [
