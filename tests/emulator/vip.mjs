@@ -161,7 +161,7 @@ const tbl = async (c, id) => (await getDoc(doc(c.db, "tables", id))).data();
   check("Teke Tek boşsa Sosyete'de (giriş 100) bekleyen oyuncuyla eşleşir", vj.tableId === sj.tableId && st.type === "vip2" && st.status === "playing" && st.seats.length === 2 && st.seats.every((x) => !x.bot) && st.deadline === null, `${st.type} · ${st.seats.map((x) => x.name).join(" vs ")}`);
   check("yüksek girişli Sosyete (1.000) oyuncusu VIP ile eşleşmez, masası bozulmaz", vj.tableId !== hj.tableId && ht.type === "usta2" && ht.seats.length === 1);
   const tt = await tbl(T1, tj.tableId);
-  check("Teke Tek 250 oyuncusu VIP ile eşleşmez (yalnızca giriş 100 olan masalar)", vj.tableId !== tj.tableId && tt.type === "ozel2u" && tt.seats.length === 1);
+  check("Teke Tek 500 oyuncusu VIP ile eşleşmez (yalnızca giriş 100 olan masalar)", vj.tableId !== tj.tableId && tt.type === "ozel2u" && tt.seats.length === 1);
   check("çip iadesi yok: Sosyete 100 oyuncusu yalnızca 100 öder, 1.000'lik oyuncunun çipi değişmez", (await S1.wallet()).balance === s0 - 100 && (await H1.wallet()).balance === h0 - 1000);
   check("Sosyete'den gelen oyuncu (abonesiz) sohbet edebilir", (await S1.call("sendText", { tableId: sj.tableId, text: "merhaba", uiLang: "tr" })).ok === true);
 }

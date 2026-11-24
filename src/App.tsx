@@ -44,8 +44,8 @@ function tableOf(saved: SavedGame | null): TableConfig | undefined {
   return { ...tb, entry: saved.entry ?? tb.entry, prize: saved.prize ?? tb.prize };
 }
 
-/** Sosyete fiyatları değişmeden önce başlamış oyunlar eski fiyatla biter. */
-const OLD_SOSYETE: Record<string, [number, number]> = { usta: [500, 2_000], usta5: [5_000, 20_000] };
+/** Fiyatlar değişmeden önce başlamış (kaydında fiyat olmayan) oyunlar eski fiyatla biter. */
+const OLD_PRICES: Record<string, [number, number]> = { usta: [500, 2_000], usta5: [5_000, 20_000], ozel2u: [250, 500], ozel2b: [500, 1_000] };
 
 function settle(saved: SavedGame): SavedGame {
   const table = tableOf(saved);
@@ -97,9 +97,9 @@ export function App() {
   });
   const [saved, setSaved] = useState<SavedGame | null>(() => {
     let g = loadGame();
-    // Fiyatı kayıtlı olmayan (güncellemeden önce başlamış) Sosyete oyunu eski fiyatla biter
-    if (g?.tableId && g.entry === undefined && OLD_SOSYETE[g.tableId] && !(g.settled && !g.carry)) {
-      const [entry, prize] = OLD_SOSYETE[g.tableId];
+    // Fiyatı kayıtlı olmayan (güncellemeden önce başlamış) Sosyete / Teke Tek oyunu eski fiyatla biter
+    if (g?.tableId && g.entry === undefined && OLD_PRICES[g.tableId] && !(g.settled && !g.carry)) {
+      const [entry, prize] = OLD_PRICES[g.tableId];
       g = { ...g, entry, prize };
       saveGame(g);
     }
