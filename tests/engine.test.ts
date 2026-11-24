@@ -747,3 +747,17 @@ describe("kimse bitiremedi (deste bitti)", () => {
     expect(noWinnerGame({ phase: "play", lastResult: null })).toBe(false);
   });
 });
+
+import { SOSYETE_MIN_RATE, rateAllows } from "../src/economy/tables";
+describe("Sosyete giriş şartı (başarı oranı)", () => {
+  it("yalnızca Sosyete masalarında %76; altı engellenir, diğer masalar serbest", () => {
+    expect(SOSYETE_MIN_RATE).toBe(76);
+    expect(TABLES.filter((x) => x.minRate).map((x) => [x.id, x.minRate])).toEqual([["usta", 76], ["usta2", 76], ["usta5", 76]]);
+    for (const tb of TABLES) {
+      const pro = tb.id.startsWith("usta");
+      expect(rateAllows(tb, 75), tb.id).toBe(!pro);
+      expect(rateAllows(tb, 76), tb.id).toBe(true);
+      expect(rateAllows(tb, 0), tb.id).toBe(!pro);
+    }
+  });
+});

@@ -1,7 +1,8 @@
 import { wallet } from "../economy/wallet";
 import { useEffect, useState } from "react";
 import type { TableConfig } from "../economy/tables";
-import { tableById, winnerPrize } from "../economy/tables";
+import { rateAllows, tableById, winnerPrize } from "../economy/tables";
+import { myRate } from "../stats";
 import { TwoPlayerChoices, type TwoMode } from "./TwoPlayer";
 import { GenderModal } from "./Vip";
 import type { Gender } from "../storage";
@@ -110,6 +111,9 @@ export function SosyeteLobby({ name, onClose, onPick }: { name: string; onClose:
   const ids = ["usta", "usta2", "usta5"] as const;
   const [id, setId] = useState<string>(ids[0]);
   const tb = tableById(id)!;
+  // Giriş şartı: başarı oranı en az %76 (altındaki oyuncu bu masada oynayamaz)
+  const me = myRate();
+  const allowed = rateAllows(tb, me.rate);
   return (
     <div className="lobby ozel-lobby sosyete-lobby">
       <div className="lobby-felt">
@@ -132,7 +136,14 @@ export function SosyeteLobby({ name, onClose, onPick }: { name: string; onClose:
                 );
               })}
             </div>
-            <button type="button" className="primary big sosyete-sit" onClick={() => onPick(tb)}>{t("sit")}</button>
+            {allowed ? (
+              <button type="button" className="primary big sosyete-sit" onClick={() => onPick(tb)}>{t("sit")}</button>
+            ) : (
+              <div className="rate-block" role="alert">
+                <b>⛔ {t("rateBlockTitle")}</b>
+                <span>{t("rateBlockText", { need: tb.minRate ?? 0, rate: me.rate, won: me.won, played: me.played })}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

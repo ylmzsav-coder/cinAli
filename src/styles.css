@@ -1638,3 +1638,20 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .kumbara-balance { gap: 8px; padding-left: 10px; }
 .kumbara-text { display: inline-flex; flex-direction: column; align-items: flex-start; line-height: 1.05; }
 .kumbara-label { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #ffe082; }
+
+/* Sosyete giriş şartı uyarısı (başarı oranı) */
+.rate-block { display: grid; gap: 4px; padding: 10px 12px; border-radius: 12px; background: rgba(198, 40, 40, 0.18); border: 2px solid #e57373; color: #ffe0e0; text-align: center; font-size: 0.92rem; line-height: 1.35; }
+.rate-block b { color: #fff; font-size: 1rem; }
+.rate-modal p { line-height: 1.4; }
+/* Sosyete lobi: uyarı yazısıyla da başlık ve oyuncu rozetiyle çakışmasın (VIP lobi gibi alt alta) */
+.sosyete-lobby .lobby-felt { display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; gap: 4px; padding: 6px 0; }
+.sosyete-lobby .lobby-felt > .vip-search-seat, .sosyete-lobby .lobby-felt > .lobby-panel, .sosyete-lobby .lobby-felt > .lobby-me { position: static; transform: none; flex: none; }
+.sosyete-lobby .lobby-panel { width: min(66%, 600px); order: 2; }
+.sosyete-lobby .lobby-felt > .lobby-me { order: 3; }
+@media (max-height: 420px) {
+  .sosyete-lobby .vip-search-seat { height: 40px; }
+  .sosyete-lobby .lobby-panel { width: min(72%, 600px); }
+  .sosyete-lobby .rate-block { font-size: 0.74rem; padding: 6px 10px; gap: 2px; line-height: 1.25; }
+  .sosyete-lobby .rate-block b { font-size: 0.82rem; }
+  .sosyete-lobby .ozel-stake button { padding: 3px; }
+}

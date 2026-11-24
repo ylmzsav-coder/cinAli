@@ -15,6 +15,16 @@ export interface TableConfig {
   vip?: boolean;
   /** En kısa kelime (Sosyete profesyonel masa: 3, iki harfli kelime yok). */
   minWord?: number;
+  /** Masaya oturmak için gereken en düşük başarı oranı (yüzde). Sosyete: 76. */
+  minRate?: number;
+}
+
+/** Sosyete (profesyonel masa) giriş şartı: başarı oranı en az yüzde 76. */
+export const SOSYETE_MIN_RATE = 76;
+
+/** Oyuncunun başarı oranı masanın şartını karşılıyor mu. */
+export function rateAllows(t: TableConfig, rate: number): boolean {
+  return !t.minRate || rate >= t.minRate;
 }
 
 /** Kasa payı: pottan düşülen oran. Çiplerin zamanla erimesini sağlar. */
@@ -25,9 +35,9 @@ export const PLAYERS_PER_TABLE = 4;
 export const TABLES: TableConfig[] = [
   { id: "caylak", name: "Çayhane", entry: TABLE_ENTRY, hands: 1, level: "orta", prize: TABLE_PRIZE },
   // Sosyete: dört kişilik profesyonel masalar (100 → 400, 1.000 → 4.000, 10.000 → 40.000)
-  { id: "usta", name: "Sosyete", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE, minWord: 3 },
-  { id: "usta2", name: "Sosyete 1000", entry: SOSYETE_ORTA_ENTRY, hands: 1, level: "zor", prize: SOSYETE_ORTA_PRIZE, minWord: 3 },
-  { id: "usta5", name: "Sosyete 10000", entry: SOSYETE_BUYUK_ENTRY, hands: 1, level: "zor", prize: SOSYETE_BUYUK_PRIZE, minWord: 3 },
+  { id: "usta", name: "Sosyete", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE },
+  { id: "usta2", name: "Sosyete 1000", entry: SOSYETE_ORTA_ENTRY, hands: 1, level: "zor", prize: SOSYETE_ORTA_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE },
+  { id: "usta5", name: "Sosyete 10000", entry: SOSYETE_BUYUK_ENTRY, hands: 1, level: "zor", prize: SOSYETE_BUYUK_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE },
   // Özel oda: herkese açık iki kişilik masa (rastgele oyuncu / arkadaş / bilgisayar).
   // İki harfli kelime yalnızca Çayhane ve Pratik masada geçerli; diğer masalarda en az 3 harf.
   { id: "ozel2", name: "Teke Tek", entry: OZEL_ENTRY, hands: 1, level: "orta", prize: OZEL_PRIZE, players: 2, minWord: 3 },

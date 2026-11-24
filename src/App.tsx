@@ -2,7 +2,7 @@ import { SETTINGS_EVENT } from "./ui/Profile";
 import { BACK_EVENT, setupBackButton } from "./backButton";
 import { useCallback, useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { PLAYERS_PER_TABLE, TableConfig, noWinnerGame, payout, tableById, winnerPrize } from "./economy/tables";
+import { PLAYERS_PER_TABLE, TableConfig, noWinnerGame, payout, rateAllows, tableById, winnerPrize } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
 import { GAME_HANDS, GameState, colorWinsOf, newGame, gameWinners } from "./game/engine";
@@ -18,7 +18,7 @@ import type { TwoMode } from "./ui/TwoPlayer";
 import { enterFullscreenLandscape } from "./display";
 import { startMusic, stopMusic } from "./music";
 import { flushFeedback } from "./feedbackBox";
-import { recordProgress, recordQuit } from "./stats";
+import { myRate, recordProgress, recordQuit } from "./stats";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Terms } from "./ui/Terms";
 import { Admin } from "./ui/Admin";
@@ -208,9 +208,16 @@ export function App() {
   };
 
   const [shopNotice, setShopNotice] = useState<string | null>(null);
+  const [rateBlock, setRateBlock] = useState<string | null>(null);
   const sitAt = (tb: TableConfig, want?: Gender) => {
     // VIP oda yalnızca abonelere (Masalar sayfası da kontrol eder)
     if (tb.vip && !wallet.isVip()) return;
+    // Sosyete: başarı oranı %76'nın altındaki oyuncu oturamaz; nedeni uyarıyla söylenir
+    const me = myRate();
+    if (!rateAllows(tb, me.rate)) {
+      setRateBlock(t("rateBlockText", { need: tb.minRate ?? 0, rate: me.rate, won: me.won, played: me.played }));
+      return;
+    }
     if (CLOUD) {
       // Giriş ücretini ve masayı sunucu yönetir
       setOnline({ kind: "public", table: tb, want });
@@ -352,6 +359,15 @@ export function App() {
   return (
     <>
       {page}
+      {rateBlock && (
+        <div className="modal-bg" onClick={() => setRateBlock(null)}>
+          <div className="modal rate-modal" role="alertdialog" onClick={(e) => e.stopPropagation()}>
+            <h2>⛔ {t("rateBlockTitle")}</h2>
+            <p>{rateBlock}</p>
+            <button type="button" className="primary" onClick={() => setRateBlock(null)}>{t("close")}</button>
+          </div>
+        </div>
+      )}
       <RotateHint />
     </>
   );

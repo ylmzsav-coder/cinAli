@@ -28,6 +28,8 @@ async function fresh(browser, device, opts = {}) {
     localStorage.setItem("wordokey.vipTerms", "2026-11-24");
     localStorage.setItem("wordokey.welcomeSeen", "1");
     localStorage.setItem("cinali.settings", JSON.stringify({ name: "Yılmaz", uiLang: o.lang || "tr", gameLang: o.lang || "tr", music: false, sound: false, gender: "erkek", speed: "hizli" }));
+    // Başarı oranı (Sosyete şartı %76): varsayılan 10 oyunda 9 galibiyet (%90)
+    localStorage.setItem("wordokey.stats", JSON.stringify({ gamesPlayed: o.played ?? 10, gamesWon: o.won ?? 9, gamesLost: (o.played ?? 10) - (o.won ?? 9) }));
     localStorage.setItem("cinali.wallet", JSON.stringify({ balance: o.balance ?? 50000, vipUntil: o.vip === false ? null : Date.now() + 864e5 * 5, lastDaily: new Date().toISOString().slice(0, 10) }));
   }, opts);
   await p.reload();
@@ -113,7 +115,7 @@ const TABLES = [
 
   console.log("\n== 1b. Kimse bitiremedi (deste bitti): kaybeden yok, ücret yeni oyuna, çıkarsa iade");
   {
-    const p = await fresh(browser, "Pixel 7 landscape", { balance: 1000 });
+    const p = await fresh(browser, "Pixel 7 landscape", { balance: 1000, played: 0, won: 0 });
     const deckOut = async () => {
       await p.evaluate(() => {
         const g = JSON.parse(localStorage.getItem("cinali.game"));
@@ -290,7 +292,47 @@ const TABLES = [
     const kb = await p.evaluate(() => { const el = document.querySelector(".kumbara-balance"); return { icon: !!el?.querySelector(".kumbara-icon"), label: el?.querySelector(".kumbara-label")?.textContent ?? "" }; });
     const KB = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" };
     check(`Menü (${lang}): çipler kumbarada — resim ve "${KB[lang]}" yazısı`, kb.icon && kb.label === KB[lang], JSON.stringify(kb));
-    check(`Kurallar (${lang}): 15 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 15 && !r.hscroll && !r.raw, JSON.stringify(r));
+    check(`Kurallar (${lang}): 16 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 16 && !r.hscroll && !r.raw, JSON.stringify(r));
+    await p.context().close();
+  }
+
+  console.log("\n== 7. Sosyete giriş şartı: başarı oranı en az %76 (7 dil)");
+  for (const lang of LANGS) {
+    // %75 (4 oyunda 3): giriş engellenir, neden yazılır, çip alınmaz
+    const p = await fresh(browser, "Pixel 7 landscape", { lang, played: 4, won: 3 });
+    const b0 = await bal(p);
+    await p.locator(".usta-hub").tap(); await W(p, 400);
+    const blocked = await p.evaluate(() => ({ sit: !!document.querySelector(".sosyete-sit"), text: document.querySelector(".rate-block")?.textContent ?? "" }));
+    check(`Sosyete (${lang}) %75: oturma düğmesi yok, uyarı yazısı var (%76 ve %75 yazıyor)`, !blocked.sit && blocked.text.includes("76") && blocked.text.includes("75"), blocked.text.slice(0, 90));
+    // Masalar sayfası gibi başka yoldan oturmaya çalışınca da engellenir
+    await p.locator(".leave-round").tap(); await W(p, 300);
+    check(`Sosyete (${lang}) %75: oyun açılmadı, çip alınmadı`, !(await game(p)) && (await bal(p)) === b0);
+    await p.context().close();
+    // %76 (25 oyunda 19): oturabilir
+    const q = await fresh(browser, "Pixel 7 landscape", { lang, played: 25, won: 19 });
+    await q.locator(".usta-hub").tap(); await W(q, 400);
+    await q.locator(".sosyete-sit").tap(); await W(q, 400);
+    await q.locator(".lobby-panel .primary").tap(); await W(q, 1200);
+    const g = await game(q);
+    check(`Sosyete (${lang}) %76: oturabilir, oyun başladı`, g?.tableId === "usta" && (await bal(q)) === 50000 - 100, `masa ${g?.tableId}`);
+    check(`Sosyete (${lang}): tarayıcı hatası yok`, !q.errors.length && !p.errors.length, [...p.errors, ...q.errors].slice(0, 2).join(" | "));
+    await q.context().close();
+  }
+  {
+    // Yeni oyuncu (hiç oyun yok, %0) de oturamaz; Çayhane ve Teke Tek serbest
+    const p = await fresh(browser, "Pixel 7 landscape", { played: 0, won: 0 });
+    await p.locator(".usta-hub").tap(); await W(p, 400);
+    for (const d of ["iPhone SE landscape", "Galaxy S8 landscape"]) {
+      const q = await fresh(browser, d, { played: 12, won: 7 });
+      await q.locator(".usta-hub").tap(); await W(q, 400);
+      const r = await q.evaluate(() => { const g = (x) => document.querySelector(x).getBoundingClientRect(); const i = g(".lobby-info"), h = g(".vip-search-seat"), m = g(".lobby-me"); return { top: i.top - h.bottom, bot: m.top - i.bottom }; });
+      check(`Sosyete uyarısı (${d}): başlık ve oyuncu rozetiyle çakışmıyor`, r.top >= 0 && r.bot >= 0, JSON.stringify(r));
+      await q.context().close();
+    }
+    check("yeni oyuncu (%0) Sosyete'ye oturamaz", (await p.locator(".sosyete-sit").count()) === 0 && (await p.locator(".rate-block").count()) === 1);
+    await p.locator(".leave-round").tap(); await W(p, 300);
+    await TABLES[0].open(p); await W(p, 1000);
+    check("yeni oyuncu Çayhane'ye oturabilir", (await game(p))?.tableId === "caylak");
     await p.context().close();
   }
 
