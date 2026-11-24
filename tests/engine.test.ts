@@ -725,7 +725,7 @@ describe("bütün masaların giriş ve ödülleri", () => {
   it("VIP, Teke Tek, Sosyete, Çayhane: giriş, bitirene ödül, kaybedene 0", () => {
     const want: Record<string, [number, number, number]> = {
       caylak: [100, 400, 4], usta: [100, 400, 4], usta2: [1000, 4000, 4], usta5: [10000, 40000, 4],
-      ozel2: [100, 200, 2], ozel2u: [500, 1000, 2], ozel2b: [1000, 2000, 2], vip2: [100, 200, 2],
+      ozel2: [100, 200, 2], ozel2u: [1000, 2000, 2], ozel2b: [10000, 20000, 2], vip2: [100, 200, 2],
     };
     expect(TABLES.map((x) => x.id).sort()).toEqual(Object.keys(want).sort());
     for (const tb of TABLES) {
