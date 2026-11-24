@@ -80,6 +80,14 @@ export function App() {
   });
   const [saved, setSaved] = useState<SavedGame | null>(() => {
     const g = loadGame();
+    // Eski sürümün hatası: 4 kişilik masada (Çayhane, Sosyete) 2 kişilik başlamış, bitmemiş oyun
+    // silinir ve giriş ücreti iade edilir; masaya yeniden oturulunca 4 kişilik başlar.
+    const tb = tableById(g?.tableId);
+    if (g && tb && g.state.phase !== "gameOver" && g.state.players.length !== (tb.players ?? PLAYERS_PER_TABLE)) {
+      wallet.add(tb.entry, "iade", tb.id);
+      saveGame(null);
+      return null;
+    }
     return g ? settle(g) : null;
   });
   const [dict, setDict] = useState<Dictionary | null>(null);
