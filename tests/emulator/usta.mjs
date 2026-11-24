@@ -1,4 +1,4 @@
-// Emülatör: Usta masa (giriş 500, birinciye 1.500)
+// Emülatör: Sosyete masası (giriş 100, birinciye 400)
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, signInAnonymously } from "firebase/auth";
 import { connectFirestoreEmulator, doc, getDoc, getFirestore } from "firebase/firestore";
@@ -15,8 +15,8 @@ const b0 = await bal();
 const j = await call("joinTable", { type: "usta", lang: "tr", name: "Usta" });
 await call("startTable", { tableId: j.tableId });
 const tb = (await getDoc(doc(db, "tables", j.tableId))).data();
-const ok = tb.status === "playing" && tb.seats.length === 4 && (await bal()) === b0 - 500;
-console.log(ok ? "✓ Usta masa: 500 giriş alındı, oyun başladı" : "✗ " + JSON.stringify({ b0, b: await bal(), st: tb.status }));
+const ok = tb.status === "playing" && tb.seats.length === 4 && (await bal()) === b0 - 100;
+console.log(ok ? "✓ Sosyete masası: 100 giriş alındı, oyun başladı" : "✗ " + JSON.stringify({ b0, b: await bal(), st: tb.status }));
 // VIP Oda tek masa: eski 250/500 seçeneklerine yeni oyun açılmaz, 100'lük VIP masa sohbetli
 await call("testSubscribeVip");
 await call("leaveTable", { tableId: j.tableId }).catch(() => {});

@@ -105,7 +105,7 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
  * aynı görünüm. Ortada giriş seçimi ve Rastgele oyuncu / Arkadaşla oyna /
  * Bilgisayara karşı oyna düğmeleri; VIP'te ayrıca Bayan / Bay oyuncu ara.
  */
-/** Sosyete: dört kişilik yüksek girişli masalar (500 → 2.000, 1.000 → 4.000, 5.000 → 20.000). */
+/** Sosyete: dört kişilik yüksek girişli masalar (100 → 400, 1.000 → 4.000, 10.000 → 40.000). */
 export function SosyeteLobby({ name, onClose, onPick }: { name: string; onClose: () => void; onPick: (tb: TableConfig) => void }) {
   const ids = ["usta", "usta2", "usta5"] as const;
   const [id, setId] = useState<string>(ids[0]);

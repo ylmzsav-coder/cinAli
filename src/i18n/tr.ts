@@ -156,7 +156,7 @@ const tr = {
   table_caylak: "Çayhane",
   table_usta: "Sosyete",
   table_usta2: "Sosyete 1000",
-  table_usta5: "Sosyete 5000",
+  table_usta5: "Sosyete 10000",
   table_sampiyon: "Şampiyon",
   table_vip: "VIP",
   tableTitle: "{name} Masası",

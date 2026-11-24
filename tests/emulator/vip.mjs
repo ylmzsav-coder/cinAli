@@ -148,13 +148,15 @@ const tbl = async (c, id) => (await getDoc(doc(c.db, "tables", id))).data();
 {
   const S1 = await client("Sefa"), V1 = await client("Vedat");
   await V1.call("testSubscribeVip");
+  await S1.call("testPurchase", { chips: 5000, productId: "wordokey_cip_5k" });
   const s0 = (await S1.wallet()).balance;
-  const sj = await S1.call("joinTable", { type: "usta", lang: "de", name: "Sefa" });
+  // Sosyete 1000'lik masada bekleyen oyuncu: VIP'e (100) geçince farkı (900) iade edilir
+  const sj = await S1.call("joinTable", { type: "usta2", lang: "de", name: "Sefa" });
   const vj = await V1.call("joinTable", { type, lang: "de", name: "Vedat" });
   const st = await tbl(S1, sj.tableId);
   check("Teke Tek boşsa Sosyete'de bekleyen oyuncuyla eşleşir", vj.tableId === sj.tableId && st.type === "vip2" && st.status === "playing" && st.seats.length === 2 && st.seats.every((x) => !x.bot) && st.deadline === null, `${st.type} · ${st.seats.map((x) => x.name).join(" vs ")}`);
   const s1 = (await S1.wallet()).balance;
-  check("Sosyete oyuncusuna giriş farkı iade edilir (500 − 100 = 400)", s1 === s0 - 100, `${s0} → ${s1}`);
+  check("Sosyete oyuncusuna giriş farkı iade edilir (1.000 − 100 = 900)", s1 === s0 - 100, `${s0} → ${s1}`);
   check("Sosyete'den gelen oyuncu (abonesiz) sohbet edebilir", (await S1.call("sendText", { tableId: sj.tableId, text: "merhaba", uiLang: "tr" })).ok === true);
 }
 {

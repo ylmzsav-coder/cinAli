@@ -253,11 +253,11 @@ describe("çip ödemesi (en yüksek toplam birinci)", () => {
     const ozel = TABLES.find((x) => x.id === "ozel2")!;
     expect([ozel.players, ozel.entry, winnerPrize(ozel)]).toEqual([2, 100, 200]);
     const usta = TABLES.find((x) => x.id === "usta")!;
-    expect([usta.entry, winnerPrize(usta)]).toEqual([500, 2000]);
-    expect(payout(usta, [80, 120, 120, 40], 1, 0)).toBe(1000);
+    expect([usta.entry, winnerPrize(usta)]).toEqual([100, 400]);
+    expect(payout(usta, [80, 120, 120, 40], 1, 0)).toBe(200);
     const s2 = TABLES.find((x) => x.id === "usta2")!, s5 = TABLES.find((x) => x.id === "usta5")!;
     expect([s2.entry, winnerPrize(s2), s2.players ?? 4]).toEqual([1000, 4000, 4]);
-    expect([s5.entry, winnerPrize(s5), s5.players ?? 4]).toEqual([5000, 20000, 4]);
+    expect([s5.entry, winnerPrize(s5), s5.players ?? 4]).toEqual([10000, 40000, 4]);
     const vip = TABLES.find((x) => x.vip)!;
     expect(vip.players).toBe(2);
     expect(vip.entry).toBe(100);
@@ -723,7 +723,7 @@ describe("işleme (yerdeki kelimeye harf ekleme) denetimi", () => {
 describe("bütün masaların giriş ve ödülleri", () => {
   it("VIP, Teke Tek, Sosyete, Çayhane: giriş, birinciye ödül, kaybedene 0, eşitlikte paylaşım", () => {
     const want: Record<string, [number, number, number]> = {
-      caylak: [100, 400, 4], usta: [500, 2000, 4], usta2: [1000, 4000, 4], usta5: [5000, 20000, 4],
+      caylak: [100, 400, 4], usta: [100, 400, 4], usta2: [1000, 4000, 4], usta5: [10000, 40000, 4],
       ozel2: [100, 200, 2], ozel2u: [250, 500, 2], ozel2b: [500, 1000, 2], vip2: [100, 200, 2],
     };
     expect(TABLES.map((x) => x.id).sort()).toEqual(Object.keys(want).sort());

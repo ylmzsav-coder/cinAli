@@ -96,6 +96,9 @@ export interface SavedGame {
   settings: Settings;
   /** Çipli masada oynanıyorsa masa kimliği. */
   tableId?: string;
+  /** Oyun başladığındaki giriş ücreti ve birinciye ödül (fiyat değişse de bu oyun eski fiyatla biter). */
+  entry?: number;
+  prize?: number;
   /** Masa ödülü ödendi mi (iki kez ödenmesin). */
   /** Bonus çipi ödenmiş el sayısı (kazanılan her el için). */
   handChipsPaid?: number;

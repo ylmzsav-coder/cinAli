@@ -2,14 +2,14 @@
 /** Masa giriş ücreti ve birinciye ödenen çip. */
 export const TABLE_ENTRY = 100;
 export const TABLE_PRIZE = 400;
-/** Usta masa: giriş ve birinciye ödül. */
-export const USTA_ENTRY = 500;
-export const USTA_PRIZE = 2_000;
-/** Sosyete büyük masalar: 1.000 → 4.000, 5.000 → 20.000 */
+/** Sosyete (ilk masa): giriş ve birinciye ödül. */
+export const USTA_ENTRY = 100;
+export const USTA_PRIZE = 400;
+/** Sosyete büyük masalar: 1.000 → 4.000, 10.000 → 40.000 */
 export const SOSYETE_ORTA_ENTRY = 1_000;
 export const SOSYETE_ORTA_PRIZE = 4_000;
-export const SOSYETE_BUYUK_ENTRY = 5_000;
-export const SOSYETE_BUYUK_PRIZE = 20_000;
+export const SOSYETE_BUYUK_ENTRY = 10_000;
+export const SOSYETE_BUYUK_PRIZE = 40_000;
 /** Özel oda (2 kişi, herkese açık): giriş ve kazanana ödül. */
 export const OZEL_ENTRY = 100;
 export const OZEL_PRIZE = 200;

@@ -4,7 +4,7 @@ import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest, bloc
 import { Avatar } from "./Profile";
 import { sendGiftTo } from "../online/gifts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { isVipType, tableById, type TableConfig } from "../economy/tables";
+import { isVipType, tableById, winnerPrize, type TableConfig } from "../economy/tables";
 import type { Dictionary } from "../game/dictionary";
 import { setGameLang, type LangCode } from "../game/lang";
 import { errorText, t, uiLang } from "../i18n";
@@ -352,7 +352,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       onExit={onExit}
       onNewGame={onDone}
       onLeave={doc_.status === "playing" ? leave : undefined}
-      tableName={t(`table_${cfg.id}` as "table_vip")} tableId={cfg.id}
+      tableName={t(`table_${cfg.id}` as "table_vip")} tableId={cfg.id} prize={winnerPrize(cfg)}
       payout={doc_.payouts?.[uid]}
     />
   );

@@ -42,7 +42,6 @@ import { GiftSendModal } from "./Gifts";
 import { type Gift } from "../economy/gifts";
 import { GiftIcon } from "./GiftIcon";
 import { wallet } from "../economy/wallet";
-import { TABLE_PRIZE } from "../economy/config";
 import { Slots, groupsOf, initialSlots, moveGroup, moveTile, syncSlots } from "./rack";
 
 const ME = 0;
@@ -154,13 +153,15 @@ interface Props {
   carry?: { entry: number; onReplay: () => void; onLeave: () => void };
   /** Oturan oyuncuların VIP rozeti (gösterilen koltuk sırasıyla). */
   vipSeats?: boolean[];
+  /** Masanın birinciye ödülü (eşitlikte paylaşılır). */
+  prize?: number;
   /** Masa kimliği: başlıkta simge (Çayhane çay, Sosyete araba) */
   tableId?: string;
   /** Oyun sonunda kazanılan çip. */
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, carry, tableId, vipSeats = [], payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, carry, tableId, vipSeats = [], payout, prize = 0 }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -1333,7 +1334,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             ) : state.phase === "gameOver" && (gameWinners(state).length > 1 ? (
               <>
                 <p className="winner">🤝 {t("tieIs", { names: winnerName(state) })}</p>
-                {tableName && <p className="muted">{t("tieSplit", { prize: TABLE_PRIZE, n: gameWinners(state).length, each: Math.floor(TABLE_PRIZE / gameWinners(state).length) })}</p>}
+                {tableName && prize > 0 && <p className="muted">{t("tieSplit", { prize, n: gameWinners(state).length, each: Math.floor(prize / gameWinners(state).length) })}</p>}
               </>
             ) : (
               <p className="winner">🏆 {t("winnerIs", { names: winnerName(state) })}</p>

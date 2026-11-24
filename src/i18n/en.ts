@@ -154,7 +154,7 @@ const en: Messages = {
   table_caylak: "Tea House",
   table_usta: "High Society",
   table_usta2: "High Society 1000",
-  table_usta5: "High Society 5000",
+  table_usta5: "High Society 10000",
   table_sampiyon: "Champion",
   table_vip: "VIP",
   tableTitle: "{name} Table",

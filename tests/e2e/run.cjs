@@ -60,7 +60,7 @@ async function topbarOverlaps(p) {
 
 const TABLES = [
   { name: "Çayhane", entry: 100, prize: 400, n: 4, open: async (p) => { await p.locator(".caylak-hub:not(.ozel-hub):not(.vip-hub):not(.usta-hub)").first().tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } },
-  ...[0, 1, 2].map((i) => ({ name: `Sosyete ${[500, 1000, 5000][i]}`, entry: [500, 1000, 5000][i], prize: [2000, 4000, 20000][i], n: 4, open: async (p) => { await p.locator(".usta-hub").tap(); await W(p, 300); await p.locator(".sosyete-lobby .vip-stake button").nth(i).tap(); await p.locator(".sosyete-sit").tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } })),
+  ...[0, 1, 2].map((i) => ({ name: `Sosyete ${[100, 1000, 10000][i]}`, entry: [100, 1000, 10000][i], prize: [400, 4000, 40000][i], n: 4, open: async (p) => { await p.locator(".usta-hub").tap(); await W(p, 300); await p.locator(".sosyete-lobby .vip-stake button").nth(i).tap(); await p.locator(".sosyete-sit").tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } })),
   ...[0, 1, 2].map((i) => ({ name: `Teke Tek ${[100, 250, 500][i]}`, entry: [100, 250, 500][i], prize: [200, 500, 1000][i], n: 2, open: async (p) => { await p.locator(".ozel-hub").tap(); await W(p, 300); await p.locator(".ozel-stake button").nth(i).tap(); await p.locator(".two-choices button").nth(2).tap(); } })),
   { name: "VIP", entry: 100, prize: 200, n: 2, open: async (p) => { await p.locator(".vip-hub").tap(); await W(p, 300); await p.locator(".two-choices button").nth(2).tap(); } },
 ];
@@ -83,6 +83,18 @@ const TABLES = [
           `kişi ${g?.state.players.length}, giriş ${b0 - b1}, ödeme ${b2 - b1}`);
         await toHub(p);
       }
+    }
+    // Fiyat değişmeden önce başlamış Sosyete oyunu (kayıtta fiyat yok) eski fiyatla biter: 500 giriş → 2.000 ödül
+    {
+      const sos = TABLES.find((x) => x.name === "Sosyete 100");
+      await sos.open(p); await W(p, 1200);
+      const g0 = await game(p);
+      check("yeni oyun kendi fiyatını kaydeder", g0?.entry === 100 && g0?.prize === 400, JSON.stringify({ entry: g0?.entry, prize: g0?.prize }));
+      const b1 = await bal(p);
+      await p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); delete g.entry; delete g.prize; g.state.history = [g.state.players.map((_, i) => (i === 0 ? 150 : 20))]; g.state.results = [{ winner: 0, colorWin: null }]; g.state.phase = "gameOver"; g.state.handNo = g.state.totalHands; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); }; });
+      await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
+      check("güncellemeden önce başlamış Sosyete oyunu eski fiyatla ödenir (2.000)", (await bal(p)) - b1 === 2000, `ödeme ${(await bal(p)) - b1}`);
+      await toHub(p);
     }
     check("masalarda tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
@@ -201,7 +213,7 @@ const TABLES = [
     const WORDS = [["EK", 20], ["SÜT", 72], ["KUZU", 93], ["KZAL", null]];
     // İki harfli kelime yalnızca Çayhane ve Pratik (çipsiz) masada geçerli
     const pratik = { name: "Pratik", open: async (p) => { await p.locator(".practice-hub").tap(); await W(p, 300); await p.locator(".page .primary.big").last().tap(); } };
-    const all = [pick("VIP"), pick("Teke Tek 100"), pick("Teke Tek 250"), pick("Teke Tek 500"), pick("Çayhane"), pratik, pick("Sosyete 500")];
+    const all = [pick("VIP"), pick("Teke Tek 100"), pick("Teke Tek 250"), pick("Teke Tek 500"), pick("Çayhane"), pratik, pick("Sosyete 100")];
     for (const tb of all) {
       const pro = !["Çayhane", "Pratik"].includes(tb.name);
       for (const [word, value] of WORDS) {

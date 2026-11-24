@@ -2,7 +2,7 @@ import { SETTINGS_EVENT } from "./ui/Profile";
 import { BACK_EVENT, setupBackButton } from "./backButton";
 import { useCallback, useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { PLAYERS_PER_TABLE, TableConfig, noWinnerGame, payout, tableById } from "./economy/tables";
+import { PLAYERS_PER_TABLE, TableConfig, noWinnerGame, payout, tableById, winnerPrize } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
 import { GAME_HANDS, GameState, colorWinsOf, newGame, totals } from "./game/engine";
@@ -37,8 +37,18 @@ const paidGames = new Set<number>();
  * sonra çip eklenir; aynı oyun için tekrar çağrılırsa (React'in çift
  * çağrısı, sayfa yenileme vb.) ikinci kez ödeme yapılmaz.
  */
+/** Oyunun kendi fiyatıyla masa: oyun başladığındaki giriş ücreti ve ödül geçerlidir. */
+function tableOf(saved: SavedGame | null): TableConfig | undefined {
+  const tb = tableById(saved?.tableId);
+  if (!tb || !saved) return tb;
+  return { ...tb, entry: saved.entry ?? tb.entry, prize: saved.prize ?? tb.prize };
+}
+
+/** Sosyete fiyatları değişmeden önce başlamış oyunlar eski fiyatla biter. */
+const OLD_SOSYETE: Record<string, [number, number]> = { usta: [500, 2_000], usta5: [5_000, 20_000] };
+
 function settle(saved: SavedGame): SavedGame {
-  const table = tableById(saved.tableId);
+  const table = tableOf(saved);
   if (!table || saved.settled || saved.state.phase !== "gameOver") return saved;
   const stored = loadGame();
   if (paidGames.has(saved.state.seed) || (stored?.settled && stored.state.seed === saved.state.seed)) {
@@ -86,12 +96,18 @@ export function App() {
     }
   });
   const [saved, setSaved] = useState<SavedGame | null>(() => {
-    const g = loadGame();
+    let g = loadGame();
+    // Fiyatı kayıtlı olmayan (güncellemeden önce başlamış) Sosyete oyunu eski fiyatla biter
+    if (g?.tableId && g.entry === undefined && OLD_SOSYETE[g.tableId] && !(g.settled && !g.carry)) {
+      const [entry, prize] = OLD_SOSYETE[g.tableId];
+      g = { ...g, entry, prize };
+      saveGame(g);
+    }
     // Eski sürümün hatası: 4 kişilik masada (Çayhane, Sosyete) 2 kişilik başlamış, bitmemiş oyun
     // silinir ve giriş ücreti iade edilir; masaya yeniden oturulunca 4 kişilik başlar.
     const tb = tableById(g?.tableId);
     if (g && tb && g.state.phase !== "gameOver" && g.state.players.length !== (tb.players ?? PLAYERS_PER_TABLE)) {
-      wallet.add(tb.entry, "iade", tb.id);
+      wallet.add(g.entry ?? tb.entry, "iade", tb.id);
       saveGame(null);
       return null;
     }
@@ -184,6 +200,7 @@ export function App() {
       state: g,
       settings: { ...s, level: table?.level ?? s.level, turnSeconds: table ? TABLE_TURN_SECONDS : s.turnSeconds },
       tableId: table?.id,
+      ...(table ? { entry: table.entry, prize: winnerPrize(table) } : {}),
     };
     setSaved(next);
     saveGame(next);
@@ -251,14 +268,15 @@ export function App() {
 
   /** Kimse bitiremedi: aynı masada ücretsiz yeni oyun (giriş ücreti aktarılır). */
   const replayCarry = () => {
-    const tb = tableById(saved?.tableId);
+    const tb = tableOf(saved);
     if (!saved?.carry || !tb) return;
     saveGame(null);
+    // Aktarılan ücret eski fiyattansa yeni oyun da o fiyatla oynanır
     startGame(settings, tb);
   };
   /** Kimse bitiremedi ve masadan çıkılıyor: giriş ücreti kesintisiz iade. */
   const leaveCarry = () => {
-    const tb = tableById(saved?.tableId);
+    const tb = tableOf(saved);
     if (saved?.carry && tb) wallet.add(tb.entry, "iade", tb.id);
     setSaved(null);
     saveGame(null);
@@ -274,7 +292,7 @@ export function App() {
     setScreen("hub");
   };
 
-  const activeTable = tableById(saved?.tableId);
+  const activeTable = tableOf(saved);
   const inProgress = !!saved && saved.state.phase !== "gameOver";
 
   // Müzik: menülerde çalar, oyunda susar
@@ -428,7 +446,7 @@ export function App() {
             carry={saved.carry ? { entry: activeTable?.entry ?? 0, onReplay: replayCarry, onLeave: leaveCarry } : undefined}
             onLeave={finishGame}
             onShop={() => { setShopBack("game"); setScreen("shop"); }}
-            tableName={activeTable ? t(`table_${activeTable.id}` as "table_vip") : undefined} tableId={activeTable?.id}
+            tableName={activeTable ? t(`table_${activeTable.id}` as "table_vip") : undefined} tableId={activeTable?.id} prize={activeTable ? winnerPrize(activeTable) : 0}
             payout={saved.payout}
           />
         );

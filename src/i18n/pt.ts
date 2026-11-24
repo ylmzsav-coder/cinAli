@@ -154,7 +154,7 @@ const pt: Messages = {
   table_caylak: "Casa de chá",
   table_usta: "Alta Sociedade",
   table_usta2: "Alta Sociedade 1000",
-  table_usta5: "Alta Sociedade 5000",
+  table_usta5: "Alta Sociedade 10000",
   table_sampiyon: "Campeão",
   table_vip: "VIP",
   tableTitle: "Mesa {name}",
