@@ -82,6 +82,28 @@ jobs:
           for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
           node tests/e2e/run.cjs
 
+  cevrimici:
+    name: Çevrimiçi oyun (iki gerçek tarayıcı + sunucu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
+      - run: npm --prefix functions ci
+      - run: npm --prefix functions run build
+      - run: npx playwright@1.63.0 install --with-deps chromium
+      - run: npm i --no-save playwright@1.63.0
+      - name: Çevrimiçi sürümü derle (emülatöre bağlanır)
+        run: VITE_FIREBASE_EMULATOR=1 npx vite build --outDir dist-online
+      - name: İki oyuncu aynı masada; hamle eşzamanlılığı, emoji, yenileme, süre, çıkış, Sosyete sohbeti ve küfür filtresi
+        run: |
+          npx vite preview --outDir dist-online --host 127.0.0.1 --port 4174 --strictPort &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4174/ >/dev/null && break; sleep 1; done
+          npx firebase emulators:exec --project demo-cinali --only auth,firestore,functions "node tests/e2e/online.cjs"
+
   uyari:
     name: Hata e-postası
     # Testlerden biri başarısız olursa e-posta gönderilir. Gerekli gizli anahtarlar
@@ -90,7 +112,7 @@ jobs:
     #   MAIL_PASSWORD  o Gmail hesabının "uygulama şifresi" (normal şifre değil)
     #   ALERT_EMAIL    uyarının gideceği adres
     # Tanımlı değilse bu adım atlanır; GitHub'ın kendi bildirim e-postası yine gider.
-    needs: [birim, sunucu, tarayici]
+    needs: [birim, sunucu, tarayici, cevrimici]
     if: ${{ failure() }}
     runs-on: ubuntu-latest
     env:
@@ -117,6 +139,7 @@ jobs:
             Kurallar ve birim testleri: ${{ needs.birim.result }}
             Sunucu testleri: ${{ needs.sunucu.result }}
             Tarayıcı (uçtan uca) testleri: ${{ needs.tarayici.result }}
+            Çevrimiçi oyun testi: ${{ needs.cevrimici.result }}
 
             Değişiklik: ${{ github.sha }}
             Ayrıntılar: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

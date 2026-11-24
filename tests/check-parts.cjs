@@ -14,6 +14,7 @@ const assigned = new Set(Object.values(parts).flat());
 for (const m of e2e.matchAll(/if \(want\("([0-9a-z]+)"\)\)/g)) {
   if (!assigned.has(m[1])) { console.log(`✗ tarayıcı bölümü ${m[1]} hiçbir parçada değil`); bad++; }
 }
+if (!wf.includes("tests/e2e/online.cjs")) { console.log("✗ çevrimiçi test (tests/e2e/online.cjs) CI'da çalışmıyor"); bad++; }
 for (const p of Object.keys(parts)) if (!wf.includes(p)) { console.log(`✗ CI'da ${p} parçası yok`); bad++; }
 console.log(bad ? `\n✗ ${bad} eksik` : "✓ bütün testler bir paralel parçaya atanmış");
 process.exit(bad ? 1 : 0);

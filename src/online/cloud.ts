@@ -138,3 +138,9 @@ export async function call<T = unknown>(name: string, data?: unknown): Promise<T
     throw new CloudError(err.code === "functions/unavailable" || err.code === "functions/internal" ? "network" : "network");
   }
 }
+
+// Yalnızca emülatör (test) derlemesinde: uçtan uca testlerin sunucu test fonksiyonlarını
+// (testSetStats, testSubscribeVip…) çağırabilmesi için. Gerçek sürümde bulunmaz.
+if (import.meta.env.VITE_FIREBASE_EMULATOR === "1" && typeof window !== "undefined") {
+  (window as unknown as { __woTest?: unknown }).__woTest = { call };
+}

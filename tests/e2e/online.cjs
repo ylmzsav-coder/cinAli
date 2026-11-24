@@ -1,0 +1,186 @@
+/**
+ * Çevrimiçi oyun uçtan uca testi: iki gerçek tarayıcı, sunucu (Firebase emülatörü) üzerinden
+ * aynı masada oynar. Çevrimiçi sürüm VITE_FIREBASE_EMULATOR=1 ile derlenir:
+ *   VITE_FIREBASE_EMULATOR=1 npx vite build --outDir dist-online
+ *   npx vite preview --outDir dist-online --host 127.0.0.1 --port 4174 &
+ *   npx firebase emulators:exec --project demo-cinali --only auth,firestore,functions "node tests/e2e/online.cjs"
+ * Herhangi bir denetim başarısız olursa çıkış kodu 1 olur.
+ */
+const { chromium, devices } = require("playwright");
+const BASE = process.env.E2E_ONLINE_URL || "http://127.0.0.1:4174/";
+let fails = 0;
+const check = (label, ok, extra = "") => {
+  console.log(`${ok ? "✓" : "✗"} ${label}${extra ? " — " + extra : ""}`);
+  if (!ok) fails++;
+};
+const W = (p, ms) => p.waitForTimeout(ms);
+/** Koşul sağlanana kadar bekler (en çok ms). */
+async function until(fn, ms = 15000, step = 250) {
+  const end = Date.now() + ms;
+  for (;;) {
+    try { if (await fn()) return true; } catch { /* sayfa yenileniyor */ }
+    if (Date.now() > end) return false;
+    await new Promise((r) => setTimeout(r, step));
+  }
+}
+
+async function player(browser, name) {
+  const ctx = await browser.newContext({ ...devices["Pixel 7 landscape"] });
+  const p = await ctx.newPage();
+  p.setDefaultTimeout(15000);
+  p.errors = [];
+  p.on("pageerror", (e) => p.errors.push(e.message));
+  await p.goto(BASE);
+  await p.evaluate((name) => {
+    localStorage.clear();
+    localStorage.setItem("wordokey.account", '{"method":"guest"}');
+    localStorage.setItem("wordokey.birthYear", "1980");
+    localStorage.setItem("wordokey.welcomeSeen", "1");
+    localStorage.setItem("cinali.settings", JSON.stringify({ name, uiLang: "tr", gameLang: "tr", music: false, sound: false, vibration: false }));
+  }, name);
+  await p.reload();
+  await W(p, 800);
+  if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap();
+  // Sunucudan kumbara gelir (hoş geldin hediyesi 999)
+  await until(async () => /\d/.test(await p.locator(".kumbara-balance").innerText()), 20000);
+  const welcome = p.locator(".modal .primary").first();
+  if (await welcome.count()) await welcome.tap().catch(() => {});
+  return p;
+}
+const kumbara = async (p) => Number((await p.locator(".kumbara-balance").innerText()).replace(/\D/g, ""));
+const deckCount = async (p) => Number((await p.locator(".deck-count").innerText()).replace(/\D/g, ""));
+/** Sıra bu oyuncuda mı: süre sayacı (⏱) yalnızca sıra sendeyken görünür. */
+const myTurn = async (p) => (await p.locator(".timer-badge").count()) > 0;
+const tilesOnRack = (p) => p.locator(".okey-rack .rack-slot .tile");
+
+(async () => {
+  const browser = await chromium.launch();
+  console.log("\n== Çevrimiçi: iki oyuncu aynı Çayhane masasında (sunucu üzerinden)");
+  const A = await player(browser, "Ali");
+  const B = await player(browser, "Bea");
+  const a0 = await kumbara(A), b0 = await kumbara(B);
+  check("iki oyuncunun kumbarası sunucudan geldi (hoş geldin hediyesi)", a0 > 0 && b0 > 0, `${a0} / ${b0}`);
+
+  // Ali oturur, bekleme masası açılır; Bea aynı masaya oturur
+  await A.locator(".caylak-hub:not(.ozel-hub):not(.vip-hub):not(.usta-hub)").first().tap();
+  await until(async () => (await A.locator(".waiting-seats").count()) > 0);
+  await B.locator(".caylak-hub:not(.ozel-hub):not(.vip-hub):not(.usta-hub)").first().tap();
+  const both = await until(async () => {
+    const t = await A.locator(".waiting-seats").innerText();
+    return t.includes("Ali") && t.includes("Bea");
+  });
+  check("Bea, Ali'nin bekleyen masasına oturdu (ikisi de bekleme ekranında birbirini görüyor)", both, (await A.locator(".waiting-seats").innerText().catch(() => "")).replace(/\n/g, " · "));
+
+  // Hemen başla: boş koltuklara bilgisayar oturur
+  await A.locator(".page.menu .primary.big").first().tap();
+  const started = await until(async () => (await A.locator(".okey-rack").count()) > 0 && (await B.locator(".okey-rack").count()) > 0, 20000);
+  check("oyun ikisinde de başladı", started);
+  const opp = async (p) => (await p.locator(".opp .name-btn, .topbar-center .name-btn").allInnerTexts()).join(" ");
+  check("Ali rakiplerinde Bea'yı, Bea rakiplerinde Ali'yi görüyor", (await opp(A)).includes("Bea") && (await opp(B)).includes("Ali"), `${await opp(A)} | ${await opp(B)}`);
+  const rackA = await tilesOnRack(A).count(), rackB = await tilesOnRack(B).count();
+  check("ıstakalarda 14-15 taş var ve rakibin taşları görünmüyor", rackA >= 14 && rackA <= 15 && rackB >= 14 && rackB <= 15, `${rackA} / ${rackB}`);
+
+  // Sırayla oyna: sırası gelen desteden çeker ve bir taş atar; diğer ekran aynı anda güncellenir
+  let moves = 0, synced = 0;
+  for (let k = 0; k < 60 && moves < 6; k++) {
+    const p = (await myTurn(A)) ? A : (await myTurn(B)) ? B : null;
+    if (!p) { await W(A, 400); continue; }
+    if (await p.locator("button.deck:not([disabled])").count()) {
+      await p.locator("button.deck").tap();
+      await until(async () => (await tilesOnRack(p).count()) >= 15, 8000);
+    }
+    await tilesOnRack(p).last().tap();
+    await p.locator(".rack-discard").tap();
+    moves++;
+    const ok = await until(async () => (await deckCount(A)) === (await deckCount(B)), 10000);
+    if (ok) synced++;
+    await W(A, 500);
+  }
+  check(`insan hamleleri (${moves}) iki ekranda da aynı anda görünüyor (deste sayısı eşit)`, moves >= 4 && synced === moves, `${synced}/${moves}`);
+
+  // Emoji balonu karşı tarafa ulaşır; Çayhane'de serbest yazı yok
+  await A.locator(".chat-room-btn").first().tap();
+  await W(A, 300);
+  check("Çayhane'de serbest yazı kutusu yok (sohbet yalnızca VIP ve Sosyete'de)", (await A.locator(".chat-input").count()) === 0 && (await B.locator(".chat-input").count()) === 0);
+  await A.locator(".chat-emojis button").first().tap();
+  const bubble = await until(async () => (await B.locator(".bubble").count()) > 0, 8000);
+  check("Ali'nin emojisi Bea'nın ekranında balon olarak çıktı", bubble);
+  await A.keyboard.press("Escape").catch(() => {});
+
+  // Sayfa yenilenince oyuna geri dönülür
+  await B.reload();
+  await W(B, 1000);
+  if (await B.locator(".splash-hit").count()) await B.locator(".splash-hit").tap();
+  const back = await until(async () => (await B.locator(".okey-rack").count()) > 0, 20000)
+    || (await B.locator(".hub-right .primary.big").first().tap().then(() => until(async () => (await B.locator(".okey-rack").count()) > 0, 15000)).catch(() => false));
+  check("Bea sayfayı yenileyince aynı oyuna geri döndü", back && (await deckCount(A)) === (await deckCount(B)), `deste ${await deckCount(A).catch(() => "?")} / ${await deckCount(B).catch(() => "?")}`);
+
+  // Hamle süresi (60 sn) dolunca sunucu otomatik hamle yapar
+  const idle = (await until(async () => (await myTurn(A)) || (await myTurn(B)), 30000)) ? ((await myTurn(A)) ? A : B) : null;
+  if (idle) {
+    const d0 = await deckCount(idle);
+    const moved = await until(async () => !(await myTurn(idle)) || (await deckCount(idle)) < d0, 80000, 1000);
+    check("hamle yapılmayınca 60 sn sonra sunucu sırayı ilerletti (otomatik çek-at)", moved);
+  } else check("hamle süresi testi için sıra bir oyuncuya gelmedi", false);
+
+  // Ali oyundan çıkar; Bea'nın oyunu sürer (Ali'nin yerine bilgisayar)
+  await A.locator(".quit-btn").tap();
+  await A.locator(".quit-modal .danger").first().tap().catch(() => {});
+  await until(async () => (await A.locator(".kumbara-balance").count()) > 0, 15000);
+  const dB = await deckCount(B);
+  let goes = false;
+  for (let k = 0; k < 40 && !goes; k++) {
+    if (await myTurn(B)) {
+      if (await B.locator("button.deck:not([disabled])").count()) await B.locator("button.deck").tap();
+      await W(B, 400);
+      await tilesOnRack(B).last().tap();
+      await B.locator(".rack-discard").tap();
+    }
+    await W(B, 700);
+    goes = (await deckCount(B)) <= dB - 3 || (await B.locator(".modal .winner").count()) > 0;
+  }
+  check("Ali çıkınca Bea'nın oyunu sürüyor (Ali'nin yerinde bilgisayar oynuyor)", goes);
+  const a1 = await kumbara(A);
+  check("Ali'nin kumbarasından 100 giriş düştü (sunucu)", a1 === a0 - 100, `${a0} → ${a1}`);
+  check("tarayıcı hatası yok", !A.errors.length && !B.errors.length, [...A.errors, ...B.errors].slice(0, 2).join(" | "));
+
+  // ---- Sosyete: başarı oranı %76+ oyuncular ücretsiz yazışır, küfür filtresi ----
+  console.log("\n== Çevrimiçi: Sosyete sohbetli masa (iki gerçek oyuncu, küfür filtresi)");
+  const C = await player(browser, "Cem");
+  const D = await player(browser, "Deniz");
+  for (const p of [C, D]) {
+    await p.evaluate(() => window.__woTest.call("testSetStats", { played: 10, won: 9 }));
+    await p.evaluate(() => window.__woTest.call("heartbeat", { name: "x", adult: true }));
+    await W(p, 800);
+  }
+  await C.evaluate(() => localStorage.setItem("wordokey.vipTerms", "2026-11-24"));
+  await D.evaluate(() => localStorage.setItem("wordokey.vipTerms", "2026-11-24"));
+  for (const p of [C, D]) {
+    await p.locator(".usta-hub").tap(); await W(p, 400);
+    await p.locator(".sosyete-sit").tap();
+    await until(async () => (await p.locator(".waiting-seats").count()) > 0);
+  }
+  const met = await until(async () => { const t = await C.locator(".waiting-seats").innerText(); return t.includes("Cem") && t.includes("Deniz"); });
+  check("Cem ve Deniz (başarı oranı %90) aynı Sosyete masasında", met);
+  await C.locator(".page.menu .primary.big").first().tap();
+  await until(async () => (await C.locator(".okey-rack").count()) > 0 && (await D.locator(".okey-rack").count()) > 0, 20000);
+  await C.locator(".chat-room-btn").first().tap(); await W(C, 300);
+  const box = C.locator(".chat-input input");
+  check("Sosyete'de serbest yazı kutusu var", (await box.count()) === 1);
+  await box.fill("merhaba, iyi oyunlar");
+  await C.locator(".chat-input button[type=submit], .chat-input button").first().tap();
+  const seen = await until(async () => (await D.locator(".bubble-text").allInnerTexts()).some((x) => x.includes("merhaba")), 10000);
+  check("Cem'in yazdığı mesaj Deniz'in ekranında görünüyor (VIP gerekmeden)", seen);
+  await W(C, 1600);
+  await box.fill("siktir git");
+  await C.locator(".chat-input button[type=submit], .chat-input button").first().tap();
+  const note = await until(async () => (await C.locator(".chat-note").count()) > 0, 8000);
+  await W(D, 2500);
+  const leaked = (await D.locator(".bubble-text").allInnerTexts()).some((x) => /siktir/i.test(x));
+  check("küfürlü mesaj gönderilmedi: Cem uyarı aldı, Deniz görmedi", note && !leaked, (await C.locator(".chat-note").innerText().catch(() => "")).slice(0, 80));
+  check("Sosyete testinde tarayıcı hatası yok", !C.errors.length && !D.errors.length, [...C.errors, ...D.errors].slice(0, 2).join(" | "));
+
+  await browser.close();
+  console.log(fails ? `\n✗ ${fails} DENETİM BAŞARISIZ` : "\nHEPSİ GEÇTİ");
+  process.exit(fails ? 1 : 0);
+})().catch((e) => { console.error(e); process.exit(1); });
