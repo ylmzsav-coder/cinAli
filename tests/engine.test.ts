@@ -597,3 +597,22 @@ describe("işleme (yerdeki kelimeye harf ekleme) denetimi", () => {
     expect(o.table[k].tiles[1].tile.letter).toBe(null);
   });
 });
+
+describe("bütün masaların giriş ve ödülleri", () => {
+  it("VIP, Teke Tek, Sosyete, Çayhane: giriş, birinciye ödül, kaybedene 0, eşitlikte paylaşım", () => {
+    const want: Record<string, [number, number, number]> = {
+      caylak: [100, 400, 4], usta: [500, 2000, 4], usta2: [1000, 4000, 4], usta5: [5000, 20000, 4],
+      ozel2: [100, 200, 2], ozel2u: [250, 500, 2], ozel2b: [500, 1000, 2], vip2: [100, 200, 2],
+    };
+    expect(TABLES.map((x) => x.id).sort()).toEqual(Object.keys(want).sort());
+    for (const tb of TABLES) {
+      const [entry, prize, n] = want[tb.id];
+      expect([tb.id, tb.entry, winnerPrize(tb), tb.players ?? 4]).toEqual([tb.id, entry, prize, n]);
+      const win = Array.from({ length: n }, (_, i) => (i === 0 ? 150 : 20));
+      expect(payout(tb, win, 0, 0)).toBe(prize);
+      expect(payout(tb, win, 1, 0)).toBe(0);
+      const tie = Array.from({ length: n }, (_, i) => (i < 2 ? 150 : 20));
+      expect(payout(tb, tie, 0, 0)).toBe(Math.floor(prize / 2));
+    }
+  });
+});
