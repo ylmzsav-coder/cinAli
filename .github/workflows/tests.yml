@@ -60,6 +60,6 @@ jobs:
       - run: npm run build
       - name: Oyunu başlat ve denetle (masalar, ödemeler, tam oyun, 7 dil × 4 ekran, ayarlar)
         run: |
-          npx vite preview --port 4173 --strictPort &
+          npx vite preview --host 127.0.0.1 --port 4173 --strictPort &
           for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
           node tests/e2e/run.cjs
