@@ -1592,3 +1592,12 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .okey .topbar-opp { padding: 0 !important; overflow: visible; }
 .okey .topbar-opp > .opp-compact { border: 2px solid rgba(255, 255, 255, 0.18); border-radius: 10px; transition: border-color 0.2s, box-shadow 0.2s; }
 .okey .topbar-opp > .opp-compact.active { border: 3px solid #3ddc6a; box-shadow: 0 0 10px rgba(61, 220, 106, 0.55); }
+/* Sol üstteki masa adı: siyah zeminli kutu (düğme değil, yalnızca etiket) */
+.okey .topbar > .title {
+  justify-self: start; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px;
+  background: linear-gradient(#1c1c1c, #050505); border: 1px solid rgba(255, 213, 79, 0.45); border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 6px rgba(0, 0, 0, 0.4);
+  color: #ffe082; letter-spacing: 0.02em; cursor: default; user-select: none; pointer-events: none;
+}
+@media (max-width: 800px) { .okey .topbar > .title { height: 32px; padding: 0 8px; } }
+@media (max-width: 800px) { .okey .topbar > .title { font-size: 0.72rem !important; } .okey .topbar > .title .title-ico svg { width: 1em; height: 1em; } }
