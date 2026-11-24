@@ -73,7 +73,7 @@ export const testPurchase = onCall(async (req) => {
   const uid = uidOf(req);
   if (!IS_EMULATOR) fail("storeSoon");
   const chips = Number(req.data?.chips);
-  if (![1_000, 5_000, 15_000].includes(chips)) fail("badRequest", {}, "invalid-argument");
+  if (![1_000, 5_000, 15_000, 30_000, 50_000, 100_000].includes(chips)) fail("badRequest", {}, "invalid-argument");
   return db.runTransaction(async (t) => {
     const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
     if (!w) return fail("noWallet");

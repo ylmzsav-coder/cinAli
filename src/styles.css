@@ -1492,3 +1492,5 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .profile-modal .settings-head { background: rgba(0, 0, 0, 0.22); }
 .profile-modal .muted { color: rgba(255, 255, 255, 0.82); }
 .profile-modal .switch { box-shadow: 0 0 0 2px rgba(255,255,255,0.55); } .profile-modal .switch.on { background: #1b5e20; }
+.packs { grid-template-columns: repeat(3, 1fr); } .pack-badge.best { background: linear-gradient(#ffd54f, #ff9800); color: #3b2500; }
+@media (max-width: 520px) { .packs { grid-template-columns: repeat(2, 1fr); } }

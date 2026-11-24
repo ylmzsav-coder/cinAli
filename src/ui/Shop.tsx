@@ -3,7 +3,7 @@ import { VipModal } from "./Vip";
 import { VIP_PRODUCT } from "../economy/store";
 import { VIP_BONUS_CHIPS } from "../economy/config";
 import { useState } from "react";
-import { CHIP_PACKS, TEST_MODE, adsAvailable, buyPack, purchasesAvailable, restorePurchases, showRewardedAd } from "../economy/store";
+import { CHIP_PACKS, TEST_MODE, adsAvailable, buyPack, packSaving, purchasesAvailable, restorePurchases, showRewardedAd } from "../economy/store";
 import { PurchaseConsent } from "./Terms";
 import { salesConsented } from "../terms";
 import { useWallet } from "../economy/useWallet";
@@ -84,7 +84,11 @@ export function Shop({ onBack, notice }: { onBack: () => void; notice?: string |
       <div className="packs">
         {CHIP_PACKS.map((p) => (
           <div key={p.productId} className="pack">
-            {p.badge && <span className="pack-badge">{t(p.badge)}</span>}
+            {(p.badge || packSaving(p) > 0) && (
+              <span className={`pack-badge ${p.badge === "badge_best" ? "best" : ""}`}>
+                {p.badge ? t(p.badge) : ""}{p.badge && packSaving(p) > 0 && p.badge !== "badge_popular" ? " · " : ""}{packSaving(p) > 0 && p.badge !== "badge_popular" ? t("badge_save", { n: packSaving(p) }) : ""}
+              </span>
+            )}
             <Chips amount={p.chips} big />
             <button type="button" className="primary" disabled={!purchasesAvailable() || !!busy || !consent}
               title={!consent ? t("consentNeeded") : undefined} onClick={() => buy(p.productId)}>

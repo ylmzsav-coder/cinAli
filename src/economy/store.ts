@@ -15,15 +15,21 @@ export interface ChipPack {
   chips: number;
   /** Gerçek fiyat mağazadan gelir; bu yalnızca test modunda gösterilir. */
   testPrice: string;
+  /** Liste fiyatı (TL): indirim oranı bununla, en küçük paketin çip başı fiyatına göre hesaplanır. */
+  priceTry: number;
   /** Rozet çeviri anahtarı. */
   badge?: "badge_popular" | "badge_bonus" | "badge_best";
 }
 
 export const CHIP_PACKS: ChipPack[] = [
   // Masa girişi 100 çip: 1.000 çip = 10 oyun
-  { productId: "wordokey_cip_1k", chips: 1_000, testPrice: "₺ 29,99" },
-  { productId: "wordokey_cip_5k", chips: 5_000, testPrice: "₺ 119,99", badge: "badge_popular" },
-  { productId: "wordokey_cip_15k", chips: 15_000, testPrice: "₺ 299,99", badge: "badge_bonus" },
+  { productId: "wordokey_cip_1k", chips: 1_000, testPrice: "₺ 29,99", priceTry: 29.99 },
+  { productId: "wordokey_cip_5k", chips: 5_000, testPrice: "₺ 119,99", priceTry: 119.99, badge: "badge_popular" },
+  { productId: "wordokey_cip_15k", chips: 15_000, testPrice: "₺ 299,99", priceTry: 299.99 },
+  // Büyük paketler: paket büyüdükçe çip başı fiyat düşer (1.000'lik pakete göre %39 / %43 / %50 avantaj)
+  { productId: "wordokey_cip_30k", chips: 30_000, testPrice: "₺ 549,99", priceTry: 549.99 },
+  { productId: "wordokey_cip_50k", chips: 50_000, testPrice: "₺ 849,99", priceTry: 849.99 },
+  { productId: "wordokey_cip_100k", chips: 100_000, testPrice: "₺ 1.499,99", priceTry: 1499.99, badge: "badge_best" },
 ];
 
 /**
@@ -96,4 +102,10 @@ export async function restorePurchases(): Promise<{ vip: boolean; autoPer: boole
   if (!TEST_MODE) throw Object.assign(new Error("storeSoon"), { code: "storeSoon" });
   await wait(600);
   return { vip: false, autoPer: ownsAutoPer() };
+}
+
+/** Paketin, en küçük paketin çip başı fiyatına göre yüzde kaç avantajlı olduğu (tam sayı). */
+export function packSaving(p: ChipPack): number {
+  const base = CHIP_PACKS[0].priceTry / CHIP_PACKS[0].chips;
+  return Math.max(0, Math.round((1 - p.priceTry / p.chips / base) * 100));
 }

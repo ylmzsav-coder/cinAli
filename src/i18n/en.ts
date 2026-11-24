@@ -514,6 +514,7 @@ const en: Messages = {
   ageTooYoung: "Word Okey is not suitable for children under {n}.",
   continue: "Continue",
   vipAdultOnly: "VIP Room chat is for ages 18 and up.",
+  badge_save: "{n}% off",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

@@ -514,6 +514,7 @@ const es: Messages = {
   ageTooYoung: "Word Okey no es adecuado para menores de {n} años.",
   continue: "Continuar",
   vipAdultOnly: "El chat de la Sala VIP es para mayores de 18 años.",
+  badge_save: "-{n} %",
   close: "Cerrar",
   handCol: "Mano",
   totalRow: "Total",
