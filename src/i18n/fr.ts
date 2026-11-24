@@ -72,7 +72,7 @@ const fr: Messages = {
   feedbackEmpty: "Veuillez écrire un message.",
   "err.feedbackLimit": "Vous pouvez envoyer au maximum {n} messages par jour.",
   welcomeTitle: "Bienvenue !",
-  welcomeText: "Nous t'offrons {chips} jetons, de quoi jouer {games} parties. Commence tout de suite à la table Débutant.",
+  welcomeText: "Nous t'offrons {chips} jetons, de quoi jouer {games} parties. Commence tout de suite à la table Salon de thé.",
   welcomePlay: "Jouer",
   welcomeOk: "Merci",
   closeGame: "Fermer le jeu",

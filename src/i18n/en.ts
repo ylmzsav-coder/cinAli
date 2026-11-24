@@ -72,7 +72,7 @@ const en: Messages = {
   feedbackEmpty: "Please write a message.",
   "err.feedbackLimit": "You can send at most {n} messages a day.",
   welcomeTitle: "Welcome!",
-  welcomeText: "We've given you {chips} chips, enough for {games} games. Start playing at the Rookie table right away.",
+  welcomeText: "We've given you {chips} chips, enough for {games} games. Start playing at the Tea House table right away.",
   welcomePlay: "Play now",
   welcomeOk: "Thanks",
   closeGame: "Close game",

@@ -73,7 +73,7 @@ const tr = {
   feedbackEmpty: "Lütfen bir mesaj yazın.",
   "err.feedbackLimit": "Bugün en fazla {n} mesaj gönderebilirsiniz.",
   welcomeTitle: "Hoş geldin!",
-  welcomeText: "Sana {games} oyunluk {chips} çip hediye ettik. Çaylak masasında hemen oynamaya başlayabilirsin.",
+  welcomeText: "Sana {games} oyunluk {chips} çip hediye ettik. Çayhane masasında hemen oynamaya başlayabilirsin.",
   welcomePlay: "Hemen oyna",
   welcomeOk: "Teşekkürler",
   closeGame: "Oyunu kapat",

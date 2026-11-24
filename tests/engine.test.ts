@@ -395,10 +395,10 @@ describe("Türkçe sözlükte küfür yok", () => {
 
 import { WELCOME_CHIPS, WELCOME_GAMES } from "../src/economy/config";
 describe("hoş geldin hediyesi", () => {
-  it("500 çip = masada 5 oyunluk çip", () => {
-    expect(WELCOME_CHIPS).toBe(500);
-    expect(WELCOME_GAMES).toBe(5);
-    expect(WELCOME_CHIPS).toBe(WELCOME_GAMES * TABLES[0].entry);
+  it("999 çip = Çayhane'de 9 oyunluk çip", () => {
+    expect(WELCOME_CHIPS).toBe(999);
+    expect(WELCOME_GAMES).toBe(9);
+    expect(Math.floor(WELCOME_CHIPS / TABLES[0].entry)).toBe(WELCOME_GAMES);
   });
 });
 

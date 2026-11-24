@@ -26,8 +26,8 @@ export const VIP_USTA_PRIZE = 1_000;
 export const VIP_ORTA_ENTRY = 250;
 export const VIP_ORTA_PRIZE = 500;
 /** Yeni oyuncuya hoş geldin hediyesi: 5 oyunluk çip. */
-export const WELCOME_GAMES = 5;
-export const WELCOME_CHIPS = 500;
+export const WELCOME_GAMES = 9;
+export const WELCOME_CHIPS = 999;
 export const DAILY_BONUS = 100;
 /** VIP abonelik: haftalık, abone olana hediye çip; VIP masa yalnızca abonelere açık. */
 export const VIP_BONUS_CHIPS = 1_000;

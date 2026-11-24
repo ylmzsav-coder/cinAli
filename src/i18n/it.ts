@@ -72,7 +72,7 @@ const it: Messages = {
   feedbackEmpty: "Scrivi un messaggio.",
   "err.feedbackLimit": "Puoi inviare al massimo {n} messaggi al giorno.",
   welcomeTitle: "Benvenuto!",
-  welcomeText: "Ti regaliamo {chips} gettoni, abbastanza per {games} partite. Inizia subito al tavolo Principiante.",
+  welcomeText: "Ti regaliamo {chips} gettoni, abbastanza per {games} partite. Inizia subito al tavolo Sala da tè.",
   welcomePlay: "Gioca ora",
   welcomeOk: "Grazie",
   closeGame: "Chiudi il gioco",
