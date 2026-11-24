@@ -103,7 +103,7 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
 /**
  * İki kişilik oda giriş ekranı (Özel Oda ve VIP): Çaylak/Usta bekleme masasıyla
  * aynı görünüm. Ortada giriş seçimi ve Rastgele oyuncu / Arkadaşla oyna /
- * Bilgisayara karşı oyna düğmeleri; VIP'te ayrıca Bayan / Erkek oyuncu ara.
+ * Bilgisayara karşı oyna düğmeleri; VIP'te ayrıca Bayan / Bay oyuncu ara.
  */
 /** Sosyete: dört kişilik yüksek girişli masalar (500 → 2.000, 1.000 → 4.000, 5.000 → 20.000). */
 export function SosyeteLobby({ name, onClose, onPick }: { name: string; onClose: () => void; onPick: (tb: TableConfig) => void }) {
