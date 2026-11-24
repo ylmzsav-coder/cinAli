@@ -56,7 +56,7 @@ export class Dictionary {
 
   /**
    * İki harfli kelimeler: dilin listesi varsa yalnızca listedekiler (Türkçe: AK,
-   * EL, ON, Lİ…); yoksa biri sesli, biri sessiz harf olan her ikili. Oyuncu elinde
+   * EL, ON, İŞ…); yoksa biri sesli, biri sessiz harf olan her ikili. Oyuncu elinde
    * son taşlarla kalınca bitirebilsin diye.
    */
   isTwoLetter(word: string): boolean {
