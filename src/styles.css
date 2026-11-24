@@ -1626,3 +1626,9 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
   .vip-lobby .two-choices button, .vip-lobby .vip-search-row .vip-search-btn { padding: 5px 4px; font-size: 0.8rem; }
   .vip-lobby .vip-opp-note { font-size: 0.64rem; }
 }
+
+/* Kurallar: masalar ve ücretler tablosu */
+.fee-wrap { overflow-x: auto; }
+.fee-table { width: 100%; max-width: 720px; border-collapse: collapse; font-size: 0.92rem; }
+.fee-table th, .fee-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.15); white-space: nowrap; }
+.fee-table th { font-weight: 800; color: #ffe082; }

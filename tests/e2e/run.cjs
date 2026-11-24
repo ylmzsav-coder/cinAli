@@ -76,7 +76,7 @@ const TABLES = [
         const b0 = await bal(p);
         await tb.open(p); await W(p, 1200);
         const g = await game(p); const b1 = await bal(p);
-        await p.evaluate((w) => { const g = JSON.parse(localStorage.getItem("cinali.game")); g.state.history = [g.state.players.map((_, i) => (i === (w ? 0 : 1) ? 150 : 20))]; g.state.results = [{ winner: w ? 0 : 1, colorWin: null }]; g.state.phase = "gameOver"; g.state.handNo = g.state.totalHands; localStorage.setItem("cinali.game", JSON.stringify(g)); }, win);
+        await p.evaluate((w) => { const g = JSON.parse(localStorage.getItem("cinali.game")); g.state.history = [g.state.players.map((_, i) => (i === (w ? 0 : 1) ? 150 : 20))]; g.state.results = [{ winner: w ? 0 : 1, colorWin: null }]; g.state.phase = "gameOver"; g.state.handNo = g.state.totalHands; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); }; }, win);
         await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
         const b2 = await bal(p);
         check(`${tb.name} ${win ? "kazanınca" : "kaybedince"}`, g?.state.players.length === tb.n && b0 - b1 === tb.entry && b2 - b1 === (win ? tb.prize : 0),
@@ -97,7 +97,7 @@ const TABLES = [
         g.state.results = [{ winner: null, colorWin: null }];
         g.state.lastResult = { winner: null, colorWin: null, scores: g.state.history[0], reason: "deckEmpty" };
         g.state.phase = "gameOver"; g.state.handNo = g.state.totalHands;
-        localStorage.setItem("cinali.game", JSON.stringify(g));
+        localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); };
       });
       await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
       if (await p.locator(".hub-right .primary.big").count()) { await p.locator(".hub-right .primary.big").first().tap(); await W(p, 800); }
@@ -121,7 +121,7 @@ const TABLES = [
   {
     const p = await fresh(browser, "Pixel 7 landscape", { balance: 1000 });
     await TABLES[0].open(p); await W(p, 1000);
-    await p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); g.state.players[0].isBot = true; localStorage.setItem("cinali.game", JSON.stringify(g)); });
+    await p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); g.state.players[0].isBot = true; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); }; });
     await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
     await p.locator(".hub-right .primary.big").first().tap();
     let g;
@@ -212,7 +212,7 @@ const TABLES = [
           const g = JSON.parse(localStorage.getItem("cinali.game")); const s = g.state;
           const me = s.players.findIndex((x) => !x.isBot); const tpl = s.players[me].rack.find((x) => x.letter !== null);
           s.players[me].rack = [...word].map((ch, i) => ({ ...tpl, id: 9000 + i, letter: ch }));
-          s.current = me; s.phase = "play"; localStorage.setItem("cinali.game", JSON.stringify(g));
+          s.current = me; s.phase = "play"; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); };
         }, word);
         await p.reload(); await W(p, 900);
         if (await p.locator(".splash-hit").count()) { await p.locator(".splash-hit").tap(); await W(p, 400); }
@@ -224,6 +224,15 @@ const TABLES = [
       }
     }
     check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
+  }
+
+  console.log("\n== 6. Kurallar sayfası: 7 dilde masa/ücret tablosu ve güncel kurallar");
+  for (const lang of LANGS) {
+    const p = await fresh(browser, "iPhone SE landscape", { lang });
+    await p.locator(".hub-right button").filter({ hasText: /📖/ }).first().tap(); await W(p, 400);
+    const r = await p.evaluate(() => ({ rows: document.querySelectorAll(".fee-table tbody tr").length, items: document.querySelectorAll("ol.rules li").length, hscroll: document.documentElement.scrollWidth > innerWidth + 2, raw: /\{[a-z]+\}/.test(document.body.innerText) }));
+    check(`Kurallar (${lang}): 15 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 15 && !r.hscroll && !r.raw, JSON.stringify(r));
+    await p.context().close();
   }
 
   await browser.close();
