@@ -920,6 +920,9 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             <button type="button" className="name-btn" onClick={() => setProfileSeat(i)}>{p.name}</button>
           )}{" "}
           <span className="muted">({seatLabel(i)})</span>
+          {!compact && tableId?.startsWith("vip") && !p.isBot && (
+            <span className={`opp-vip ${vipSeats[i] ? "on" : ""}`}>{vipSeats[i] ? `👑 ${t("oppVip")}` : t("oppNotVip")}</span>
+          )}
         </div>
         {menuSeat === i && playerMenu && (
           <div className="player-menu" role="menu">
@@ -1004,7 +1007,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         </div>
       </header>
       {profileSeat !== null && (
-        <SeatStatsModal state={state} seat={profileSeat} vip={!!vipSeats[profileSeat]} onClose={() => setProfileSeat(null)}
+        <SeatStatsModal state={state} seat={profileSeat} vip={!!vipSeats[profileSeat]} vipRoom={!!tableId?.startsWith("vip")} onClose={() => setProfileSeat(null)}
           onAddFriend={playerMenu?.addFriend && playerMenu.available(profileSeat) ? () => addFriendAt(profileSeat) : undefined}
           onGift={canGift(profileSeat) ? () => setGiftSeat(profileSeat) : undefined} />
       )}

@@ -376,27 +376,44 @@ export const joinTable = onCall(async (req) => {
     };
     let candidate: FirebaseFirestore.QueryDocumentSnapshot | undefined;
     for (const d of open.docs) if (await free(d)) { candidate = d; break; }
-    // VIP oyuncu yoksa: aynı girişli 2 kişilik Özel Odada bekleyen oyuncuyla eşleş.
-    // Özel oda oyuncusundan abonelik istenmez; masa VIP masasına dönüşür (sohbetli, süresiz).
+    // VIP oyuncu yoksa sırayla: Teke Tek (aynı girişli 2 kişilik masa) → Sosyete → Çayhane.
+    // Orada tek başına bekleyen oyuncuyla eşleşilir; ondan abonelik istenmez, masa VIP
+    // masasına dönüşür (sohbetli, süresiz). Daha pahalı masadan gelenin giriş farkı iade edilir.
+    // 18 yaş altı oyuncu VIP odaya (sohbet) alınmaz.
     let fromOzel = false;
+    let movedRefund: { uid: string; wallet: WalletDoc; amount: number } | null = null;
     if (cfg.vip && !candidate) {
-      const ozelTypes = TABLES.filter((x) => !x.vip && x.players === 2 && x.entry === cfg.entry).map((x) => x.id);
-      for (const oz of ozelTypes) {
-        const os = await t.get(db.collection("tables").where("status", "==", "waiting").where("private", "==", false)
-          .where("type", "==", oz).where("lang", "==", lang).where("startAt", ">", now + 500).limit(5));
-        candidate = undefined;
-        for (const d of os.docs) {
-          const tb = d.data() as TableDoc;
-          if (tb.seats.length < 2 && !tb.uids.includes(uid) && !(await blockedWithAny(uid, tb.uids))) { candidate = d; break; }
-        }
-        if (candidate) {
-          fromOzel = true;
-          break;
+      const tiers = [
+        TABLES.filter((x) => !x.vip && x.players === 2 && x.entry === cfg.entry).map((x) => x.id),
+        TABLES.filter((x) => x.id.startsWith("usta") && x.entry >= cfg.entry).map((x) => x.id),
+        TABLES.filter((x) => x.id === "caylak" && x.entry >= cfg.entry).map((x) => x.id),
+      ];
+      search: for (const types of tiers) {
+        for (const oz of types) {
+          const os = await t.get(db.collection("tables").where("status", "==", "waiting").where("private", "==", false)
+            .where("type", "==", oz).where("lang", "==", lang).where("startAt", ">", now + 500).limit(5));
+          for (const d of os.docs) {
+            const tb = d.data() as TableDoc;
+            // Yalnızca tek başına bekleyen gerçek oyuncu (başka oyuncuların masası bozulmaz)
+            if (tb.seats.length !== 1 || tb.seats[0].bot || tb.uids.includes(uid) || (await blockedWithAny(uid, tb.uids))) continue;
+            const other = tb.seats[0].uid!;
+            if ((await t.get(userRef(other))).data()?.adult === false) continue;
+            const diff = (configFor(oz).entry ?? 0) - cfg.entry;
+            if (diff > 0) {
+              const ow = (await t.get(walletRef(other))).data() as WalletDoc | undefined;
+              if (!ow) continue;
+              movedRefund = { uid: other, wallet: ow, amount: diff };
+            }
+            candidate = d;
+            fromOzel = true;
+            break search;
+          }
         }
       }
     }
 
     applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
+    if (movedRefund) applyTx(t, movedRefund.uid, movedRefund.wallet, movedRefund.amount, "iade", cfg.id);
     let id: string;
     if (candidate) {
       id = candidate.id;

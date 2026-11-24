@@ -388,7 +388,7 @@ function GamesBar({ s }: { s: PlayerStats }) {
 }
 
 /** Masadaki bir oyuncunun bu oyundaki istatistikleri. */
-export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip = false }: { state: GameState; seat: number; onClose: () => void; onAddFriend?: () => void; onGift?: () => void; vip?: boolean }) {
+export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip = false, vipRoom = false }: { state: GameState; seat: number; onClose: () => void; onAddFriend?: () => void; onGift?: () => void; vip?: boolean; vipRoom?: boolean }) {
   if (seat === 0) return <MyStatsModal name={state.players[0].name} onClose={onClose} standalone />;
   const p = state.players[seat];
   const sums = totals(state);
@@ -409,6 +409,7 @@ export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip 
           <Avatar name={p.name} seat={seat} size="lg" vip={vip} />
           <div className="profile-name">{p.name}</div>
           {vip && <div className="vip-badge-line">👑 {t("vipBadge")}</div>}
+          {vipRoom && !vip && !p.isBot && <div className="opp-vip">{t("oppNotVip")}</div>}
           <div className="muted small">{p.isBot ? t("computerPlayer") : t("thisGame")}</div>
         </div>
         <div className="profile-summary">

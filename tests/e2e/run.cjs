@@ -188,6 +188,14 @@ const TABLES = [
   {
     const p = await fresh(browser, "Pixel 7 landscape");
     const pick = (n) => TABLES.find((x) => x.name === n);
+    for (const d of ["Pixel 7 landscape", "iPhone SE landscape", "Galaxy S8 landscape"]) {
+      const q = await fresh(browser, d);
+      await q.locator(".vip-hub").tap(); await W(q, 400);
+      const r = await q.evaluate(() => { const g = (s) => document.querySelector(s).getBoundingClientRect(); const a = g(".vip-search-seat"), i = g(".lobby-info"), m = g(".lobby-me"); return { top: i.top - a.bottom, bot: m.top - i.bottom, note: !!document.querySelector(".vip-opp-note") }; });
+      check(`VIP lobi (${d}): "rakip VIP olmak zorunda değil" notu var, başlık ve oyuncu rozetiyle çakışmıyor`, r.note && r.top >= 0 && r.bot >= 0, JSON.stringify(r));
+      await q.context().close();
+    }
+
     const WORDS = [["EK", 20], ["SÜT", 72], ["KUZU", 93], ["KZAL", null]];
     for (const tb of [pick("VIP"), pick("Teke Tek 100"), pick("Çayhane"), pick("Sosyete 500")]) {
       const pro = tb.name.startsWith("Sosyete");

@@ -189,6 +189,7 @@ export function TwoLobby({ vip = false, name, gender, onGender, onClose, onPick,
               </div>
             )}
             <TwoPlayerChoices onRandom={() => onPick(tb, "random")} onFriend={() => onPick(tb, "friend")} onBot={() => onPick(tb, "bot")} />
+            {vip && <p className="vip-opp-note">ℹ️ {t("vipOppNote")}</p>}
           </div>
         </div>
       </div>

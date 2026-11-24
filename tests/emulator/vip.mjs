@@ -143,6 +143,59 @@ const zv = await Z2.call("joinTable", { type, lang: "en", name: "Zara", gender: 
 const zt = (await getDoc(doc(Z1.db, "tables", zo.tableId))).data();
 check("VIP yoksa Özel Oda oyuncusuyla eşleşir", zv.tableId === zo.tableId && zt.status === "playing" && zt.type === "vip2" && zt.deadline === null, zt.seats.map((x) => x.name).join(" vs ") + " · " + zt.type);
 check("Özel Oda oyuncusu (abonesiz) sohbet edebilir", (await Z1.call("sendText", { tableId: zo.tableId, text: "merhaba", uiLang: "tr" })).ok === true);
+// VIP ve Teke Tek boşsa: Sosyete'de, o da yoksa Çayhane'de tek başına bekleyen oyuncuyla eşleşir
+const tbl = async (c, id) => (await getDoc(doc(c.db, "tables", id))).data();
+{
+  const S1 = await client("Sefa"), V1 = await client("Vedat");
+  await V1.call("testSubscribeVip");
+  const s0 = (await S1.wallet()).balance;
+  const sj = await S1.call("joinTable", { type: "usta", lang: "de", name: "Sefa" });
+  const vj = await V1.call("joinTable", { type, lang: "de", name: "Vedat" });
+  const st = await tbl(S1, sj.tableId);
+  check("Teke Tek boşsa Sosyete'de bekleyen oyuncuyla eşleşir", vj.tableId === sj.tableId && st.type === "vip2" && st.status === "playing" && st.seats.length === 2 && st.seats.every((x) => !x.bot) && st.deadline === null, `${st.type} · ${st.seats.map((x) => x.name).join(" vs ")}`);
+  const s1 = (await S1.wallet()).balance;
+  check("Sosyete oyuncusuna giriş farkı iade edilir (500 − 100 = 400)", s1 === s0 - 100, `${s0} → ${s1}`);
+  check("Sosyete'den gelen oyuncu (abonesiz) sohbet edebilir", (await S1.call("sendText", { tableId: sj.tableId, text: "merhaba", uiLang: "tr" })).ok === true);
+}
+{
+  const C1 = await client("Cemre"), V2 = await client("Veli");
+  await V2.call("testSubscribeVip");
+  const c0 = (await C1.wallet()).balance;
+  const cj = await C1.call("joinTable", { type: "caylak", lang: "fr", name: "Cemre" });
+  const vj = await V2.call("joinTable", { type, lang: "fr", name: "Veli", gender: "erkek", want: "kadin" });
+  const ct = await tbl(C1, cj.tableId);
+  check("Sosyete de boşsa en son Çayhane'de bekleyen oyuncuyla eşleşir", vj.tableId === cj.tableId && ct.type === "vip2" && ct.status === "playing" && ct.seats.length === 2, `${ct.type} · ${ct.seats.map((x) => x.name).join(" vs ")}`);
+  check("Çayhane oyuncusundan fazladan çip alınmaz (giriş 100 = VIP 100)", (await C1.wallet()).balance === c0 - 100);
+}
+{
+  // Sıra: Teke Tek → Sosyete → Çayhane
+  const P1 = await client("Pelin"), P2 = await client("Polat"), P3 = await client("Peri");
+  const VA = await client("Vusat"), VB = await client("Vildan"), VC = await client("Vecdi");
+  for (const v of [VA, VB, VC]) await v.call("testSubscribeVip");
+  const cj = await P3.call("joinTable", { type: "caylak", lang: "es", name: "Peri" });
+  const sj = await P2.call("joinTable", { type: "usta", lang: "es", name: "Polat" });
+  const oj = await P1.call("joinTable", { type: "ozel2", lang: "es", name: "Pelin" });
+  const a = await VA.call("joinTable", { type, lang: "es", name: "Vusat" });
+  const b = await VB.call("joinTable", { type, lang: "es", name: "Vildan" });
+  const c = await VC.call("joinTable", { type, lang: "es", name: "Vecdi" });
+  check("öncelik sırası: önce Teke Tek, sonra Sosyete, en son Çayhane", a.tableId === oj.tableId && b.tableId === sj.tableId && c.tableId === cj.tableId, JSON.stringify({ a: a.tableId === oj.tableId, b: b.tableId === sj.tableId, c: c.tableId === cj.tableId, ta: (await tbl(VA, a.tableId)).seats.map((x) => x.name), tb: (await tbl(VB, b.tableId)).seats.map((x) => x.name), tc: (await tbl(VC, c.tableId)).seats.map((x) => x.name) }));
+}
+{
+  // 18 yaş altı Çayhane oyuncusu VIP odaya alınmaz; iki kişinin beklediği Çayhane masası bozulmaz
+  const M1 = await client("Melih"), VM = await client("Vasfi");
+  await M1.call("heartbeat", { name: "Melih", adult: false });
+  await VM.call("testSubscribeVip");
+  const mj = await M1.call("joinTable", { type: "caylak", lang: "it", name: "Melih" });
+  const vj = await VM.call("joinTable", { type, lang: "it", name: "Vasfi" });
+  check("18 yaş altı oyuncu VIP odaya eşlenmez", vj.tableId !== mj.tableId && (await tbl(M1, mj.tableId)).type === "caylak", JSON.stringify({ same: vj.tableId === mj.tableId, m: await tbl(M1, mj.tableId).then((x) => [x.type, x.seats.map((y) => y.name)]), v: await tbl(VM, vj.tableId).then((x) => [x.type, x.seats.map((y) => y.name)]) }));
+  const D1 = await client("Duru"), D2 = await client("Doruk"), VD = await client("Vahit");
+  await VD.call("testSubscribeVip");
+  const d1 = await D1.call("joinTable", { type: "caylak", lang: "pt", name: "Duru" });
+  await D2.call("joinTable", { type: "caylak", lang: "pt", name: "Doruk" });
+  const vd = await VD.call("joinTable", { type, lang: "pt", name: "Vahit" });
+  const dt = await tbl(D1, d1.tableId);
+  check("iki kişinin beklediği Çayhane masası bozulmaz", vd.tableId !== d1.tableId && dt.type === "caylak" && dt.seats.length === 2);
+}
 const N = await client("Nur");
 const cj = await N.call("joinTable", { type: "caylak", lang, name: "Nur" });
 await N.call("startTable", { tableId: cj.tableId });
