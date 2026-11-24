@@ -5,7 +5,7 @@ import { connectFirestoreEmulator, doc, getDoc, getFirestore } from "firebase/fi
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from "firebase/functions";
 let ok = true;
 const check = (l, c, x = "") => { console.log(`${c ? "✓" : "✗"} ${l}${x ? " — " + x : ""}`); if (!c) ok = false; };
-const want = { caylak: [100, 4], usta: [100, 4], usta2: [1000, 4], usta5: [10000, 4], ozel2: [100, 2], ozel2u: [1000, 2], ozel2b: [10000, 2], vip2: [100, 2] };
+const want = { caylak: [100, 4], carli: [100, 4], carli2: [200, 4], carli3: [300, 4], usta: [100, 4], usta2: [1000, 4], usta5: [10000, 4], ozel2: [100, 2], ozel2u: [1000, 2], ozel2b: [10000, 2], vip2: [100, 2] };
 let k = 0;
 for (const [type, [entry, n]] of Object.entries(want)) {
   const app = initializeApp({ projectId: "demo-cinali", apiKey: "demo-key" }, "c" + k++);

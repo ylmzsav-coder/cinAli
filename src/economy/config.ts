@@ -5,6 +5,13 @@ export const TABLE_TURN_SECONDS = 60;
 export const VIP_TURN_SECONDS = 180;
 export const TABLE_ENTRY = 100;
 export const TABLE_PRIZE = 400;
+/** Çarli (4 kişi, başarı oranı %31+): 100 → 400, 200 → 800, 300 → 1.200. */
+export const CARLI_ENTRY = 100;
+export const CARLI_PRIZE = 400;
+export const CARLI_ORTA_ENTRY = 200;
+export const CARLI_ORTA_PRIZE = 800;
+export const CARLI_BUYUK_ENTRY = 300;
+export const CARLI_BUYUK_PRIZE = 1_200;
 /** Sosyete (ilk masa): giriş ve birinciye ödül. */
 export const USTA_ENTRY = 100;
 export const USTA_PRIZE = 400;

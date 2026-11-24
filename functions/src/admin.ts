@@ -119,8 +119,9 @@ export const adminResolve = onCall(async (req) => {
 });
 
 /** Oda grubu: Çayhane, Sosyete (usta*), Teke Tek (ozel*), VIP (vip*). */
-function roomOf(type: string): "caylak" | "sosyete" | "teketek" | "vip" | null {
+function roomOf(type: string): "caylak" | "carli" | "sosyete" | "teketek" | "vip" | null {
   if (type === "caylak") return "caylak";
+  if (type.startsWith("carli")) return "carli";
   if (type.startsWith("usta")) return "sosyete";
   if (type.startsWith("ozel")) return "teketek";
   if (type.startsWith("vip")) return "vip";
@@ -138,7 +139,7 @@ export const adminTableReport = onCall(async (req) => {
   const since = Date.now() - days * 86_400_000;
   const tables = await db.collection("tables").where("createdAt", ">=", since).get();
   const rooms: Record<string, { games: number; players: Set<string>; byType: Record<string, number> }> = {};
-  for (const name of ["caylak", "sosyete", "teketek", "vip"]) rooms[name] = { games: 0, players: new Set(), byType: {} };
+  for (const name of ["caylak", "carli", "sosyete", "teketek", "vip"]) rooms[name] = { games: 0, players: new Set(), byType: {} };
   for (const d of tables.docs) {
     const t = d.data();
     const room = roomOf(String(t.type ?? ""));
@@ -150,16 +151,17 @@ export const adminTableReport = onCall(async (req) => {
     for (const s of (t.seats as { uid: string | null; bot?: boolean }[]) ?? []) if (s.uid && !s.bot) r.players.add(s.uid);
   }
   const users = await db.collection("users").where("gamesPlayed", ">", 0).get();
-  let teke = 0, sosyete = 0;
+  let teke = 0, sosyete = 0, carli = 0;
   for (const u of users.docs) {
     const played = Number(u.data().gamesPlayed ?? 0), won = Number(u.data().gamesWon ?? 0);
     const rate = played > 0 ? Math.round((won / played) * 100) : 0;
+    if (rate >= 31) carli++;
     if (rate >= 50) teke++;
     if (rate >= 76) sosyete++;
   }
   return {
     days, since,
     rooms: Object.entries(rooms).map(([room, r]) => ({ room, games: r.games, players: r.players.size, byType: r.byType })),
-    rated: { players: users.size, teketek: teke, sosyete },
+    rated: { players: users.size, carli, teketek: teke, sosyete },
   };
 });

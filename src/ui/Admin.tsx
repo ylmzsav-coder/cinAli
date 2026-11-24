@@ -15,8 +15,8 @@ interface ChatLog { uid: string; name: string; banned: boolean; strikes: number;
 const CAT: Record<string, string> = { drugs: "💊 Uyuşturucu", weapons: "🔫 Silah", gambling: "🎰 Kumar", selling: "💰 Alım-satım", contact: "📵 İletişim/ödeme" };
 const when = (n: number | null) => (n ? new Date(n).toLocaleString("tr-TR") : "–");
 type Tab = "moderation" | "reports" | "review" | "banned" | "rooms";
-interface RoomReport { days: number; since: number; rooms: { room: string; games: number; players: number; byType: Record<string, number> }[]; rated: { players: number; teketek: number; sosyete: number } }
-const ROOM: Record<string, string> = { caylak: "🫖 Çayhane", sosyete: "🚘 Sosyete", teketek: "🎲 Teke Tek", vip: "👑 VIP Oda" };
+interface RoomReport { days: number; since: number; rooms: { room: string; games: number; players: number; byType: Record<string, number> }[]; rated: { players: number; carli: number; teketek: number; sosyete: number } }
+const ROOM: Record<string, string> = { caylak: "🫖 Çayhane", carli: "🎲 Çarli", sosyete: "🚘 Sosyete", teketek: "🎲 Fifty Cent", vip: "👑 VIP Oda" };
 
 export function Admin({ onBack }: { onBack: () => void }) {
   const [me, setMe] = useState<{ uid: string; admin: boolean } | null>(null);
@@ -117,7 +117,7 @@ export function Admin({ onBack }: { onBack: () => void }) {
                       ))}
                     </tbody>
                   </table>
-                  <p>Başarı oranı olan oyuncu: <b>{rooms.rated.players}</b> · Teke Tek şartını (%50) karşılayan: <b>{rooms.rated.teketek}</b> · Sosyete şartını (%76) karşılayan: <b>{rooms.rated.sosyete}</b></p>
+                  <p>Başarı oranı olan oyuncu: <b>{rooms.rated.players}</b> · Çarli şartını (%31) karşılayan: <b>{rooms.rated.carli}</b> · Fifty Cent şartını (%50) karşılayan: <b>{rooms.rated.teketek}</b> · Sosyete şartını (%76) karşılayan: <b>{rooms.rated.sosyete}</b></p>
                   <p className="muted small">Başlangıç: {when(rooms.since)}</p>
                 </>
               )}

@@ -10,6 +10,7 @@ import type { Gender } from "../storage";
 import { formatNumber, t } from "../i18n";
 import { Avatar } from "./Profile";
 import { Chips } from "./Chips";
+import { DiceIcon } from "./Dice";
 
 /** Bekleme süresi: bu sürede gelen olmazsa boş koltuklara bilgisayar oyuncuları oturur. */
 const WAIT_SECONDS = 10;
@@ -108,25 +109,29 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
  * Bilgisayara karşı oyna düğmeleri; VIP'te ayrıca Bayan / Bay oyuncu ara.
  */
 /** Sosyete: dört kişilik yüksek girişli masalar (100 → 400, 1.000 → 4.000, 10.000 → 40.000). */
-export function SosyeteLobby({ name, onClose, onPick }: { name: string; onClose: () => void; onPick: (tb: TableConfig) => void }) {
-  const ids = ["usta", "usta2", "usta5"] as const;
+export function SosyeteLobby({ name, onClose, onPick, room = "sosyete" }: { name: string; onClose: () => void; onPick: (tb: TableConfig) => void; room?: "sosyete" | "carli" }) {
+  // Aynı lobi Sosyete (3 masa, sohbetli) ve Çarli (3 masa) için kullanılır
+  const carli = room === "carli";
+  const ids = carli ? (["carli", "carli2", "carli3"] as const) : (["usta", "usta2", "usta5"] as const);
   const [id, setId] = useState<string>(ids[0]);
   const tb = tableById(id)!;
   // Giriş şartı: başarı oranı en az %76 (altındaki oyuncu bu masada oynayamaz)
   const me = myRate();
   const allowed = rateAllows(tb, me.rate);
   return (
-    <div className="lobby ozel-lobby sosyete-lobby">
+    <div className={`lobby ozel-lobby sosyete-lobby ${carli ? "carli-lobby" : ""}`}>
       <div className="lobby-felt">
         <button type="button" className="leave-round" onClick={onClose}>{t("leaveTableShort")}</button>
-        <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>🚘</span></span> {t("playUsta")}</div>
+        <div className="seat-top vip-search-seat">
+          {carli ? <><DiceIcon size="1.5em" /> {t("carliTitle")}</> : <><span className="vip-radar small" aria-hidden><span>🚘</span></span> {t("playUsta")}</>}
+        </div>
         <div className="lobby-me">
           <Avatar name={name} seat={0} size="md" vip={wallet.isVip()} />
           <span>{name}</span>
         </div>
         <div className="lobby-panel">
           <div className="lobby-info">
-            <div className="vip-chat-tag">💬 {t("sosyeteChat")}</div>
+            {!carli && <div className="vip-chat-tag">💬 {t("sosyeteChat")}</div>}
             <div className="vip-stake ozel-stake" role="radiogroup" aria-label={t("vipStake")}>
               {ids.map((k) => {
                 const x = tableById(k)!;

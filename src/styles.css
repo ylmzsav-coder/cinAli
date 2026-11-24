@@ -1680,3 +1680,15 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
   .ozel-lobby:not(.vip-lobby):not(.sosyete-lobby) .vip-search-seat { height: 40px; }
   .ozel-lobby:not(.vip-lobby):not(.sosyete-lobby) .lobby-panel { width: min(72%, 600px); }
 }
+
+/* Ana menü: Çarli düğmesi (iki zar) ve üçlü satır (Pratik, Mağaza, Kurallar) */
+.hub-row.hub-row3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+.hub-row3 .big { font-size: 0.95em; padding-left: 4px; padding-right: 4px; }
+.carli-top { display: inline-flex; align-items: center; gap: 6px; }
+.dice-icon { display: inline-block; vertical-align: middle; flex: none; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)); }
+/* Dar ekranda masa düğmelerinin yazıları taşmasın: alt alta kırılır */
+.hub-right .ozel-hub .ozel-top { flex-wrap: wrap; justify-content: center; white-space: normal; text-align: center; }
+@media (max-width: 760px) {
+  .hub-right .caylak-sub { font-size: 0.54em; white-space: nowrap; }
+  .hub-right .ozel-hub .ozel-top { font-size: 0.85em; }
+}

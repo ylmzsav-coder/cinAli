@@ -252,7 +252,7 @@ import { TABLES, payout, tableById, winnerPrize } from "../src/economy/tables";
 describe("çip ödemesi (ıstakayı ilk bitiren kazanır)", () => {
   const t = TABLES[0]; // Çayhane: giriş 100, birinciye 400
   it("giriş 100, birinci 300 çip alır", () => {
-    expect(TABLES.filter((x) => !x.vip).map((x) => x.id)).toEqual(["caylak", "usta", "usta2", "usta5", "ozel2", "ozel2u", "ozel2b"]);
+    expect(TABLES.filter((x) => !x.vip).map((x) => x.id)).toEqual(["caylak", "carli", "carli2", "carli3", "usta", "usta2", "usta5", "ozel2", "ozel2u", "ozel2b"]);
     const ozel = TABLES.find((x) => x.id === "ozel2")!;
     expect([ozel.players, ozel.entry, winnerPrize(ozel)]).toEqual([2, 100, 200]);
     const usta = TABLES.find((x) => x.id === "usta")!;
@@ -437,7 +437,7 @@ describe("iki harfli kelimeler", () => {
   });
   it("Sosyete (en az 3 harf): iki harfli kelime ne açılışta ne sonra geçerli", () => {
     // İki harfli kelime yalnızca Çayhane (ve masasız Pratik) oyununda geçerli
-    expect(TABLES.filter((x) => x.minWord === 3).map((x) => x.id)).toEqual(["usta", "usta2", "usta5", "ozel2", "ozel2u", "ozel2b", "vip2"]);
+    expect(TABLES.filter((x) => x.minWord === 3).map((x) => x.id)).toEqual(["carli", "carli2", "carli3", "usta", "usta2", "usta5", "ozel2", "ozel2u", "ozel2b", "vip2"]);
     expect(TABLES.filter((x) => !x.minWord).map((x) => x.id)).toEqual(["caylak"]);
     for (const id of ["vip2m", "vip2u"]) expect(tableById(id)?.minWord, id).toBe(3);
     const pro = { ...base, minWord: 3 };
@@ -724,7 +724,7 @@ describe("işleme (yerdeki kelimeye harf ekleme) denetimi", () => {
 describe("bütün masaların giriş ve ödülleri", () => {
   it("VIP, Teke Tek, Sosyete, Çayhane: giriş, bitirene ödül, kaybedene 0", () => {
     const want: Record<string, [number, number, number]> = {
-      caylak: [100, 400, 4], usta: [100, 400, 4], usta2: [1000, 4000, 4], usta5: [10000, 40000, 4],
+      caylak: [100, 400, 4], carli: [100, 400, 4], carli2: [200, 800, 4], carli3: [300, 1200, 4], usta: [100, 400, 4], usta2: [1000, 4000, 4], usta5: [10000, 40000, 4],
       ozel2: [100, 200, 2], ozel2u: [1000, 2000, 2], ozel2b: [10000, 20000, 2], vip2: [100, 200, 2],
     };
     expect(TABLES.map((x) => x.id).sort()).toEqual(Object.keys(want).sort());
@@ -748,19 +748,27 @@ describe("kimse bitiremedi (deste bitti)", () => {
   });
 });
 
-import { SOSYETE_MIN_RATE, TEKE_TEK_MIN_RATE, isChatType, rateAllows } from "../src/economy/tables";
+import { CARLI_MIN_RATE, SOSYETE_MIN_RATE, TEKE_TEK_MIN_RATE, isChatType, rateAllows, turnSecondsFor as turnFor } from "../src/economy/tables";
 describe("Sosyete giriş şartı (başarı oranı)", () => {
-  it("Sosyete %76, Teke Tek %50; Çayhane ve VIP'te şart yok", () => {
+  it("Sosyete %76, Fifty Cent %50, Çarli %31; Çayhane ve VIP'te şart yok", () => {
     expect(SOSYETE_MIN_RATE).toBe(76);
     expect(TEKE_TEK_MIN_RATE).toBe(50);
-    expect(TABLES.filter((x) => x.minRate).map((x) => [x.id, x.minRate])).toEqual([["usta", 76], ["usta2", 76], ["usta5", 76], ["ozel2", 50], ["ozel2u", 50], ["ozel2b", 50]]);
+    expect(CARLI_MIN_RATE).toBe(31);
+    expect(TABLES.filter((x) => x.minRate).map((x) => [x.id, x.minRate])).toEqual([["carli", 31], ["carli2", 31], ["carli3", 31], ["usta", 76], ["usta2", 76], ["usta5", 76], ["ozel2", 50], ["ozel2u", 50], ["ozel2b", 50]]);
     for (const tb of TABLES) {
-      const pro = tb.id.startsWith("usta"), teke = tb.id.startsWith("ozel");
+      const pro = tb.id.startsWith("usta"), teke = tb.id.startsWith("ozel"), carli = tb.id.startsWith("carli");
       expect(rateAllows(tb, 75), tb.id).toBe(!pro);
       expect(rateAllows(tb, 76), tb.id).toBe(true);
       expect(rateAllows(tb, 49), tb.id).toBe(!pro && !teke);
       expect(rateAllows(tb, 50), tb.id).toBe(!pro);
-      expect(rateAllows(tb, 0), tb.id).toBe(!pro && !teke);
+      expect(rateAllows(tb, 31), tb.id).toBe(!pro && !teke);
+      expect(rateAllows(tb, 30), tb.id).toBe(!pro && !teke && !carli);
+      expect(rateAllows(tb, 0), tb.id).toBe(!pro && !teke && !carli);
+    }
+    // Çarli: 4 kişi, en az 3 harf, serbest sohbet yok, 60 sn
+    for (const id of ["carli", "carli2", "carli3"]) {
+      const tb = TABLES.find((x) => x.id === id)!;
+      expect([tb.players ?? 4, tb.minWord, isChatType(id), turnFor(tb)], id).toEqual([4, 3, false, 60]);
     }
   });
   it("serbest sohbet yalnızca VIP (ücretli) ve Sosyete'de (ücretsiz); Teke Tek ve Çayhane'de yok", () => {

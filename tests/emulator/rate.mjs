@@ -159,5 +159,21 @@ check("oyuncu başarı sayılarını kendisi yazamaz", w === "permission-denied"
     await U.call("leaveTable", { tableId: j.tableId });
   }
 }
+// 10) Çarli giriş şartı: başarı oranı en az %31 (altındakiler Çayhane'de oynar)
+{
+  const G = await client("Gül");
+  await G.call("testSetStats", { played: 10, won: 3 });
+  for (const type of ["carli", "carli2", "carli3"]) {
+    const e = await err(G.call("joinTable", { type, lang, name: "Gül" }));
+    check(`%30 oyuncu ${type} masasına oturamaz: rateTooLowCarli`, e.code === "rateTooLowCarli" && e.params.need === 31 && e.params.rate === 30, JSON.stringify(e));
+  }
+  const gc = await G.call("joinTable", { type: "caylak", lang: "pt", name: "Gül" });
+  check("%30 oyuncu Çayhane'de oynar", !!gc.tableId);
+  const H2 = await client("Hilal");
+  await H2.call("testSetStats", { played: 100, won: 31 });
+  const hb2 = await H2.balance();
+  const hj2 = await H2.call("joinTable", { type: "carli2", lang: "pt", name: "Hilal" });
+  check("%31 oyuncu Çarli 200'e oturur, 200 giriş alınır", !!hj2.tableId && (await H2.balance()) === hb2 - 200);
+}
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

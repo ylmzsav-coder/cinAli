@@ -18,6 +18,7 @@ import { SosyeteLobby, TwoLobby } from "./Lobby";
 import { VipTermsModal } from "./Terms";
 import { vipTermsAccepted } from "../terms";
 import { KumbaraIcon } from "./Kumbara";
+import { DiceIcon } from "./Dice";
 import { Chips } from "./Chips";
 import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
@@ -78,10 +79,12 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [vipOpen, setVipOpen] = useState(false);
   const [ozelOpen, setOzelOpen] = useState(false);
   const [sosyeteOpen, setSosyeteOpen] = useState(false);
+  const [carliOpen, setCarliOpen] = useState(false);
   // Android geri tuşu menüde: açık oda ekranı varsa kapat, yoksa "Oyunu kapat" onayı
   useEffect(() => {
     const onBack = () => {
       if (sosyeteOpen) setSosyeteOpen(false);
+      else if (carliOpen) setCarliOpen(false);
       else if (ozelOpen) setOzelOpen(false);
       else if (vipLobby) setVipLobby(false);
       else setCloseAsk(true);
@@ -245,6 +248,10 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             <SosyeteLobby name={settings.name || t("defaultName")} onClose={() => setSosyeteOpen(false)}
               onPick={(tb) => { setSosyeteOpen(false); onSitTable(tb); }} />
           )}
+          {carliOpen && (
+            <SosyeteLobby room="carli" name={settings.name || t("defaultName")} onClose={() => setCarliOpen(false)}
+              onPick={(tb) => { setCarliOpen(false); onSitTable(tb); }} />
+          )}
           {ozelOpen && (
             <TwoLobby name={settings.name || t("defaultName")} onClose={() => setOzelOpen(false)}
               onPick={(tb, mode) => { setOzelOpen(false); onTwo(tb, mode); }} />
@@ -291,29 +298,29 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           )}
           {toast && <div className="toast">{toast}</div>}
           {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
+          {/* Masalar: [Çayhane, Çarli] [Sosyete, Fifty Cent]; ardından [Pratik, Mağaza, Kurallar] */}
           <div className="hub-row">
-            {(["caylak", "usta"] as const).map((id) => {
-              const tb = tableById(id)!;
-              return (
-                <button key={id} type="button" className={`${canResume ? "big" : "primary big"} caylak-hub ${id}-hub`} onClick={() => (id === "usta" ? openSosyete() : onSitTable(tb))}>
-                  <span>{id === "caylak" ? "🫖 " : "🚘 "}{t(id === "caylak" ? "playCaylak" : "playUsta")}</span>
-                  {id === "usta"
-                    ? <>
-                        <span className="sosyete-tags"><small className="pro-tag">{t("proLabel")}</small><small className="pro-tag chat-tag">💬 {t("sosyeteChatTag")}</small></span>
-                        <span className="caylak-sub">{t("entry")} <Chips amount={tb.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
-                      </>
-                    : <span className="caylak-sub">{t("entry")} <Chips amount={tb.entry} /> · {t("toWinner")} <Chips amount={winnerPrize(tb)} /></span>}
-                </button>
-              );
-            })}
+            <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub`} onClick={() => onSitTable(tableById("caylak")!)}>
+              <span>🫖 {t("playCaylak")}</span>
+              <span className="caylak-sub">{t("entry")} <Chips amount={tableById("caylak")!.entry} /> · {t("toWinner")} <Chips amount={winnerPrize(tableById("caylak")!)} /></span>
+            </button>
+            <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub carli-hub`} onClick={() => setCarliOpen(true)}>
+              <span className="carli-top"><DiceIcon /> {t("playCarli")}</span>
+              <span className="caylak-sub">{t("entry")} <Chips amount={tableById("carli")!.entry} /> – <Chips amount={tableById("carli3")!.entry} /></span>
+            </button>
           </div>
           <div className="hub-row">
-            <button type="button" className="big practice-hub" onClick={onPractice}>{t("practice")}</button>
+            <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub usta-hub`} onClick={() => openSosyete()}>
+              <span>🚘 {t("playUsta")}</span>
+              <span className="sosyete-tags"><small className="pro-tag">{t("proLabel")}</small><small className="pro-tag chat-tag">💬 {t("sosyeteChatTag")}</small></span>
+              <span className="caylak-sub">{t("entry")} <Chips amount={tableById("usta")!.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
+            </button>
             <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
               <span className="ozel-top"><span className="duo-icons" aria-hidden><PlayerIcon /><PlayerIcon /></span> {t("ozelShort")}</span>
             </button>
           </div>
-          <div className="hub-row">
+          <div className="hub-row hub-row3">
+            <button type="button" className="big practice-hub" onClick={onPractice}>{t("practice")}</button>
             <button type="button" className="big shop-hub" onClick={onShop}><CartIcon /> {t("shop")}</button>
             <button type="button" className="big rules-hub" onClick={onRules}>📖 {t("rules")}</button>
           </div>

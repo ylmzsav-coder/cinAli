@@ -38,6 +38,7 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
     t("rule_rate"),
     t("rule_sosyete_chat"),
     t("rule_rate_ozel"),
+    t("rule_rate_carli"),
     t("rule_chat"),
   ];
   return (
@@ -58,7 +59,7 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
           </thead>
           <tbody>
             {TABLES.map((tb) => {
-              const group = tb.id === "caylak" ? t("table_caylak") : tb.id.startsWith("usta") ? t("table_usta") : tb.vip ? t("vipShort") : t("ozelShort");
+              const group = tb.id === "caylak" ? t("table_caylak") : tb.id.startsWith("carli") ? t("playCarli") : tb.id.startsWith("usta") ? t("table_usta") : tb.vip ? t("vipShort") : t("ozelShort");
               return (
                 <tr key={tb.id}>
                   <td>{group}</td>

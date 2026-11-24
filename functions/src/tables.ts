@@ -121,7 +121,7 @@ function requireRate(cfg: TableConfig, user: FirebaseFirestore.DocumentData) {
   const played = Number(user.gamesPlayed ?? 0), won = Number(user.gamesWon ?? 0);
   const rate = ratePercent(won, played);
   // Teke Tek ve Sosyete için ayrı uyarı metni (masa adı ve şart)
-  if (!rateAllows(cfg, rate)) fail(cfg.id.startsWith("ozel") ? "rateTooLowOzel" : "rateTooLow", { need: cfg.minRate ?? 0, rate, won, played });
+  if (!rateAllows(cfg, rate)) fail(cfg.id.startsWith("ozel") ? "rateTooLowOzel" : cfg.id.startsWith("carli") ? "rateTooLowCarli" : "rateTooLow", { need: cfg.minRate ?? 0, rate, won, played });
 }
 
 function requireVip(cfg: TableConfig, w: WalletDoc) {
@@ -395,7 +395,7 @@ export const joinTable = onCall(async (req) => {
     };
     let candidate: FirebaseFirestore.QueryDocumentSnapshot | undefined;
     for (const d of open.docs) if (await free(d)) { candidate = d; break; }
-    // VIP oyuncu yoksa sırayla: Teke Tek → Sosyete → Çayhane. Yalnızca VIP ile AYNI girişli
+    // VIP oyuncu yoksa sırayla: Fifty Cent (Teke Tek) → Sosyete → Çarli → Çayhane. Yalnızca VIP ile AYNI girişli
     // (100) masada tek başına bekleyen oyuncuyla eşleşilir; yüksek girişli masalardan oyuncu
     // alınmaz, çip iadesi gerekmez. Ondan abonelik istenmez, masa VIP masasına dönüşür
     // (sohbetli, süresiz). 18 yaş altı oyuncu VIP odaya (sohbet) alınmaz.
@@ -405,6 +405,7 @@ export const joinTable = onCall(async (req) => {
       const tiers = [
         TABLES.filter((x) => same(x) && x.players === 2).map((x) => x.id),
         TABLES.filter((x) => same(x) && x.id.startsWith("usta")).map((x) => x.id),
+        TABLES.filter((x) => same(x) && x.id.startsWith("carli")).map((x) => x.id),
         TABLES.filter((x) => same(x) && x.id === "caylak").map((x) => x.id),
       ];
       search: for (const types of tiers) {

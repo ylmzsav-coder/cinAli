@@ -10,7 +10,7 @@ const LANGS = ["tr", "en", "de", "fr", "es", "it", "pt"];
  * Paralel çalıştırma: E2E_PART=A|B|C|D ile yalnızca o parçanın bölümleri çalışır
  * (CI'da dört iş aynı anda). E2E_PART yoksa bütün bölümler sırayla çalışır.
  */
-const PARTS = { A: ["3"], B: ["5"], C: ["1", "1b", "2", "2b"], D: ["4", "6", "7", "7b", "8", "9"] };
+const PARTS = { A: ["3"], B: ["5"], C: ["1", "1b", "2", "2b"], D: ["4", "6", "7", "7b", "7c", "8", "9"] };
 const PART = process.env.E2E_PART || "";
 const want = (id) => !PART || (PARTS[PART] || []).includes(id);
 let fails = 0;
@@ -69,8 +69,9 @@ async function topbarOverlaps(p) {
 
 const TABLES = [
   { name: "Çayhane", entry: 100, prize: 400, n: 4, open: async (p) => { await p.locator(".caylak-hub:not(.ozel-hub):not(.vip-hub):not(.usta-hub)").first().tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } },
+  ...[0, 1, 2].map((i) => ({ name: `Çarli ${[100, 200, 300][i]}`, entry: [100, 200, 300][i], prize: [400, 800, 1200][i], n: 4, open: async (p) => { await p.locator(".carli-hub").tap(); await W(p, 300); await p.locator(".carli-lobby .vip-stake button").nth(i).tap(); await p.locator(".carli-lobby .sosyete-sit").tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } })),
   ...[0, 1, 2].map((i) => ({ name: `Sosyete ${[100, 1000, 10000][i]}`, entry: [100, 1000, 10000][i], prize: [400, 4000, 40000][i], n: 4, open: async (p) => { await p.locator(".usta-hub").tap(); await W(p, 300); await p.locator(".sosyete-lobby .vip-stake button").nth(i).tap(); await p.locator(".sosyete-sit").tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } })),
-  ...[0, 1, 2].map((i) => ({ name: `Teke Tek ${[100, 1000, 10000][i]}`, entry: [100, 1000, 10000][i], prize: [200, 2000, 20000][i], n: 2, open: async (p) => { await p.locator(".ozel-hub").tap(); await W(p, 300); await p.locator(".ozel-stake button").nth(i).tap(); await p.locator(".two-choices button").nth(2).tap(); } })),
+  ...[0, 1, 2].map((i) => ({ name: `Fifty Cent ${[100, 1000, 10000][i]}`, entry: [100, 1000, 10000][i], prize: [200, 2000, 20000][i], n: 2, open: async (p) => { await p.locator(".ozel-hub").tap(); await W(p, 300); await p.locator(".ozel-stake button").nth(i).tap(); await p.locator(".two-choices button").nth(2).tap(); } })),
   { name: "VIP", entry: 100, prize: 200, n: 2, open: async (p) => { await p.locator(".vip-hub").tap(); await W(p, 300); await p.locator(".two-choices button").nth(2).tap(); } },
 ];
 
@@ -177,12 +178,12 @@ const TABLES = [
   }
 
   if (want("2b")) {
-  console.log("\n== 2b. Teke Tek baştan sona gerçek oyun (100, 1.000, 10.000)");
+  console.log("\n== 2b. Fifty Cent baştan sona gerçek oyun (100, 1.000, 10.000)");
   for (const [i, entry, prize] of [[0, 100, 200], [1, 1000, 2000], [2, 10000, 20000]]) {
     const p = await fresh(browser, "Pixel 7 landscape", { balance: 25000 });
-    await TABLES.find((x) => x.name === `Teke Tek ${entry}`).open(p); await W(p, 1000);
+    await TABLES.find((x) => x.name === `Fifty Cent ${entry}`).open(p); await W(p, 1000);
     const b1 = await bal(p);
-    check(`Teke Tek ${entry}: giriş ${entry} alındı, 2 kişilik, kayıtta fiyat ${entry} → ${prize}`, b1 === 25000 - entry && (await game(p))?.state.players.length === 2 && (await game(p))?.entry === entry && (await game(p))?.prize === prize);
+    check(`Fifty Cent ${entry}: giriş ${entry} alındı, 2 kişilik, kayıtta fiyat ${entry} → ${prize}`, b1 === 25000 - entry && (await game(p))?.state.players.length === 2 && (await game(p))?.entry === entry && (await game(p))?.prize === prize);
     await p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); g.state.players[0].isBot = true; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); }; });
     await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
     await p.locator(".hub-right .primary.big").first().tap();
@@ -192,19 +193,19 @@ const TABLES = [
     const carry = !!g.carry;
     const expected = carry ? 0 : g.state.lastResult?.winner === 0 ? prize : 0;
     await W(p, 600);
-    check(`Teke Tek ${entry}: oyun bitti ve doğru ödendi`, g.state.phase === "gameOver" && (await bal(p)) === b1 + expected, `bitiren ${g.state.lastResult?.winner ?? "yok"}, puanlar ${tot.join("/")}, ödeme ${(await bal(p)) - b1}${carry ? " (kimse bitiremedi: ücret devreder)" : ""}`);
-    check(`Teke Tek ${entry}: oyunda en az 3 harf kuralı`, g.state.minWord === 3);
-    check(`Teke Tek ${entry}: tarayıcı hatası yok`, !p.errors.length, p.errors.slice(0, 2).join(" | "));
+    check(`Fifty Cent ${entry}: oyun bitti ve doğru ödendi`, g.state.phase === "gameOver" && (await bal(p)) === b1 + expected, `bitiren ${g.state.lastResult?.winner ?? "yok"}, puanlar ${tot.join("/")}, ödeme ${(await bal(p)) - b1}${carry ? " (kimse bitiremedi: ücret devreder)" : ""}`);
+    check(`Fifty Cent ${entry}: oyunda en az 3 harf kuralı`, g.state.minWord === 3);
+    check(`Fifty Cent ${entry}: tarayıcı hatası yok`, !p.errors.length, p.errors.slice(0, 2).join(" | "));
     await p.context().close();
   }
   {
-    // Fiyat değişmeden önce başlamış Teke Tek oyunu (250'lik, kayıtta fiyat yok) eski fiyatla biter: 500 ödül
+    // Fiyat değişmeden önce başlamış Fifty Cent oyunu (250'lik, kayıtta fiyat yok) eski fiyatla biter: 500 ödül
     const p = await fresh(browser, "Pixel 7 landscape");
-    await TABLES.find((x) => x.name === "Teke Tek 1000").open(p); await W(p, 1000);
+    await TABLES.find((x) => x.name === "Fifty Cent 1000").open(p); await W(p, 1000);
     const b1 = await bal(p);
     await p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); delete g.entry; delete g.prize; g.state.history = [g.state.players.map((_, i) => (i === 0 ? 150 : 20))]; g.state.results = [{ winner: 0, colorWin: null }]; g.state.phase = "gameOver"; g.state.handNo = g.state.totalHands; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); }; });
     await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
-    check("güncellemeden önce başlamış Teke Tek (250) oyunu eski fiyatla ödenir (500)", (await bal(p)) - b1 === 500, `ödeme ${(await bal(p)) - b1}`);
+    check("güncellemeden önce başlamış Fifty Cent (250) oyunu eski fiyatla ödenir (500)", (await bal(p)) - b1 === 500, `ödeme ${(await bal(p)) - b1}`);
     await p.context().close();
   }
   }
@@ -278,7 +279,7 @@ const TABLES = [
     const WORDS = [["EK", 20], ["SÜT", 72], ["KUZU", 93], ["KZAL", null]];
     // İki harfli kelime yalnızca Çayhane ve Pratik (çipsiz) masada geçerli
     const pratik = { name: "Pratik", open: async (p) => { await p.locator(".practice-hub").tap(); await W(p, 300); await p.locator(".page .primary.big").last().tap(); } };
-    const all = [pick("VIP"), pick("Teke Tek 100"), pick("Teke Tek 1000"), pick("Teke Tek 10000"), pick("Çayhane"), pratik, pick("Sosyete 100")];
+    const all = [pick("VIP"), pick("Fifty Cent 100"), pick("Fifty Cent 1000"), pick("Fifty Cent 10000"), pick("Çayhane"), pratik, pick("Çarli 100"), pick("Sosyete 100")];
     for (const tb of all) {
       const pro = !["Çayhane", "Pratik"].includes(tb.name);
       for (const [word, value] of WORDS) {
@@ -314,7 +315,7 @@ const TABLES = [
     const kb = await p.evaluate(() => { const el = document.querySelector(".kumbara-balance"); return { icon: !!el?.querySelector(".kumbara-icon"), label: el?.querySelector(".kumbara-label")?.textContent ?? "" }; });
     const KB = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" };
     check(`Menü (${lang}): çipler kumbarada — resim ve "${KB[lang]}" yazısı`, kb.icon && kb.label === KB[lang], JSON.stringify(kb));
-    check(`Kurallar (${lang}): 19 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 19 && !r.hscroll && !r.raw, JSON.stringify(r));
+    check(`Kurallar (${lang}): 20 madde, 12 satırlık masa tablosu, taşma yok`, r.rows === 12 && r.items === 20 && !r.hscroll && !r.raw, JSON.stringify(r));
     await p.context().close();
   }
   }
@@ -343,7 +344,7 @@ const TABLES = [
     await q.context().close();
   }
   {
-    // Yeni oyuncu (hiç oyun yok, %0) de oturamaz; Çayhane ve Teke Tek serbest
+    // Yeni oyuncu (hiç oyun yok, %0) de oturamaz; Çayhane ve Fifty Cent serbest
     const p = await fresh(browser, "Pixel 7 landscape", { played: 0, won: 0 });
     await p.locator(".usta-hub").tap(); await W(p, 400);
     for (const d of ["iPhone SE landscape", "Galaxy S8 landscape"]) {
@@ -362,35 +363,73 @@ const TABLES = [
   }
 
   if (want("7b")) {
-  console.log("\n== 7b. Teke Tek giriş şartı: başarı oranı en az %50 (7 dil)");
+  console.log("\n== 7b. Fifty Cent giriş şartı: başarı oranı en az %50 (7 dil)");
   for (const lang of LANGS) {
     // %49 (100 oyunda 49): oyun seçenekleri yerine uyarı; oyun açılmaz, çip alınmaz
     const p = await fresh(browser, "Pixel 7 landscape", { lang, played: 100, won: 49 });
     const b0 = await bal(p);
     await p.locator(".ozel-hub").tap(); await W(p, 400);
     const r = await p.evaluate(() => ({ choices: document.querySelectorAll(".ozel-lobby .two-choices button").length, text: document.querySelector(".ozel-lobby .rate-block")?.textContent ?? "" }));
-    check(`Teke Tek (${lang}) %49: oyun düğmeleri yok, uyarı var (%50 ve %49 yazıyor)`, r.choices === 0 && r.text.includes("50") && r.text.includes("49"), r.text.slice(0, 80));
+    check(`Fifty Cent (${lang}) %49: oyun düğmeleri yok, uyarı var (%50 ve %49 yazıyor)`, r.choices === 0 && r.text.includes("50") && r.text.includes("49"), r.text.slice(0, 80));
     await p.locator(".leave-round").tap(); await W(p, 300);
-    check(`Teke Tek (${lang}) %49: oyun açılmadı, çip alınmadı`, !(await game(p)) && (await bal(p)) === b0);
+    check(`Fifty Cent (${lang}) %49: oyun açılmadı, çip alınmadı`, !(await game(p)) && (await bal(p)) === b0);
     await p.context().close();
     // %50 (2 oyunda 1): oturur
     const q = await fresh(browser, "Pixel 7 landscape", { lang, played: 2, won: 1 });
-    await TABLES.find((x) => x.name === "Teke Tek 100").open(q); await W(q, 1200);
-    check(`Teke Tek (${lang}) %50: oturabilir, oyun başladı`, (await game(q))?.tableId === "ozel2" && (await bal(q)) === 50000 - 100);
-    check(`Teke Tek (${lang}): tarayıcı hatası yok`, !p.errors.length && !q.errors.length, [...p.errors, ...q.errors].slice(0, 2).join(" | "));
+    await TABLES.find((x) => x.name === "Fifty Cent 100").open(q); await W(q, 1200);
+    check(`Fifty Cent (${lang}) %50: oturabilir, oyun başladı`, (await game(q))?.tableId === "ozel2" && (await bal(q)) === 50000 - 100);
+    check(`Fifty Cent (${lang}): tarayıcı hatası yok`, !p.errors.length && !q.errors.length, [...p.errors, ...q.errors].slice(0, 2).join(" | "));
     await q.context().close();
   }
   for (const d of ["iPhone SE landscape", "Galaxy S8 landscape"]) {
     const q = await fresh(browser, d, { played: 100, won: 49 });
     await q.locator(".ozel-hub").tap(); await W(q, 400);
     const r = await q.evaluate(() => { const g = (x) => document.querySelector(x).getBoundingClientRect(); const i = g(".ozel-lobby .lobby-info"), h = g(".ozel-lobby .vip-search-seat"), m = g(".ozel-lobby .lobby-me"); return { top: i.top - h.bottom, bot: m.top - i.bottom }; });
-    check(`Teke Tek uyarısı (${d}): başlık ve oyuncu rozetiyle çakışmıyor`, r.top >= 0 && r.bot >= 0, JSON.stringify(r));
+    check(`Fifty Cent uyarısı (${d}): başlık ve oyuncu rozetiyle çakışmıyor`, r.top >= 0 && r.bot >= 0, JSON.stringify(r));
     await q.context().close();
   }
   {
     const p = await fresh(browser, "Pixel 7 landscape", { played: 0, won: 0 });
     await p.locator(".ozel-hub").tap(); await W(p, 400);
-    check("yeni oyuncu (%0) Teke Tek'e oturamaz", (await p.locator(".ozel-lobby .two-choices button").count()) === 0 && (await p.locator(".ozel-lobby .rate-block").count()) === 1);
+    check("yeni oyuncu (%0) Fifty Cent'e oturamaz", (await p.locator(".ozel-lobby .two-choices button").count()) === 0 && (await p.locator(".ozel-lobby .rate-block").count()) === 1);
+    await p.context().close();
+  }
+  }
+
+  if (want("7c")) {
+  console.log("\n== 7c. Çarli giriş şartı: başarı oranı en az %31 (7 dil)");
+  for (const lang of LANGS) {
+    // %30 (10 oyunda 3): oturma düğmesi yerine uyarı; oyun açılmaz, çip alınmaz
+    const p = await fresh(browser, "Pixel 7 landscape", { lang, played: 10, won: 3 });
+    const b0 = await bal(p);
+    await p.locator(".carli-hub").tap(); await W(p, 400);
+    const r = await p.evaluate(() => ({ sit: !!document.querySelector(".carli-lobby .sosyete-sit"), text: document.querySelector(".carli-lobby .rate-block")?.textContent ?? "", dice: !!document.querySelector(".carli-lobby .dice-icon") }));
+    check(`Çarli (${lang}) %30: oturma düğmesi yok, uyarı var (%31 ve %30 yazıyor)`, !r.sit && r.text.includes("31") && r.text.includes("30") && r.dice, r.text.slice(0, 80));
+    await p.locator(".leave-round").tap(); await W(p, 300);
+    check(`Çarli (${lang}) %30: oyun açılmadı, çip alınmadı`, !(await game(p)) && (await bal(p)) === b0);
+    const dice = await p.evaluate(() => { const d = document.querySelector(".carli-hub .dice-icon"); return d ? d.querySelectorAll("circle").length : 0; });
+    check(`Çarli düğmesi (${lang}): iki zar, ikisi de 4 (8 nokta)`, dice === 8, String(dice));
+    await p.context().close();
+    // %31 (100 oyunda 31): oturur, 4 kişilik, en az 3 harf
+    const q = await fresh(browser, "Pixel 7 landscape", { lang, played: 100, won: 31 });
+    await TABLES.find((x) => x.name === "Çarli 100").open(q); await W(q, 1200);
+    const g = await game(q);
+    check(`Çarli (${lang}) %31: oturabilir, 4 kişilik, en az 3 harf`, g?.tableId === "carli" && g?.state.players.length === 4 && g?.state.minWord === 3 && (await bal(q)) === 50000 - 100);
+    check(`Çarli (${lang}): tarayıcı hatası yok`, !p.errors.length && !q.errors.length, [...p.errors, ...q.errors].slice(0, 2).join(" | "));
+    await q.context().close();
+  }
+  for (const d of ["iPhone SE landscape", "Galaxy S8 landscape"]) {
+    const q = await fresh(browser, d, { played: 10, won: 3 });
+    await q.locator(".carli-hub").tap(); await W(q, 400);
+    const r = await q.evaluate(() => { const g = (x) => document.querySelector(x).getBoundingClientRect(); const i = g(".carli-lobby .lobby-info"), h = g(".carli-lobby .vip-search-seat"), m = g(".carli-lobby .lobby-me"); return { top: i.top - h.bottom, bot: m.top - i.bottom }; });
+    check(`Çarli uyarısı (${d}): başlık ve oyuncu rozetiyle çakışmıyor`, r.top >= 0 && r.bot >= 0, JSON.stringify(r));
+    await q.context().close();
+  }
+  {
+    // %30 oyuncu Çayhane'de oynar
+    const p = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 3 });
+    await TABLES[0].open(p); await W(p, 1000);
+    check("%30 oyuncu Çayhane'de oynayabilir", (await game(p))?.tableId === "caylak");
     await p.context().close();
   }
   }
@@ -418,8 +457,8 @@ const TABLES = [
     check("Sosyete oyununda serbest yazı kutusu var (yetişkin)", (await p.locator(".chat-panel input, .chat-text input, input[type=text]").count()) > 0);
     check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
     await p.context().close();
-    // Teke Tek ve Çayhane'de serbest yazı yok (yalnızca hazır mesaj ve emoji)
-    for (const tb of [TABLES.find((x) => x.name === "Teke Tek 100"), TABLES[0]]) {
+    // Fifty Cent ve Çayhane'de serbest yazı yok (yalnızca hazır mesaj ve emoji)
+    for (const tb of [TABLES.find((x) => x.name === "Fifty Cent 100"), TABLES[0]]) {
       const q = await fresh(browser, "Pixel 7 landscape");
       await tb.open(q); await W(q, 1500);
       await q.locator(".chat-room-btn").first().tap().catch(() => {}); await W(q, 400);
@@ -439,8 +478,8 @@ const TABLES = [
   }
 
   if (want("9")) {
-  console.log("\n== 9. Hamle süresi: Çayhane, Teke Tek, Sosyete 60 sn; VIP Oda 3 dk");
-  for (const [name, secs] of [["Çayhane", 60], ["Teke Tek 100", 60], ["Sosyete 100", 60], ["VIP", 180]]) {
+  console.log("\n== 9. Hamle süresi: Çayhane, Fifty Cent, Sosyete 60 sn; VIP Oda 3 dk");
+  for (const [name, secs] of [["Çayhane", 60], ["Çarli 100", 60], ["Fifty Cent 100", 60], ["Sosyete 100", 60], ["VIP", 180]]) {
     const ctx = await browser.newContext({ ...devices["Pixel 7 landscape"] });
     const p = await ctx.newPage(); p.errors = []; p.on("pageerror", (e) => p.errors.push(e.message));
     await p.clock.install();
