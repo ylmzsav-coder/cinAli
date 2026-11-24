@@ -1543,3 +1543,19 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
   .okey .topbar-actions .scores-btn { width: 44px; }
 }
 @media (max-width: 800px) { .okey .topbar-opp .opp-name .avatar { display: none; } }
+/* Mesaj, Teslim ol ve Puanlar: aynı ölçü */
+.okey .topbar-actions .chat-room-btn, .okey .topbar-actions .scores-btn { width: 68px !important; min-width: 0 !important; height: 44px !important; padding: 2px 4px !important; box-sizing: border-box; display: inline-flex !important; flex-direction: column; align-items: center; justify-content: center; }
+.okey .topbar-actions .chat-room-btn { font-size: 1.45rem !important; }
+@media (max-width: 800px) { .okey .topbar-actions .chat-room-btn, .okey .topbar-actions .scores-btn { width: 50px !important; height: 40px !important; } .okey .topbar-actions .chat-room-btn { font-size: 1.15rem !important; } }
+.okey .topbar-center > .quit-btn, .okey .topbar-center > .topbar-opp, .okey .topbar-center > .buy-btn { width: clamp(96px, 14vw, 160px) !important; }
+@media (max-width: 800px) {
+  .okey .topbar-center > .quit-btn, .okey .topbar-center > .topbar-opp, .okey .topbar-center > .buy-btn { width: 11vw !important; }
+  .okey .topbar-actions .chat-room-btn, .okey .topbar-actions .scores-btn { width: 46px !important; }
+  .okey .topbar-actions .scores-label { font-size: 0.52rem; }
+}
+@media (max-width: 800px) {
+  .okey .topbar-center > .quit-btn, .okey .topbar-center > .topbar-opp, .okey .topbar-center > .buy-btn { width: 12.5vw !important; font-size: 0.58rem !important; white-space: nowrap; }
+  .okey .topbar-opp .opp-compact { font-size: 0.62rem !important; }
+  .okey .topbar-opp .opp-compact .tile { transform: scale(0.85); }
+}
+@media (max-width: 800px) { .okey .topbar-center { gap: 6px !important; justify-content: center !important; grid-template-columns: none !important; display: flex !important; } }
