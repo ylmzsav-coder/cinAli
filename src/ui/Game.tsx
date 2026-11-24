@@ -986,7 +986,10 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         </div>
         <div className="topbar-actions">
           {/* Oyuncu profili (S): Satın al ile mesaj düğmesinin arasında */}
-          <div className="me-slot topbar-me"><Avatar name={me.name} seat={ME} size="sm" vip={!!vipSeats[ME]} onClick={() => setProfileSeat(ME)} /></div>
+          <button type="button" className="me-slot topbar-me" onClick={() => setProfileSeat(ME)} aria-label={t("profileOf", { name: me.name })}>
+            <Avatar name={me.name} seat={ME} size="sm" vip={!!vipSeats[ME]} />
+            <span className="topbar-me-name">{me.name}</span>
+          </button>
           {/* Sarı mesaj düğmesi: bütün masalarda aynı (VIP'te serbest yazı, diğerlerinde hazır mesaj ve emoji) */}
           <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
             aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬<span className="chat-room-label"> {t("chatNow")}</span></button>

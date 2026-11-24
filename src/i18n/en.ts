@@ -533,6 +533,7 @@ const en: Messages = {
   photoSaved: "Your profile photo was saved.",
   photoRejected: "This photo is not allowed: explicit content can't be a profile photo.",
   photoCheckFailed: "The photo couldn't be checked, please try again.",
+  changeName: "Change your name",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

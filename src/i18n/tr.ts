@@ -537,6 +537,7 @@ const tr = {
   photoSaved: "Profil resmin kaydedildi.",
   photoRejected: "Bu resim uygun değil: müstehcen içerik profil resmi olamaz.",
   photoCheckFailed: "Resim denetlenemedi, lütfen tekrar dene.",
+  changeName: "Adını değiştir",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

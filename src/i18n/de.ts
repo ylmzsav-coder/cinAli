@@ -533,6 +533,7 @@ const de: Messages = {
   photoSaved: "Dein Profilfoto wurde gespeichert.",
   photoRejected: "Dieses Foto ist nicht erlaubt: anstößige Inhalte sind als Profilfoto verboten.",
   photoCheckFailed: "Das Foto konnte nicht geprüft werden, bitte erneut versuchen.",
+  changeName: "Namen ändern",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

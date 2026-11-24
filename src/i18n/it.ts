@@ -533,6 +533,7 @@ const it: Messages = {
   photoSaved: "La tua foto profilo è stata salvata.",
   photoRejected: "Questa foto non è consentita: niente contenuti espliciti come foto profilo.",
   photoCheckFailed: "Impossibile controllare la foto, riprova.",
+  changeName: "Cambia nome",
   close: "Chiudi",
   handCol: "Mano",
   totalRow: "Totale",

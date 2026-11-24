@@ -145,7 +145,8 @@ export function MyStatsModal({ name, onClose, onJoin, gender: genderProp, onGend
   const gender = genderProp ?? (standalone ? settings?.gender : undefined);
   const onGender = onGenderProp ?? (standalone && onSettings && settings ? (g: "erkek" | "kadin") => onSettings({ ...settings, gender: g }) : undefined);
   const s = loadStats();
-  const shown = name || t("defaultName");
+  const [editName, setEditName] = useState(false);
+  const shown = (settings?.name ?? name) || t("defaultName");
   const [photo, setPhoto] = useState(loadPhoto);
   const [tab, setTab] = useState<"summary" | "detail" | "friends" | "gifts" | "settings">("summary");
   const [msg, setMsg] = useState<string | null>(null);
@@ -183,7 +184,17 @@ export function MyStatsModal({ name, onClose, onJoin, gender: genderProp, onGend
               }
             }} />
           </label>
-          <div className="profile-name">{shown}</div>
+          {editName && settings && onSettings ? (
+            <form className="name-edit" onSubmit={(e) => { e.preventDefault(); setEditName(false); }}>
+              <input autoFocus value={settings.name} maxLength={12} placeholder={t("defaultName")} aria-label={t("yourName")}
+                onChange={(e) => onSettings({ ...settings, name: e.target.value })} onBlur={() => setEditName(false)} />
+              <button type="submit" className="primary">✓</button>
+            </form>
+          ) : (
+            <button type="button" className="profile-name name-btn" disabled={!settings || !onSettings} onClick={() => setEditName(true)} title={t("changeName")}>
+              {shown}{settings && onSettings && <span className="name-pen" aria-hidden> ✏️</span>}
+            </button>
+          )}
           {wallet.isVip() && <div className="vip-badge-line">👑 {t("vipBadge")}{wallet.snapshot.vipUntil && wallet.snapshot.vipUntil > Date.now() ? ` · ${t("vipUntilDate", { date: new Date(wallet.snapshot.vipUntil).toLocaleDateString(uiLocale()) })}` : ""}</div>}
           {onGender && (
             <div className="gender-toggle" role="radiogroup" aria-label={t("genderLabel")}>

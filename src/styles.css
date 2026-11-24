@@ -1563,3 +1563,13 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .okey .topbar-actions > .topbar-me { margin: 0 6px 0 0 !important; grid-column: auto; justify-self: auto; }
 .okey .topbar-actions { display: flex; align-items: center; }
 .okey .topbar { grid-template-columns: auto minmax(0, 1fr) auto !important; column-gap: 8px; } .okey .topbar > .topbar-center { justify-self: center; } .okey .topbar > .title { margin-left: 0 !important; max-width: 22vw !important; }
+/* Üst çubukta oyuncu: avatar + tam ad (Ayşe kutusu gibi) */
+.okey .topbar-actions > .topbar-me { display: inline-flex !important; align-items: center; gap: 6px; height: 44px; padding: 0 10px 0 4px; border-radius: 10px; background: #123d2a; border: 2px solid rgba(255,213,79,0.55); color: #fff; font-weight: 800; max-width: 150px; cursor: pointer; }
+.okey .topbar-actions > .topbar-me .avatar { width: 30px !important; height: 30px !important; font-size: 0.85rem !important; border-radius: 7px; }
+.topbar-me-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
+@media (max-width: 800px) { .okey .topbar-actions > .topbar-me { height: 40px; max-width: 92px; padding: 0 6px 0 3px; } .topbar-me-name { font-size: 0.7rem; } .okey .topbar-actions > .topbar-me .avatar { width: 24px !important; height: 24px !important; } }
+.profile-name.name-btn { border: none; font: inherit; cursor: pointer; }
+.profile-name.name-btn:disabled { cursor: default; }
+.name-pen { font-size: 0.8em; }
+.name-edit { display: flex; gap: 6px; justify-content: center; }
+.name-edit input { font-size: 1.1rem; font-weight: 800; padding: 6px 10px; border-radius: 10px; width: 170px; text-align: center; }

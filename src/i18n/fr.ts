@@ -533,6 +533,7 @@ const fr: Messages = {
   photoSaved: "Ta photo de profil a été enregistrée.",
   photoRejected: "Cette photo n’est pas autorisée : pas de contenu explicite en photo de profil.",
   photoCheckFailed: "La photo n’a pas pu être vérifiée, réessaie.",
+  changeName: "Changer de nom",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

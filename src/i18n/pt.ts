@@ -533,6 +533,7 @@ const pt: Messages = {
   photoSaved: "A tua foto de perfil foi guardada.",
   photoRejected: "Esta foto não é permitida: conteúdo explícito não pode ser foto de perfil.",
   photoCheckFailed: "Não foi possível verificar a foto, tenta de novo.",
+  changeName: "Alterar o nome",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",
