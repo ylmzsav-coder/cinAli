@@ -964,8 +964,6 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         <div className="title">
           {tableId === "caylak" && <span className="title-ico"><TeaGlass size="1.25em" /></span>}{tableId?.startsWith("usta") && "🚘 "}{tableId?.startsWith("vip") && "👑 "}{tableName ?? t("practiceShort")} {state.totalHands > 1 && <span className="muted">· {t("handOf", { n: state.handNo, total: state.totalHands })}</span>}
         </div>
-        {/* Oyuncu profili: sol üstte, Oyundan çık'ın solunda */}
-        <div className="me-slot topbar-me"><Avatar name={me.name} seat={ME} size="sm" vip={!!vipSeats[ME]} onClick={() => setProfileSeat(ME)} /></div>
         <div className="topbar-center">
           {onLeave && !handOver && (
             <button type="button" className="quit-btn" onClick={() => setQuitAsk(true)}><svg className="door-ico" viewBox="0 0 40 56" aria-hidden>
@@ -987,6 +985,8 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
           )}
         </div>
         <div className="topbar-actions">
+          {/* Oyuncu profili (S): Satın al ile mesaj düğmesinin arasında */}
+          <div className="me-slot topbar-me"><Avatar name={me.name} seat={ME} size="sm" vip={!!vipSeats[ME]} onClick={() => setProfileSeat(ME)} /></div>
           {/* Sarı mesaj düğmesi: bütün masalarda aynı (VIP'te serbest yazı, diğerlerinde hazır mesaj ve emoji) */}
           <button type="button" className={`chat-btn chat-room-btn ${chatOpen ? "on" : ""}`} onClick={() => setChatOpen((v) => !v)}
             aria-label={t("chatOpen")} aria-expanded={chatOpen}>💬<span className="chat-room-label"> {t("chatNow")}</span></button>

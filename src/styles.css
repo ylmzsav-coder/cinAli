@@ -1559,3 +1559,7 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
   .okey .topbar-opp .opp-compact .tile { transform: scale(0.85); }
 }
 @media (max-width: 800px) { .okey .topbar-center { gap: 6px !important; justify-content: center !important; grid-template-columns: none !important; display: flex !important; } }
+/* S profili sağ grupta (mesajın solunda): eski sol konum ayarları geçersiz */
+.okey .topbar-actions > .topbar-me { margin: 0 6px 0 0 !important; grid-column: auto; justify-self: auto; }
+.okey .topbar-actions { display: flex; align-items: center; }
+.okey .topbar { grid-template-columns: auto minmax(0, 1fr) auto !important; column-gap: 8px; } .okey .topbar > .topbar-center { justify-self: center; } .okey .topbar > .title { margin-left: 0 !important; max-width: 22vw !important; }
