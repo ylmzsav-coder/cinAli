@@ -1511,3 +1511,5 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .invite-room.vip { background: linear-gradient(#f06292, #c2185b); color: #fff; }
 .invite-room.ozel { background: linear-gradient(#ffe082, #f0a500); color: #3b2500; }
 .invite-room small { font-size: 0.85rem; font-weight: 700; display: inline-flex; gap: 4px; align-items: center; }
+/* S düğmesi ile "Oyundan çık" arası 1 cm */
+.okey .topbar > .topbar-me { margin-right: calc(1cm - 8px); }
