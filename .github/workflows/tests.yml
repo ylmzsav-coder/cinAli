@@ -63,3 +63,42 @@ jobs:
           npx vite preview --host 127.0.0.1 --port 4173 --strictPort &
           for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
           node tests/e2e/run.cjs
+
+  uyari:
+    name: Hata e-postası
+    # Testlerden biri başarısız olursa e-posta gönderilir. Gerekli gizli anahtarlar
+    # (Settings > Secrets and variables > Actions > Secrets):
+    #   MAIL_USERNAME  gönderen Gmail adresi
+    #   MAIL_PASSWORD  o Gmail hesabının "uygulama şifresi" (normal şifre değil)
+    #   ALERT_EMAIL    uyarının gideceği adres
+    # Tanımlı değilse bu adım atlanır; GitHub'ın kendi bildirim e-postası yine gider.
+    needs: [birim, sunucu, tarayici]
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    env:
+      HAS_MAIL: ${{ secrets.MAIL_USERNAME != '' && secrets.MAIL_PASSWORD != '' && secrets.ALERT_EMAIL != '' }}
+    steps:
+      - name: E-posta ayarı yoksa bildir
+        if: env.HAS_MAIL != 'true'
+        run: echo "::warning::Hata e-postası için MAIL_USERNAME, MAIL_PASSWORD ve ALERT_EMAIL gizli anahtarları tanımlı değil."
+      - name: Uyarı e-postası gönder
+        if: env.HAS_MAIL == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          to: ${{ secrets.ALERT_EMAIL }}
+          from: Word Okey Testleri <${{ secrets.MAIL_USERNAME }}>
+          subject: "⚠️ Word Okey: otomatik testlerde hata (${{ github.event_name }})"
+          body: |
+            Word Okey otomatik testlerinde hata bulundu.
+
+            Kurallar ve birim testleri: ${{ needs.birim.result }}
+            Sunucu testleri: ${{ needs.sunucu.result }}
+            Tarayıcı (uçtan uca) testleri: ${{ needs.tarayici.result }}
+
+            Değişiklik: ${{ github.sha }}
+            Ayrıntılar: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
