@@ -446,6 +446,46 @@ describe("iki harfli kelimeler", () => {
     expect(newGame(["A", "B"], [false, true], 1, 3, 3).minWord).toBe(3);
     expect(newGame(["A", "B"], [false, true], 1, 3).minWord).toBeUndefined();
   });
+  it("Sosyete: 3 harfli kelimelerle açılır, 3 harfli kelime koyulur ve işlenir", () => {
+    const pro = { ...base, minWord: 3 };
+    const sut = tiles("SÜT"), tuz = tiles("TUZ"), kar = tiles("KAR"), kus = tiles("KUŞ"), a = t("A"), z = t("Z");
+    const s = rig(pro, [...sut, ...tuz, ...kar, ...kus, a, z]);
+    // Yalnızca 3 harfli kelimelerle açılış (SÜT 72 + TUZ 78 = 150 ≥ 101)
+    let o = openHand(dict, s, [sut, tuz].map((w) => ({ tileIds: w.map((x) => x.id) })));
+    expect(o.players[o.current].opened).toBe(true);
+    expect(o.table.map((w) => w.tiles.map((x) => x.letter).join(""))).toEqual(["SÜT", "TUZ"]);
+    // Açtıktan sonra 3 harfli kelime koyma
+    o = layWord(dict, o, { tileIds: kar.map((x) => x.id) });
+    o = layWord(dict, o, { tileIds: kus.map((x) => x.id) });
+    expect(o.table.at(-1)?.tiles.map((x) => x.letter).join("")).toBe("KUŞ");
+    // 3 harfli kelimeye işleme: KAR → KARA
+    const karId = o.table.find((w) => w.tiles.map((x) => x.letter).join("") === "KAR")!.id;
+    o = extendWord(dict, o, karId, "end", { tileIds: [a.id] });
+    expect(o.table.find((w) => w.id === karId)!.tiles.map((x) => x.letter).join("")).toBe("KARA");
+    // Tek başına 3 harfli ama sözlükte olmayan kelime yine reddedilir
+    const zkt = tiles("ZKT"), sut2 = tiles("SÜT"), tuz2 = tiles("TUZ");
+    const o2 = openHand(dict, rig(pro, [...zkt, ...sut2, ...tuz2, z]), [sut2, tuz2].map((w) => ({ tileIds: w.map((x) => x.id) })));
+    expectErr(() => layWord(dict, o2, { tileIds: zkt.map((x) => x.id) }), "notInDict", { word: "ZKT" });
+  });
+  it("Sosyete: bilgisayarlar yere hiç 2 harfli kelime koymaz ve oyunlar biter", () => {
+    let hands = 0, wins = 0;
+    for (let seed = 1; seed <= 4; seed++) {
+      let s = newGame(["A", "B", "C", "D"], [true, true, true, true], 2, seed, 3);
+      let steps = 0;
+      const check = () => {
+        hands++;
+        if (s.lastResult?.winner != null) wins++;
+        for (const w of s.table) expect(w.tiles.length, `seed ${seed}`).toBeGreaterThanOrEqual(3);
+      };
+      while (s.phase !== "gameOver") {
+        if (s.phase === "handOver") { check(); s = dealHand(s); continue; }
+        s = botStep(dict, s, "orta");
+        if (++steps > 8000) throw new Error("sonsuz döngü");
+      }
+      check();
+    }
+    expect(wins).toBeGreaterThan(0);
+  }, 120000);
 });
 
 import { LANGS, TWO_LETTER_WORDS } from "../src/game/lang";
