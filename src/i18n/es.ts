@@ -543,7 +543,7 @@ const es: Messages = {
   noWinnerLeave: "Salir · se devuelven {n} fichas",
   noWinnerRefund: "Nadie terminó: tu entrada se devolvió por completo.",
   proLabel: "Profesional",
-  rule_pro: "Alta sociedad (mesa profesional): no se aceptan palabras de dos letras; se abre y se juega con palabras de al menos 3 letras. En la Casa de té, Uno contra uno y la Sala VIP sí se aceptan.",
+  rule_pro: "Las palabras de dos letras solo se aceptan en la Casa de té y en Práctica (sin fichas). En Alta sociedad (mesa profesional), Uno contra uno y la Sala VIP no se aceptan; se abre y se juega con palabras de al menos 3 letras.",
   close: "Cerrar",
   handCol: "Mano",
   totalRow: "Total",

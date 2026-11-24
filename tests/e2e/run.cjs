@@ -186,7 +186,7 @@ const TABLES = [
     check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
 
-  console.log("\n== 5. Kelime uzunlukları: 2, 3, 4 harf (Sosyete'de 2 harf geçersiz)");
+  console.log("\n== 5. Kelime uzunlukları: 2, 3, 4 harf (2 harf yalnızca Çayhane ve Pratikte geçerli)");
   {
     const p = await fresh(browser, "Pixel 7 landscape");
     const pick = (n) => TABLES.find((x) => x.name === n);
@@ -199,8 +199,11 @@ const TABLES = [
     }
 
     const WORDS = [["EK", 20], ["SÜT", 72], ["KUZU", 93], ["KZAL", null]];
-    for (const tb of [pick("VIP"), pick("Teke Tek 100"), pick("Çayhane"), pick("Sosyete 500")]) {
-      const pro = tb.name.startsWith("Sosyete");
+    // İki harfli kelime yalnızca Çayhane ve Pratik (çipsiz) masada geçerli
+    const pratik = { name: "Pratik", open: async (p) => { await p.locator(".practice-hub").tap(); await W(p, 300); await p.locator(".page .primary.big").last().tap(); } };
+    const all = [pick("VIP"), pick("Teke Tek 100"), pick("Teke Tek 250"), pick("Teke Tek 500"), pick("Çayhane"), pratik, pick("Sosyete 500")];
+    for (const tb of all) {
+      const pro = !["Çayhane", "Pratik"].includes(tb.name);
       for (const [word, value] of WORDS) {
         await toHub(p);
         await tb.open(p); await W(p, 1500);

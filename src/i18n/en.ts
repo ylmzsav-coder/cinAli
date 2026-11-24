@@ -543,7 +543,7 @@ const en: Messages = {
   noWinnerLeave: "Leave table · {n} chips back",
   noWinnerRefund: "Nobody finished: your entry was refunded in full.",
   proLabel: "Professional",
-  rule_pro: "High Society (professional table): two-letter words are not allowed; you open and play with words of at least 3 letters. Two-letter words are allowed at the Tea House, One on One and the VIP Room.",
+  rule_pro: "Two-letter words are allowed only at the Tea House and in Practice (no chips). At High Society (professional table), One on One and the VIP Room they are not allowed; you open and play with words of at least 3 letters.",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

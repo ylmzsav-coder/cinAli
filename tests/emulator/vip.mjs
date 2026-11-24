@@ -201,5 +201,13 @@ const cj = await N.call("joinTable", { type: "caylak", lang, name: "Nur" });
 await N.call("startTable", { tableId: cj.tableId });
 const ct = (await getDoc(doc(N.db, "tables", cj.tableId))).data();
 check("Çaylak masada beklemeden başlatılabilir", ct.status === "playing" && ct.seats.length === 4 && ct.seats.slice(1).every((s) => s.bot));
+// İki harfli kelime yalnızca Çayhane (ve Pratik) oyununda geçerli: VIP ve Teke Tek en az 3 harf
+{
+  const mw = (tb) => JSON.parse(tb.view ?? "{}").minWord ?? 2;
+  check("VIP oyununda en az 3 harf (iki harfli kelime yok)", mw(t1) === 3, String(mw(t1)));
+  check("Teke Tek oyununda en az 3 harf", mw(ot) === 3 && mw(ob) === 3, `${mw(ot)} / ${mw(ob)}`);
+  check("Sosyete/Çayhane'den VIP'e dönen oyunda da en az 3 harf", mw(zt) === 3);
+  check("Çayhane oyununda iki harfli kelime geçerli", mw(ct) === 2, String(mw(ct)));
+}
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

@@ -543,7 +543,7 @@ const it: Messages = {
   noWinnerLeave: "Lascia il tavolo · {n} gettoni resi",
   noWinnerRefund: "Nessuno ha chiuso: la puntata è stata rimborsata per intero.",
   proLabel: "Professionale",
-  rule_pro: "Alta società (tavolo pro): le parole di due lettere non sono valide; si apre e si gioca con parole di almeno 3 lettere. Sono valide alla Sala da tè, all’Uno contro uno e nella Sala VIP.",
+  rule_pro: "Le parole di due lettere sono valide solo alla Sala da tè e in Allenamento (senza fiches). All’Alta società (tavolo pro), all’Uno contro uno e nella Sala VIP non sono valide; si apre e si gioca con parole di almeno 3 lettere.",
   close: "Chiudi",
   handCol: "Mano",
   totalRow: "Totale",

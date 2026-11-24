@@ -547,7 +547,7 @@ const tr = {
   noWinnerLeave: "Masadan çık · {n} çip iade",
   noWinnerRefund: "Kimse bitiremedi: giriş ücretin kesintisiz iade edildi.",
   proLabel: "Profesyonel",
-  rule_pro: "Sosyete (profesyonel masa): iki harfli kelimeler geçerli değildir; en az 3 harfli kelimelerle açılır ve oynanır. Çayhane, Teke Tek ve VIP Oda'da iki harfli kelimeler geçerlidir.",
+  rule_pro: "İki harfli kelimeler yalnızca Çayhane ve Pratik (çipsiz) masada geçerlidir. Sosyete (profesyonel masa), Teke Tek ve VIP Oda'da iki harfli kelimeler geçerli değildir; en az 3 harfli kelimelerle açılır ve oynanır.",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",

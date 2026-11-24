@@ -543,7 +543,7 @@ const fr: Messages = {
   noWinnerLeave: "Quitter · {n} jetons rendus",
   noWinnerRefund: "Personne n’a fini : ta mise t’a été rendue en entier.",
   proLabel: "Professionnel",
-  rule_pro: "Haute société (table pro) : les mots de deux lettres ne sont pas acceptés ; on ouvre et on joue avec des mots d’au moins 3 lettres. Ils sont acceptés au Salon de thé, au Face à face et au salon VIP.",
+  rule_pro: "Les mots de deux lettres ne sont acceptés qu’au Salon de thé et à l’Entraînement (sans jetons). À la Haute société (table pro), au Face à face et au Salon VIP, ils ne sont pas acceptés ; on ouvre et on joue avec des mots d’au moins 3 lettres.",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

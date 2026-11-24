@@ -245,7 +245,7 @@ describe("bot simülasyonu", () => {
   }, 120000);
 });
 
-import { TABLES, payout, winnerPrize } from "../src/economy/tables";
+import { TABLES, payout, tableById, winnerPrize } from "../src/economy/tables";
 describe("çip ödemesi (en yüksek toplam birinci)", () => {
   const t = TABLES[0]; // Çayhane: giriş 100, birinciye 400
   it("giriş 100, birinci 300 çip alır", () => {
@@ -435,8 +435,10 @@ describe("iki harfli kelimeler", () => {
     expectErr(() => layWord(dict, o, { tileIds: [b.id] }), "minLength", { n: 2 });
   });
   it("Sosyete (en az 3 harf): iki harfli kelime ne açılışta ne sonra geçerli", () => {
-    expect(TABLES.filter((x) => x.minWord === 3).map((x) => x.id)).toEqual(["usta", "usta2", "usta5"]);
-    expect(TABLES.filter((x) => !x.id.startsWith("usta")).every((x) => !x.minWord)).toBe(true);
+    // İki harfli kelime yalnızca Çayhane (ve masasız Pratik) oyununda geçerli
+    expect(TABLES.filter((x) => x.minWord === 3).map((x) => x.id)).toEqual(["usta", "usta2", "usta5", "ozel2", "ozel2u", "ozel2b", "vip2"]);
+    expect(TABLES.filter((x) => !x.minWord).map((x) => x.id)).toEqual(["caylak"]);
+    for (const id of ["vip2m", "vip2u"]) expect(tableById(id)?.minWord, id).toBe(3);
     const pro = { ...base, minWord: 3 };
     const kalem = tiles("KALEM"), cay = tiles("ÇAY"), tuz = tiles("TUZ"), ek = tiles("EK"), at = tiles("AT"), b = t("B");
     const s = rig(pro, [...kalem, ...cay, ...tuz, ...ek, ...at, b]);
@@ -486,11 +488,11 @@ describe("iki harfli kelimeler", () => {
     // Sözlükte olmayan 4 harfli dizi reddedilir
     expectErr(() => layWord(dict, o, { tileIds: kzal.map((x) => x.id) }), "notInDict", { word: "KZAL" });
   });
-  it("VIP, Teke Tek, Çayhane: 2, 3 ve 4 harfli kelimelerle açılır, koyulur ve işlenir", () => {
-    for (const id of ["vip2", "ozel2", "ozel2u", "ozel2b", "caylak"]) {
-      const cfg = TABLES.find((x) => x.id === id)!;
-      expect(cfg.minWord, id).toBeUndefined();
-      const g = newGame(["A", "B"], [false, true], 1, 5, cfg.minWord);
+  it("Çayhane ve Pratik: 2, 3 ve 4 harfli kelimelerle açılır, koyulur ve işlenir", () => {
+    for (const id of ["caylak", "pratik"]) {
+      const cfg = TABLES.find((x) => x.id === id);
+      expect(cfg?.minWord, id).toBeUndefined();
+      const g = newGame(["A", "B"], [false, true], 1, 5, cfg?.minWord);
       expect(g.minWord, id).toBeUndefined();
       const st = { ...base, minWord: g.minWord };
       const ek = tiles("EK"), sut = tiles("SÜT"), kuzu = tiles("KUZU"), at = tiles("AT"), kar = tiles("KAR"), kale = tiles("KALE"), m = t("M"), a = t("A");
@@ -506,6 +508,25 @@ describe("iki harfli kelimeler", () => {
       o = extendWord(dict, o, word("KALE"), "end", { tileIds: [m.id] }); // 4 → 5: KALEM
       o = extendWord(dict, o, word("KAR"), "end", { tileIds: [a.id] }); // 3 → 4: KARA
       expect(o.table.map((w) => w.tiles.map((x) => x.letter).join("")).sort(), id).toEqual(["AT", "EK", "KALEM", "KARA", "KUZU", "SÜT"]);
+    }
+  });
+  it("VIP ve Teke Tek: iki harfli kelime ne açılışta ne sonra geçerli; 3 ve 4 harfli geçerli", () => {
+    for (const id of ["vip2", "ozel2", "ozel2u", "ozel2b"]) {
+      const cfg = TABLES.find((x) => x.id === id)!;
+      const g = newGame(["A", "B"], [false, true], 1, 5, cfg.minWord);
+      expect(g.minWord, id).toBe(3);
+      const st = { ...base, minWord: g.minWord };
+      const ek = tiles("EK"), sut = tiles("SÜT"), kuzu = tiles("KUZU"), at = tiles("AT"), kar = tiles("KAR"), kale = tiles("KALE"), m = t("M"), a = t("A");
+      const s = rig(st, [...ek, ...sut, ...kuzu, ...at, ...kar, ...kale, m, a, t("Z")]);
+      expectErr(() => openHand(dict, s, [ek, sut, kuzu].map((w) => ({ tileIds: w.map((x) => x.id) }))), "minLength", { n: 3 });
+      let o = openHand(dict, s, [sut, kuzu].map((w) => ({ tileIds: w.map((x) => x.id) })));
+      expectErr(() => layWord(dict, o, { tileIds: at.map((x) => x.id) }), "minLength", { n: 3 });
+      o = layWord(dict, o, { tileIds: kar.map((x) => x.id) });
+      o = layWord(dict, o, { tileIds: kale.map((x) => x.id) });
+      const word = (w: string) => o.table.find((x) => x.tiles.map((y) => y.letter).join("") === w)!.id;
+      o = extendWord(dict, o, word("KALE"), "end", { tileIds: [m.id] });
+      o = extendWord(dict, o, word("KAR"), "end", { tileIds: [a.id] });
+      expect(o.table.map((w) => w.tiles.map((x) => x.letter).join("")).sort(), id).toEqual(["KALEM", "KARA", "KUZU", "SÜT"]);
     }
   });
   it("Sosyete: bilgisayarlar yere hiç 2 harfli kelime koymaz ve oyunlar biter", () => {
