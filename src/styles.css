@@ -1584,3 +1584,6 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .okey .topbar-actions > .topbar-me .avatar { margin-left: 4px; }
 .okey .topbar-actions > .topbar-me .topbar-me-name { padding-right: 8px; }
 @media (prefers-reduced-motion: reduce) { .okey .topbar-actions > .topbar-me::before { animation-duration: 8s; } }
+.okey .topbar { grid-template-columns: minmax(0, 1fr) auto auto !important; } .okey .topbar > .title { max-width: 100% !important; min-width: 0; } .okey .topbar > .topbar-center { justify-self: end; margin-right: 1vw; }
+@media (min-width: 801px) and (max-width: 1100px) { .okey .topbar-center > .quit-btn, .okey .topbar-center > .topbar-opp, .okey .topbar-center > .buy-btn { width: 12vw !important; font-size: 0.78rem !important; } .okey .topbar-actions > .topbar-me { max-width: 120px; } .okey .topbar-actions .chat-room-btn, .okey .topbar-actions .scores-btn { width: 58px !important; } .okey .topbar > .topbar-center { margin-right: 4px; } }
+.okey .topbar-center { grid-template-columns: repeat(3, auto) !important; gap: 8px !important; }

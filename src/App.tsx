@@ -2,7 +2,7 @@ import { SETTINGS_EVENT } from "./ui/Profile";
 import { BACK_EVENT, setupBackButton } from "./backButton";
 import { useCallback, useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { TableConfig, payout, tableById } from "./economy/tables";
+import { PLAYERS_PER_TABLE, TableConfig, payout, tableById } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
 import { GAME_HANDS, GameState, colorWinsOf, newGame, totals } from "./game/engine";
@@ -156,8 +156,8 @@ export function App() {
 
   const startGame = (s: Settings, table?: TableConfig, want?: Gender) => {
     setGameLang(s.gameLang);
-    // Pratik (çipsiz) iki kişilik: siz ve bir bilgisayar
-    const size = table?.players ?? 2;
+    // Pratik (çipsiz) iki kişilik; çipli masalarda masanın oyuncu sayısı (belirtilmemişse 4: Çayhane, Sosyete)
+    const size = table ? table.players ?? PLAYERS_PER_TABLE : 2;
     // İki kişilik VIP odada bilgisayar rakip aranan cinsiyette (bot adları: kadın, erkek, kadın)
     const bots = size === 2 && want ? [botNames()[want === "kadin" ? 0 : 1]] : botNames();
     const names = [s.name || t("defaultName"), ...bots].slice(0, size);
