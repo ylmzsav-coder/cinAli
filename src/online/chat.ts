@@ -4,12 +4,13 @@
  * küfür/taciz riski ve dil engeli yoktur.
  */
 export const CHAT_MESSAGES = [
-  "hello", "goodLuck", "niceWord", "wellPlayed", "thinking",
-  "hurry", "almost", "oops", "thanks", "gg",
+  // "Teşekkürler" başta: panelde kaydırmadan görünsün
+  "hello", "thanks", "goodLuck", "niceWord", "wellPlayed", "thinking",
+  "hurry", "almost", "oops", "gg",
 ] as const;
 export type ChatMessageId = (typeof CHAT_MESSAGES)[number];
 
-export const EMOJIS = ["👍", "👏", "😂", "😮", "😅", "😢", "😡", "🔥"] as const;
+export const EMOJIS = ["❤️", "👍", "👏", "😂", "😮", "😅", "😢", "😡", "🔥"] as const;
 
 export interface ChatEvent {
   /** Görünümdeki oyuncu sırası (0 = siz). */
