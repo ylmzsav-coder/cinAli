@@ -1573,3 +1573,14 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .name-pen { font-size: 0.8em; }
 .name-edit { display: flex; gap: 6px; justify-content: center; }
 .name-edit input { font-size: 1.1rem; font-weight: 800; padding: 6px 10px; border-radius: 10px; width: 170px; text-align: center; }
+/* Oyuncunun kendi düğmesi (Yılmaz): Ayşe gibi etrafında dönen sarı şerit */
+.okey .topbar-actions > .topbar-me { position: relative; overflow: hidden; isolation: isolate; border: none !important; background: transparent !important; padding: 3px !important; }
+.okey .topbar-actions > .topbar-me::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 300%; aspect-ratio: 1; z-index: -2;
+  background: conic-gradient(from 0deg, transparent 0deg 110deg, #ffb300 150deg, #fff59d 170deg, #ffd54f 185deg, transparent 220deg 290deg, #ffb300 330deg, #fff59d 350deg, #ffd54f 360deg);
+  transform: translate(-50%, -50%) rotate(0deg); animation: opp-ring 2.4s linear infinite;
+}
+.okey .topbar-actions > .topbar-me::after { content: ""; position: absolute; inset: 3px; border-radius: 8px; background: #123d2a; z-index: -1; box-shadow: 0 0 0 1px rgba(255,213,79,0.35); }
+.okey .topbar-actions > .topbar-me .avatar { margin-left: 4px; }
+.okey .topbar-actions > .topbar-me .topbar-me-name { padding-right: 8px; }
+@media (prefers-reduced-motion: reduce) { .okey .topbar-actions > .topbar-me::before { animation-duration: 8s; } }
