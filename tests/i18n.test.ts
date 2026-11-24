@@ -42,3 +42,12 @@ describe("Kumbara (çiplerin biriktiği yer)", () => {
     }
   });
 });
+
+describe("masa adları her dilde aynı yazılır", () => {
+  it("Fifty Cent ve Çarli 7 dilde aynı (noktalı küçük i ile, tamamı büyük harf değil)", () => {
+    for (const [code, cat] of Object.entries(catalogs)) {
+      expect([cat.table_ozel2, cat.table_ozel2u, cat.table_ozel2b, cat.ozelShort], code).toEqual(["Fifty Cent", "Fifty Cent 1000", "Fifty Cent 10000", "Fifty Cent"]);
+      expect([cat.table_carli, cat.table_carli2, cat.table_carli3, cat.playCarli], code).toEqual(["Çarli", "Çarli 200", "Çarli 300", "Çarli"]);
+    }
+  });
+});
