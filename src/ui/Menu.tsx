@@ -298,7 +298,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           )}
           {toast && <div className="toast">{toast}</div>}
           {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
-          {/* Masalar: [Çayhane, Çarli] [Sosyete, Fifty Cent]; ardından [Pratik, Mağaza, Kurallar] */}
+          {/* Masalar: [Çayhane, Çarli] [Fifty Cent, Sosyete]; ardından [Pratik, Mağaza, Kurallar] */}
           <div className="hub-row">
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub`} onClick={() => onSitTable(tableById("caylak")!)}>
               <span>🫖 {t("playCaylak")}</span>
@@ -310,13 +310,13 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             </button>
           </div>
           <div className="hub-row">
+            <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
+              <span className="ozel-top"><span className="duo-icons" aria-hidden><PlayerIcon /><PlayerIcon /></span> {t("ozelShort")}</span>
+            </button>
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub usta-hub`} onClick={() => openSosyete()}>
               <span>🚘 {t("playUsta")}</span>
               <span className="sosyete-tags"><small className="pro-tag">{t("proLabel")}</small><small className="pro-tag chat-tag">💬 {t("sosyeteChatTag")}</small></span>
               <span className="caylak-sub">{t("entry")} <Chips amount={tableById("usta")!.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
-            </button>
-            <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
-              <span className="ozel-top"><span className="duo-icons" aria-hidden><PlayerIcon /><PlayerIcon /></span> {t("ozelShort")}</span>
             </button>
           </div>
           <div className="hub-row hub-row3">
