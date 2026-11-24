@@ -264,6 +264,13 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <div className="modal invite-modal" role="alertdialog" aria-label={t("inviteTitle")}>
                 <div className="invite-icon" aria-hidden>{isVipType(invite.type) ? "👑" : "🎲"}</div>
                 <h3>{t("inviteTitle")}</h3>
+                {/* Hangi odaya davet edildiği: VIP Masa ya da Teke Tek Oda (giriş ve ödülüyle) */}
+                <div className={`invite-room ${isVipType(invite.type) ? "vip" : "ozel"}`}>
+                  {isVipType(invite.type) ? `👑 ${t("inviteToVip")}` : invite.type.startsWith("ozel") ? `🎲 ${t("inviteToOzel")}` : t("inviteToTable", { table: t(`table_${invite.type}` as "table_vip") })}
+                  {tableById(invite.type) && !isVipType(invite.type) && (
+                    <small>{t("entry")} <Chips amount={tableById(invite.type)!.entry} /> → {t("toWinner")} <Chips amount={winnerPrize(tableById(invite.type)!)} /></small>
+                  )}
+                </div>
                 <p className="invite-text">{t("inviteWaiting", { name: invite.name, table: isVipType(invite.type) ? t("vipShort") : invite.type.startsWith("ozel") ? t("ozelShort") : t(`table_${invite.type}` as "table_vip") })}</p>
                 {isVipType(invite.type) && <p className="muted small">{t("inviteVipFree")}</p>}
                 <div className="modal-actions">
