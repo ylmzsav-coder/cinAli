@@ -269,7 +269,11 @@ function RateRow() {
   const [choose, setChoose] = useState(false);
   return (
     <>
-      <button type="button" className="rate-row" onClick={() => { if (!openStoreReview()) setChoose(true); }}>
+      <button type="button" className="rate-row" onClick={() => {
+        if (!openStoreReview()) return setChoose(true);
+        // Mağaza açılmadıysa (sayfa hâlâ önde) bağlantıları da göster
+        setTimeout(() => { if (document.visibilityState === "visible") setChoose(true); }, 1500);
+      }}>
         <span className="rate-star" aria-hidden>⭐</span>
         <span className="settings-label">{t("rateTitle")}<small>{t("rateSub")}</small></span>
       </button>
