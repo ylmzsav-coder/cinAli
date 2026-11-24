@@ -44,10 +44,10 @@ check("masadayken silinemez", (await errCode(A.call("deleteAccount"))) === "leav
 await A.call("leaveTable", { tableId: pt.tableId });
 
 // Hesap silme
-check("cüzdan ve kullanıcı var", (await exists(`wallets/${A.uid}`)) && (await exists(`users/${A.uid}`)));
+check("kumbara ve kullanıcı var", (await exists(`wallets/${A.uid}`)) && (await exists(`users/${A.uid}`)));
 check("hesap silindi", (await A.call("deleteAccount")).ok === true);
 check("kullanıcı belgesi silindi", !(await exists(`users/${A.uid}`)));
-check("cüzdan silindi", !(await exists(`wallets/${A.uid}`)));
+check("kumbara silindi", !(await exists(`wallets/${A.uid}`)));
 check("arkadaşlık alt koleksiyonu silindi", !(await exists(`users/${A.uid}/friends/${B.uid}`)));
 check("Bea'nın listesinden çıktı", (await B.call("friendsStatus")).friends.every((f) => f.uid !== A.uid));
 check("silme kaydı tutuldu", await exists(`deletedAccounts/${A.uid}`));

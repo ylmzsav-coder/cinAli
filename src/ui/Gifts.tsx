@@ -6,6 +6,7 @@ import { CLOUD } from "../online/cloud";
 import { type ReceivedGift, convertGift, myGifts, sendGiftTo } from "../online/gifts";
 import { type FriendStatus, friendsStatus } from "../online/social";
 import { Avatar } from "./Profile";
+import { KumbaraIcon } from "./Kumbara";
 import { Chips } from "./Chips";
 import { GiftIcon } from "./GiftIcon";
 
@@ -63,7 +64,7 @@ export function GiftSendModal({ toName, onSend, onClose }: { toName: string; onS
       <div className="modal gift-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t("giftSendTitle", { name: toName })}>
         <button type="button" className="profile-close" onClick={onClose} aria-label={t("close")}>✕</button>
         <h3>🎁 {t("giftSendTitle", { name: toName })}</h3>
-        <div className="muted small">{t("yourBalance")} <Chips amount={w.balance} /></div>
+        <div className="muted small">{t("yourBalance")} <Chips amount={w.balance} icon={<KumbaraIcon size="1.3em" />} /></div>
         <GiftCatalog onPick={setPick} selected={pick?.id} />
         {msg && <p className={msg.error ? "error" : "toast"}>{msg.text}</p>}
         <button type="button" className="primary gift-send-btn" disabled={!pick || busy || (!!pick && w.balance < pick.value)} onClick={() => void send()}>

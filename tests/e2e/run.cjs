@@ -231,6 +231,10 @@ const TABLES = [
     const p = await fresh(browser, "iPhone SE landscape", { lang });
     await p.locator(".hub-right button").filter({ hasText: /📖/ }).first().tap(); await W(p, 400);
     const r = await p.evaluate(() => ({ rows: document.querySelectorAll(".fee-table tbody tr").length, items: document.querySelectorAll("ol.rules li").length, hscroll: document.documentElement.scrollWidth > innerWidth + 2, raw: /\{[a-z]+\}/.test(document.body.innerText) }));
+    await p.locator(".link").first().tap(); await W(p, 300);
+    const kb = await p.evaluate(() => { const el = document.querySelector(".kumbara-balance"); return { icon: !!el?.querySelector(".kumbara-icon"), label: el?.querySelector(".kumbara-label")?.textContent ?? "" }; });
+    const KB = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" };
+    check(`Menü (${lang}): çipler kumbarada — resim ve "${KB[lang]}" yazısı`, kb.icon && kb.label === KB[lang], JSON.stringify(kb));
     check(`Kurallar (${lang}): 15 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 15 && !r.hscroll && !r.raw, JSON.stringify(r));
     await p.context().close();
   }

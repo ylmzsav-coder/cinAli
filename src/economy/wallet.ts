@@ -1,7 +1,7 @@
 /**
- * Çip cüzdanı. İki uygulaması var, arayüz aynı:
+ * Çip kumbarası. İki uygulaması var, arayüz aynı:
  *  - Sunucu (Firebase yapılandırılmışsa): bakiye yalnızca Cloud Functions
- *    tarafından değişir; istemci kendi cüzdan belgesini canlı dinler.
+ *    tarafından değişir; istemci kendi kumbara belgesini canlı dinler.
  *  - Cihaz (Firebase yoksa): localStorage. Yalnızca geliştirme/önizleme için;
  *    gerçek parayla satış sunucu modunda yapılır.
  */
@@ -23,7 +23,7 @@ export interface WalletData {
   vipUntil?: number | null;
   /** Sunucu modunda ilk veri geldi mi. */
   ready: boolean;
-  /** Cüzdan bu açılışta yeni oluşturuldu (hoş geldin hediyesi verildi). */
+  /** Kumbara bu açılışta yeni oluşturuldu (hoş geldin hediyesi verildi). */
   welcome?: boolean;
 }
 
@@ -97,7 +97,7 @@ abstract class Base {
 // ---- Sahip (kontrol) modu -------------------------------------------------
 /**
  * Oyun sahibinin kendi cihazında bütün masaları denemesi için: VIP açık ve çip
- * hiç bitmez. Yalnızca bu cihazda (cihaz cüzdanı) geçerlidir; sunucu cüzdanını
+ * hiç bitmez. Yalnızca bu cihazda (cihaz kumbarası) geçerlidir; sunucu kumbarasını
  * etkilemez. Ana menüde sürüm yazısına 7 kez dokunarak açılıp kapanır.
  */
 const OWNER_KEY = "wordokey.owner";
@@ -144,7 +144,7 @@ class LocalWallet extends Base implements WalletApi {
     };
     const since = nextBrokeSince(this.data.balance, this.data.brokeSince);
     if (stored && since !== this.data.brokeSince) this.commit(0, { brokeSince: since });
-    // Yeni cüzdan hemen kaydedilir (hediye bir kez verilir)
+    // Yeni kumbara hemen kaydedilir (hediye bir kez verilir)
     if (!stored) {
       try {
         const { balance, lastDaily, adsDay, adsToday } = this.data;
@@ -213,7 +213,7 @@ class LocalWallet extends Base implements WalletApi {
 class CloudWallet extends Base implements WalletApi {
   private started = false;
 
-  /** Oturum açar, cüzdanı oluşturur (ilk seferde hoş geldin çipi) ve canlı dinlemeye başlar. */
+  /** Oturum açar, kumbarayı oluşturur (ilk seferde hoş geldin çipi) ve canlı dinlemeye başlar. */
   start(name = "") {
     if (this.started) return;
     this.started = true;

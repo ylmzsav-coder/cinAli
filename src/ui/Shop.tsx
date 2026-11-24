@@ -9,6 +9,7 @@ import { salesConsented } from "../terms";
 import { useWallet } from "../economy/useWallet";
 import { AD_REWARD, DAILY_BONUS, wallet } from "../economy/wallet";
 import { errorText, formatNumber, t } from "../i18n";
+import { KumbaraIcon } from "./Kumbara";
 import { Chips } from "./Chips";
 
 export function Shop({ onBack, notice }: { onBack: () => void; notice?: string | null }) {
@@ -65,7 +66,7 @@ export function Shop({ onBack, notice }: { onBack: () => void; notice?: string |
     <div className="page">
       <div className="page-head">
         <button type="button" className="link" onClick={onBack}>{t("back")}</button>
-        <span className="balance small-balance"><Chips amount={w.balance} loading={!w.ready} /></span>
+        <span className="balance small-balance"><Chips amount={w.balance} loading={!w.ready} icon={<KumbaraIcon />} /></span>
       </div>
       <h1>{t("shop")}</h1>
       {notice && <div className="shop-notice" role="alert">⚠️ {notice}</div>}

@@ -31,3 +31,14 @@ describe("çeviriler", () => {
     }
   });
 });
+
+describe("Kumbara (çiplerin biriktiği yer)", () => {
+  const WALLET = { tr: /cüzdan/i, en: /wallet/i, de: /geldbörse|brieftasche/i, fr: /portefeuille/i, es: /cartera|billetera/i, it: /portafoglio/i, pt: /carteira/i } as Record<string, RegExp>;
+  const NAME = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" } as Record<string, string>;
+  it("hiçbir metinde 'cüzdan' geçmez; her dilde kumbaranın adı var", () => {
+    for (const [code, cat] of Object.entries(catalogs)) {
+      for (const [k, v] of Object.entries(cat)) if (typeof v === "string") expect(WALLET[code].test(v), `${code}.${k}: ${v}`).toBe(false);
+      expect(cat.kumbara, code).toBe(NAME[code]);
+    }
+  });
+});

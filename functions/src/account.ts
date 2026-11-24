@@ -2,7 +2,7 @@
  * Hesabı silme (profil > Ayarlar > "Word Okey hesabını sil").
  *
  * Silinenler: kullanıcı belgesi ve alt koleksiyonları (arkadaşlar, istekler, davetler,
- * hediye sınırları), cüzdan ve alt koleksiyonları (çip hareketleri, hediyeler),
+ * hediye sınırları), kumbara ve alt koleksiyonları (çip hareketleri, hediyeler),
  * arkadaşların listesindeki kayıt ve giriş hesabı (Firebase Auth).
  * Yasal saklama yükümlülüğü olan sohbet ve ihlal kayıtları (chatLogs, moderation)
  * süreleri dolana kadar kalır.

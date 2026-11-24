@@ -1,4 +1,4 @@
-// Emülatöre karşı cüzdan testi: node tests/emulator/wallet.mjs
+// Emülatöre karşı kumbara testi: node tests/emulator/wallet.mjs
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, signInAnonymously } from "firebase/auth";
 import { connectFirestoreEmulator, doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
@@ -25,7 +25,7 @@ console.log("6. reklam:", await err(call("rewardAd")));
 console.log("test satın alma:", await call("testPurchase", { chips: 5000, productId: "wordokey_cip_5k" }));
 console.log("geçersiz paket:", await err(call("testPurchase", { chips: 999999 })));
 const w = (await getDoc(doc(db, "wallets", user.uid))).data();
-console.log("cüzdan okuma (kendi):", w.balance);
-console.log("cüzdana yazma (yasak olmalı):", await setDoc(doc(db, "wallets", user.uid), { balance: 1e9 }).then(() => "YAZILDI!", (e) => e.code));
-console.log("başkasının cüzdanı (yasak olmalı):", await getDoc(doc(db, "wallets", "baskasi")).then(() => "OKUNDU!", (e) => e.code));
+console.log("kumbara okuma (kendi):", w.balance);
+console.log("kumbaraya yazma (yasak olmalı):", await setDoc(doc(db, "wallets", user.uid), { balance: 1e9 }).then(() => "YAZILDI!", (e) => e.code));
+console.log("başkasının kumbarası (yasak olmalı):", await getDoc(doc(db, "wallets", "baskasi")).then(() => "OKUNDU!", (e) => e.code));
 process.exit(0);

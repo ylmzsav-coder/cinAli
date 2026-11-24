@@ -112,7 +112,7 @@ export function App() {
     setScreen("online");
   }, []);
 
-  // Sunucu modu: oturum aç, cüzdanı başlat, yarım kalan masa varsa hatırla
+  // Sunucu modu: oturum aç, kumbarayı başlat, yarım kalan masa varsa hatırla
   // Sunucu kurulduysa cihazda bekleyen şikâyet/öneri mesajlarını ilet
   useEffect(() => {
     void flushFeedback();

@@ -70,7 +70,7 @@ npm run build    # dist/ klasörüne üretim derlemesi
 Firebase yapılandırılmışsa çipler ve çipli masalar sunucuda yönetilir; yapılandırılmamışsa
 (ör. şu anki GitHub Pages sürümü) çipler cihazda tutulur ve masalar botlarla cihazda oynanır.
 
-- **Cüzdan:** `functions/src/wallet.ts`: hoş geldin çipi, günlük ödül, reklam ödülü, satın alma.
+- **Kumbara:** `functions/src/wallet.ts`: hoş geldin çipi, günlük ödül, reklam ödülü, satın alma.
   Bakiye yalnızca sunucuda değişir; her değişiklik `wallets/{uid}/tx` altında kayıtlıdır.
 - **Çevrimiçi masalar:** `functions/src/tables.ts`. Aynı dil ve seviyedeki oyuncular aynı
   masaya oturur; 8 sn içinde dolmayan koltuklara sunucudaki botlar oturur. Her hamle sunucuda
@@ -87,7 +87,7 @@ Firebase yapılandırılmışsa çipler ve çipli masalar sunucuda yönetilir; y
   gitmez ve kaydedilmez; 3 denemede 10 dk sohbet kapanır. En fazla 120 karakter, bağlantı yok,
   hız sınırı var. Her oyuncunun adına dokununca **Sustur** ve **Şikâyet et** (şikâyetler son
   mesajlarla `reports` koleksiyonuna denetim için kaydedilir).
-- **Gizlilik:** `firestore.rules`. Herkes yalnızca kendi ıstakasını ve cüzdanını okur;
+- **Gizlilik:** `firestore.rules`. Herkes yalnızca kendi ıstakasını ve kumbarasını okur;
   deste ve tam oyun durumu istemciye kapalıdır. Hiçbir şey istemciden yazılamaz.
 
 Yerel geliştirme (emülatör, gerçek proje gerekmez):
@@ -96,7 +96,7 @@ Yerel geliştirme (emülatör, gerçek proje gerekmez):
 (cd functions && npm install && npm run build)
 npx firebase emulators:start --project demo-cinali
 VITE_FIREBASE_EMULATOR=1 npm run dev
-node tests/emulator/wallet.mjs     # cüzdan testi
+node tests/emulator/wallet.mjs     # kumbara testi
 node tests/emulator/tables.mjs     # iki oyunculu masa testi
 node tests/emulator/chat.mjs       # sohbet güvenlik kuralları testi
 ```
@@ -123,7 +123,7 @@ GitHub Pages yayını yalnızca depo herkese açıkken çalışır; depo gizlend
 Her gönderimde, her gün ve her çekme isteğinde `.github/workflows/tests.yml` çalışır; bir denetim bile başarısızsa iş kırmızı yanar ve GitHub e-posta ile uyarır.
 
 - `npm test` — kurallar, 7 dilde bilgisayar maçları, masaların giriş/ödülleri, küfür ve yasa dışı içerik filtreleri
-- `npm run test:server` — sunucu (Firebase emülatörü): cüzdan, masalar, VIP, sohbet, hediye, arkadaş, davet, engelleme, hesap, yönetici
+- `npm run test:server` — sunucu (Firebase emülatörü): kumbara, masalar, VIP, sohbet, hediye, arkadaş, davet, engelleme, hesap, yönetici
 - `npm run test:e2e` — gerçek tarayıcıda oyun: bütün masalarda ödeme, baştan sona oyun, 7 dil × 4 ekran boyutu, ayarlar, yaş kapısı
 
 ## Lisans
@@ -142,7 +142,7 @@ kaynakları için `THIRD_PARTY_NOTICES.md`.
 - `public/dict/<dil>.txt` – sözlükler (yaygın kelimeler önce)
 - `tools/build_dict.py` – sözlükleri üreten betik
 - `src/online/` – Firebase bağlantısı, çevrimiçi masa görünümü
-- `functions/` – Cloud Functions (cüzdan, çevrimiçi masalar)
+- `functions/` – Cloud Functions (kumbara, çevrimiçi masalar)
 
 ## Sözlük kaynakları ve lisanslar
 

@@ -3,7 +3,7 @@ import { AD_DAILY_LIMIT, AD_REWARD, DAILY_BONUS, REFILL_CHIPS, REFILL_MS, VIP_BO
 import { IS_EMULATOR, WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 
-/** İstemcinin gördüğü cüzdan (sunucu saatine göre günlük durumlar dahil). */
+/** İstemcinin gördüğü kumbara (sunucu saatine göre günlük durumlar dahil). */
 function view(w: WalletDoc) {
   const today = dayKey();
   return {
@@ -13,7 +13,7 @@ function view(w: WalletDoc) {
   };
 }
 
-/** Oturum açan kullanıcı için cüzdanı oluşturur (ilk seferde hoş geldin çipi). Tekrar çağrılabilir. */
+/** Oturum açan kullanıcı için kumbarayı oluşturur (ilk seferde hoş geldin çipi). Tekrar çağrılabilir. */
 export const bootstrap = onCall(async (req) => {
   const uid = uidOf(req);
   const name = typeof req.data?.name === "string" && req.data.name.trim() ? cleanName(req.data.name, uid, "en") : "";

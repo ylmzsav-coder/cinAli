@@ -44,7 +44,7 @@ jobs:
       - run: npm ci
       - run: npm --prefix functions ci
       - run: npm --prefix functions run build
-      - name: Cüzdan, masalar, VIP, sohbet, hediye, arkadaş, davet, engelleme, hesap, yönetici
+      - name: Kumbara, masalar, VIP, sohbet, hediye, arkadaş, davet, engelleme, hesap, yönetici
         run: bash tests/emulator/run-all.sh
 
   tarayici:

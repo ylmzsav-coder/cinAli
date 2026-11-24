@@ -94,7 +94,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
         setUid(user.uid);
         // Çevrimiçi masada "Sen" yerine ayırt edilebilir bir ad
         const name = settings.name || t("guestName", { n: String(parseInt(user.uid.slice(0, 6), 36) % 10000).padStart(4, "0") });
-        // Davet linkiyle ilk kez gelen oyuncunun cüzdanı henüz oluşmamış olabilir:
+        // Davet linkiyle ilk kez gelen oyuncunun kumbarası henüz oluşmamış olabilir:
         // masaya katılmadan önce hesabın hazır olduğundan emin ol (tekrar çağrılabilir).
         await call("bootstrap", { name: settings.name });
         const res =

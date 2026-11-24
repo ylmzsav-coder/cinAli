@@ -5,6 +5,7 @@ import { TABLE_ENTRY, TABLE_PRIZE } from "../economy/config";
 import { useWallet } from "../economy/useWallet";
 import { wallet } from "../economy/wallet";
 import { t } from "../i18n";
+import { KumbaraIcon } from "./Kumbara";
 import { Chips } from "./Chips";
 import { GenderModal, VipModal } from "./Vip";
 import { TwoPlayerChoices, type TwoMode } from "./TwoPlayer";
@@ -40,7 +41,7 @@ export function Tables({ onPick, onTwo, gender, onGender, onCreatePrivate, onJoi
       <div className="page-head">
         <button type="button" className="link" onClick={onBack}>{t("back")}</button>
         <button type="button" className="balance small-balance" onClick={onShop} aria-label={t("balanceAria")}>
-          <Chips amount={w.balance} loading={!w.ready} /> <span className="plus-chip">+</span>
+          <Chips amount={w.balance} loading={!w.ready} icon={<KumbaraIcon />} /> <span className="plus-chip">+</span>
         </button>
       </div>
       <h1>{t("chipTables")}</h1>

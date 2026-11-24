@@ -24,7 +24,8 @@ const tr = {
   resumeTable: "{name} masasına dön",
   resumeGame: "Oyuna devam et",
   seeResult: "Sonucu gör",
-  balanceAria: "Çip bakiyesi, mağazaya git",
+  kumbara: "Kumbara",
+  balanceAria: "Kumbara: çip bakiyen, mağazaya git",
   legal: "Çipler sanal oyun parasıdır; gerçek paraya çevrilemez, devredilemez.",
 
   // Pratik
@@ -334,7 +335,7 @@ const tr = {
   vipSubscribe: "Abone ol",
   vipExtend: "Aboneliği uzat",
   vipNote: "Abonelik her hafta yenilenir; mağaza ayarlarından istediğin zaman iptal edebilirsin.",
-  vipDone: "VIP oldun! {n} çip hediye cüzdanına eklendi.",
+  vipDone: "VIP oldun! {n} çip hediye kumbarana eklendi.",
   vipBannerSub: "2 kişilik özel oda · Sohbetli oyun · Ücretsiz misafir davet et · {n} çip hediye",
   vipBecome: "VIP ol",
   vipTableDesc: "Karşılıklı 2 kişi · Seyirci yok · Hamle süresi yok",
@@ -388,7 +389,7 @@ const tr = {
   giftCat_herkes: "Herkese",
   giftSent: "{gift} {name} adlı oyuncuya gönderildi!",
   giftSendTitle: "{name} için hediye",
-  yourBalance: "Bakiyen:",
+  yourBalance: "Kumbaranda:",
   giftSendBtn: "{gift} gönder ({n} çip)",
   giftChoose: "Bir hediye seç",
   giftNote: "Hediyeyi alan isterse saklar, isterse değerinin %{pct}'ine çipe dönüştürür.",

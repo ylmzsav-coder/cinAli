@@ -17,6 +17,7 @@ import { type TwoMode } from "./TwoPlayer";
 import { SosyeteLobby, TwoLobby } from "./Lobby";
 import { VipTermsModal } from "./Terms";
 import { vipTermsAccepted } from "../terms";
+import { KumbaraIcon } from "./Kumbara";
 import { Chips } from "./Chips";
 import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
@@ -228,8 +229,12 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <Avatar name={settings.name || t("defaultName")} seat={0} size="md" vip={wallet.isVip()} />
               <span>{t("myProfile")}</span>
             </button>
-            <button type="button" className="balance" onClick={onShop} aria-label={t("balanceAria")}>
-              <Chips amount={w.balance} big loading={!w.ready} />
+            <button type="button" className="balance kumbara-balance" onClick={onShop} aria-label={t("balanceAria")}>
+              <KumbaraIcon size="2.4em" />
+              <span className="kumbara-text">
+                <span className="kumbara-label">{t("kumbara")}</span>
+                <Chips amount={w.balance} big loading={!w.ready} icon={null} />
+              </span>
               <span className="plus-chip">+</span>
             </button>
           </div>
