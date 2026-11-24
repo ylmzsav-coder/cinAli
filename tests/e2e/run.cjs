@@ -128,9 +128,11 @@ const TABLES = [
     for (let k = 0; k < 600; k++) { await W(p, 250); g = await game(p); if (g?.state.phase === "gameOver" && g.settled) break; }
     const tot = g.state.history.reduce((a, h) => a.map((x, i) => x + h[i]), g.state.players.map(() => 0));
     const mx = Math.max(...tot);
-    const expected = tot[0] === mx ? Math.floor(400 / tot.filter((x) => x === mx).length) : 0;
+    // Kimse bitiremediyse (deste bitti) kaybeden yok: ödeme yapılmaz, giriş ücreti yeni oyuna devreder
+    const carry = !!g.carry;
+    const expected = carry ? 0 : tot[0] === mx ? Math.floor(400 / tot.filter((x) => x === mx).length) : 0;
     await W(p, 600);
-    check("oyun bitti ve doğru ödendi", g.state.phase === "gameOver" && (await bal(p)) === 900 + expected, `toplamlar ${tot.join("/")}, bakiye ${await bal(p)}`);
+    check("oyun bitti ve doğru ödendi", g.state.phase === "gameOver" && (await bal(p)) === 900 + expected, `toplamlar ${tot.join("/")}, bakiye ${await bal(p)}${carry ? " (kimse bitiremedi: ücret devreder)" : ""}`);
     check("sonuç ekranı göründü", (await p.locator(".modal").count()) > 0);
     check("oyun sırasında tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
