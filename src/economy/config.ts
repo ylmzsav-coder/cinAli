@@ -1,5 +1,8 @@
 /** Çip ekonomisi sabitleri: istemci ve sunucu (functions/) aynı değerleri kullanır. */
 /** Masa giriş ücreti ve birinciye ödenen çip. */
+/** Hamle süresi (saniye): Çayhane, Teke Tek, Sosyete 60 sn; VIP Oda 3 dakika. */
+export const TABLE_TURN_SECONDS = 60;
+export const VIP_TURN_SECONDS = 180;
 export const TABLE_ENTRY = 100;
 export const TABLE_PRIZE = 400;
 /** Sosyete (ilk masa): giriş ve birinciye ödül. */

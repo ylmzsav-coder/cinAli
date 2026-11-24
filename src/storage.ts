@@ -35,8 +35,8 @@ export interface Settings {
   chatInvite?: boolean;
 }
 
-/** Çipli masalarda sabit hamle süresi. */
-export const TABLE_TURN_SECONDS = 45;
+/** Çipli masalarda hamle süresi (varsayılan 60 sn; VIP Oda 3 dk: turnSecondsFor). */
+export { TABLE_TURN_SECONDS } from "./economy/config";
 
 function deviceLang(): LangCode {
   try {

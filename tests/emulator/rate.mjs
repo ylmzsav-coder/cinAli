@@ -146,5 +146,18 @@ check("oyuncu başarı sayılarını kendisi yazamaz", w === "permission-denied"
   const fj = await F.call("joinTable", { type: "ozel2", lang: "es", name: "Fatih" });
   check("%50 oyuncu Teke Tek'e oturur, 100 giriş alınır", !!fj.tableId && (await F.balance()) === fb - 100);
 }
+// 9) Hamle süresi sunucuda: Çayhane, Teke Tek, Sosyete 60 sn
+{
+  for (const type of ["caylak", "ozel2", "usta"]) {
+    const U = await client("Süre" + type);
+    await U.call("testSetStats", { played: 10, won: 9 });
+    const j = await U.call("joinTable", { type, lang: "en", name: "Süre" });
+    await U.call("startTable", { tableId: j.tableId });
+    const tb = (await getDoc(doc(U.db, "tables", j.tableId))).data();
+    const left = Math.round((tb.deadline - Date.now()) / 1000);
+    check(`${type}: hamle süresi 60 sn (sunucu)`, left > 50 && left <= 60, `${left} sn`);
+    await U.call("leaveTable", { tableId: j.tableId });
+  }
+}
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

@@ -1,9 +1,9 @@
 import { RULES, jokerRackValue } from "../game/engine";
-import { TABLES, winnerPrize } from "../economy/tables";
+import { TABLES, turnSecondsFor, winnerPrize } from "../economy/tables";
 import { LangCode, alphabet, gameLang } from "../game/lang";
 import { JOKER_COUNT, letterTileTotal, letterValue } from "../game/tiles";
 import { t } from "../i18n";
-import { TABLE_TURN_SECONDS } from "../storage";
+import { TABLE_TURN_SECONDS, VIP_TURN_SECONDS } from "../economy/config";
 import { COPYRIGHT_YEAR } from "./Menu";
 import { Chips } from "./Chips";
 
@@ -31,7 +31,7 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
     t("rule_finish"),
     t("rule_score", { win: RULES.winBonus, joker: jokerRackValue(), top: alphabet()[alphabet().length - 1] }),
     t("rule_color", { score: RULES.colorWinBonus }),
-    t("rule_timer", { n: TABLE_TURN_SECONDS }),
+    t("rule_timer", { n: TABLE_TURN_SECONDS, vip: VIP_TURN_SECONDS / 60 }),
     t("rule_winner"),
     t("rule_nowinner"),
     t("rule_pro"),
@@ -54,7 +54,7 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
       <div className="fee-wrap">
         <table className="fee-table">
           <thead>
-            <tr><th>{t("feeTable")}</th><th>{t("feePlayers")}</th><th>{t("feeEntry")}</th><th>{t("feeWinner")}</th><th>{t("feeMinWord")}</th></tr>
+            <tr><th>{t("feeTable")}</th><th>{t("feePlayers")}</th><th>{t("feeEntry")}</th><th>{t("feeWinner")}</th><th>{t("feeTurn")}</th><th>{t("feeMinWord")}</th></tr>
           </thead>
           <tbody>
             {TABLES.map((tb) => {
@@ -65,11 +65,12 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
                   <td>{tb.players ?? 4}</td>
                   <td><Chips amount={tb.entry} /></td>
                   <td><Chips amount={winnerPrize(tb)} /></td>
+                  <td>{turnSecondsFor(tb) >= 60 && turnSecondsFor(tb) % 60 === 0 && turnSecondsFor(tb) > 60 ? t("feeMin", { n: turnSecondsFor(tb) / 60 }) : t("feeSec", { n: turnSecondsFor(tb) })}</td>
                   <td>{t("feeLetters", { n: tb.minWord ?? 2 })}</td>
                 </tr>
               );
             })}
-            <tr><td>{t("practiceShort")}</td><td>2</td><td colSpan={2}>{t("feeFree")}</td><td>{t("feeLetters", { n: 2 })}</td></tr>
+            <tr><td>{t("practiceShort")}</td><td>2</td><td colSpan={2}>{t("feeFree")}</td><td>{t("feeTurnSetting")}</td><td>{t("feeLetters", { n: 2 })}</td></tr>
           </tbody>
         </table>
       </div>

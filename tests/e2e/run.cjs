@@ -409,6 +409,41 @@ const TABLES = [
     await m.context().close();
   }
 
+  console.log("\n== 9. Hamle süresi: Çayhane, Teke Tek, Sosyete 60 sn; VIP Oda 3 dk");
+  for (const [name, secs] of [["Çayhane", 60], ["Teke Tek 100", 60], ["Sosyete 100", 60], ["VIP", 180]]) {
+    const ctx = await browser.newContext({ ...devices["Pixel 7 landscape"] });
+    const p = await ctx.newPage(); p.errors = []; p.on("pageerror", (e) => p.errors.push(e.message));
+    await p.clock.install();
+    await p.goto(BASE);
+    await p.evaluate(() => {
+      localStorage.clear();
+      localStorage.setItem("wordokey.account", '{"method":"guest"}'); localStorage.setItem("wordokey.birthYear", "1980"); localStorage.setItem("wordokey.vipTerms", "2026-11-24"); localStorage.setItem("wordokey.welcomeSeen", "1");
+      localStorage.setItem("wordokey.stats", JSON.stringify({ gamesPlayed: 10, gamesWon: 9, gamesLost: 1 }));
+      localStorage.setItem("cinali.settings", JSON.stringify({ name: "Yılmaz", uiLang: "tr", gameLang: "tr", music: false, sound: false, gender: "erkek" }));
+      localStorage.setItem("cinali.wallet", JSON.stringify({ balance: 50000, vipUntil: Date.now() + 864e5 * 5, lastDaily: new Date().toISOString().slice(0, 10) }));
+    });
+    await p.reload(); await p.clock.runFor(900); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await p.clock.runFor(400);
+    await TABLES.find((x) => x.name === name).open(p); await p.clock.runFor(1200);
+    // Sıra oyuncuda (çekme aşaması)
+    await p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); const me = g.state.players.findIndex((x) => !x.isBot); g.state.current = me; g.state.phase = "draw"; g.state.turnPlays = 0; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); }; });
+    await p.reload(); await p.clock.runFor(900); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await p.clock.runFor(400);
+    await p.locator(".hub-right .primary.big").first().tap(); await p.clock.runFor(1500);
+    const saved = JSON.parse(await p.evaluate(() => localStorage.getItem("cinali.game")));
+    const left = Number((await p.locator(".timer-badge").innerText().catch(() => "")).replace(/\D/g, ""));
+    check(`${name}: hamle süresi ${secs} sn (kayıtta ${saved.settings.turnSeconds}, ekranda ⏱ ${left})`, saved.settings.turnSeconds === secs && left <= secs && left >= secs - 3);
+    // Süre dolmadan sıra değişmez; dolunca otomatik hamle yapılır (taş çekilip atılır)
+    const myDiscards = async () => p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); const me = g.state.players.findIndex((x) => !x.isBot); return { n: g.state.discards[me].length, cur: g.state.current === me }; });
+    const d0 = await myDiscards();
+    await p.clock.runFor((secs - 10) * 1000);
+    const mid = Number((await p.locator(".timer-badge").innerText().catch(() => "")).replace(/\D/g, ""));
+    const d1 = await myDiscards();
+    await p.clock.runFor(15 * 1000); await p.clock.runFor(2000);
+    const d2 = await myDiscards();
+    check(`${name}: ${secs - 10}. saniyede sıra hâlâ oyuncuda (⏱ ${mid}), süre dolunca otomatik taş atıldı`, d1.cur && d1.n === d0.n && mid <= 11 && mid >= 8 && d2.n === d0.n + 1, `atılan ${d0.n} → ${d1.n} → ${d2.n}`);
+    check(`${name}: tarayıcı hatası yok`, !p.errors.length, p.errors.slice(0, 2).join(" | "));
+    await ctx.close();
+  }
+
   await browser.close();
   console.log(fails ? `\n✗ ${fails} DENETİM BAŞARISIZ` : "\nHEPSİ GEÇTİ");
   process.exit(fails ? 1 : 0);

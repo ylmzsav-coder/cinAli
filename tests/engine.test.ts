@@ -784,3 +784,10 @@ describe("başarı oranı (sunucu ve cihaz aynı kural)", () => {
     expect(gameOutcome({ phase: "play", lastResult: null }, [], 0)).toBeNull();
   });
 });
+
+import { turnSecondsFor } from "../src/economy/tables";
+describe("hamle süresi", () => {
+  it("Çayhane, Teke Tek, Sosyete 60 sn; VIP Oda 3 dakika", () => {
+    for (const tb of TABLES) expect(turnSecondsFor(tb), tb.id).toBe(tb.vip ? 180 : 60);
+  });
+});

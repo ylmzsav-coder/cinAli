@@ -4,7 +4,7 @@ import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest, bloc
 import { Avatar } from "./Profile";
 import { sendGiftTo } from "../online/gifts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { isChatType, tableById, winnerPrize, type TableConfig } from "../economy/tables";
+import { isChatType, tableById, turnSecondsFor, winnerPrize, type TableConfig } from "../economy/tables";
 import { isAdult } from "../age";
 import type { Dictionary } from "../game/dictionary";
 import { setGameLang, type LangCode } from "../game/lang";
@@ -13,7 +13,7 @@ import { call, currentUser, firestore } from "../online/cloud";
 import { loadDictionary } from "../online/dicts";
 import type { ChatEvent, SendTextResult } from "../online/chat";
 import { rotatedState, type Action, type PublicView, type SeatInfo } from "../online/view";
-import { TABLE_TURN_SECONDS, type Gender, type Settings } from "../storage";
+import { type Gender, type Settings } from "../storage";
 import { Game, type ChatChannel, type PlayerMenu, type RemoteControl } from "./Game";
 
 /** Susturulan oyuncular cihazda hatırlanır (tüm masalarda geçerli). */
@@ -345,7 +345,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       state={state}
       level={cfg.level}
       speed={settings.speed}
-      turnSeconds={cfg.vip ? 0 : TABLE_TURN_SECONDS}
+      turnSeconds={turnSecondsFor(cfg)}
       sound={settings.sound}
       vibration={settings.vibration}
       onChange={() => {}}

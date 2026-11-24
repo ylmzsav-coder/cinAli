@@ -37,7 +37,7 @@ import {
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { assertNotBanned } from "./admin";
 import { blockedWithAny } from "./blocks";
-import { TABLES, TableConfig, gameOutcome, noWinnerGame, payout, rateAllows, ratePercent, tableById } from "../../src/economy/tables";
+import { TABLES, TableConfig, turnSecondsFor, gameOutcome, noWinnerGame, payout, rateAllows, ratePercent, tableById } from "../../src/economy/tables";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 import { publicView, type Action, type PublicView, type SeatInfo } from "../../src/online/view";
@@ -47,7 +47,8 @@ export const WAIT_MS = 8_000;
 /** VIP odada rastgele eşleşme: rakip VIP oyuncu için bekleme süresi. */
 export const VIP_WAIT_MS = 60_000;
 /** Hamle süresi (sunucu tarafı; istemcideki çerçeveyle aynı). */
-export const TURN_MS = 45_000;
+/** Varsayılan hamle süresi (ms); masaya göre: turnSecondsFor. */
+export const TURN_MS = 60_000;
 /** Ağ gecikmesi için ek süre. */
 const GRACE_MS = 1_500;
 /** El bittikten sonra sonraki ele geçmeden önce sonuç ekranı süresi. */
@@ -164,9 +165,10 @@ function runBots(state: GameState, level: BotLevel): GameState {
   return state;
 }
 
-function deadlineFor(state: GameState, now: number): number | null {
+function deadlineFor(state: GameState, now: number, cfg: TableConfig): number | null {
   if (state.phase === "handOver") return now + HAND_BREAK_MS;
-  if (state.phase === "draw" || state.phase === "play") return now + TURN_MS;
+  // Hamle süresi: Çayhane, Teke Tek, Sosyete 60 sn; VIP Oda 3 dk
+  if (state.phase === "draw" || state.phase === "play") return now + turnSecondsFor(cfg) * 1000;
   return null;
 }
 
@@ -200,9 +202,7 @@ async function settle(t: Transaction, table: TableDoc, state: GameState, wallets
  */
 async function persist(t: Transaction, id: string, table: TableDoc, state: GameState, wallets: Map<string, WalletDoc>) {
   const now = Date.now();
-  const next: TableDoc = { ...table, version: table.version + 1, deadline: deadlineFor(state, now) };
-  // VIP odada hamle süresi yok (sohbetli oyun): sıradaki oyuncu için son tarih konmaz
-  if (configFor(table.type).vip && (state.phase === "draw" || state.phase === "play")) next.deadline = null;
+  const next: TableDoc = { ...table, version: table.version + 1, deadline: deadlineFor(state, now, configFor(table.type)) };
   if (state.phase === "gameOver" && table.status === "playing") {
     next.status = "finished";
     next.payouts = await settle(t, table, state, wallets);

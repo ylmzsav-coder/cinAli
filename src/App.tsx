@@ -2,7 +2,7 @@ import { SETTINGS_EVENT } from "./ui/Profile";
 import { BACK_EVENT, setupBackButton } from "./backButton";
 import { useCallback, useEffect, useState } from "react";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
-import { PLAYERS_PER_TABLE, TableConfig, noWinnerGame, payout, rateAllows, tableById, winnerPrize } from "./economy/tables";
+import { PLAYERS_PER_TABLE, TableConfig, noWinnerGame, payout, rateAllows, tableById, turnSecondsFor, winnerPrize } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
 import { GAME_HANDS, GameState, colorWinsOf, newGame, gameWinners } from "./game/engine";
@@ -10,7 +10,7 @@ import { LangCode, setGameLang } from "./game/lang";
 import { CLOUD, currentUser, firestore } from "./online/cloud";
 import { loadDictionary } from "./online/dicts";
 import { botNames, setUiLang, t } from "./i18n";
-import { type Gender, SavedGame, Settings, TABLE_TURN_SECONDS, loadGame, loadSettings, saveGame, saveSettings } from "./storage";
+import { type Gender, SavedGame, Settings, loadGame, loadSettings, saveGame, saveSettings } from "./storage";
 import { Game } from "./ui/Game";
 import { Hub, Practice } from "./ui/Menu";
 import { RotateHint, Splash } from "./ui/Splash";
@@ -205,7 +205,7 @@ export function App() {
     const next: SavedGame = {
       version: 2,
       state: g,
-      settings: { ...s, level: table?.level ?? s.level, turnSeconds: table ? TABLE_TURN_SECONDS : s.turnSeconds },
+      settings: { ...s, level: table?.level ?? s.level, turnSeconds: table ? turnSecondsFor(table) : s.turnSeconds },
       tableId: table?.id,
       ...(table ? { entry: table.entry, prize: winnerPrize(table) } : {}),
     };
@@ -461,7 +461,7 @@ export function App() {
             vipSeats={[wallet.isVip()]}
             level={saved.settings.level}
             speed={settings.speed}
-            turnSeconds={activeTable?.vip ? 0 : saved.tableId ? TABLE_TURN_SECONDS : settings.turnSeconds}
+            turnSeconds={activeTable ? turnSecondsFor(activeTable) : settings.turnSeconds}
             sound={settings.sound}
             vibration={settings.vibration}
             chatEnabled={settings.chat}
