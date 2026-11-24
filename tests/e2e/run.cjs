@@ -340,8 +340,9 @@ const TABLES = [
   const CHAT = { tr: "Ücretsiz sohbet", en: "Free chat", de: "Gratis-Chat", fr: "Chat gratuit", es: "Chat gratis", it: "Chat gratis", pt: "Chat grátis" };
   for (const lang of LANGS) {
     const p = await fresh(browser, "Pixel 7 landscape", { lang });
-    const tag = await p.locator(".usta-hub .chat-tag").innerText().catch(() => "");
-    check(`Sosyete düğmesi (${lang}): "${CHAT[lang]}" etiketi`, tag.toLowerCase().includes(CHAT[lang].toLowerCase()), tag);
+    // Ekranda büyük harfle gösterilir; asıl metin (textContent) karşılaştırılır (Türkçe İ/i farkı)
+    const tag = await p.locator(".usta-hub .chat-tag").textContent().catch(() => "");
+    check(`Sosyete düğmesi (${lang}): "${CHAT[lang]}" etiketi`, (tag ?? "").includes(CHAT[lang]), tag ?? "");
     await p.context().close();
   }
   {
