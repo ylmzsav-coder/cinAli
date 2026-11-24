@@ -324,7 +324,7 @@ const it: Messages = {
   vipMonth: "settimana",
   vipPerkRoom: "Sala VIP privata per 2: testa a testa",
   vipPerkChat: "Partita con chat: chatta con il tuo compagno di gioco",
-  vipPerkTable: "Tre puntate VIP: {entry} → {prize} · {entry2} → {prize2} · {entry3} → {prize3} fiches",
+  vipPerkTable: "Un tavolo VIP: ingresso {entry} gettoni, al vincitore {prize} · chat e gioco tranquillo",
   vipPerkGift: "{n} fiches in regalo all'abbonamento",
   vipActiveUntil: "Il tuo abbonamento VIP è valido fino al {date}.",
   vipSubscribe: "Abbonati",

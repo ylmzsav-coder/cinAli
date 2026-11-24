@@ -150,7 +150,7 @@ export function TwoLobby({ vip = false, name, gender, onGender, onClose, onPick,
   /** VIP: aranan cinsiyette oyuncu. */
   onSeek?: (tb: TableConfig, want: Gender) => void;
 }) {
-  const ids = vip ? (["vip2", "vip2m", "vip2u"] as const) : (["ozel2", "ozel2u", "ozel2b"] as const);
+  const ids = vip ? (["vip2"] as const) : (["ozel2", "ozel2u", "ozel2b"] as const);
   const [id, setId] = useState<string>(ids[0]);
   const [askFor, setAskFor] = useState<Gender | null>(null);
   const tb = tableById(id)!;
@@ -167,17 +167,21 @@ export function TwoLobby({ vip = false, name, gender, onGender, onClose, onPick,
         <div className="lobby-panel">
           <div className="lobby-info">
             {vip && <div className="vip-chat-tag">💬 {t("vipChatGame")}</div>}
+            {ids.length === 1 ? (
+              <div className="vip-single">{t("entry")} <Chips amount={tb.entry} /> → {t("toWinner")} <Chips amount={winnerPrize(tb)} /></div>
+            ) : (
             <div className="vip-stake ozel-stake" role="radiogroup" aria-label={t("vipStake")}>
-              {ids.map((k) => {
-                const x = tableById(k)!;
-                return (
-                  <button key={k} type="button" role="radio" aria-checked={id === k} className={id === k ? "on" : ""} onClick={() => setId(k)}>
-                    <span><Chips amount={x.entry} /></span>
-                    <span className="vip-stake-arrow">→ <Chips amount={winnerPrize(x)} /></span>
-                  </button>
-                );
-              })}
-            </div>
+                {ids.map((k) => {
+                  const x = tableById(k)!;
+                  return (
+                    <button key={k} type="button" role="radio" aria-checked={id === k} className={id === k ? "on" : ""} onClick={() => setId(k)}>
+                      <span><Chips amount={x.entry} /></span>
+                      <span className="vip-stake-arrow">→ <Chips amount={winnerPrize(x)} /></span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             {vip && (
               <div className="vip-search-row">
                 <button type="button" className="primary vip-search-btn vip-f" onClick={() => seek("kadin")}>👩 {t("vipSearchF")}</button>

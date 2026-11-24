@@ -33,17 +33,18 @@ export const TABLES: TableConfig[] = [
   // VIP iki kişilik özel oda: karşılıklı, yalnızca VIP aboneler
   { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true },
   // VIP Usta: aynı oda, yüksek giriş (VIP kartındaki giriş seçiminden)
-  { id: "vip2m", name: "VIP 250", entry: VIP_ORTA_ENTRY, hands: 1, level: "zor", prize: VIP_ORTA_PRIZE, players: 2, vip: true },
-  { id: "vip2u", name: "VIP Usta", entry: VIP_USTA_ENTRY, hands: 1, level: "zor", prize: VIP_USTA_PRIZE, players: 2, vip: true },
 ];
 
 /** VIP oda türü mü (serbest sohbet, izleyici yok, süre yok). */
-export const isVipType = (type: string | undefined) => !!TABLES.find((t) => t.id === type)?.vip;
+export const isVipType = (type: string | undefined) => !!tableById(type)?.vip;
 
 /** Eski masalar: yalnızca önceki sürümde başlamış oyunların ödemesi için. */
 const LEGACY_TABLES: TableConfig[] = [
   { id: "sampiyon", name: "Şampiyon", entry: 10_000, hands: 5, level: "zor" },
   { id: "vip", name: "VIP", entry: 50_000, hands: 5, level: "zor" },
+  // VIP Oda artık tek masa (100 → 200): sohbet ve sakin oyun için. Eski seçenekler yalnızca sürmekte olan oyunlar için.
+  { id: "vip2m", name: "VIP 250", entry: VIP_ORTA_ENTRY, hands: 1, level: "zor", prize: VIP_ORTA_PRIZE, players: 2, vip: true },
+  { id: "vip2u", name: "VIP 500", entry: VIP_USTA_ENTRY, hands: 1, level: "zor", prize: VIP_USTA_PRIZE, players: 2, vip: true },
 ];
 
 export function tableById(id: string | undefined): TableConfig | undefined {

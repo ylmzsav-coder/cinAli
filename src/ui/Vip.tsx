@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { VIP_BONUS_CHIPS, VIP_ENTRY, VIP_ORTA_ENTRY, VIP_ORTA_PRIZE, VIP_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE } from "../economy/config";
+import { VIP_BONUS_CHIPS, VIP_ENTRY, VIP_PRIZE } from "../economy/config";
 import { TEST_MODE, VIP_PRODUCT, buyVip, purchasesAvailable } from "../economy/store";
 import { useWallet } from "../economy/useWallet";
 import { wallet } from "../economy/wallet";
@@ -41,7 +41,7 @@ export function VipModal({ onClose, onSubscribed }: { onClose: () => void; onSub
           <li className="vip-perk-hl">👩👨 {t("vipPerkGender")}</li>
           <li>💬 {t("vipPerkChat")}</li>
           <li>⏳ {t("vipPerkNoTimer")}</li>
-          <li className="vip-perk-hl">🪙 {t("vipPerkTable", { entry: VIP_ENTRY, prize: VIP_PRIZE, entry2: VIP_ORTA_ENTRY, prize2: VIP_ORTA_PRIZE, entry3: formatNumber(VIP_USTA_ENTRY), prize3: formatNumber(VIP_USTA_PRIZE) })}</li>
+          <li className="vip-perk-hl">🪙 {t("vipPerkTable", { entry: VIP_ENTRY, prize: VIP_PRIZE })}</li>
           <li>🎁 {t("vipPerkGift", { n: formatNumber(VIP_BONUS_CHIPS) })}</li>
         </ul>
         <div className="vip-buy-bar">

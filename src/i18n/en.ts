@@ -324,7 +324,7 @@ const en: Messages = {
   vipMonth: "week",
   vipPerkRoom: "Private 2-player VIP room: play head-to-head",
   vipPerkChat: "Game with chat: chat with your fellow player",
-  vipPerkTable: "Three VIP stakes: {entry} → {prize} · {entry2} → {prize2} · {entry3} → {prize3} chips",
+  vipPerkTable: "One VIP table: entry {entry} chips, winner gets {prize} · chat and relaxed play",
   vipPerkGift: "{n} free chips when you subscribe",
   vipActiveUntil: "Your VIP membership is valid until {date}.",
   vipSubscribe: "Subscribe",

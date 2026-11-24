@@ -37,7 +37,7 @@ import {
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { assertNotBanned } from "./admin";
 import { blockedWithAny } from "./blocks";
-import { TABLES, TableConfig, payout } from "../../src/economy/tables";
+import { TABLES, TableConfig, payout, tableById } from "../../src/economy/tables";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 import { publicView, type Action, type PublicView, type SeatInfo } from "../../src/online/view";
@@ -98,7 +98,14 @@ const stateRef = (id: string) => tableRef(id).collection("server").doc("state");
 const handRef = (id: string, uid: string) => tableRef(id).collection("hands").doc(uid);
 const userRef = (uid: string) => db.collection("users").doc(uid);
 
+/** Masa ayarı (sürmekte olan eski masa türleri dahil). */
 function configFor(type: unknown): TableConfig {
+  const c = tableById(type as string);
+  if (!c) fail("badRequest", {}, "invalid-argument");
+  return c;
+}
+/** Yeni oturma: yalnızca güncel masa türleri (kaldırılan türlere yeni oyun açılmaz). */
+function joinableConfig(type: unknown): TableConfig {
   const c = TABLES.find((t) => t.id === type);
   if (!c) fail("badRequest", {}, "invalid-argument");
   return c;
@@ -242,7 +249,7 @@ async function activeTableOf(t: Transaction, uid: string): Promise<string | null
 export const createPrivateTable = onCall(async (req) => {
   const uid = uidOf(req);
   await assertNotBanned(uid);
-  const cfg = configFor(req.data?.type);
+  const cfg = joinableConfig(req.data?.type);
   const lang = langOf(req.data?.lang);
   const name = cleanName(req.data?.name, uid, lang);
   // Kod çakışmasını önlemek için birkaç deneme
@@ -317,7 +324,7 @@ export const joinPrivateTable = onCall(async (req) => {
 export const joinTable = onCall(async (req) => {
   const uid = uidOf(req);
   await assertNotBanned(uid);
-  const cfg = configFor(req.data?.type);
+  const cfg = joinableConfig(req.data?.type);
   const lang = langOf(req.data?.lang);
   const name = cleanName(req.data?.name, uid, lang);
 

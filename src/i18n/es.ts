@@ -324,7 +324,7 @@ const es: Messages = {
   vipMonth: "semana",
   vipPerkRoom: "Sala VIP privada para 2: frente a frente",
   vipPerkChat: "Partida con chat: chatea con tu compañero de juego",
-  vipPerkTable: "Tres entradas VIP: {entry} → {prize} · {entry2} → {prize2} · {entry3} → {prize3} fichas",
+  vipPerkTable: "Una mesa VIP: entrada {entry} fichas, el ganador recibe {prize} · chat y juego tranquilo",
   vipPerkGift: "{n} fichas de regalo al suscribirte",
   vipActiveUntil: "Tu suscripción VIP es válida hasta el {date}.",
   vipSubscribe: "Suscribirse",
