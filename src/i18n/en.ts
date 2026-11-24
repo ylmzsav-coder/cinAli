@@ -562,6 +562,7 @@ const en: Messages = {
   rule_rate: "High Society entry requirement: only players with a win rate (games won out of games played) of 76% or more can sit at the High Society professional table. Players below 76% are blocked and told why on screen; they can raise their rate by winning at the Tea House and Fifty Cent.",
   sosyeteTermsTitle: "High Society chat rules",
   sosyeteTerms5: "High Society chat is for adults (18+); younger players can play at High Society but can't write messages.",
+  rateTag: "Win rate {n}%",
   sosyeteChatTag: "Free chat",
   sosyeteChat: "Chat game · free",
   rule_sosyete_chat: "High Society is a chat table: players with a win rate of 76% or more can chat with each other at the table for free, no VIP membership needed. A profanity and illegal-content filter applies and messages are logged. Chatting is for adults (18+).",

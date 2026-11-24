@@ -562,6 +562,7 @@ const fr: Messages = {
   rule_rate: "Condition d’accès à la Haute Société : seuls les joueurs ayant un taux de victoire (parties gagnées sur parties jouées) d’au moins 76 % peuvent s’asseoir à cette table pro. En dessous, l’accès est refusé et la raison s’affiche à l’écran ; on peut augmenter son taux en gagnant au Salon de thé et au Fifty Cent.",
   sosyeteTermsTitle: "Règles du chat de la Haute Société",
   sosyeteTerms5: "Le chat de la Haute Société est réservé aux adultes (18+) ; les plus jeunes peuvent y jouer mais pas écrire.",
+  rateTag: "Taux de victoire {n} %",
   sosyeteChatTag: "Chat gratuit",
   sosyeteChat: "Partie avec chat · gratuit",
   rule_sosyete_chat: "La Haute Société est une table avec chat : les joueurs ayant un taux de victoire d’au moins 76 % peuvent discuter gratuitement entre eux à la table, sans abonnement VIP. Un filtre anti-injures et anti-contenu illégal s’applique et les messages sont enregistrés. Le chat est réservé aux 18 ans et plus.",

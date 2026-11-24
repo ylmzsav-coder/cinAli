@@ -566,6 +566,7 @@ const tr = {
   rule_rate: "Sosyete giriş şartı: Sosyete profesyonel masasına yalnızca başarı oranı (kazanılan oyunların oynanan oyunlara oranı) %76 ve üzeri olan oyuncular oturabilir. Oranı %76'nın altında olan oyuncunun girişi engellenir ve nedeni ekranda yazılır; Çayhane ve Fifty Cent'te kazanarak oranını yükseltebilir.",
   sosyeteTermsTitle: "Sosyete sohbet kuralları",
   sosyeteTerms5: "Sosyete sohbeti 18 yaşından büyükler içindir; 18 yaş altı oyuncular Sosyete'de oynayabilir ama yazışamaz.",
+  rateTag: "Başarı oranı %{n}",
   sosyeteChatTag: "Ücretsiz sohbet",
   sosyeteChat: "Sohbetli oyun · ücretsiz",
   rule_sosyete_chat: "Sosyete sohbetli masadır: başarı oranı %76 ve üzeri olan oyuncular masada kendi aralarında ücretsiz yazışabilir; VIP üyelik gerekmez. Küfür ve yasa dışı içerik filtresi uygulanır, mesajlar kayıt altında tutulur. Yazışma 18 yaşından büyükler içindir.",

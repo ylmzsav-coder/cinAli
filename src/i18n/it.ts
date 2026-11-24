@@ -562,6 +562,7 @@ const it: Messages = {
   rule_rate: "Requisito dell’Alta Società: a questo tavolo pro possono sedersi solo i giocatori con una percentuale di vittorie (partite vinte su giocate) di almeno il 76%. Sotto questa soglia l’ingresso è bloccato e il motivo appare sullo schermo; si può aumentare vincendo alla Sala da tè e al Fifty Cent.",
   sosyeteTermsTitle: "Regole della chat dell’Alta Società",
   sosyeteTerms5: "La chat dell’Alta Società è per maggiorenni; i più giovani possono giocare ma non scrivere.",
+  rateTag: "Vittorie {n}%",
   sosyeteChatTag: "Chat gratis",
   sosyeteChat: "Partita con chat · gratis",
   rule_sosyete_chat: "L’Alta Società è un tavolo con chat: i giocatori con una percentuale di vittorie di almeno il 76% possono chattare gratis tra loro al tavolo, senza abbonamento VIP. È attivo un filtro contro parolacce e contenuti illegali e i messaggi vengono registrati. La chat è per maggiorenni.",
