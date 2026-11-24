@@ -37,6 +37,8 @@ export default defineConfig({
       workbox: {
         // Sözlükler önceden indirilmez; yalnızca seçilen dilinki ilk kullanımda önbelleğe alınır.
         globPatterns: ["**/*.{js,css,html,svg,png,m4a}"],
+        // Resim denetimi modeli (~5 MB) önceden indirilmez: yalnızca profil resmi seçilince yüklenir
+        globIgnores: ["**/photocheck-*.js", "**/group1-shard*.js", "**/model.min-*.js"],
         runtimeCaching: [
           {
             urlPattern: /\/dict\/[a-z]{2}\.txt(\?.*)?$/,
@@ -67,7 +69,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
-        manualChunks: (id) => (id.includes("node_modules/firebase") || id.includes("node_modules/@firebase") ? "firebase" : id.includes("node_modules/react") ? "react" : undefined),
+        manualChunks: (id) => (id.includes("node_modules/@tensorflow") || id.includes("node_modules/nsfwjs") ? "photocheck" : id.includes("node_modules/firebase") || id.includes("node_modules/@firebase") ? "firebase" : id.includes("node_modules/react") ? "react" : undefined),
       },
     },
   },

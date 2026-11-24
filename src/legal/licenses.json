@@ -4,28 +4,41 @@
     "updated": "Word Okey'in kendi kodu, görselleri, müzikleri ve metinleri tescillidir; tüm hakları saklıdır. Aşağıdaki bileşenler kendi lisanslarıyla kullanılır.",
     "intro": "Bu bileşenlerin yazarlarına teşekkür ederiz.",
     "sections": [
-      { "h": "Sözlükler", "items": [
-        "Türkçe: Vikisözlük kelime listesi (mertemin/turkish-word-list) — CC BY-SA; ek kelimeler: CanNuhlar/Turkce-Kelime-Listesi; sıklık sırası: an-array-of-turkish-words — MIT.",
-        "Almanca ve İtalyanca: Vikisözlük (Wiktionary) veri dosyaları — CC BY-SA 4.0.",
-        "İngilizce: Hunspell dictionary-en (SCOWL) — MIT ve BSD.",
-        "Fransızca: Hunspell dictionary-fr — MPL-2.0. İspanyolca: Hunspell dictionary-es — MPL-1.1. Portekizce: Hunspell dictionary-pt — MPL-2.0.",
-        "Kelime sıklıkları (tüm diller): hermitdave/FrequencyWords — CC BY-SA 4.0.",
-        "Bu kaynaklardan uyarlanan kelime listeleri (filtrelenmiş, büyük harfe çevrilmiş, sıklığa göre dizilmiş) CC BY-SA 4.0 lisansıyla paylaşılır; bu yalnızca kelime listesi dosyalarını kapsar."
-      ] },
-      { "h": "Sohbet filtresi", "items": [
-        "Küfür listeleri: LDNOOBW — List of Dirty, Naughty, Obscene, and Otherwise Bad Words (github.com/LDNOOBW) — CC BY 4.0; Word Okey tarafından eklenen kelime ve köklerle genişletilmiştir."
-      ] },
-      { "h": "Açık kaynak yazılımlar", "items": [
-        "React ve React DOM — MIT. Vite, vite-plugin-pwa ve Workbox — MIT.",
-        "Firebase JavaScript SDK, Firebase Admin SDK ve Cloud Functions for Firebase — Apache-2.0.",
-        "Capacitor ve eklentileri (App, Haptics, Splash Screen, Status Bar) — MIT.",
-        "Bu lisansların tam metinleri ilgili paketlerin kaynak dağıtımlarında yer alır."
-      ] },
-      { "h": "Görseller, sesler ve yazı tipleri", "items": [
-        "Logo, taşlar, simgeler ve hediye çizimleri Word Okey için özgün olarak hazırlanmıştır.",
-        "Müzik ve oyun sesleri Word Okey için özgün olarak üretilmiştir.",
-        "Emojiler ve yazı tipleri cihazının işletim sistemine aittir."
-      ] }
+      {
+        "h": "Sözlükler",
+        "items": [
+          "Türkçe: Vikisözlük kelime listesi (mertemin/turkish-word-list) — CC BY-SA; ek kelimeler: CanNuhlar/Turkce-Kelime-Listesi; sıklık sırası: an-array-of-turkish-words — MIT.",
+          "Almanca ve İtalyanca: Vikisözlük (Wiktionary) veri dosyaları — CC BY-SA 4.0.",
+          "İngilizce: Hunspell dictionary-en (SCOWL) — MIT ve BSD.",
+          "Fransızca: Hunspell dictionary-fr — MPL-2.0. İspanyolca: Hunspell dictionary-es — MPL-1.1. Portekizce: Hunspell dictionary-pt — MPL-2.0.",
+          "Kelime sıklıkları (tüm diller): hermitdave/FrequencyWords — CC BY-SA 4.0.",
+          "Bu kaynaklardan uyarlanan kelime listeleri (filtrelenmiş, büyük harfe çevrilmiş, sıklığa göre dizilmiş) CC BY-SA 4.0 lisansıyla paylaşılır; bu yalnızca kelime listesi dosyalarını kapsar."
+        ]
+      },
+      {
+        "h": "Sohbet filtresi",
+        "items": [
+          "Küfür listeleri: LDNOOBW — List of Dirty, Naughty, Obscene, and Otherwise Bad Words (github.com/LDNOOBW) — CC BY 4.0; Word Okey tarafından eklenen kelime ve köklerle genişletilmiştir."
+        ]
+      },
+      {
+        "h": "Açık kaynak yazılımlar",
+        "items": [
+          "React ve React DOM — MIT. Vite, vite-plugin-pwa ve Workbox — MIT.",
+          "Firebase JavaScript SDK, Firebase Admin SDK ve Cloud Functions for Firebase — Apache-2.0.",
+          "Capacitor ve eklentileri (App, Haptics, Splash Screen, Status Bar) — MIT.",
+          "Profil resmi denetimi: NSFWJS — MIT; TensorFlow.js — Apache-2.0 (cihazda çalışır, resim sunucuya gönderilmez).",
+          "Bu lisansların tam metinleri ilgili paketlerin kaynak dağıtımlarında yer alır."
+        ]
+      },
+      {
+        "h": "Görseller, sesler ve yazı tipleri",
+        "items": [
+          "Logo, taşlar, simgeler ve hediye çizimleri Word Okey için özgün olarak hazırlanmıştır.",
+          "Müzik ve oyun sesleri Word Okey için özgün olarak üretilmiştir.",
+          "Emojiler ve yazı tipleri cihazının işletim sistemine aittir."
+        ]
+      }
     ]
   },
   "en": {
@@ -33,28 +46,41 @@
     "updated": "Word Okey's own code, graphics, music and texts are proprietary; all rights reserved. The components below are used under their own licenses.",
     "intro": "We thank the authors of these components.",
     "sections": [
-      { "h": "Dictionaries", "items": [
-        "Turkish: Wiktionary word list (mertemin/turkish-word-list) — CC BY-SA; extra words: CanNuhlar/Turkce-Kelime-Listesi; frequency order: an-array-of-turkish-words — MIT.",
-        "German and Italian: Wiktionary data dumps — CC BY-SA 4.0.",
-        "English: Hunspell dictionary-en (SCOWL) — MIT and BSD.",
-        "French: Hunspell dictionary-fr — MPL-2.0. Spanish: Hunspell dictionary-es — MPL-1.1. Portuguese: Hunspell dictionary-pt — MPL-2.0.",
-        "Word frequencies (all languages): hermitdave/FrequencyWords — CC BY-SA 4.0.",
-        "Word lists adapted from these sources (filtered, upper-cased, ordered by frequency) are shared under CC BY-SA 4.0; this covers only the word list files."
-      ] },
-      { "h": "Chat filter", "items": [
-        "Profanity lists: LDNOOBW — List of Dirty, Naughty, Obscene, and Otherwise Bad Words (github.com/LDNOOBW) — CC BY 4.0; extended with words and stems added by Word Okey."
-      ] },
-      { "h": "Open-source software", "items": [
-        "React and React DOM — MIT. Vite, vite-plugin-pwa and Workbox — MIT.",
-        "Firebase JavaScript SDK, Firebase Admin SDK and Cloud Functions for Firebase — Apache-2.0.",
-        "Capacitor and plugins (App, Haptics, Splash Screen, Status Bar) — MIT.",
-        "The full license texts are included in the source distributions of these packages."
-      ] },
-      { "h": "Graphics, sounds and fonts", "items": [
-        "The logo, tiles, icons and gift drawings were made originally for Word Okey.",
-        "Music and game sounds were produced originally for Word Okey.",
-        "Emoji and fonts belong to your device's operating system."
-      ] }
+      {
+        "h": "Dictionaries",
+        "items": [
+          "Turkish: Wiktionary word list (mertemin/turkish-word-list) — CC BY-SA; extra words: CanNuhlar/Turkce-Kelime-Listesi; frequency order: an-array-of-turkish-words — MIT.",
+          "German and Italian: Wiktionary data dumps — CC BY-SA 4.0.",
+          "English: Hunspell dictionary-en (SCOWL) — MIT and BSD.",
+          "French: Hunspell dictionary-fr — MPL-2.0. Spanish: Hunspell dictionary-es — MPL-1.1. Portuguese: Hunspell dictionary-pt — MPL-2.0.",
+          "Word frequencies (all languages): hermitdave/FrequencyWords — CC BY-SA 4.0.",
+          "Word lists adapted from these sources (filtered, upper-cased, ordered by frequency) are shared under CC BY-SA 4.0; this covers only the word list files."
+        ]
+      },
+      {
+        "h": "Chat filter",
+        "items": [
+          "Profanity lists: LDNOOBW — List of Dirty, Naughty, Obscene, and Otherwise Bad Words (github.com/LDNOOBW) — CC BY 4.0; extended with words and stems added by Word Okey."
+        ]
+      },
+      {
+        "h": "Open-source software",
+        "items": [
+          "React and React DOM — MIT. Vite, vite-plugin-pwa and Workbox — MIT.",
+          "Firebase JavaScript SDK, Firebase Admin SDK and Cloud Functions for Firebase — Apache-2.0.",
+          "Capacitor and plugins (App, Haptics, Splash Screen, Status Bar) — MIT.",
+          "Profile photo check: NSFWJS — MIT; TensorFlow.js — Apache-2.0 (runs on device; photos are not uploaded).",
+          "The full license texts are included in the source distributions of these packages."
+        ]
+      },
+      {
+        "h": "Graphics, sounds and fonts",
+        "items": [
+          "The logo, tiles, icons and gift drawings were made originally for Word Okey.",
+          "Music and game sounds were produced originally for Word Okey.",
+          "Emoji and fonts belong to your device's operating system."
+        ]
+      }
     ]
   }
 }

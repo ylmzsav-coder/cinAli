@@ -1,3 +1,4 @@
+import { checkPhoto } from "../photoCheck";
 import { appStoreUrl, openStoreReview, playUrl } from "../rate";
 import { loadSettings, saveSettings, type Settings } from "../storage";
 
@@ -29,19 +30,36 @@ export function loadPhoto(): string | null {
   }
 }
 
-/** Seçilen resmi 160 piksel kare olarak küçültüp kaydeder. */
+/** Facebook profil resmi (Facebook ile kayıt olunca varsayılan; oyuncu kendi resmini seçince onun yerine geçer). */
+export function setFacebookPhoto(url: string | null) {
+  try {
+    if (url && !localStorage.getItem(PHOTO_KEY)) localStorage.setItem(PHOTO_KEY, url);
+  } catch {
+    /* depolama yok */
+  }
+}
+
+/**
+ * Seçilen resmi 160 piksel kare olarak küçültür, müstehcen içerik denetiminden geçirir
+ * ve kaydeder. Reddedilirse "rejected" hatası verir; resim kaydedilmez.
+ */
 function savePhoto(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onload = () => {
+    img.onload = async () => {
       const size = 160;
       const c = document.createElement("canvas");
       c.width = c.height = size;
       const g = c.getContext("2d")!;
       const s = Math.min(img.width, img.height);
       g.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
-      const url = c.toDataURL("image/jpeg", 0.85);
       URL.revokeObjectURL(img.src);
+      try {
+        if ((await checkPhoto(c)) === "rejected") return reject(new Error("photoRejected"));
+      } catch {
+        return reject(new Error("photoCheckFailed"));
+      }
+      const url = c.toDataURL("image/jpeg", 0.85);
       try {
         localStorage.setItem(PHOTO_KEY, url);
       } catch {
@@ -154,7 +172,15 @@ export function MyStatsModal({ name, onClose, onJoin, gender: genderProp, onGend
             <span className="photo-edit" aria-hidden>📷</span>
             <input type="file" accept="image/*" hidden onChange={async (e) => {
               const f = e.target.files?.[0];
-              if (f) setPhoto(await savePhoto(f).catch(() => photo));
+              e.target.value = "";
+              if (!f) return;
+              setMsg(t("photoChecking"));
+              try {
+                setPhoto(await savePhoto(f));
+                setMsg(t("photoSaved"));
+              } catch (err) {
+                setMsg(t((err as Error).message === "photoRejected" ? "photoRejected" : "photoCheckFailed"));
+              }
             }} />
           </label>
           <div className="profile-name">{shown}</div>

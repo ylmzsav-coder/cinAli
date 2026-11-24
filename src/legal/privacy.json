@@ -20,7 +20,7 @@
           "Şikâyetler: bir oyuncuyu şikâyet ettiğinde ya da şikâyet edildiğinde, şikâyet kaydı ve o masadaki son mesajlar.",
           "Otomatik toplanan bilgiler: IP adresin, bağlantı ve son görülme zamanların (çevrimiçi durumu için).",
           "Satın almalar: VIP üyelik ve çip satın alımları Google Play veya App Store üzerinden yapılır. Kart ve ödeme bilgilerin bize gelmez; yalnızca satın alma kaydı (ürün, tarih, sipariş numarası) tutulur.",
-          "Toplamadıklarımız: rehberin, konumun, fotoğraf galerin, mikrofonun veya kameran. Profil fotoğrafı seçersen fotoğraf yalnızca kendi cihazında saklanır, sunucumuza gönderilmez."
+          "Toplamadıklarımız: rehberin, konumun, fotoğraf galerin, mikrofonun veya kameran. Profil fotoğrafı seçersen fotoğraf yalnızca kendi cihazında saklanır; müstehcen içerik denetimi de cihazında yapılır, sunucumuza gönderilmez. Facebook ile giriş yaparsan Facebook profil resmin varsayılan profil resmin olur; dilediğin zaman değiştirebilirsin."
         ]
       },
       {
@@ -129,7 +129,7 @@
           "Reports: when you report a player or are reported, the report and the latest messages at that table.",
           "Automatically collected information: your IP address, connection and last-seen times (for online status).",
           "Purchases: VIP membership and chips are bought through Google Play or the App Store. Your card and payment details never reach us; we only keep the purchase record (product, date, order number).",
-          "What we do not collect: your contacts, location, photo gallery, microphone or camera. If you choose a profile photo, it is stored only on your own device and is never sent to our servers."
+          "What we do not collect: your contacts, location, photo gallery, microphone or camera. If you choose a profile photo, it is stored only on your device; the explicit-content check also runs on your device and the photo is never sent to our servers. If you sign in with Facebook, your Facebook profile picture becomes your default profile photo; you can change it at any time."
         ]
       },
       {

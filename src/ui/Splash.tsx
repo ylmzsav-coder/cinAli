@@ -1,3 +1,4 @@
+import { setFacebookPhoto } from "./Profile";
 import { AgeGate } from "./AgeGate";
 import { birthYear, tooYoung } from "../age";
 import { LegalOverlay } from "./Terms";
@@ -45,7 +46,10 @@ export function Splash({ onStart }: { onStart: () => void }) {
     setBusy(true);
     setErr(null);
     try {
-      await connectFacebook();
+      const u = await connectFacebook();
+      // Facebook profil resmi Word Okey profil resmi olur (oyuncu sonra değiştirebilir)
+      const fb = u.providerData.find((p) => p.providerId === "facebook.com");
+      setFacebookPhoto(fb?.photoURL ? `${fb.photoURL}?type=large` : u.photoURL);
       finish({ method: "facebook" });
     } catch (e) {
       setErr(errorText(e));
