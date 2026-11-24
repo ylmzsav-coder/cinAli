@@ -376,17 +376,17 @@ export const joinTable = onCall(async (req) => {
     };
     let candidate: FirebaseFirestore.QueryDocumentSnapshot | undefined;
     for (const d of open.docs) if (await free(d)) { candidate = d; break; }
-    // VIP oyuncu yoksa sırayla: Teke Tek (aynı girişli 2 kişilik masa) → Sosyete → Çayhane.
-    // Orada tek başına bekleyen oyuncuyla eşleşilir; ondan abonelik istenmez, masa VIP
-    // masasına dönüşür (sohbetli, süresiz). Daha pahalı masadan gelenin giriş farkı iade edilir.
-    // 18 yaş altı oyuncu VIP odaya (sohbet) alınmaz.
+    // VIP oyuncu yoksa sırayla: Teke Tek → Sosyete → Çayhane. Yalnızca VIP ile AYNI girişli
+    // (100) masada tek başına bekleyen oyuncuyla eşleşilir; yüksek girişli masalardan oyuncu
+    // alınmaz, çip iadesi gerekmez. Ondan abonelik istenmez, masa VIP masasına dönüşür
+    // (sohbetli, süresiz). 18 yaş altı oyuncu VIP odaya (sohbet) alınmaz.
     let fromOzel = false;
-    let movedRefund: { uid: string; wallet: WalletDoc; amount: number } | null = null;
     if (cfg.vip && !candidate) {
+      const same = (x: TableConfig) => !x.vip && x.entry === cfg.entry;
       const tiers = [
-        TABLES.filter((x) => !x.vip && x.players === 2 && x.entry === cfg.entry).map((x) => x.id),
-        TABLES.filter((x) => x.id.startsWith("usta") && x.entry >= cfg.entry).map((x) => x.id),
-        TABLES.filter((x) => x.id === "caylak" && x.entry >= cfg.entry).map((x) => x.id),
+        TABLES.filter((x) => same(x) && x.players === 2).map((x) => x.id),
+        TABLES.filter((x) => same(x) && x.id.startsWith("usta")).map((x) => x.id),
+        TABLES.filter((x) => same(x) && x.id === "caylak").map((x) => x.id),
       ];
       search: for (const types of tiers) {
         for (const oz of types) {
@@ -396,14 +396,7 @@ export const joinTable = onCall(async (req) => {
             const tb = d.data() as TableDoc;
             // Yalnızca tek başına bekleyen gerçek oyuncu (başka oyuncuların masası bozulmaz)
             if (tb.seats.length !== 1 || tb.seats[0].bot || tb.uids.includes(uid) || (await blockedWithAny(uid, tb.uids))) continue;
-            const other = tb.seats[0].uid!;
-            if ((await t.get(userRef(other))).data()?.adult === false) continue;
-            const diff = (configFor(oz).entry ?? 0) - cfg.entry;
-            if (diff > 0) {
-              const ow = (await t.get(walletRef(other))).data() as WalletDoc | undefined;
-              if (!ow) continue;
-              movedRefund = { uid: other, wallet: ow, amount: diff };
-            }
+            if ((await t.get(userRef(tb.seats[0].uid!))).data()?.adult === false) continue;
             candidate = d;
             fromOzel = true;
             break search;
@@ -413,7 +406,6 @@ export const joinTable = onCall(async (req) => {
     }
 
     applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
-    if (movedRefund) applyTx(t, movedRefund.uid, movedRefund.wallet, movedRefund.amount, "iade", cfg.id);
     let id: string;
     if (candidate) {
       id = candidate.id;

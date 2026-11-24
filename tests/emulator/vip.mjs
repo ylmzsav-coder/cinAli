@@ -146,17 +146,23 @@ check("Özel Oda oyuncusu (abonesiz) sohbet edebilir", (await Z1.call("sendText"
 // VIP ve Teke Tek boşsa: Sosyete'de, o da yoksa Çayhane'de tek başına bekleyen oyuncuyla eşleşir
 const tbl = async (c, id) => (await getDoc(doc(c.db, "tables", id))).data();
 {
-  const S1 = await client("Sefa"), V1 = await client("Vedat");
+  const S1 = await client("Sefa"), V1 = await client("Vedat"), H1 = await client("Hakan");
   await V1.call("testSubscribeVip");
-  await S1.call("testPurchase", { chips: 5000, productId: "wordokey_cip_5k" });
+  // Yüksek girişli masada (Sosyete 1.000) bekleyen oyuncu VIP (100) ile eşleşmez
+  await H1.call("testPurchase", { chips: 5000, productId: "wordokey_cip_5k" });
+  const h0 = (await H1.wallet()).balance;
+  const hj = await H1.call("joinTable", { type: "usta2", lang: "de", name: "Hakan" });
+  const T1 = await client("Tamer");
+  const tj = await T1.call("joinTable", { type: "ozel2u", lang: "de", name: "Tamer" });
   const s0 = (await S1.wallet()).balance;
-  // Sosyete 1000'lik masada bekleyen oyuncu: VIP'e (100) geçince farkı (900) iade edilir
-  const sj = await S1.call("joinTable", { type: "usta2", lang: "de", name: "Sefa" });
+  const sj = await S1.call("joinTable", { type: "usta", lang: "de", name: "Sefa" });
   const vj = await V1.call("joinTable", { type, lang: "de", name: "Vedat" });
-  const st = await tbl(S1, sj.tableId);
-  check("Teke Tek boşsa Sosyete'de bekleyen oyuncuyla eşleşir", vj.tableId === sj.tableId && st.type === "vip2" && st.status === "playing" && st.seats.length === 2 && st.seats.every((x) => !x.bot) && st.deadline === null, `${st.type} · ${st.seats.map((x) => x.name).join(" vs ")}`);
-  const s1 = (await S1.wallet()).balance;
-  check("Sosyete oyuncusuna giriş farkı iade edilir (1.000 − 100 = 900)", s1 === s0 - 100, `${s0} → ${s1}`);
+  const st = await tbl(S1, sj.tableId), ht = await tbl(H1, hj.tableId);
+  check("Teke Tek boşsa Sosyete'de (giriş 100) bekleyen oyuncuyla eşleşir", vj.tableId === sj.tableId && st.type === "vip2" && st.status === "playing" && st.seats.length === 2 && st.seats.every((x) => !x.bot) && st.deadline === null, `${st.type} · ${st.seats.map((x) => x.name).join(" vs ")}`);
+  check("yüksek girişli Sosyete (1.000) oyuncusu VIP ile eşleşmez, masası bozulmaz", vj.tableId !== hj.tableId && ht.type === "usta2" && ht.seats.length === 1);
+  const tt = await tbl(T1, tj.tableId);
+  check("Teke Tek 250 oyuncusu VIP ile eşleşmez (yalnızca giriş 100 olan masalar)", vj.tableId !== tj.tableId && tt.type === "ozel2u" && tt.seats.length === 1);
+  check("çip iadesi yok: Sosyete 100 oyuncusu yalnızca 100 öder, 1.000'lik oyuncunun çipi değişmez", (await S1.wallet()).balance === s0 - 100 && (await H1.wallet()).balance === h0 - 1000);
   check("Sosyete'den gelen oyuncu (abonesiz) sohbet edebilir", (await S1.call("sendText", { tableId: sj.tableId, text: "merhaba", uiLang: "tr" })).ok === true);
 }
 {
