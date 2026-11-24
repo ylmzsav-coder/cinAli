@@ -539,6 +539,8 @@ const pt: Messages = {
   noWinnerReplay: "Novo jogo (grátis)",
   noWinnerLeave: "Sair da mesa · {n} fichas devolvidas",
   noWinnerRefund: "Ninguém terminou: a tua entrada foi devolvida na totalidade.",
+  proLabel: "Profissional",
+  rule_pro: "Alta sociedade (mesa profissional): palavras de duas letras não são válidas; abre-se e joga-se com palavras de pelo menos 3 letras. Na Casa de chá, Um contra um e Sala VIP são válidas.",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

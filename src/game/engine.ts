@@ -108,6 +108,8 @@ export interface GameState {
   results?: { winner: number | null; colorWin: Color | null; pairWin?: boolean }[];
   lastResult: HandResult | null;
   log: LogEntry[];
+  /** En kısa kelime uzunluğu (Sosyete: 3, iki harfli kelime yok). Yoksa 2. */
+  minWord?: number;
 }
 
 /** Bir kelime için oyuncunun ıstakasından seçtiği taşlar, sırasıyla. */
@@ -206,7 +208,7 @@ function assertTurn(state: GameState, phase: Phase) {
 
 // ---- Oyun kurulumu -----------------------------------------------------
 /** Etkin oyun dilinde (setGameLang) yeni oyun başlatır. */
-export function newGame(names: string[], bots: boolean[], totalHands: number, seed: number): GameState {
+export function newGame(names: string[], bots: boolean[], totalHands: number, seed: number, minWord?: number): GameState {
   const state: GameState = {
     lang: gameLang().code,
     seed,
@@ -224,6 +226,7 @@ export function newGame(names: string[], bots: boolean[], totalHands: number, se
     history: [],
     lastResult: null,
     log: [],
+    ...(minWord && minWord > MIN_PLAY_LENGTH ? { minWord } : {}),
   };
   return dealHand(state);
 }
@@ -284,8 +287,9 @@ export function drawFromDiscard(prev: GameState): GameState {
 }
 
 /** Bir kelime tanımını doğrular ve yerleştirilmiş taşları döndürür. */
-export function buildWord(dict: Dictionary, rack: Tile[], spec: WordSpec): PlacedTile[] {
-  if (spec.tileIds.length < MIN_PLAY_LENGTH) throw new GameError("minLength", { n: MIN_PLAY_LENGTH });
+export function buildWord(dict: Dictionary, rack: Tile[], spec: WordSpec, minWord = MIN_PLAY_LENGTH): PlacedTile[] {
+  const min = Math.max(MIN_PLAY_LENGTH, minWord);
+  if (spec.tileIds.length < min) throw new GameError("minLength", { n: min });
   const placed = placeTiles(takeTilesFromRack(rack, spec.tileIds), spec.jokerLetters);
   const w = wordString(placed);
   if (!dict.has(w)) throw new GameError("notInDict", { word: w });
@@ -301,7 +305,7 @@ export function openHand(dict: Dictionary, prev: GameState, specs: WordSpec[]): 
   if (!specs.length) throw new GameError("chooseWords");
   const allIds = specs.flatMap((s) => s.tileIds);
   if (new Set(allIds).size !== allIds.length) throw new GameError("tileInTwoWords");
-  const words = specs.map((s) => buildWord(dict, p.rack, s));
+  const words = specs.map((s) => buildWord(dict, p.rack, s, state.minWord));
   const total = words.reduce((s, w) => s + placedValue(w), 0);
   if (total < RULES.openThreshold) {
     throw new GameError("openNeeds", { need: RULES.openThreshold, total });
@@ -326,7 +330,7 @@ export function layWord(dict: Dictionary, prev: GameState, spec: WordSpec): Game
   const p = state.players[state.current];
   if (!p.opened) throw new GameError("mustOpenFirst", { need: RULES.openThreshold });
   if (p.pairs) throw new GameError("pairsOnly");
-  const word = buildWord(dict, p.rack, spec);
+  const word = buildWord(dict, p.rack, spec, state.minWord);
   if (p.rack.length - word.length < 1) throw new GameError("keepOne");
   removeFromRack(p, new Set(spec.tileIds));
   state.table.push({ id: state.nextWordId++, owner: state.current, tiles: word });

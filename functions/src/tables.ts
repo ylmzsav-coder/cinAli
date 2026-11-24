@@ -233,7 +233,7 @@ function startGame(table: TableDoc, seed: number): { table: TableDoc; state: Gam
   const size = cfg.players ?? 4;
   while (seats.length < size) seats.push({ uid: null, name: BOT_NAMES[b++ % BOT_NAMES.length], bot: true });
   setGameLang(table.lang);
-  let state = newGame(seats.map((s) => s.name), seats.map((s) => s.bot), cfg.hands, seed);
+  let state = newGame(seats.map((s) => s.name), seats.map((s) => s.bot), cfg.hands, seed, cfg.minWord);
   state = runBots(state, cfg.level);
   return { table: { ...table, seats, status: "playing" }, state };
 }

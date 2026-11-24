@@ -32,6 +32,7 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
     t("rule_color", { score: RULES.colorWinBonus }),
     t("rule_timer", { n: TABLE_TURN_SECONDS }),
     t("rule_winner", { entry: TABLE_ENTRY, prize: TABLE_PRIZE }),
+    t("rule_pro"),
   ];
   return (
     <div className="page">

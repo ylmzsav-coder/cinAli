@@ -388,6 +388,8 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
     return groupsOf(slots).map((g) => {
       const tiles = g.ids.map((id) => tileById.get(id)).filter((x): x is Tile => !!x);
       const base: GroupInfo = { ids: g.ids, slots: g.slots, word: null, value: 0, jokerLetters: [], options: [], valid: false, pair: false };
+      // Sosyete (profesyonel masa): en az 3 harfli kelime; iki harfli grup kelime sayılmaz
+      if (tiles.length < (state.minWord ?? 2)) return { ...base, word: tiles.map((x) => x.letter ?? "?").join("") };
       if (tiles.length === 2) {
         const [a, b] = tiles;
         const l = a.letter ?? b.letter;
@@ -397,7 +399,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         if (l && (a.letter === null || b.letter === null)) base.pair = true;
         else if (a.letter && b.letter) {
           const word = a.letter + b.letter;
-          const valid = dict.has(word);
+          const valid = (state.minWord ?? 2) <= 2 && dict.has(word);
           return { ...base, word, valid, value: valid ? letterValue(a.letter) + letterValue(b.letter) : 0 };
         }
       }
@@ -419,7 +421,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
       const word = pattern.map((p) => p ?? choice[j++]).join("");
       return { ...base, word, valid: true, jokerLetters: choice, options, value: [...word].reduce((s, ch) => s + letterValue(ch), 0) };
     });
-  }, [slots, tileById, dict, jokerPick]);
+  }, [slots, tileById, dict, jokerPick, state.minWord]);
   const validGroups = groups.filter((g) => g.valid);
   const groupTotal = validGroups.reduce((s, g) => s + g.value, 0);
   /** Istakadaki puan sayacı: açmadan önce ıstakadaki geçerli perlerin toplamı (101'e doğru), açtıktan sonra yere açılan ve işlenen puan. */

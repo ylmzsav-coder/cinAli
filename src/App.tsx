@@ -178,7 +178,7 @@ export function App() {
     const names = [s.name || t("defaultName"), ...bots].slice(0, size);
     // Oyun tek el: taşlarını ilk bitiren olunca oyun biter
     const hands = table?.hands ?? GAME_HANDS;
-    const g = newGame(names, names.map((_, i) => i > 0), hands, Date.now() % 1_000_000);
+    const g = newGame(names, names.map((_, i) => i > 0), hands, Date.now() % 1_000_000, table?.minWord);
     const next: SavedGame = {
       version: 2,
       state: g,

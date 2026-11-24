@@ -539,6 +539,8 @@ const de: Messages = {
   noWinnerReplay: "Neues Spiel (gratis)",
   noWinnerLeave: "Tisch verlassen · {n} Chips zurück",
   noWinnerRefund: "Niemand hat beendet: dein Einsatz wurde voll erstattet.",
+  proLabel: "Profi",
+  rule_pro: "High Society (Profitisch): Wörter mit zwei Buchstaben sind nicht erlaubt; eröffnet und gespielt wird mit Wörtern ab 3 Buchstaben. Im Teehaus, bei Eins gegen Eins und im VIP-Raum sind sie erlaubt.",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

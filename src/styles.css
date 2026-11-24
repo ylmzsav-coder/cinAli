@@ -1604,3 +1604,4 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 /* Oyuncunun kendi düğmesi: dönen sarı şerit kaldırıldı (dikkat dağıtıyordu); sade çerçeve */
 .okey .topbar-actions > .topbar-me::before { display: none !important; content: none !important; animation: none !important; }
 .okey .topbar-actions > .topbar-me::after { inset: 0 !important; border-radius: 10px; box-shadow: none; border: 2px solid rgba(255, 255, 255, 0.18); }
+.pro-tag { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: #1a1a1a; color: #ffd54f; font-size: 0.62em; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: middle; border: 1px solid rgba(255,213,79,0.6); }

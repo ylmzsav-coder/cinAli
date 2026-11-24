@@ -434,6 +434,18 @@ describe("iki harfli kelimeler", () => {
     expect(o.table.at(-1)?.tiles.map((x) => x.letter).join("")).toBe("EK");
     expectErr(() => layWord(dict, o, { tileIds: [b.id] }), "minLength", { n: 2 });
   });
+  it("Sosyete (en az 3 harf): iki harfli kelime ne açılışta ne sonra geçerli", () => {
+    expect(TABLES.filter((x) => x.minWord === 3).map((x) => x.id)).toEqual(["usta", "usta2", "usta5"]);
+    expect(TABLES.filter((x) => !x.id.startsWith("usta")).every((x) => !x.minWord)).toBe(true);
+    const pro = { ...base, minWord: 3 };
+    const kalem = tiles("KALEM"), cay = tiles("ÇAY"), tuz = tiles("TUZ"), ek = tiles("EK"), at = tiles("AT"), b = t("B");
+    const s = rig(pro, [...kalem, ...cay, ...tuz, ...ek, ...at, b]);
+    expectErr(() => openHand(dict, s, [kalem, cay, tuz, ek].map((w) => ({ tileIds: w.map((x) => x.id) }))), "minLength", { n: 3 });
+    const o = openHand(dict, s, [kalem, cay, tuz].map((w) => ({ tileIds: w.map((x) => x.id) })));
+    expectErr(() => layWord(dict, o, { tileIds: at.map((x) => x.id) }), "minLength", { n: 3 });
+    expect(newGame(["A", "B"], [false, true], 1, 3, 3).minWord).toBe(3);
+    expect(newGame(["A", "B"], [false, true], 1, 3).minWord).toBeUndefined();
+  });
 });
 
 import { LANGS, TWO_LETTER_WORDS } from "../src/game/lang";
