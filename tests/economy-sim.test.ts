@@ -2,7 +2,7 @@
  * Çip ekonomisi ve başarı oranı simülasyonu (yalnızca istenince:
  *   SIM=1 SIM_N=300 SIM_OUT=sonuc.json npx vitest run tests/economy-sim.test.ts).
  * Gerçek oyuncuyu bir beceri seviyesindeki yapay oyuncu temsil eder; masadaki bilgisayarlar
- * oyundaki gibi davranır (gerçek oyuncu varken ilk turlarda bitirmeyi geciktirir).
+ * oyundaki gibi davranır (bitirebildiği an bitirir; gerçek oyuncuyla eşit şartlar).
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { describe, it } from "vitest";

@@ -14,7 +14,9 @@ interface ChatLog { uid: string; name: string; banned: boolean; strikes: number;
 
 const CAT: Record<string, string> = { drugs: "💊 Uyuşturucu", weapons: "🔫 Silah", gambling: "🎰 Kumar", selling: "💰 Alım-satım", contact: "📵 İletişim/ödeme" };
 const when = (n: number | null) => (n ? new Date(n).toLocaleString("tr-TR") : "–");
-type Tab = "moderation" | "reports" | "review" | "banned";
+type Tab = "moderation" | "reports" | "review" | "banned" | "rooms";
+interface RoomReport { days: number; since: number; rooms: { room: string; games: number; players: number; byType: Record<string, number> }[]; rated: { players: number; teketek: number; sosyete: number } }
+const ROOM: Record<string, string> = { caylak: "🫖 Çayhane", sosyete: "🚘 Sosyete", teketek: "🎲 Teke Tek", vip: "👑 VIP Oda" };
 
 export function Admin({ onBack }: { onBack: () => void }) {
   const [me, setMe] = useState<{ uid: string; admin: boolean } | null>(null);
@@ -23,6 +25,9 @@ export function Admin({ onBack }: { onBack: () => void }) {
   const [log, setLog] = useState<ChatLog | null>(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
+  const [rooms, setRooms] = useState<RoomReport | null>(null);
+  const [days, setDays] = useState(7);
+  const loadRooms = (d = days) => void call<RoomReport>("adminTableReport", { days: d }).then(setRooms, (e) => setErr(errorText(e)));
 
   const load = useCallback(async () => {
     setErr("");
@@ -89,11 +94,35 @@ export function Admin({ onBack }: { onBack: () => void }) {
               ["reports", `Şikâyetler (${data.reports.length})`],
               ["review", `İncelemede (${data.review.length})`],
               ["banned", `Engelliler (${data.banned.length})`],
+              ["rooms", "📊 Oda raporu"],
             ] as [Tab, string][]).map(([k, label]) => (
-              <button key={k} type="button" role="tab" aria-selected={tab === k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{label}</button>
+              <button key={k} type="button" role="tab" aria-selected={tab === k} className={tab === k ? "on" : ""} onClick={() => { setTab(k); if (k === "rooms") loadRooms(); }}>{label}</button>
             ))}
             <button type="button" onClick={() => void load()} disabled={busy}>↻ Yenile</button>
           </div>
+          {tab === "rooms" && (
+            <div className="admin-rooms">
+              <label>Son{" "}
+                <select value={days} onChange={(e) => { const d = Number(e.target.value); setDays(d); loadRooms(d); }}>
+                  {[1, 7, 14, 30].map((d) => <option key={d} value={d}>{d} gün</option>)}
+                </select>
+              </label>
+              {!rooms ? <p className="muted">Yükleniyor…</p> : (
+                <>
+                  <table className="fee-table">
+                    <thead><tr><th>Oda</th><th>Oynanan oyun</th><th>Farklı oyuncu</th></tr></thead>
+                    <tbody>
+                      {rooms.rooms.map((r) => (
+                        <tr key={r.room}><td>{ROOM[r.room] ?? r.room}</td><td>{r.games}</td><td>{r.players}</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p>Başarı oranı olan oyuncu: <b>{rooms.rated.players}</b> · Teke Tek şartını (%50) karşılayan: <b>{rooms.rated.teketek}</b> · Sosyete şartını (%76) karşılayan: <b>{rooms.rated.sosyete}</b></p>
+                  <p className="muted small">Başlangıç: {when(rooms.since)}</p>
+                </>
+              )}
+            </div>
+          )}
           {tab === "moderation" && (
             <ul className="admin-list">
               {data.moderation.length === 0 && <li className="muted">Açık ihlal yok.</li>}

@@ -16,4 +16,4 @@ export { declineInvite, friendsStatus, heartbeat, inviteFriend, removeFriend, re
 export { convertGift, sendGift } from "./gifts";
 export { deleteAccount } from "./account";
 export { blockPlayer, blockedList, unblockPlayer } from "./blocks";
-export { adminChatLog, adminOverview, adminResolve, adminSetBan, adminWhoAmI } from "./admin";
+export { adminChatLog, adminOverview, adminResolve, adminSetBan, adminTableReport, adminWhoAmI } from "./admin";

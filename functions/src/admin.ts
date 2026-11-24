@@ -117,3 +117,49 @@ export const adminResolve = onCall(async (req) => {
   await db.collection(kind).doc(id).set({ status: "closed", closedBy: admin, closedAt: Date.now() }, { merge: true });
   return { ok: true };
 });
+
+/** Oda grubu: Çayhane, Sosyete (usta*), Teke Tek (ozel*), VIP (vip*). */
+function roomOf(type: string): "caylak" | "sosyete" | "teketek" | "vip" | null {
+  if (type === "caylak") return "caylak";
+  if (type.startsWith("usta")) return "sosyete";
+  if (type.startsWith("ozel")) return "teketek";
+  if (type.startsWith("vip")) return "vip";
+  return null;
+}
+
+/**
+ * Oda raporu (çevrimiçi açılışın ilk haftası için): son N günde (varsayılan 7) her odada oynanan
+ * oyun sayısı ve oynayan farklı gerçek oyuncu sayısı; ayrıca başarı oranına göre Teke Tek (%50)
+ * ve Sosyete (%76) şartını karşılayan oyuncu sayısı.
+ */
+export const adminTableReport = onCall(async (req) => {
+  await requireAdmin(req);
+  const days = Math.min(90, Math.max(1, Number((req.data as { days?: number })?.days ?? 7)));
+  const since = Date.now() - days * 86_400_000;
+  const tables = await db.collection("tables").where("createdAt", ">=", since).get();
+  const rooms: Record<string, { games: number; players: Set<string>; byType: Record<string, number> }> = {};
+  for (const name of ["caylak", "sosyete", "teketek", "vip"]) rooms[name] = { games: 0, players: new Set(), byType: {} };
+  for (const d of tables.docs) {
+    const t = d.data();
+    const room = roomOf(String(t.type ?? ""));
+    // Başlamış oyunlar (bekleme masası ya da kimse gelmeden kapanan masa sayılmaz)
+    if (!room || !["playing", "finished"].includes(String(t.status)) && !(t.status === "abandoned" && t.view)) continue;
+    const r = rooms[room];
+    r.games++;
+    r.byType[t.type] = (r.byType[t.type] ?? 0) + 1;
+    for (const s of (t.seats as { uid: string | null; bot?: boolean }[]) ?? []) if (s.uid && !s.bot) r.players.add(s.uid);
+  }
+  const users = await db.collection("users").where("gamesPlayed", ">", 0).get();
+  let teke = 0, sosyete = 0;
+  for (const u of users.docs) {
+    const played = Number(u.data().gamesPlayed ?? 0), won = Number(u.data().gamesWon ?? 0);
+    const rate = played > 0 ? Math.round((won / played) * 100) : 0;
+    if (rate >= 50) teke++;
+    if (rate >= 76) sosyete++;
+  }
+  return {
+    days, since,
+    rooms: Object.entries(rooms).map(([room, r]) => ({ room, games: r.games, players: r.players.size, byType: r.byType })),
+    rated: { players: users.size, teketek: teke, sosyete },
+  };
+});

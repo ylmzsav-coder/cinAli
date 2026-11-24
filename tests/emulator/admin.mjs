@@ -72,5 +72,21 @@ check("tekrar masaya oturabilir", !!(await K.call("joinTable", { type: "caylak",
 check("istemci config/admins okuyamaz", (await getDoc(doc(N.db, "config", "admins")).then(() => "EVET", (e) => e.code)) === "permission-denied");
 check("işlem günlüğü tutuldu", ((await get("adminLog")).documents ?? []).length === 2);
 
+// Oda raporu (çevrimiçi açılışın ilk haftası): odalardaki oyun ve oyuncu sayıları, şartı karşılayanlar
+{
+  const R1 = await client("Rapor1"), R2 = await client("Rapor2"), R3 = await client("Rapor3");
+  await R1.call("testSetStats", { played: 10, won: 9 });   // %90: Teke Tek ve Sosyete
+  await R2.call("testSetStats", { played: 10, won: 6 });   // %60: yalnızca Teke Tek
+  await R3.call("testSetStats", { played: 10, won: 2 });   // %20: ikisi de değil
+  const c = await R3.call("joinTable", { type: "caylak", lang: "it", name: "Rapor3" }); await R3.call("startTable", { tableId: c.tableId });
+  const o = await R2.call("joinTable", { type: "ozel2", lang: "it", name: "Rapor2" }); await R2.call("startTable", { tableId: o.tableId });
+  const u = await R1.call("joinTable", { type: "usta", lang: "it", name: "Rapor1" }); await R1.call("startTable", { tableId: u.tableId });
+  const rep = await Y.call("adminTableReport", { days: 7 });
+  const room = (k) => rep.rooms.find((x) => x.room === k);
+  check("oda raporu: Çayhane, Teke Tek, Sosyete oyunları ve oyuncuları sayıldı", room("caylak").games >= 1 && room("teketek").games >= 1 && room("sosyete").games >= 1 && room("sosyete").players >= 1 && room("teketek").players >= 1, JSON.stringify(rep.rooms.map((r) => [r.room, r.games, r.players])));
+  check("oda raporu: şartı karşılayan oyuncu sayıları (Teke Tek %50, Sosyete %76)", rep.rated.teketek >= 2 && rep.rated.sosyete >= 1 && rep.rated.players >= 3, JSON.stringify(rep.rated));
+  check("yönetici olmayan oda raporunu göremez", (await errCode(N.call("adminTableReport", { days: 7 }))) === "adminOnly");
+}
+
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

@@ -37,22 +37,17 @@ export interface BotProfile {
    * Gerçek oyuncunun olduğu masada bilgisayar bu turdan önce eli bitirmez
    * (ıstakasında en az bir taş fazla tutar): oyun çabuk bitmesin, oyuncu da kelime kurabilsin.
    */
-  finishFromRound: number;
 }
 
-/**
- * 4 kişilik masada bekleme turunun 2 kişiliğe oranı. Ölçüm (Türkçe, 150'şer maç): 0,65'te oyuncu
- * elde ~6,5 kez sıra alıyordu; 0,9'da ~8–9 kez, destenin tükendiği eller %16–19.
- */
-const FOUR_FACTOR = 0.9;
 export const BOT_PROFILES: Record<BotLevel, BotProfile> = {
   // Bilgisayar elini hemen açmasın diye bekler: oyunlar çok çabuk bitmesin, oyuncu da kelime arayabilsin.
   // (Ölçüm: orta seviyede 4. turdan önce açmamak bir eli 4,7 turdan 7,5 tura uzatır.)
   // İşleme: bilgisayar yerdeki kelimelere harf eklemeyi yeni kelime koymaktan önce dener ve
-  // kelime hakkı bitse de ek işleme yapabilir; bitirme ise gerçek oyuncu varken geciktirilir.
-  kolay: { vocabulary: 1500, maxOpenWords: 2, playsPerTurn: 1, openStyle: "az", openFromRound: 5, extraExtends: 1, extendMaxTiles: 1, finishFromRound: 10 },
-  orta: { vocabulary: 4000, maxOpenWords: 3, playsPerTurn: 1, openStyle: "az", openFromRound: 4, extraExtends: 1, extendMaxTiles: 2, finishFromRound: 9 },
-  zor: { vocabulary: 10000, maxOpenWords: 3, playsPerTurn: 2, openStyle: "az", openFromRound: 3, extraExtends: 2, extendMaxTiles: 2, finishFromRound: 8 },
+  // kelime hakkı bitse de ek işleme yapabilir. Bitirme geciktirilmez: bilgisayar da gerçek oyuncu
+  // gibi bitirebildiği an bitirir (bitirme turları eşit; simülasyon: tests/economy-sim.test.ts).
+  kolay: { vocabulary: 1500, maxOpenWords: 2, playsPerTurn: 1, openStyle: "az", openFromRound: 5, extraExtends: 1, extendMaxTiles: 1 },
+  orta: { vocabulary: 4000, maxOpenWords: 3, playsPerTurn: 1, openStyle: "az", openFromRound: 4, extraExtends: 1, extendMaxTiles: 2 },
+  zor: { vocabulary: 10000, maxOpenWords: 3, playsPerTurn: 2, openStyle: "az", openFromRound: 3, extraExtends: 2, extendMaxTiles: 2 },
 };
 
 const vocabCache = new WeakMap<Dictionary, Map<BotLevel, DictWord[]>>();
@@ -268,11 +263,8 @@ export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "o
     return drawFromDeck(state);
   }
 
-  // Gerçek oyuncu varken erken bitirmesin: tur sınırına kadar ıstakada en az 2 taş kalsın (biri atılır)
-  const humanTable = state.players.some((x) => !x.isBot);
-  // 4 kişide deste daha çabuk tükenir: bekleme turu 2 kişidekinden biraz kısa
-  const finishRound = state.players.length > 2 ? Math.round(profile.finishFromRound * FOUR_FACTOR) : profile.finishFromRound;
-  const keep = humanTable && roundOf(state) + 1 < finishRound ? 2 : 1;
+  // Istakada atılacak bir taş kalsın; bitirme geciktirilmez (oyuncu ve bilgisayar eşit şartlarda bitirir)
+  const keep = 1;
   const tryExtend = () => {
     const ext = findExtension(dict, state, p.rack, profile.extendMaxTiles, keep);
     if (!ext) return null;
