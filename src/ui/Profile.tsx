@@ -1,3 +1,4 @@
+import { appStoreUrl, openStoreReview, playUrl } from "../rate";
 import { loadSettings, saveSettings, type Settings } from "../storage";
 
 /** Ayarlar oyun içinden (masadaki profil kartı) değişince uygulamaya haber verilir. */
@@ -258,7 +259,30 @@ function SettingsPanel({ settings, onSettings }: { settings: Settings; onSetting
         ))}
       </ul>
       <BlockedList />
+      <RateRow />
     </div>
+  );
+}
+
+/** "Word Okey'i Değerlendir": Google Play / App Store sayfası. */
+function RateRow() {
+  const [choose, setChoose] = useState(false);
+  return (
+    <>
+      <button type="button" className="rate-row" onClick={() => { if (!openStoreReview()) setChoose(true); }}>
+        <span className="rate-star" aria-hidden>⭐</span>
+        <span className="settings-label">{t("rateTitle")}<small>{t("rateSub")}</small></span>
+      </button>
+      {choose && (
+        <div className="rate-stores">
+          <a className="store-btn" href={playUrl} target="_blank" rel="noopener noreferrer">▶ Google Play</a>
+          {appStoreUrl
+            ? <a className="store-btn" href={appStoreUrl} target="_blank" rel="noopener noreferrer">App Store</a>
+            : <span className="store-btn off">App Store · {t("soon")}</span>}
+        </div>
+      )}
+      <p className="muted small app-version">Word Okey · v {typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : ""}</p>
+    </>
   );
 }
 

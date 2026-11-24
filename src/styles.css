@@ -1494,3 +1494,9 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .profile-modal .switch { box-shadow: 0 0 0 2px rgba(255,255,255,0.55); } .profile-modal .switch.on { background: #1b5e20; }
 .packs { grid-template-columns: repeat(3, 1fr); } .pack-badge.best { background: linear-gradient(#ffd54f, #ff9800); color: #3b2500; }
 @media (max-width: 520px) { .packs { grid-template-columns: repeat(2, 1fr); } }
+.rate-row { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: rgba(0,0,0,0.22); border-radius: 12px; padding: 10px 12px; margin-top: 6px; color: inherit; border: none; }
+.rate-star { font-size: 1.6rem; }
+.rate-stores { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 6px 0; }
+.store-btn { background: #111; color: #fff; padding: 8px 14px; border-radius: 10px; font-weight: 800; text-decoration: none; }
+.store-btn.off { opacity: 0.55; }
+.app-version { text-align: center; margin: 8px 0 0; }

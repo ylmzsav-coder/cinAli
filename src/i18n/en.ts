@@ -515,6 +515,8 @@ const en: Messages = {
   continue: "Continue",
   vipAdultOnly: "VIP Room chat is for ages 18 and up.",
   badge_save: "{n}% off",
+  rateTitle: "Rate Word Okey",
+  rateSub: "We'd love a 5-star review :)",
   close: "Close",
   handCol: "Hand",
   totalRow: "Total",

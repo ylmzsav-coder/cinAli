@@ -515,6 +515,8 @@ const fr: Messages = {
   continue: "Continuer",
   vipAdultOnly: "Le chat du salon VIP est réservé aux 18 ans et plus.",
   badge_save: "-{n} %",
+  rateTitle: "Noter Word Okey",
+  rateSub: "5 étoiles nous feraient très plaisir :)",
   close: "Fermer",
   handCol: "Manche",
   totalRow: "Total",

@@ -515,6 +515,8 @@ const pt: Messages = {
   continue: "Continuar",
   vipAdultOnly: "O chat da Sala VIP é para maiores de 18 anos.",
   badge_save: "-{n}%",
+  rateTitle: "Avaliar o Word Okey",
+  rateSub: "Ficaríamos felizes com 5 estrelas :)",
   close: "Fechar",
   handCol: "Rodada",
   totalRow: "Total",

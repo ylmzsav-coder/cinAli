@@ -515,6 +515,8 @@ const de: Messages = {
   continue: "Weiter",
   vipAdultOnly: "Der Chat im VIP-Raum ist ab 18 Jahren.",
   badge_save: "{n} % günstiger",
+  rateTitle: "Word Okey bewerten",
+  rateSub: "Über 5 Sterne freuen wir uns :)",
   close: "Schließen",
   handCol: "Runde",
   totalRow: "Summe",

@@ -519,6 +519,8 @@ const tr = {
   continue: "Devam",
   vipAdultOnly: "VIP Oda sohbeti 18 yaş ve üzeri içindir.",
   badge_save: "%{n} avantajlı",
+  rateTitle: "Word Okey'i Değerlendir",
+  rateSub: "Bize 5 yıldız verirsen seviniriz :)",
   close: "Kapat",
   handCol: "El",
   totalRow: "Toplam",
