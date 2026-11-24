@@ -432,13 +432,16 @@ const TABLES = [
     const left = Number((await p.locator(".timer-badge").innerText().catch(() => "")).replace(/\D/g, ""));
     check(`${name}: hamle süresi ${secs} sn (kayıtta ${saved.settings.turnSeconds}, ekranda ⏱ ${left})`, saved.settings.turnSeconds === secs && left <= secs && left >= secs - 3);
     // Süre dolmadan sıra değişmez; dolunca otomatik hamle yapılır (taş çekilip atılır)
-    const myDiscards = async () => p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); const me = g.state.players.findIndex((x) => !x.isBot); return { n: g.state.discards[me].length, cur: g.state.current === me }; });
+    // Oyuncunun attığı taş sayısı oyun kaydından (sonraki oyuncu yandan alabilir; atılanlar yığınına bakılmaz)
+    const myDiscards = async () => p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); const me = g.state.players.findIndex((x) => !x.isBot); const name = g.state.players[me].name; return { n: g.state.log.filter((e) => e.k === "discarded" && e.p?.name === name).length, cur: g.state.current === me }; });
     const d0 = await myDiscards();
     await p.clock.runFor((secs - 10) * 1000);
     const mid = Number((await p.locator(".timer-badge").innerText().catch(() => "")).replace(/\D/g, ""));
     const d1 = await myDiscards();
-    await p.clock.runFor(15 * 1000); await p.clock.runFor(2000);
-    const d2 = await myDiscards();
+    await p.clock.runFor(15 * 1000);
+    // Yavaş makinede kayıt gecikebilir: kısa gerçek bekleme ile birkaç kez yokla
+    let d2 = await myDiscards();
+    for (let k = 0; k < 10 && d2.n === d0.n; k++) { await p.clock.runFor(1000); await p.waitForTimeout(300); d2 = await myDiscards(); }
     check(`${name}: ${secs - 10}. saniyede sıra hâlâ oyuncuda (⏱ ${mid}), süre dolunca otomatik taş atıldı`, d1.cur && d1.n === d0.n && mid <= 11 && mid >= 8 && d2.n === d0.n + 1, `atılan ${d0.n} → ${d1.n} → ${d2.n}`);
     check(`${name}: tarayıcı hatası yok`, !p.errors.length, p.errors.slice(0, 2).join(" | "));
     await ctx.close();
