@@ -2,7 +2,7 @@ import { SETTINGS_EVENT } from "./ui/Profile";
 import { BACK_EVENT, setupBackButton } from "./backButton";
 import { useCallback, useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { PLAYERS_PER_TABLE, TableConfig, payout, tableById } from "./economy/tables";
+import { PLAYERS_PER_TABLE, TableConfig, noWinnerGame, payout, tableById } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
 import { GAME_HANDS, GameState, colorWinsOf, newGame, totals } from "./game/engine";
@@ -43,6 +43,13 @@ function settle(saved: SavedGame): SavedGame {
   const stored = loadGame();
   if (paidGames.has(saved.state.seed) || (stored?.settled && stored.state.seed === saved.state.seed)) {
     return { ...saved, settled: true, payout: stored?.payout ?? saved.payout };
+  }
+  // Kimse bitiremedi: ödeme yok, giriş ücreti yeni oyunda kullanılır (çıkarsa iade edilir)
+  if (noWinnerGame(saved.state)) {
+    const next = { ...saved, settled: true, payout: 0, carry: true };
+    paidGames.add(saved.state.seed);
+    saveGame(next);
+    return next;
   }
   const colorWins = colorWinsOf(saved.state, 0);
   const amount = payout(table, totals(saved.state), 0, colorWins);
@@ -242,7 +249,24 @@ export function App() {
     startGame(settings, tb, lobbyWant ?? undefined);
   };
 
+  /** Kimse bitiremedi: aynı masada ücretsiz yeni oyun (giriş ücreti aktarılır). */
+  const replayCarry = () => {
+    const tb = tableById(saved?.tableId);
+    if (!saved?.carry || !tb) return;
+    saveGame(null);
+    startGame(settings, tb);
+  };
+  /** Kimse bitiremedi ve masadan çıkılıyor: giriş ücreti kesintisiz iade. */
+  const leaveCarry = () => {
+    const tb = tableById(saved?.tableId);
+    if (saved?.carry && tb) wallet.add(tb.entry, "iade", tb.id);
+    setSaved(null);
+    saveGame(null);
+    setScreen("hub");
+  };
+
   const finishGame = () => {
+    if (saved?.carry) return leaveCarry();
     // Çipli masada oyun bitmeden çıkılırsa yenilgi sayılır (Pratik masa işlenmez)
     if (saved?.tableId) recordQuit(saved.state);
     setSaved(null);
@@ -401,6 +425,7 @@ export function App() {
             onChange={update}
             onExit={() => setScreen("hub")}
             onNewGame={finishGame}
+            carry={saved.carry ? { entry: activeTable?.entry ?? 0, onReplay: replayCarry, onLeave: leaveCarry } : undefined}
             onLeave={finishGame}
             onShop={() => { setShopBack("game"); setScreen("shop"); }}
             tableName={activeTable ? t(`table_${activeTable.id}` as "table_vip") : undefined} tableId={activeTable?.id}

@@ -37,7 +37,7 @@ import {
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { assertNotBanned } from "./admin";
 import { blockedWithAny } from "./blocks";
-import { TABLES, TableConfig, payout, tableById } from "../../src/economy/tables";
+import { TABLES, TableConfig, noWinnerGame, payout, tableById } from "../../src/economy/tables";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 import { publicView, type Action, type PublicView, type SeatInfo } from "../../src/online/view";
@@ -167,6 +167,16 @@ async function settle(t: Transaction, table: TableDoc, state: GameState, wallets
   const cfg = configFor(table.type);
   const sums = totals(state);
   const payouts: Record<string, number> = {};
+  // Kimse bitiremedi: kaybeden yok, giriş ücreti kesintisiz iade (davetli misafir ücret ödemedi)
+  if (noWinnerGame(state)) {
+    table.seats.forEach((seat) => {
+      if (!seat.uid || seat.guest) return;
+      payouts[seat.uid] = cfg.entry;
+      const w = wallets.get(seat.uid);
+      if (w) wallets.set(seat.uid, applyTx(t, seat.uid, w, cfg.entry, "iade", cfg.id));
+    });
+    return payouts;
+  }
   table.seats.forEach((seat, i) => {
     if (!seat.uid) return;
     const amount = payout(cfg, sums, i, colorWinsOf(state, i));

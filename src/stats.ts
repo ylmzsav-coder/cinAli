@@ -153,7 +153,10 @@ export function recordProgress(state: GameState, payout?: number) {
     }
   });
   const gameKey = `${state.seed}:oyun`;
-  if (state.phase === "gameOver" && !done.has(gameKey)) {
+  // Kimse bitiremedi (deste bitti): kazanan ya da kaybeden sayılmaz
+  if (state.phase === "gameOver" && state.lastResult?.reason === "deckEmpty") {
+    if (!done.has(gameKey)) { done.add(gameKey); changed = true; }
+  } else if (state.phase === "gameOver" && !done.has(gameKey)) {
     done.add(gameKey);
     changed = true;
     s.gamesPlayed++;

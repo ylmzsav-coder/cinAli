@@ -87,6 +87,36 @@ const TABLES = [
     check("masalarda tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
 
+  console.log("\n== 1b. Kimse bitiremedi (deste bitti): kaybeden yok, ücret yeni oyuna, çıkarsa iade");
+  {
+    const p = await fresh(browser, "Pixel 7 landscape", { balance: 1000 });
+    const deckOut = async () => {
+      await p.evaluate(() => {
+        const g = JSON.parse(localStorage.getItem("cinali.game"));
+        g.state.history = [g.state.players.map((_, i) => 100 + i)];
+        g.state.results = [{ winner: null, colorWin: null }];
+        g.state.lastResult = { winner: null, colorWin: null, scores: g.state.history[0], reason: "deckEmpty" };
+        g.state.phase = "gameOver"; g.state.handNo = g.state.totalHands;
+        localStorage.setItem("cinali.game", JSON.stringify(g));
+      });
+      await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
+      if (await p.locator(".hub-right .primary.big").count()) { await p.locator(".hub-right .primary.big").first().tap(); await W(p, 800); }
+    };
+    await TABLES[0].open(p); await W(p, 1200);
+    await deckOut();
+    check("deste bitince ödeme yok, kesinti yok (bakiye 900)", (await bal(p)) === 900, String(await bal(p)));
+    check("kaybeden yok ekranı ve iki seçenek", (await p.getByText("Yeni oyun (ücretsiz)").count()) === 1 && (await p.getByText(/Masadan çık · 100 çip iade/).count()) === 1);
+    await p.getByText("Yeni oyun (ücretsiz)").tap(); await W(p, 1200);
+    const g2 = await game(p);
+    check("yeni oyun ücretsiz başladı (bakiye 900, 4 kişi)", (await bal(p)) === 900 && g2?.state.phase !== "gameOver" && g2?.state.players.length === 4);
+    await deckOut();
+    await p.getByText(/Masadan çık · 100 çip iade/).tap(); await W(p, 600);
+    check("masadan çıkınca ücret kesintisiz iade (bakiye 1000)", (await bal(p)) === 1000 && !(await game(p)), String(await bal(p)));
+    const st = JSON.parse(await p.evaluate(() => localStorage.getItem("wordokey.stats") || "{}"));
+    check("kaybeden sayılmadı (istatistikte yenilgi yok)", !st.gamesLost);
+    check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
+  }
+
   console.log("\n== 2. Çayhane baştan sona gerçek oyun (bilgisayarlar oynar)");
   {
     const p = await fresh(browser, "Pixel 7 landscape", { balance: 1000 });

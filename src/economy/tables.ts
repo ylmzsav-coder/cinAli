@@ -70,3 +70,11 @@ export function payout(t: TableConfig, totals: number[], me: number, colorWins: 
 }
 
 export { formatNumber as formatChips } from "../i18n";
+
+/**
+ * Kimse bitiremedi (deste bitti): çipli masada kaybeden yoktur, ödül verilmez.
+ * Giriş ücreti yeni oyunda kullanılır; oyuncu masadan çıkarsa kesintisiz iade edilir.
+ */
+export function noWinnerGame(state: { phase: string; lastResult: { reason: string } | null }): boolean {
+  return state.phase === "gameOver" && state.lastResult?.reason === "deckEmpty";
+}

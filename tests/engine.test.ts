@@ -617,3 +617,12 @@ describe("bütün masaların giriş ve ödülleri", () => {
     }
   });
 });
+
+import { noWinnerGame } from "../src/economy/tables";
+describe("kimse bitiremedi (deste bitti)", () => {
+  it("yalnızca deste bitip oyun sona erince kaybeden yok sayılır", () => {
+    expect(noWinnerGame({ phase: "gameOver", lastResult: { reason: "deckEmpty" } })).toBe(true);
+    expect(noWinnerGame({ phase: "gameOver", lastResult: { reason: "finished" } })).toBe(false);
+    expect(noWinnerGame({ phase: "play", lastResult: null })).toBe(false);
+  });
+});

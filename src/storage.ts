@@ -89,6 +89,8 @@ export const loadSettings = (): Settings => {
 export const saveSettings = (s: Settings) => write(KEY_SETTINGS, s);
 
 export interface SavedGame {
+  /** Kimse bitiremedi: giriş ücreti yeni oyuna aktarılır (çıkılırsa iade). */
+  carry?: boolean;
   version: 2;
   state: GameState;
   settings: Settings;

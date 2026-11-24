@@ -150,6 +150,8 @@ interface Props {
   onShop?: () => void;
   /** Çipli masa adı (pratikte boş). */
   tableName?: string;
+  /** Kimse bitiremedi: ücretsiz yeni oyun ya da iadeyle çıkış. */
+  carry?: { entry: number; onReplay: () => void; onLeave: () => void };
   /** Oturan oyuncuların VIP rozeti (gösterilen koltuk sırasıyla). */
   vipSeats?: boolean[];
   /** Masa kimliği: başlıkta simge (Çayhane çay, Sosyete araba) */
@@ -158,7 +160,7 @@ interface Props {
   payout?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, tableId, vipSeats = [], payout }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, carry, tableId, vipSeats = [], payout }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -1321,7 +1323,9 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                 {result.laidPoints && <HandBreakdown state={state} />}
               </>
             )}
-            {state.phase === "gameOver" && (gameWinners(state).length > 1 ? (
+            {state.phase === "gameOver" && (tableName || remote) && state.lastResult?.reason === "deckEmpty" ? (
+              <p className="winner">🤝 {t("noWinnerTitle")}</p>
+            ) : state.phase === "gameOver" && (gameWinners(state).length > 1 ? (
               <>
                 <p className="winner">🤝 {t("tieIs", { names: winnerName(state) })}</p>
                 {tableName && <p className="muted">{t("tieSplit", { prize: TABLE_PRIZE, n: gameWinners(state).length, each: Math.floor(TABLE_PRIZE / gameWinners(state).length) })}</p>}
@@ -1333,12 +1337,26 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
             {!(handOver && state.totalHands === 1 && result?.laidPoints) && <ScoreTable state={state} />}
             {state.phase === "gameOver" ? (
               <>
-                {tableName && (
-                  <div className={payout ? "banner" : "muted"}>
-                    {payout ? t("chipsWon", { n: payout }) : t("noChipsWon")}
-                  </div>
+                {carry ? (
+                  <>
+                    <div className="banner">{t("noWinnerCarry", { n: carry.entry })}</div>
+                    <div className="modal-actions">
+                      <button type="button" className="primary" onClick={carry.onReplay}>🔁 {t("noWinnerReplay")}</button>
+                      <button type="button" onClick={carry.onLeave}>🚪 {t("noWinnerLeave", { n: carry.entry })}</button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {(tableName || remote) && state.lastResult?.reason === "deckEmpty" ? (
+                      <div className="banner">{t("noWinnerRefund")}</div>
+                    ) : tableName && (
+                      <div className={payout ? "banner" : "muted"}>
+                        {payout ? t("chipsWon", { n: payout }) : t("noChipsWon")}
+                      </div>
+                    )}
+                    <button type="button" className="primary" onClick={onNewGame}>{t("backToMenu")}</button>
+                  </>
                 )}
-                <button type="button" className="primary" onClick={onNewGame}>{t("backToMenu")}</button>
               </>
             ) : handOver ? (
               <button type="button" className="primary" onClick={() => {
