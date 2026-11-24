@@ -8,6 +8,8 @@
     "build": "node tools/build_legal.mjs && tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:server": "bash tests/emulator/run-all.sh",
+    "test:e2e": "node tests/e2e/run.cjs",
     "cap:sync": "npm run build && cap sync",
     "android": "npm run cap:sync && cap open android",
     "ios": "npm run cap:sync && cap open ios",

@@ -1,0 +1,65 @@
+name: Otomatik testler
+
+# Her gönderimde, her çekme isteğinde ve her gün 06:17 (UTC) bütün oyun sistemi denetlenir.
+# Bir denetim bile başarısız olursa iş kırmızı yanar ve GitHub depo sahibine e-posta ile uyarı gönderir
+# (GitHub > Settings > Notifications > Actions: "Only notify for failed workflows" açık olmalı).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  birim:
+    name: Kurallar, tür denetimi ve birim testleri
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm --prefix functions ci
+      - name: Tür denetimi (oyun ve sunucu)
+        run: npx tsc --noEmit -p . && (cd functions && npx tsc --noEmit -p .)
+      - name: Birim testleri (kurallar, 7 dilde bilgisayar maçları, masalar ve ödüller, filtreler)
+        run: npm test
+      - name: Derleme
+        run: npm run build
+
+  sunucu:
+    name: Sunucu testleri (Firebase emülatörü)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
+      - run: npm --prefix functions ci
+      - run: npm --prefix functions run build
+      - name: Cüzdan, masalar, VIP, sohbet, hediye, arkadaş, davet, engelleme, hesap, yönetici
+        run: bash tests/emulator/run-all.sh
+
+  tarayici:
+    name: Uçtan uca testler (gerçek tarayıcıda oyun)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright@1.63.0 install --with-deps chromium
+      - run: npm i --no-save playwright@1.63.0
+      - run: npm run build
+      - name: Oyunu başlat ve denetle (masalar, ödemeler, tam oyun, 7 dil × 4 ekran, ayarlar)
+        run: |
+          npx vite preview --port 4173 --strictPort &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          node tests/e2e/run.cjs

@@ -1,3 +1,5 @@
+![Otomatik testler](https://github.com/ylmzsav-coder/cinAli/actions/workflows/tests.yml/badge.svg)
+
 # Word Okey
 
 Harflerle oynanan, okey tarzı kelime oyunu. Taşlarla anlamlı kelimeler kurulur;
@@ -115,6 +117,14 @@ Elle yayın: `.env.example` → `.env.production.local`, ardından `npx firebase
 Cloud Functions için Firebase projesinin **Blaze** (kullandıkça öde) planında olması gerekir.
 
 GitHub Pages yayını yalnızca depo herkese açıkken çalışır; depo gizlendiğinde otomatik atlanır.
+
+## Otomatik testler
+
+Her gönderimde, her gün ve her çekme isteğinde `.github/workflows/tests.yml` çalışır; bir denetim bile başarısızsa iş kırmızı yanar ve GitHub e-posta ile uyarır.
+
+- `npm test` — kurallar, 7 dilde bilgisayar maçları, masaların giriş/ödülleri, küfür ve yasa dışı içerik filtreleri
+- `npm run test:server` — sunucu (Firebase emülatörü): cüzdan, masalar, VIP, sohbet, hediye, arkadaş, davet, engelleme, hesap, yönetici
+- `npm run test:e2e` — gerçek tarayıcıda oyun: bütün masalarda ödeme, baştan sona oyun, 7 dil × 4 ekran boyutu, ayarlar, yaş kapısı
 
 ## Lisans
 
