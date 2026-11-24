@@ -6,6 +6,13 @@
 const { chromium, devices } = require("playwright");
 const BASE = process.env.E2E_URL || "http://127.0.0.1:4173/";
 const LANGS = ["tr", "en", "de", "fr", "es", "it", "pt"];
+/**
+ * Paralel çalıştırma: E2E_PART=A|B|C|D ile yalnızca o parçanın bölümleri çalışır
+ * (CI'da dört iş aynı anda). E2E_PART yoksa bütün bölümler sırayla çalışır.
+ */
+const PARTS = { A: ["3"], B: ["5"], C: ["1", "1b", "2", "2b"], D: ["4", "6", "7", "7b", "8", "9"] };
+const PART = process.env.E2E_PART || "";
+const want = (id) => !PART || (PARTS[PART] || []).includes(id);
 let fails = 0;
 const check = (label, ok, extra = "") => {
   console.log(`${ok ? "✓" : "✗"} ${label}${extra ? " — " + extra : ""}`);
@@ -70,6 +77,7 @@ const TABLES = [
 (async () => {
   const browser = await chromium.launch();
 
+  if (want("1")) {
   console.log("\n== 1. Masalar: giriş ücreti, oyuncu sayısı, birinciye ödeme, kaybedene 0");
   {
     const p = await fresh(browser, "Pixel 7 landscape");
@@ -112,7 +120,9 @@ const TABLES = [
     }
     check("masalarda tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
+  }
 
+  if (want("1b")) {
   console.log("\n== 1b. Kimse bitiremedi (deste bitti): kaybeden yok, ücret yeni oyuna, çıkarsa iade");
   {
     const p = await fresh(browser, "Pixel 7 landscape", { balance: 1000, played: 0, won: 0 });
@@ -142,7 +152,9 @@ const TABLES = [
     check("kaybeden sayılmadı (istatistikte yenilgi yok)", !st.gamesLost);
     check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
+  }
 
+  if (want("2")) {
   console.log("\n== 2. Çayhane baştan sona gerçek oyun (bilgisayarlar oynar)");
   {
     const p = await fresh(browser, "Pixel 7 landscape", { balance: 1000 });
@@ -162,7 +174,9 @@ const TABLES = [
     check("sonuç ekranı göründü", (await p.locator(".modal").count()) > 0);
     check("oyun sırasında tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
+  }
 
+  if (want("2b")) {
   console.log("\n== 2b. Teke Tek baştan sona gerçek oyun (100, 1.000, 10.000)");
   for (const [i, entry, prize] of [[0, 100, 200], [1, 1000, 2000], [2, 10000, 20000]]) {
     const p = await fresh(browser, "Pixel 7 landscape", { balance: 25000 });
@@ -193,7 +207,9 @@ const TABLES = [
     check("güncellemeden önce başlamış Teke Tek (250) oyunu eski fiyatla ödenir (500)", (await bal(p)) - b1 === 500, `ödeme ${(await bal(p)) - b1}`);
     await p.context().close();
   }
+  }
 
+  if (want("3")) {
   console.log("\n== 3. Bütün diller ve ekran boyutları: ekranlar açılıyor, üst çubuk taşmıyor");
   for (const device of ["Pixel 7 landscape", "iPhone SE landscape", "Galaxy S8 landscape", "iPad Mini landscape"]) {
     for (const lang of LANGS) {
@@ -220,7 +236,9 @@ const TABLES = [
       await p.context().close();
     }
   }
+  }
 
+  if (want("4")) {
   console.log("\n== 4. Ayarlar, ad değiştirme, yaş kapısı, geri tuşu");
   {
     const p = await fresh(browser, "Pixel 7 landscape");
@@ -242,7 +260,9 @@ const TABLES = [
     check("13 yaş altı oyuna giremez", (await p.locator(".age-gate").count()) === 1 && (await p.locator(".hub-right").count()) === 0);
     check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
+  }
 
+  if (want("5")) {
   console.log("\n== 5. Kelime uzunlukları: 2, 3, 4 harf (2 harf yalnızca Çayhane ve Pratikte geçerli)");
   {
     const p = await fresh(browser, "Pixel 7 landscape");
@@ -282,7 +302,9 @@ const TABLES = [
     }
     check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
+  }
 
+  if (want("6")) {
   console.log("\n== 6. Kurallar sayfası: 7 dilde masa/ücret tablosu ve güncel kurallar");
   for (const lang of LANGS) {
     const p = await fresh(browser, "iPhone SE landscape", { lang });
@@ -295,7 +317,9 @@ const TABLES = [
     check(`Kurallar (${lang}): 19 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 19 && !r.hscroll && !r.raw, JSON.stringify(r));
     await p.context().close();
   }
+  }
 
+  if (want("7")) {
   console.log("\n== 7. Sosyete giriş şartı: başarı oranı en az %76 (7 dil)");
   for (const lang of LANGS) {
     // %75 (4 oyunda 3): giriş engellenir, neden yazılır, çip alınmaz
@@ -335,7 +359,9 @@ const TABLES = [
     check("yeni oyuncu Çayhane'ye oturabilir", (await game(p))?.tableId === "caylak");
     await p.context().close();
   }
+  }
 
+  if (want("7b")) {
   console.log("\n== 7b. Teke Tek giriş şartı: başarı oranı en az %50 (7 dil)");
   for (const lang of LANGS) {
     // %49 (100 oyunda 49): oyun seçenekleri yerine uyarı; oyun açılmaz, çip alınmaz
@@ -367,7 +393,9 @@ const TABLES = [
     check("yeni oyuncu (%0) Teke Tek'e oturamaz", (await p.locator(".ozel-lobby .two-choices button").count()) === 0 && (await p.locator(".ozel-lobby .rate-block").count()) === 1);
     await p.context().close();
   }
+  }
 
+  if (want("8")) {
   console.log("\n== 8. Sosyete sohbetli masa (ücretsiz, küfür filtreli)");
   const CHAT = { tr: "Ücretsiz sohbet", en: "Free chat", de: "Gratis-Chat", fr: "Chat gratuit", es: "Chat gratis", it: "Chat gratis", pt: "Chat grátis" };
   for (const lang of LANGS) {
@@ -408,7 +436,9 @@ const TABLES = [
     check("18 yaş altı Sosyete'de oynar ama serbest yazamaz", (await game(m))?.tableId === "usta" && (await m.locator("input[type=text]").count()) === 0);
     await m.context().close();
   }
+  }
 
+  if (want("9")) {
   console.log("\n== 9. Hamle süresi: Çayhane, Teke Tek, Sosyete 60 sn; VIP Oda 3 dk");
   for (const [name, secs] of [["Çayhane", 60], ["Teke Tek 100", 60], ["Sosyete 100", 60], ["VIP", 180]]) {
     const ctx = await browser.newContext({ ...devices["Pixel 7 landscape"] });
@@ -445,6 +475,7 @@ const TABLES = [
     check(`${name}: ${secs - 10}. saniyede sıra hâlâ oyuncuda (⏱ ${mid}), süre dolunca otomatik taş atıldı`, d1.cur && d1.n === d0.n && mid <= 11 && mid >= 8 && d2.n === d0.n + 1, `atılan ${d0.n} → ${d1.n} → ${d2.n}`);
     check(`${name}: tarayıcı hatası yok`, !p.errors.length, p.errors.slice(0, 2).join(" | "));
     await ctx.close();
+  }
   }
 
   await browser.close();

@@ -29,12 +29,22 @@ jobs:
         run: npx tsc --noEmit -p . && (cd functions && npx tsc --noEmit -p .)
       - name: Birim testleri (kurallar, 7 dilde bilgisayar maçları, masalar ve ödüller, filtreler)
         run: npm test
+      - name: Paralel test parçaları eksiksiz mi
+        run: node tests/check-parts.cjs
       - name: Derleme
         run: npm run build
 
   sunucu:
-    name: Sunucu testleri (Firebase emülatörü)
+    name: Sunucu testleri (Firebase emülatörü) ${{ matrix.part }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - part: "1/2"
+            files: tests/emulator/account.mjs tests/emulator/admin.mjs tests/emulator/blocks.mjs tests/emulator/chat.mjs tests/emulator/entries.mjs tests/emulator/gifts.mjs tests/emulator/invites.mjs
+          - part: "2/2"
+            files: tests/emulator/rate.mjs tests/emulator/social.mjs tests/emulator/tables.mjs tests/emulator/usta.mjs tests/emulator/vip.mjs tests/emulator/wallet.mjs
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,11 +55,17 @@ jobs:
       - run: npm --prefix functions ci
       - run: npm --prefix functions run build
       - name: Kumbara, masalar, VIP, sohbet, hediye, arkadaş, davet, engelleme, hesap, yönetici
-        run: bash tests/emulator/run-all.sh
+        run: bash tests/emulator/run-all.sh ${{ matrix.files }}
 
   tarayici:
-    name: Uçtan uca testler (gerçek tarayıcıda oyun)
+    name: Uçtan uca testler (gerçek tarayıcıda oyun) ${{ matrix.part }}
     runs-on: ubuntu-latest
+    # Dört parça aynı anda çalışır (tests/e2e/run.cjs içindeki PARTS):
+    # A: 7 dil × 4 ekran · B: kelime uzunlukları · C: masalar, ödemeler, tam oyunlar · D: ayarlar, kurallar, giriş şartları, sohbet, süre
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [A, B, C, D]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -58,7 +74,9 @@ jobs:
       - run: npx playwright@1.63.0 install --with-deps chromium
       - run: npm i --no-save playwright@1.63.0
       - run: npm run build
-      - name: Oyunu başlat ve denetle (masalar, ödemeler, tam oyun, 7 dil × 4 ekran, ayarlar)
+      - name: Oyunu başlat ve denetle (parça ${{ matrix.part }})
+        env:
+          E2E_PART: ${{ matrix.part }}
         run: |
           npx vite preview --host 127.0.0.1 --port 4173 --strictPort &
           for i in $(seq 1 60); do curl -sf http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
