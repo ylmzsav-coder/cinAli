@@ -142,7 +142,7 @@ const en: Messages = {
   autoNone: "No words can be made with these tiles.",
   start: "Start",
 
-  tablesDesc: "The entry fee is taken when you sit down. The highest total wins the table prize; tied players share it.",
+  tablesDesc: "The entry fee is taken when you sit down. The first player to finish the tiles on their rack wins the prize.",
   opponents_kolay: "Easy opponents",
   opponents_orta: "Medium opponents",
   opponents_zor: "Hard opponents",
@@ -670,7 +670,7 @@ const en: Messages = {
   rule_score: "Scoring: the value of every word you lay goes into your own score; letters you add to someone else's word also count for you. When the game ends, players still holding tiles lose the total value of the letters left in their hand (a joker left in hand counts as the highest letter, {top}: −{joker}). Finishing your tiles earns no extra points. Example: you laid words worth 174 and 40 points of letters are left in your hand: 174 − 40 = 134.",
   rule_color: "Colour Finish: if every tile the finishing player laid is the same colour (jokers match any colour), it's a Colour Finish; at the chip table it earns bonus chips equal to the entry fee.",
   rule_timer: "Move timer: At chip tables each move has {n} seconds. The time is shown on the frame: green, yellow, red. When time runs out, a tile is drawn from the deck if you haven't drawn, and a tile is discarded from your rack automatically. The VIP Room has no move timer; you play at ease while chatting.",
-  rule_winner: "Winner: The aim is to score the most points. Whether you finish your tiles doesn't matter; the player with the highest total at the end wins. Each player pays the table's entry fee and the winner takes the table's prize (see the table below). On a tie the prize is shared.",
+  rule_winner: "Winner: The first player to finish all the tiles on their rack wins (just like regular okey). Points don't decide the winner; they only show the game's score. Each player pays the table's entry fee and the winner takes the table's prize (see the table below).",
   howTitle: "Controls",
   how_1: "Drag tiles with your finger to any slot on the rack. Tiles side by side form a word; leave gaps between words.",
   how_2: "Each word's value is shown above the rack. When the total reaches {need}, press Open.",

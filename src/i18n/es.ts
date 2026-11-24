@@ -142,7 +142,7 @@ const es: Messages = {
   autoNone: "No se puede formar ninguna palabra con estas fichas.",
   start: "Empezar",
 
-  tablesDesc: "La entrada se cobra al sentarte. El total más alto gana el premio; en caso de empate se reparte.",
+  tablesDesc: "La entrada se cobra al sentarte. El primer jugador que termina las fichas de su atril gana el premio.",
   opponents_kolay: "Rivales fáciles",
   opponents_orta: "Rivales medios",
   opponents_zor: "Rivales difíciles",
@@ -670,7 +670,7 @@ const es: Messages = {
   rule_score: "Puntuación: el valor de cada palabra que colocas se suma a tu puntuación; las letras que añades a palabras de otros también cuentan para ti. Al terminar la partida, quienes aún tienen fichas pierden el valor de las letras que les quedan (un comodín en la mano cuenta como la letra más alta, {top}: −{joker}). Quedarse sin fichas no da puntos extra. Ejemplo: colocaste palabras por 174 y te quedan 40 puntos en letras: 174 − 40 = 134.",
   rule_color: "Final de color: si todas las fichas que colocó quien termina son del mismo color (el comodín vale para cualquiera), es un Final de color; en la mesa con fichas da un extra igual a la entrada.",
   rule_timer: "Tiempo de jugada: en las mesas con fichas cada jugada tiene {n} segundos. El tiempo se muestra en el marco: verde, amarillo, rojo. Al acabarse, si no robaste se roba una ficha del mazo y se descarta una automáticamente. En la Sala VIP no hay límite de tiempo; se juega tranquilo, charlando.",
-  rule_winner: "Ganador: el objetivo es sumar más puntos. No importa si terminas tus fichas; gana quien tenga el total más alto al final. Cada jugador paga la entrada de la mesa y el primero se lleva el premio de la mesa (ver la tabla de abajo). En caso de empate, el premio se reparte.",
+  rule_winner: "Ganador: gana el primer jugador que termina todas las fichas de su atril (como en el okey normal). Los puntos no deciden el ganador; solo muestran el marcador de la partida. Cada jugador paga la entrada de la mesa y el ganador se lleva el premio de la mesa (ver la tabla de abajo).",
   howTitle: "Controles",
   how_1: "Arrastra las fichas con el dedo a cualquier hueco del atril. Las fichas juntas forman una palabra; deja huecos entre palabras.",
   how_2: "Encima del atril se ve el valor de cada palabra. Al llegar a {need}, pulsa Abrir.",

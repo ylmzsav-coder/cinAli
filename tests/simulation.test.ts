@@ -28,8 +28,10 @@ for (const code of LANG_ORDER.filter((c) => LANGS[c].playable)) {
       }
       const tt = totals(s);
       if (tt.some((x) => !Number.isFinite(x))) probs.push(`${code}: NaN toplam`);
+      // Kazanan: ıstakayı bitiren; deste biterse kazanan yok
       const w = gameWinners(s);
-      if (!w.length) probs.push(`${code}: kazanan yok`);
+      const finisher = s.lastResult?.winner ?? null;
+      if (finisher === null ? w.length !== 0 : w.length !== 1 || w[0] !== finisher) probs.push(`${code}: kazanan bitiren değil`);
     }
     probs = [...new Set(probs)];
     if (probs.length) console.log(probs.slice(0, 10).join("\n"));

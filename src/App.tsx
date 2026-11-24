@@ -5,7 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { PLAYERS_PER_TABLE, TableConfig, noWinnerGame, payout, tableById, winnerPrize } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
-import { GAME_HANDS, GameState, colorWinsOf, newGame, totals } from "./game/engine";
+import { GAME_HANDS, GameState, colorWinsOf, newGame, gameWinners } from "./game/engine";
 import { LangCode, setGameLang } from "./game/lang";
 import { CLOUD, currentUser, firestore } from "./online/cloud";
 import { loadDictionary } from "./online/dicts";
@@ -62,7 +62,7 @@ function settle(saved: SavedGame): SavedGame {
     return next;
   }
   const colorWins = colorWinsOf(saved.state, 0);
-  const amount = payout(table, totals(saved.state), 0, colorWins);
+  const amount = payout(table, gameWinners(saved.state), 0, colorWins);
   const next = { ...saved, settled: true, payout: amount };
   paidGames.add(saved.state.seed);
   saveGame(next);

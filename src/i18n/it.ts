@@ -142,7 +142,7 @@ const it: Messages = {
   autoNone: "Nessuna parola possibile con queste tessere.",
   start: "Inizia",
 
-  tablesDesc: "La quota viene addebitata quando ti siedi. Il punteggio più alto vince il premio; in caso di pareggio si divide.",
+  tablesDesc: "La quota viene addebitata quando ti siedi. Il primo giocatore che finisce le tessere del suo leggio vince il premio.",
   opponents_kolay: "Avversari facili",
   opponents_orta: "Avversari medi",
   opponents_zor: "Avversari difficili",
@@ -670,7 +670,7 @@ const it: Messages = {
   rule_score: "Punteggio: il valore di ogni parola che cali va al tuo punteggio; anche le lettere aggiunte alle parole degli altri contano per te. A fine partita, chi ha ancora tessere perde il valore delle lettere rimaste in mano (un jolly rimasto in mano vale come la lettera più alta, {top}: −{joker}). Finire le tessere non dà punti in più. Esempio: hai calato parole per 174 e ti restano 40 punti di lettere: 174 − 40 = 134.",
   rule_color: "Chiusura a colore: se tutte le tessere calate da chi chiude sono dello stesso colore (il jolly va bene con tutti), è una Chiusura a colore; al tavolo a fiches dà un bonus pari alla quota d'ingresso.",
   rule_timer: "Tempo di mossa: ai tavoli con fiches ogni mossa ha {n} secondi. Il tempo è mostrato sulla cornice: verde, giallo, rosso. Allo scadere, se non hai pescato si pesca una tessera dal mazzo e una viene scartata automaticamente. Nella Sala VIP non c’è tempo di mossa; si gioca con calma chiacchierando.",
-  rule_winner: "Vincitore: lo scopo è fare più punti. Non importa se finisci le tessere; vince chi ha il totale più alto alla fine. Ognuno paga l’ingresso del tavolo e il primo prende il premio del tavolo (vedi la tabella sotto). In caso di parità il premio è diviso.",
+  rule_winner: "Vincitore: vince il primo giocatore che finisce tutte le tessere del suo leggio (come nell’okey normale). I punti non decidono il vincitore; mostrano solo il punteggio della partita. Ognuno paga l’ingresso del tavolo e il vincitore prende il premio del tavolo (vedi la tabella sotto).",
   howTitle: "Comandi",
   how_1: "Trascina le tessere col dito in qualsiasi posto del leggio. Le tessere vicine formano una parola; lascia spazi tra le parole.",
   how_2: "Sopra il leggio compare il valore di ogni parola. Arrivato a {need}, premi Apri.",

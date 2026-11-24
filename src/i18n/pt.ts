@@ -142,7 +142,7 @@ const pt: Messages = {
   autoNone: "Nenhuma palavra possível com estas peças.",
   start: "Começar",
 
-  tablesDesc: "A entrada é cobrada quando você se senta. O maior total leva o prêmio; em caso de empate, ele é dividido.",
+  tablesDesc: "A entrada é cobrada quando você se senta. O primeiro jogador que terminar as peças do seu suporte leva o prêmio.",
   opponents_kolay: "Adversários fáceis",
   opponents_orta: "Adversários médios",
   opponents_zor: "Adversários difíceis",
@@ -670,7 +670,7 @@ const pt: Messages = {
   rule_score: "Pontuação: o valor de cada palavra que você baixa vai para a sua pontuação; letras que você acrescenta às palavras dos outros também contam para você. No fim do jogo, quem ainda tem peças perde o valor das letras que sobraram na mão (um curinga na mão vale como a letra mais alta, {top}: −{joker}). Acabar as peças não dá pontos extras. Exemplo: você baixou palavras no valor de 174 e sobraram 40 pontos em letras: 174 − 40 = 134.",
   rule_color: "Batida de cor: se todas as peças baixadas por quem bate forem da mesma cor (o curinga combina com todas), é uma Batida de cor; na mesa com fichas rende um bônus igual à entrada.",
   rule_timer: "Tempo de jogada: nas mesas com fichas cada jogada tem {n} segundos. O tempo aparece na moldura: verde, amarelo, vermelho. Quando acaba, se não comprou, uma peça é comprada do monte e uma é descartada automaticamente. Na Sala VIP não há tempo de jogada; joga-se com calma, conversando.",
-  rule_winner: "Vencedor: o objetivo é fazer mais pontos. Não importa se você termina as peças; vence quem tiver o maior total no fim. Cada jogador paga a entrada da mesa e o primeiro leva o prêmio da mesa (veja a tabela abaixo). Em caso de empate, o prêmio é dividido.",
+  rule_winner: "Vencedor: vence o primeiro jogador que terminar todas as peças do seu suporte (como no okey normal). Os pontos não decidem o vencedor; só mostram o placar do jogo. Cada jogador paga a entrada da mesa e o vencedor leva o prêmio da mesa (veja a tabela abaixo).",
   howTitle: "Controles",
   how_1: "Arraste as peças com o dedo para qualquer espaço do suporte. Peças lado a lado formam uma palavra; deixe espaços entre as palavras.",
   how_2: "O valor de cada palavra aparece acima do suporte. Ao chegar a {need}, toque em Abrir.",

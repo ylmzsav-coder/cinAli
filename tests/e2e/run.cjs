@@ -84,6 +84,18 @@ const TABLES = [
         await toHub(p);
       }
     }
+    // Puanı en yüksek olan değil, ıstakasını ilk bitiren kazanır
+    {
+      const tb = TABLES[0];
+      await tb.open(p); await W(p, 1200);
+      const b1 = await bal(p);
+      await p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); g.state.history = [g.state.players.map((_, i) => (i === 0 ? 300 : 20))]; g.state.results = [{ winner: 1, colorWin: null }]; g.state.lastResult = { winner: 1, colorWin: null, scores: g.state.history[0], reason: "finished" }; g.state.phase = "gameOver"; g.state.handNo = g.state.totalHands; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); }; });
+      await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
+      await p.locator(".hub-right .primary.big").first().tap().catch(() => {}); await W(p, 1000);
+      const txt = await p.locator(".winner").first().innerText().catch(() => "");
+      check("puanı en yüksek olan değil, ıstakasını ilk bitiren kazanır (300 puanlı oyuncu ödül almaz)", (await bal(p)) === b1 && /Kazanan/.test(txt) && !txt.includes("Yılmaz"), `ödeme ${(await bal(p)) - b1}, ekranda "${txt}"`);
+      await toHub(p);
+    }
     // Fiyat değişmeden önce başlamış Sosyete oyunu (kayıtta fiyat yok) eski fiyatla biter: 500 giriş → 2.000 ödül
     {
       const sos = TABLES.find((x) => x.name === "Sosyete 100");
@@ -139,12 +151,12 @@ const TABLES = [
     let g;
     for (let k = 0; k < 600; k++) { await W(p, 250); g = await game(p); if (g?.state.phase === "gameOver" && g.settled) break; }
     const tot = g.state.history.reduce((a, h) => a.map((x, i) => x + h[i]), g.state.players.map(() => 0));
-    const mx = Math.max(...tot);
     // Kimse bitiremediyse (deste bitti) kaybeden yok: ödeme yapılmaz, giriş ücreti yeni oyuna devreder
     const carry = !!g.carry;
-    const expected = carry ? 0 : tot[0] === mx ? Math.floor(400 / tot.filter((x) => x === mx).length) : 0;
+    // Kazanan: ıstakasını ilk bitiren (puan sırası değil)
+    const expected = carry ? 0 : g.state.lastResult?.winner === 0 ? 400 : 0;
     await W(p, 600);
-    check("oyun bitti ve doğru ödendi", g.state.phase === "gameOver" && (await bal(p)) === 900 + expected, `toplamlar ${tot.join("/")}, bakiye ${await bal(p)}${carry ? " (kimse bitiremedi: ücret devreder)" : ""}`);
+    check("oyun bitti ve doğru ödendi", g.state.phase === "gameOver" && (await bal(p)) === 900 + expected, `bitiren ${g.state.lastResult?.winner ?? "yok"}, puanlar ${tot.join("/")}, bakiye ${await bal(p)}${carry ? " (kimse bitiremedi: ücret devreder)" : ""}`);
     check("sonuç ekranı göründü", (await p.locator(".modal").count()) > 0);
     check("oyun sırasında tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
@@ -161,11 +173,10 @@ const TABLES = [
     let g;
     for (let k = 0; k < 600; k++) { await W(p, 250); g = await game(p); if (g?.state.phase === "gameOver" && g.settled) break; }
     const tot = g.state.history.reduce((a, h) => a.map((x, j) => x + h[j]), g.state.players.map(() => 0));
-    const mx = Math.max(...tot);
     const carry = !!g.carry;
-    const expected = carry ? 0 : tot[0] === mx ? Math.floor(prize / tot.filter((x) => x === mx).length) : 0;
+    const expected = carry ? 0 : g.state.lastResult?.winner === 0 ? prize : 0;
     await W(p, 600);
-    check(`Teke Tek ${entry}: oyun bitti ve doğru ödendi`, g.state.phase === "gameOver" && (await bal(p)) === b1 + expected, `puanlar ${tot.join("/")}, ödeme ${(await bal(p)) - b1}${carry ? " (kimse bitiremedi: ücret devreder)" : ""}`);
+    check(`Teke Tek ${entry}: oyun bitti ve doğru ödendi`, g.state.phase === "gameOver" && (await bal(p)) === b1 + expected, `bitiren ${g.state.lastResult?.winner ?? "yok"}, puanlar ${tot.join("/")}, ödeme ${(await bal(p)) - b1}${carry ? " (kimse bitiremedi: ücret devreder)" : ""}`);
     check(`Teke Tek ${entry}: oyunda en az 3 harf kuralı`, g.state.minWord === 3);
     check(`Teke Tek ${entry}: tarayıcı hatası yok`, !p.errors.length, p.errors.slice(0, 2).join(" | "));
     await p.context().close();

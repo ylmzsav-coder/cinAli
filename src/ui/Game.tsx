@@ -1329,7 +1329,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                 {result.laidPoints && <HandBreakdown state={state} />}
               </>
             )}
-            {state.phase === "gameOver" && (tableName || remote) && state.lastResult?.reason === "deckEmpty" ? (
+            {state.phase === "gameOver" && state.lastResult?.reason === "deckEmpty" ? (
               <p className="winner">🤝 {t("noWinnerTitle")}</p>
             ) : state.phase === "gameOver" && (gameWinners(state).length > 1 ? (
               <>

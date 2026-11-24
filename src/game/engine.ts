@@ -523,11 +523,16 @@ function endHand(state: GameState, winner: number | null): GameState {
   return state;
 }
 
-/** Oyunun galipleri: en yüksek toplam puan (eşitlikte birden fazla). */
+/**
+ * Oyunun galibi: ıstakasındaki taşları İLK BİTİREN oyuncu (normal okeydeki gibi).
+ * Puan sıralaması kazananı belirlemez. Deste biterse ve kimse bitiremezse kazanan yoktur ([]).
+ * Birden çok el oynanırsa en çok el bitiren kazanır.
+ */
 export function gameWinners(state: GameState): number[] {
-  const sums = totals(state);
-  const max = Math.max(...sums);
-  return sums.map((v, i) => (v === max ? i : -1)).filter((i) => i >= 0);
+  const wins = state.players.map((_, i) => handWinsOf(state, i));
+  const max = Math.max(...wins);
+  if (max <= 0) return [];
+  return wins.map((v, i) => (v === max ? i : -1)).filter((i) => i >= 0);
 }
 
 /** Oyuncunun bu oyunda Renk Bitirme sayısı (çipli masa ikramiyesi). */

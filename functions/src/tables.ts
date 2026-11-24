@@ -31,7 +31,7 @@ import {
   newGame,
   openHand,
   timeoutMove,
-  totals,
+  gameWinners,
   colorWinsOf,
 } from "../../src/game/engine";
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
@@ -165,7 +165,6 @@ function deadlineFor(state: GameState, now: number): number | null {
 /** Oyun bittiyse insan oyunculara ödül öder (bir kez). Bot payları kasada kalır. */
 async function settle(t: Transaction, table: TableDoc, state: GameState, wallets: Map<string, WalletDoc>) {
   const cfg = configFor(table.type);
-  const sums = totals(state);
   const payouts: Record<string, number> = {};
   // Kimse bitiremedi: kaybeden yok, giriş ücreti kesintisiz iade (davetli misafir ücret ödemedi)
   if (noWinnerGame(state)) {
@@ -179,7 +178,7 @@ async function settle(t: Transaction, table: TableDoc, state: GameState, wallets
   }
   table.seats.forEach((seat, i) => {
     if (!seat.uid) return;
-    const amount = payout(cfg, sums, i, colorWinsOf(state, i));
+    const amount = payout(cfg, gameWinners(state), i, colorWinsOf(state, i));
     payouts[seat.uid] = amount;
     const w = wallets.get(seat.uid);
     if (amount > 0 && w) wallets.set(seat.uid, applyTx(t, seat.uid, w, amount, "masa-odul", cfg.id));

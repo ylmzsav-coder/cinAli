@@ -144,7 +144,7 @@ const tr = {
   start: "Başla",
 
   // Masalar
-  tablesDesc: "Giriş ücreti masaya oturunca alınır. Masada en yüksek puanı toplayan ödülü kazanır; berabere kalanlar ödülü paylaşır.",
+  tablesDesc: "Giriş ücreti masaya oturunca alınır. Istakasındaki taşları ilk bitiren oyuncu ödülü kazanır.",
   opponents_kolay: "Kolay rakipler",
   opponents_orta: "Orta rakipler",
   opponents_zor: "Zor rakipler",
@@ -677,7 +677,7 @@ const tr = {
   rule_score: "Puanlama: Yere açtığınız her kelimenin değeri kendi puan hanenize yazılır; başkasının kelimesine eklediğiniz harflerin değeri de sizin hanenize geçer. Oyun bittiğinde elinde taş kalan oyuncuların kalan harflerinin değer toplamı ceza olarak puanlarından düşülür (elde kalan okey taşı en yüksek değerli harf olan {top} kadar, −{joker} sayılır). Taşları bitirmenin ayrıca puanı yoktur. Örnek: yere 174 değerinde kelime açtınız, elinizde 40 değerinde harf kaldı: 174 − 40 = 134.",
   rule_color: "Renk Bitirme: Bitiren oyuncunun yere koyduğu taşların hepsi aynı renkteyse (joker her renge uyar) Renk Bitirme olur; çipli masada giriş ücreti kadar ikramiye çip kazandırır.",
   rule_timer: "Hamle süresi: Çipli masalarda her hamle için {n} saniye vardır. Süre çerçevede gösterilir: yeşil, sarı, kırmızı. Süre bitince taş çekilmediyse desteden çekilir ve ıstakadan bir taş otomatik atılır. VIP Oda'da hamle süresi yoktur; acele etmeden, sohbet ederek oynanır.",
-  rule_winner: "Kazanan: Oyunun amacı en çok puanı toplamaktır. Taşlarını bitirip bitirmemesi önemli değildir; oyun sonunda toplam puanı en yüksek olan oyuncu kazanır. Her oyuncu masanın giriş ücretini öder, birinci masanın ödülünü alır (aşağıdaki tabloya bakın). Eşitlikte ödül paylaşılır.",
+  rule_winner: "Kazanan: Istakasındaki taşları ilk bitiren oyuncu kazanır (normal okeydeki gibi). Puanlar kazananı belirlemez; yalnızca oyunun skorunu gösterir. Her oyuncu masanın giriş ücretini öder, kazanan masanın ödülünü alır (aşağıdaki tabloya bakın).",
   howTitle: "Nasıl oynanır?",
   how_1: "Taşları parmağınızla sürükleyip ıstakada istediğiniz yuvaya koyun. Yan yana duran taşlar bir kelimedir; kelimeler arasında boşluk bırakın.",
   how_2: "Istakanın üstünde her kelimenin değeri görünür. Toplam {need}'e ulaşınca Eli Aç'a basın.",

@@ -142,7 +142,7 @@ const fr: Messages = {
   autoNone: "Aucun mot possible avec ces tuiles.",
   start: "Jouer",
 
-  tablesDesc: "La mise est prélevée quand vous vous asseyez. Le meilleur total remporte le prix ; en cas d'égalité, il est partagé.",
+  tablesDesc: "La mise est prélevée quand vous vous asseyez. Le premier joueur qui termine les tuiles de son chevalet remporte le prix.",
   opponents_kolay: "Adversaires faciles",
   opponents_orta: "Adversaires moyens",
   opponents_zor: "Adversaires difficiles",
@@ -670,7 +670,7 @@ const fr: Messages = {
   rule_score: "Score : la valeur de chaque mot que vous posez s'ajoute à votre score ; les lettres ajoutées aux mots des autres comptent aussi pour vous. À la fin de la partie, les joueurs qui ont encore des tuiles perdent la valeur des lettres restées en main (un joker resté en main compte comme la lettre la plus forte, {top} : −{joker}). Terminer ses tuiles ne rapporte pas de points en plus. Exemple : vous avez posé des mots d'une valeur de 174 et il vous reste 40 points de lettres : 174 − 40 = 134.",
   rule_color: "Finition couleur : si toutes les tuiles posées par le joueur qui termine sont de la même couleur (le joker va avec toutes), c'est une Finition couleur ; à la table à jetons, elle rapporte un bonus égal à la mise.",
   rule_timer: "Temps de jeu : aux tables à jetons, chaque coup dispose de {n} secondes. Le temps s’affiche sur le cadre : vert, jaune, rouge. À la fin du temps, une tuile est piochée si ce n’est pas fait et une tuile est défaussée automatiquement. Le Salon VIP n’a pas de minuterie : on joue tranquillement en discutant.",
-  rule_winner: "Gagnant : le but est de marquer le plus de points. Finir ses tuiles n’a pas d’importance ; le joueur au total le plus élevé à la fin gagne. Chacun paie la mise de la table et le premier remporte le gain de la table (voir le tableau ci-dessous). En cas d’égalité, le gain est partagé.",
+  rule_winner: "Gagnant : le premier joueur qui termine toutes les tuiles de son chevalet gagne (comme à l’okey classique). Les points ne désignent pas le gagnant ; ils indiquent seulement le score de la partie. Chacun paie la mise de la table et le gagnant remporte le gain de la table (voir le tableau ci-dessous).",
   howTitle: "Commandes",
   how_1: "Faites glisser les tuiles du doigt vers n'importe quelle case du chevalet. Des tuiles côte à côte forment un mot ; laissez des espaces entre les mots.",
   how_2: "La valeur de chaque mot s'affiche au-dessus du chevalet. À {need}, appuyez sur Ouvrir.",

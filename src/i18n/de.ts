@@ -142,7 +142,7 @@ const de: Messages = {
   autoNone: "Mit diesen Steinen lässt sich kein Wort bilden.",
   start: "Los",
 
-  tablesDesc: "Der Einsatz wird beim Hinsetzen abgezogen. Die höchste Punktzahl gewinnt den Preis; bei Gleichstand wird geteilt.",
+  tablesDesc: "Der Einsatz wird beim Hinsetzen abgezogen. Wer als Erster alle Steine seines Bretts ausspielt, gewinnt den Preis.",
   opponents_kolay: "Leichte Gegner",
   opponents_orta: "Mittlere Gegner",
   opponents_zor: "Starke Gegner",
@@ -670,7 +670,7 @@ const de: Messages = {
   rule_score: "Wertung: Der Wert jedes Wortes, das du auslegst, wird dir gutgeschrieben; Buchstaben, die du an fremde Wörter anlegst, zählen ebenfalls für dich. Am Spielende verlieren Spieler mit Steinen auf der Hand den Wert ihrer restlichen Buchstaben (ein Joker auf der Hand zählt wie der höchste Buchstabe {top}: −{joker}). Das Beenden selbst bringt keine Zusatzpunkte. Beispiel: Du hast Wörter im Wert von 174 ausgelegt, 40 Punkte bleiben auf der Hand: 174 − 40 = 134.",
   rule_color: "Farbfinish: Haben alle Steine, die der beendende Spieler ausgelegt hat, dieselbe Farbe (Joker passen zu jeder Farbe), ist es ein Farbfinish; am Chip-Tisch bringt es Bonus-Chips in Höhe des Einsatzes.",
   rule_timer: "Zugzeit: An Chip-Tischen hat jeder Zug {n} Sekunden. Die Zeit wird am Rahmen angezeigt: grün, gelb, rot. Läuft sie ab, wird – falls noch nicht gezogen – ein Stein vom Stapel gezogen und automatisch ein Stein abgelegt. Im VIP-Raum gibt es keine Zugzeit; man spielt in Ruhe und chattet.",
-  rule_winner: "Gewinner: Ziel ist es, die meisten Punkte zu sammeln. Ob du deine Steine aufbrauchst, spielt keine Rolle; wer am Ende die höchste Gesamtpunktzahl hat, gewinnt. Jeder zahlt den Einsatz des Tisches, der Erste erhält den Gewinn des Tisches (siehe Tabelle unten). Bei Gleichstand wird geteilt.",
+  rule_winner: "Gewinner: Wer als Erster alle Steine seines Bretts ausspielt, gewinnt (wie beim normalen Okey). Die Punkte entscheiden nicht über den Sieg; sie zeigen nur den Spielstand. Jeder zahlt den Einsatz des Tisches, der Gewinner erhält den Preis des Tisches (siehe Tabelle unten).",
   howTitle: "Bedienung",
   how_1: "Ziehe Steine mit dem Finger auf einen beliebigen Platz der Ablage. Nebeneinander liegende Steine bilden ein Wort; lass Lücken zwischen Wörtern.",
   how_2: "Über der Ablage steht der Wert jedes Wortes. Erreicht die Summe {need}, tippe auf Auslegen.",

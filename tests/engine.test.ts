@@ -154,7 +154,7 @@ describe("kurallar", () => {
     expect(rackValue(p)).toBe(1 + 29);
   });
 
-  it("oyun tek el: ilk bitiren olunca oyun biter, kazanan en yüksek puan (bitiren değil)", () => {
+  it("oyun tek el: ilk bitiren olunca oyun biter ve KAZANAN BİTİRENDİR (puanı düşük olsa bile)", () => {
     const g = newGame(["Sen", "B1", "B2", "B3"], [false, true, true, true], GAME_HANDS, 3);
     const me = g.current;
     const other = (me + 1) % 4;
@@ -169,14 +169,17 @@ describe("kurallar", () => {
     expect(o.phase).toBe("gameOver");
     expect(o.lastResult?.winner).toBe(me);
     expect(o.lastResult?.scores[other]).toBe(300 - 1);
-    expect(gameWinners(o)).toEqual([other]);
+    expect(gameWinners(o)).toEqual([me]);
+    expect(totals(o)[other]).toBeGreaterThan(totals(o)[me]); // puanı yüksek olan kazanmaz
   });
 
-  it("en çok puanı toplayan oyunu kazanır", () => {
+  it("en çok puan kazananı belirlemez; deste biterse kazanan yok", () => {
     const g = structuredClone(base);
-    g.history = [[174 - 40, 100 + 120, -30, 0], [50, 10, 300, -5]];
-    expect(totals(g)).toEqual([184, 230, 270, -5]);
-    expect(gameWinners(g)).toEqual([2]);
+    g.history = [[300, 10, 20, 0]];
+    g.results = [{ winner: 3, colorWin: null }];
+    expect(gameWinners(g)).toEqual([3]); // en yüksek puan 0. oyuncuda, ama bitiren 3.
+    g.results = [{ winner: null, colorWin: null }];
+    expect(gameWinners(g)).toEqual([]);
   });
 
   it("son taşı atan biter; Renk Bitirme algılanır; puan açtığı kadar, diğerleri elde kalanı eksi alır", () => {
@@ -246,7 +249,7 @@ describe("bot simülasyonu", () => {
 });
 
 import { TABLES, payout, tableById, winnerPrize } from "../src/economy/tables";
-describe("çip ödemesi (en yüksek toplam birinci)", () => {
+describe("çip ödemesi (ıstakayı ilk bitiren kazanır)", () => {
   const t = TABLES[0]; // Çayhane: giriş 100, birinciye 400
   it("giriş 100, birinci 300 çip alır", () => {
     expect(TABLES.filter((x) => !x.vip).map((x) => x.id)).toEqual(["caylak", "usta", "usta2", "usta5", "ozel2", "ozel2u", "ozel2b"]);
@@ -254,7 +257,7 @@ describe("çip ödemesi (en yüksek toplam birinci)", () => {
     expect([ozel.players, ozel.entry, winnerPrize(ozel)]).toEqual([2, 100, 200]);
     const usta = TABLES.find((x) => x.id === "usta")!;
     expect([usta.entry, winnerPrize(usta)]).toEqual([100, 400]);
-    expect(payout(usta, [80, 120, 120, 40], 1, 0)).toBe(200);
+    expect(payout(usta, [1], 1, 0)).toBe(400);
     const s2 = TABLES.find((x) => x.id === "usta2")!, s5 = TABLES.find((x) => x.id === "usta5")!;
     expect([s2.entry, winnerPrize(s2), s2.players ?? 4]).toEqual([1000, 4000, 4]);
     expect([s5.entry, winnerPrize(s5), s5.players ?? 4]).toEqual([10000, 40000, 4]);
@@ -264,17 +267,15 @@ describe("çip ödemesi (en yüksek toplam birinci)", () => {
     expect(winnerPrize(vip)).toBe(200);
     expect(t.entry).toBe(100);
     expect(winnerPrize(t)).toBe(400);
-    expect(payout(t, [300, 50, 200, 30], 0, 0)).toBe(400);
+    expect(payout(t, [0], 0, 0)).toBe(400);
   });
-  it("birinci değilse 0, eşitlikte paylaşılır", () => {
-    expect(payout(t, [10, -100, 200, 30], 0, 0)).toBe(0);
-    expect(payout(t, [250, 250, 200, 30], 0, 0)).toBe(200);
-    // Üç kişi berabere: 400 / 3 = 133'er çip
-    expect(payout(t, [250, 250, 250, 30], 2, 0)).toBe(133);
+  it("taşları bitirmeyen 0 alır; kimse bitiremezse kimseye ödül yok", () => {
+    expect(payout(t, [2], 0, 0)).toBe(0);
+    expect(payout(t, [], 0, 0)).toBe(0);
   });
   it("Renk Bitirme ikramiyesi giriş ücreti kadar", () => {
-    expect(payout(t, [400, 50, 200, 30], 0, 1)).toBe(400 + 100);
-    expect(payout(t, [100, 400, 50, 30], 0, 0)).toBe(0);
+    expect(payout(t, [0], 0, 1)).toBe(400 + 100);
+    expect(payout(t, [1], 0, 0)).toBe(0);
   });
 });
 
@@ -721,7 +722,7 @@ describe("işleme (yerdeki kelimeye harf ekleme) denetimi", () => {
 });
 
 describe("bütün masaların giriş ve ödülleri", () => {
-  it("VIP, Teke Tek, Sosyete, Çayhane: giriş, birinciye ödül, kaybedene 0, eşitlikte paylaşım", () => {
+  it("VIP, Teke Tek, Sosyete, Çayhane: giriş, bitirene ödül, kaybedene 0", () => {
     const want: Record<string, [number, number, number]> = {
       caylak: [100, 400, 4], usta: [100, 400, 4], usta2: [1000, 4000, 4], usta5: [10000, 40000, 4],
       ozel2: [100, 200, 2], ozel2u: [500, 1000, 2], ozel2b: [1000, 2000, 2], vip2: [100, 200, 2],
@@ -730,11 +731,10 @@ describe("bütün masaların giriş ve ödülleri", () => {
     for (const tb of TABLES) {
       const [entry, prize, n] = want[tb.id];
       expect([tb.id, tb.entry, winnerPrize(tb), tb.players ?? 4]).toEqual([tb.id, entry, prize, n]);
-      const win = Array.from({ length: n }, (_, i) => (i === 0 ? 150 : 20));
-      expect(payout(tb, win, 0, 0)).toBe(prize);
-      expect(payout(tb, win, 1, 0)).toBe(0);
-      const tie = Array.from({ length: n }, (_, i) => (i < 2 ? 150 : 20));
-      expect(payout(tb, tie, 0, 0)).toBe(Math.floor(prize / 2));
+      // Ödülü ıstakasını ilk bitiren (0) alır; diğerleri 0
+      expect(payout(tb, [0], 0, 0)).toBe(prize);
+      expect(payout(tb, [0], 1, 0)).toBe(0);
+      expect(payout(tb, [], 0, 0)).toBe(0);
     }
   });
 });
