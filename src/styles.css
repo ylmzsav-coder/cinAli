@@ -1601,3 +1601,6 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 }
 @media (max-width: 800px) { .okey .topbar > .title { height: 32px; padding: 0 8px; } }
 @media (max-width: 800px) { .okey .topbar > .title { font-size: 0.72rem !important; } .okey .topbar > .title .title-ico svg { width: 1em; height: 1em; } }
+/* Oyuncunun kendi düğmesi: dönen sarı şerit kaldırıldı (dikkat dağıtıyordu); sade çerçeve */
+.okey .topbar-actions > .topbar-me::before { display: none !important; content: none !important; animation: none !important; }
+.okey .topbar-actions > .topbar-me::after { inset: 0 !important; border-radius: 10px; box-shadow: none; border: 2px solid rgba(255, 255, 255, 0.18); }
