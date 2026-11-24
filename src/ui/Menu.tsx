@@ -59,9 +59,6 @@ function PlayerIcon() {
         <ellipse cx="32" cy="64" rx="24" ry="20" fill="#ffffff" />
       </g>
       <circle cx="32" cy="25" r="12" fill="#ffffff" />
-      <circle cx="27.5" cy="23" r="1.9" fill="#3a3a3a" />
-      <circle cx="36.5" cy="23" r="1.9" fill="#3a3a3a" />
-      <path d="M26.5 28 Q32 34.5 37.5 28 Z" fill="#3a3a3a" />
       <circle cx="32" cy="32" r="30" fill="none" stroke="#2a2a2a" strokeWidth="1.5" />
     </svg>
   );
