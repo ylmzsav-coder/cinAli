@@ -45,7 +45,7 @@ check("başka oyuncu yine eşleşir", jc.tableId === ja.tableId || jc.tableId ==
 await A.call("leaveTable", { tableId: ja.tableId }); await B.call("leaveTable", { tableId: jb.tableId }); await C.call("leaveTable", { tableId: jc.tableId });
 
 check("engel kaldırılır", (await A.call("unblockPlayer", { targetUid: B.uid })).ok === true);
-check("kaldırınca istek gönderilebilir", (await B.call("sendFriendRequest", { targetUid: A.uid })).status === "sent");
+check("kaldırınca yeniden eklenebilir", (await B.call("sendFriendRequest", { targetUid: A.uid })).status === "friends");
 check("başkası engellenenler listesini okuyamaz", (await getDocs(collection(B.db, "users", A.uid, "blocks")).then(() => "EVET", (e) => e.code)) === "permission-denied");
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

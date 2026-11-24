@@ -35,16 +35,16 @@ const id = created.tableId;
 const readT = async (c) => (await getDoc(doc(c.db, "tables", id))).data();
 check("masa oynanıyor", (await readT(A)).status === "playing");
 
-// Arkadaşlık: Can masadaki Ali'ye istek gönderir, Ali kabul eder
-check("istek gönderildi", (await C.call("sendFriendRequest", { targetUid: A.uid })).status === "sent");
+// Arkadaş ekle (tek taraflı): Can, Ali'yi listesine ekler; Ali'ye istek/bildirim gitmez
+check("Can, Ali'yi ekler", (await C.call("sendFriendRequest", { targetUid: A.uid })).status === "friends");
 const fa = await A.call("friendsStatus");
-check("Ali'nin bekleyen isteği", fa.requests.length === 1 && fa.requests[0].name === "Can", JSON.stringify(fa.requests));
-check("istekler okunabilir (kendi)", (await getDocs(collection(A.db, "users", A.uid, "requests"))).size === 1);
+check("Ali'ye istek ya da bildirim yok", fa.requests.length === 0 && fa.friends.length === 0, JSON.stringify(fa));
+check("Ali'nin istek kutusu boş", (await getDocs(collection(A.db, "users", A.uid, "requests"))).size === 0);
 check("başkasının arkadaş listesi okunamaz", (await getDocs(collection(C.db, "users", A.uid, "friends")).then(() => "EVET", (e) => e.code)) === "permission-denied");
-await A.call("respondFriendRequest", { fromUid: C.uid, accept: true });
 const fc = await C.call("friendsStatus");
 const ali = fc.friends.find((f) => f.uid === A.uid);
 check("Can'ın listesinde Ali çevrimiçi ve masada", !!ali && ali.online && ali.tableStatus === "playing", JSON.stringify(ali));
+check("tekrar eklemek sorun değil", (await C.call("sendFriendRequest", { targetUid: A.uid })).status === "friends");
 
 // İzleme yok: masada oturmayan masayı okuyamaz, izleme çağrısı yoktur
 check("arkadaş da masayı okuyamaz", (await getDoc(doc(C.db, "tables", id)).then(() => "EVET", (e) => e.code)) === "permission-denied");

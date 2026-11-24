@@ -37,34 +37,26 @@ export const heartbeat = onCall(async (req) => {
   return { ok: true };
 });
 
-/** Masadaki oyuncuya arkadaşlık isteği gönderir; karşı taraf da istemişse hemen arkadaş olunur. */
+/**
+ * Arkadaş ekle (tek taraflı): oyuncu istediği kişiyi kendi arkadaş listesine kaydeder.
+ * Eklenen kişiye istek ya da bildirim gitmez, haberi olmaz; kendi listesi değişmez.
+ * (İşlev adı eski sürümlerle uyum için aynı kaldı.)
+ */
 export const sendFriendRequest = onCall(async (req) => {
   const uid = uidOf(req);
   await assertNotBanned(uid);
   const target = str(req.data?.targetUid);
   if (!target || target === uid) fail("badRequest", {}, "invalid-argument");
   return db.runTransaction(async (t) => {
-    const [me, them, already, reverse] = await Promise.all([
-      t.get(userRef(uid)),
-      t.get(userRef(target)),
-      t.get(friendRef(uid, target)),
-      t.get(requestRef(uid, target)),
-    ]);
+    const [them, already] = await Promise.all([t.get(userRef(target)), t.get(friendRef(uid, target))]);
     if (!them.exists) return fail("userNotFound", {}, "not-found");
     if (await blockedEither(uid, target, t)) fail("blocked", {}, "permission-denied");
     if (already.exists) return { status: "friends" };
-    const myName = (me.data()?.name as string) || "?";
-    const theirName = (them.data()?.name as string) || "?";
-    const now = Date.now();
-    if (reverse.exists) {
-      // İki taraf da istedi: arkadaş olun
-      t.set(friendRef(uid, target), { name: theirName, since: now });
-      t.set(friendRef(target, uid), { name: myName, since: now });
-      t.delete(reverse.ref);
-      return { status: "friends" };
-    }
-    t.set(requestRef(target, uid), { name: myName, at: now });
-    return { status: "sent" };
+    t.set(friendRef(uid, target), { name: (them.data()?.name as string) || "?", since: Date.now() });
+    // Eski sürümden kalan bekleyen istekler temizlenir
+    t.delete(requestRef(uid, target));
+    t.delete(requestRef(target, uid));
+    return { status: "friends" };
   });
 });
 
@@ -86,15 +78,12 @@ export const respondFriendRequest = onCall(async (req) => {
   });
 });
 
-/** Arkadaşlıktan çıkar (iki taraftan da silinir). */
+/** Arkadaş listesinden çıkar (yalnızca kendi listenden; karşı tarafa haber gitmez). */
 export const removeFriend = onCall(async (req) => {
   const uid = uidOf(req);
   const fid = str(req.data?.friendUid);
   if (!fid) fail("badRequest", {}, "invalid-argument");
-  const batch = db.batch();
-  batch.delete(friendRef(uid, fid));
-  batch.delete(friendRef(fid, uid));
-  await batch.commit();
+  await friendRef(uid, fid).delete();
   return { ok: true };
 });
 
