@@ -292,7 +292,7 @@ const TABLES = [
     const kb = await p.evaluate(() => { const el = document.querySelector(".kumbara-balance"); return { icon: !!el?.querySelector(".kumbara-icon"), label: el?.querySelector(".kumbara-label")?.textContent ?? "" }; });
     const KB = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" };
     check(`Menü (${lang}): çipler kumbarada — resim ve "${KB[lang]}" yazısı`, kb.icon && kb.label === KB[lang], JSON.stringify(kb));
-    check(`Kurallar (${lang}): 17 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 17 && !r.hscroll && !r.raw, JSON.stringify(r));
+    check(`Kurallar (${lang}): 19 madde, 9 satırlık masa tablosu, taşma yok`, r.rows === 9 && r.items === 19 && !r.hscroll && !r.raw, JSON.stringify(r));
     await p.context().close();
   }
 
@@ -333,6 +333,38 @@ const TABLES = [
     await p.locator(".leave-round").tap(); await W(p, 300);
     await TABLES[0].open(p); await W(p, 1000);
     check("yeni oyuncu Çayhane'ye oturabilir", (await game(p))?.tableId === "caylak");
+    await p.context().close();
+  }
+
+  console.log("\n== 7b. Teke Tek giriş şartı: başarı oranı en az %50 (7 dil)");
+  for (const lang of LANGS) {
+    // %49 (100 oyunda 49): oyun seçenekleri yerine uyarı; oyun açılmaz, çip alınmaz
+    const p = await fresh(browser, "Pixel 7 landscape", { lang, played: 100, won: 49 });
+    const b0 = await bal(p);
+    await p.locator(".ozel-hub").tap(); await W(p, 400);
+    const r = await p.evaluate(() => ({ choices: document.querySelectorAll(".ozel-lobby .two-choices button").length, text: document.querySelector(".ozel-lobby .rate-block")?.textContent ?? "" }));
+    check(`Teke Tek (${lang}) %49: oyun düğmeleri yok, uyarı var (%50 ve %49 yazıyor)`, r.choices === 0 && r.text.includes("50") && r.text.includes("49"), r.text.slice(0, 80));
+    await p.locator(".leave-round").tap(); await W(p, 300);
+    check(`Teke Tek (${lang}) %49: oyun açılmadı, çip alınmadı`, !(await game(p)) && (await bal(p)) === b0);
+    await p.context().close();
+    // %50 (2 oyunda 1): oturur
+    const q = await fresh(browser, "Pixel 7 landscape", { lang, played: 2, won: 1 });
+    await TABLES.find((x) => x.name === "Teke Tek 100").open(q); await W(q, 1200);
+    check(`Teke Tek (${lang}) %50: oturabilir, oyun başladı`, (await game(q))?.tableId === "ozel2" && (await bal(q)) === 50000 - 100);
+    check(`Teke Tek (${lang}): tarayıcı hatası yok`, !p.errors.length && !q.errors.length, [...p.errors, ...q.errors].slice(0, 2).join(" | "));
+    await q.context().close();
+  }
+  for (const d of ["iPhone SE landscape", "Galaxy S8 landscape"]) {
+    const q = await fresh(browser, d, { played: 100, won: 49 });
+    await q.locator(".ozel-hub").tap(); await W(q, 400);
+    const r = await q.evaluate(() => { const g = (x) => document.querySelector(x).getBoundingClientRect(); const i = g(".ozel-lobby .lobby-info"), h = g(".ozel-lobby .vip-search-seat"), m = g(".ozel-lobby .lobby-me"); return { top: i.top - h.bottom, bot: m.top - i.bottom }; });
+    check(`Teke Tek uyarısı (${d}): başlık ve oyuncu rozetiyle çakışmıyor`, r.top >= 0 && r.bot >= 0, JSON.stringify(r));
+    await q.context().close();
+  }
+  {
+    const p = await fresh(browser, "Pixel 7 landscape", { played: 0, won: 0 });
+    await p.locator(".ozel-hub").tap(); await W(p, 400);
+    check("yeni oyuncu (%0) Teke Tek'e oturamaz", (await p.locator(".ozel-lobby .two-choices button").count()) === 0 && (await p.locator(".ozel-lobby .rate-block").count()) === 1);
     await p.context().close();
   }
 

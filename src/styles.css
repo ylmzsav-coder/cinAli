@@ -1666,3 +1666,6 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .pro-tag.chat-tag { background: #1b5e20; color: #e8f5e9; border-color: rgba(165, 214, 167, 0.8); }
 .usta-hub { min-width: 0; }
 .sosyete-tags .pro-tag { max-width: 100%; white-space: normal; text-align: center; }
+@media (max-height: 420px) {
+  .ozel-lobby:not(.vip-lobby) .rate-block { font-size: 0.74rem; padding: 6px 10px; gap: 2px; line-height: 1.25; }
+}

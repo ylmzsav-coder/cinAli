@@ -23,6 +23,8 @@ export interface TableConfig {
 
 /** Sosyete (profesyonel masa) giriş şartı: başarı oranı en az yüzde 76. */
 export const SOSYETE_MIN_RATE = 76;
+/** Teke Tek giriş şartı: başarı oranı en az yüzde 50. */
+export const TEKE_TEK_MIN_RATE = 50;
 
 /** Oyuncunun başarı oranı masanın şartını karşılıyor mu. */
 export function rateAllows(t: TableConfig, rate: number): boolean {
@@ -56,9 +58,9 @@ export const TABLES: TableConfig[] = [
   { id: "usta5", name: "Sosyete 10000", entry: SOSYETE_BUYUK_ENTRY, hands: 1, level: "zor", prize: SOSYETE_BUYUK_PRIZE, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true },
   // Özel oda: herkese açık iki kişilik masa (rastgele oyuncu / arkadaş / bilgisayar).
   // İki harfli kelime yalnızca Çayhane ve Pratik masada geçerli; diğer masalarda en az 3 harf.
-  { id: "ozel2", name: "Teke Tek", entry: OZEL_ENTRY, hands: 1, level: "orta", prize: OZEL_PRIZE, players: 2, minWord: 3 },
-  { id: "ozel2u", name: "Teke Tek 500", entry: OZEL_USTA_ENTRY, hands: 1, level: "zor", prize: OZEL_USTA_PRIZE, players: 2, minWord: 3 },
-  { id: "ozel2b", name: "Teke Tek 1000", entry: OZEL_BUYUK_ENTRY, hands: 1, level: "zor", prize: OZEL_BUYUK_PRIZE, players: 2, minWord: 3 },
+  { id: "ozel2", name: "Teke Tek", entry: OZEL_ENTRY, hands: 1, level: "orta", prize: OZEL_PRIZE, players: 2, minWord: 3, minRate: TEKE_TEK_MIN_RATE },
+  { id: "ozel2u", name: "Teke Tek 500", entry: OZEL_USTA_ENTRY, hands: 1, level: "zor", prize: OZEL_USTA_PRIZE, players: 2, minWord: 3, minRate: TEKE_TEK_MIN_RATE },
+  { id: "ozel2b", name: "Teke Tek 1000", entry: OZEL_BUYUK_ENTRY, hands: 1, level: "zor", prize: OZEL_BUYUK_PRIZE, players: 2, minWord: 3, minRate: TEKE_TEK_MIN_RATE },
   // VIP iki kişilik özel oda: karşılıklı, yalnızca VIP aboneler
   { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true, minWord: 3 },
   // VIP Usta: aynı oda, yüksek giriş (VIP kartındaki giriş seçiminden)

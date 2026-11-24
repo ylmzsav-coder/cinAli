@@ -106,13 +106,45 @@ check("oyuncu başarı sayılarını kendisi yazamaz", w === "permission-denied"
   check("18 yaş altı Sosyete'de oynar ama yazamaz", !!kj.tableId && r4.code === "vipAdultOnly", JSON.stringify(r4));
   // Çayhane ve Teke Tek'te serbest yazışma yok
   for (const type of ["caylak", "ozel2"]) {
+    // Sosyete oyuncusu (%90) Teke Tek ve Çayhane'de de yazışamaz
     const C = await client("Cem" + type);
     await C.call("heartbeat", { name: "Cem", adult: true });
+    await C.call("testSetStats", { played: 10, won: 9 });
     const cj = await C.call("joinTable", { type, lang: "fr", name: "Cem" });
     await C.call("startTable", { tableId: cj.tableId });
     const r = await err(C.call("sendText", { tableId: cj.tableId, text: "merhaba", uiLang: "tr" }));
-    check(`${type === "caylak" ? "Çayhane'de" : "Teke Tek'te"} serbest yazışma yok`, r.code === "chatVipOnly", JSON.stringify(r));
+    check(`Sosyete oyuncusu (%90) ${type === "caylak" ? "Çayhane'de" : "Teke Tek'te"} yazışamaz (sohbet yok)`, r.code === "chatVipOnly", JSON.stringify(r));
   }
+}
+// 8) Teke Tek giriş şartı: başarı oranı en az %50 (açık masa, özel masa kurma ve davetle katılma)
+{
+  const Y = await client("Yeni");
+  const ey = await err(Y.call("joinTable", { type: "ozel2", lang, name: "Yeni" }));
+  check("yeni oyuncu (%0) Teke Tek'e oturamaz: rateTooLowOzel", ey.code === "rateTooLowOzel" && ey.params.need === 50 && ey.params.rate === 0, JSON.stringify(ey));
+  const D = await client("Derya");
+  await D.call("testPurchase", { chips: 5000, productId: "wordokey_cip_5k" });
+  await D.call("testSetStats", { played: 100, won: 49 });
+  for (const type of ["ozel2", "ozel2u", "ozel2b"]) {
+    const e = await err(D.call("joinTable", { type, lang, name: "Derya" }));
+    check(`%49 oyuncu ${type} masasına oturamaz`, e.code === "rateTooLowOzel" && e.params.rate === 49, JSON.stringify(e));
+  }
+  const ep = await err(D.call("createPrivateTable", { type: "ozel2", lang, name: "Derya" }));
+  check("%49 oyuncu Teke Tek özel masası (arkadaşla) kuramaz", ep.code === "rateTooLowOzel", JSON.stringify(ep));
+  const cj = await D.call("joinTable", { type: "caylak", lang: "de", name: "Derya" });
+  check("%49 oyuncu Çayhane'ye oturabilir", !!cj.tableId);
+  await D.call("leaveTable", { tableId: cj.tableId });
+  // Davetle katılma: %50 kurar, %49 davetli katılamaz
+  const E = await client("Ece");
+  await E.call("testSetStats", { played: 2, won: 1 });
+  const pt = await E.call("createPrivateTable", { type: "ozel2", lang, name: "Ece" });
+  check("%50 oyuncu Teke Tek özel masası kurabilir", !!pt.code, JSON.stringify(pt));
+  const ej = await err(D.call("joinPrivateTable", { code: pt.code, name: "Derya" }));
+  check("%49 oyuncu davet koduyla da Teke Tek'e katılamaz", ej.code === "rateTooLowOzel", JSON.stringify(ej));
+  const F = await client("Fatih");
+  await F.call("testSetStats", { played: 2, won: 1 });
+  const fb = await F.balance();
+  const fj = await F.call("joinTable", { type: "ozel2", lang: "es", name: "Fatih" });
+  check("%50 oyuncu Teke Tek'e oturur, 100 giriş alınır", !!fj.tableId && (await F.balance()) === fb - 100);
 }
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

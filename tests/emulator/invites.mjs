@@ -15,6 +15,7 @@ async function client(name) {
   const { user } = await signInAnonymously(auth);
   const call = (n, d) => httpsCallable(fns, n)(d).then((r) => r.data);
   await call("bootstrap", { name });
+  await call("testSetStats", { played: 10, won: 9 }); // Teke Tek giriş şartı (%50)
   await call("heartbeat", { name });
   const balance = async () => (await getDoc(doc(db, "wallets", user.uid))).data().balance;
   return { uid: user.uid, db, call, name, balance };

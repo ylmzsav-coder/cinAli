@@ -748,17 +748,23 @@ describe("kimse bitiremedi (deste bitti)", () => {
   });
 });
 
-import { SOSYETE_MIN_RATE, rateAllows } from "../src/economy/tables";
+import { SOSYETE_MIN_RATE, TEKE_TEK_MIN_RATE, isChatType, rateAllows } from "../src/economy/tables";
 describe("Sosyete giriş şartı (başarı oranı)", () => {
-  it("yalnızca Sosyete masalarında %76; altı engellenir, diğer masalar serbest", () => {
+  it("Sosyete %76, Teke Tek %50; Çayhane ve VIP'te şart yok", () => {
     expect(SOSYETE_MIN_RATE).toBe(76);
-    expect(TABLES.filter((x) => x.minRate).map((x) => [x.id, x.minRate])).toEqual([["usta", 76], ["usta2", 76], ["usta5", 76]]);
+    expect(TEKE_TEK_MIN_RATE).toBe(50);
+    expect(TABLES.filter((x) => x.minRate).map((x) => [x.id, x.minRate])).toEqual([["usta", 76], ["usta2", 76], ["usta5", 76], ["ozel2", 50], ["ozel2u", 50], ["ozel2b", 50]]);
     for (const tb of TABLES) {
-      const pro = tb.id.startsWith("usta");
+      const pro = tb.id.startsWith("usta"), teke = tb.id.startsWith("ozel");
       expect(rateAllows(tb, 75), tb.id).toBe(!pro);
       expect(rateAllows(tb, 76), tb.id).toBe(true);
-      expect(rateAllows(tb, 0), tb.id).toBe(!pro);
+      expect(rateAllows(tb, 49), tb.id).toBe(!pro && !teke);
+      expect(rateAllows(tb, 50), tb.id).toBe(!pro);
+      expect(rateAllows(tb, 0), tb.id).toBe(!pro && !teke);
     }
+  });
+  it("serbest sohbet yalnızca VIP (ücretli) ve Sosyete'de (ücretsiz); Teke Tek ve Çayhane'de yok", () => {
+    expect(TABLES.filter((x) => isChatType(x.id)).map((x) => x.id)).toEqual(["usta", "usta2", "usta5", "vip2"]);
   });
 });
 

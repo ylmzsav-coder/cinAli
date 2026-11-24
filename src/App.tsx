@@ -19,6 +19,7 @@ import { enterFullscreenLandscape } from "./display";
 import { startMusic, stopMusic } from "./music";
 import { flushFeedback } from "./feedbackBox";
 import { isAdult } from "./age";
+import { rateBlockMessage } from "./ui/rateBlock";
 import { myRate, recordProgress, recordQuit, setServerCounts } from "./stats";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Terms } from "./ui/Terms";
@@ -214,16 +215,19 @@ export function App() {
   };
 
   const [shopNotice, setShopNotice] = useState<string | null>(null);
-  const [rateBlock, setRateBlock] = useState<string | null>(null);
+  const [rateBlock, setRateBlock] = useState<{ title: string; text: string } | null>(null);
+  /** Başarı oranı şartı (Sosyete %76, Teke Tek %50): karşılanmıyorsa nedeni uyarıyla söylenir. */
+  const blockedByRate = (tb: TableConfig) => {
+    const me = myRate();
+    if (rateAllows(tb, me.rate)) return false;
+    setRateBlock(rateBlockMessage(tb, me));
+    return true;
+  };
   const sitAt = (tb: TableConfig, want?: Gender) => {
     // VIP oda yalnızca abonelere (Masalar sayfası da kontrol eder)
     if (tb.vip && !wallet.isVip()) return;
     // Sosyete: başarı oranı %76'nın altındaki oyuncu oturamaz; nedeni uyarıyla söylenir
-    const me = myRate();
-    if (!rateAllows(tb, me.rate)) {
-      setRateBlock(t("rateBlockText", { need: tb.minRate ?? 0, rate: me.rate, won: me.won, played: me.played }));
-      return;
-    }
+    if (blockedByRate(tb)) return;
     if (CLOUD) {
       // Giriş ücretini ve masayı sunucu yönetir
       setOnline({ kind: "public", table: tb, want });
@@ -245,6 +249,7 @@ export function App() {
   /** İki kişilik oda (Özel Oda / VIP): rastgele oyuncu, arkadaşla ya da bilgisayara karşı. */
   const playTwo = (tb: TableConfig, mode: TwoMode) => {
     if (tb.vip && !wallet.isVip()) return;
+    if (blockedByRate(tb)) return;
     if (mode === "random") return sitAt(tb);
     if (mode === "friend") {
       if (!CLOUD) return sitAt(tb); // bekleme masasında "+ DAVET ET"
@@ -368,8 +373,8 @@ export function App() {
       {rateBlock && (
         <div className="modal-bg" onClick={() => setRateBlock(null)}>
           <div className="modal rate-modal" role="alertdialog" onClick={(e) => e.stopPropagation()}>
-            <h2>⛔ {t("rateBlockTitle")}</h2>
-            <p>{rateBlock}</p>
+            <h2>⛔ {rateBlock.title}</h2>
+            <p>{rateBlock.text}</p>
             <button type="button" className="primary" onClick={() => setRateBlock(null)}>{t("close")}</button>
           </div>
         </div>

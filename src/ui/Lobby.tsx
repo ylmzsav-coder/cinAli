@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { TableConfig } from "../economy/tables";
 import { rateAllows, tableById, winnerPrize } from "../economy/tables";
 import { myRate } from "../stats";
+import { rateBlockMessage } from "./rateBlock";
 import { TwoPlayerChoices, type TwoMode } from "./TwoPlayer";
 import { GenderModal } from "./Vip";
 import type { Gender } from "../storage";
@@ -141,8 +142,8 @@ export function SosyeteLobby({ name, onClose, onPick }: { name: string; onClose:
               <button type="button" className="primary big sosyete-sit" onClick={() => onPick(tb)}>{t("sit")}</button>
             ) : (
               <div className="rate-block" role="alert">
-                <b>⛔ {t("rateBlockTitle")}</b>
-                <span>{t("rateBlockText", { need: tb.minRate ?? 0, rate: me.rate, won: me.won, played: me.played })}</span>
+                <b>⛔ {rateBlockMessage(tb, me).title}</b>
+                <span>{rateBlockMessage(tb, me).text}</span>
               </div>
             )}
           </div>
@@ -166,6 +167,9 @@ export function TwoLobby({ vip = false, name, gender, onGender, onClose, onPick,
   const [id, setId] = useState<string>(ids[0]);
   const [askFor, setAskFor] = useState<Gender | null>(null);
   const tb = tableById(id)!;
+  // Teke Tek giriş şartı: başarı oranı en az %50 (VIP'te şart yok)
+  const me = myRate();
+  const allowed = rateAllows(tb, me.rate);
   const seek = (want: Gender) => (gender ? onSeek?.(tb, want) : setAskFor(want));
   return (
     <div className={`lobby ozel-lobby ${vip ? "vip-lobby" : ""}`}>
@@ -200,7 +204,14 @@ export function TwoLobby({ vip = false, name, gender, onGender, onClose, onPick,
                 <button type="button" className="primary vip-search-btn vip-m" onClick={() => seek("erkek")}>👨 {t("vipSearchM")}</button>
               </div>
             )}
-            <TwoPlayerChoices onRandom={() => onPick(tb, "random")} onFriend={() => onPick(tb, "friend")} onBot={() => onPick(tb, "bot")} />
+            {allowed ? (
+              <TwoPlayerChoices onRandom={() => onPick(tb, "random")} onFriend={() => onPick(tb, "friend")} onBot={() => onPick(tb, "bot")} />
+            ) : (
+              <div className="rate-block" role="alert">
+                <b>⛔ {rateBlockMessage(tb, me).title}</b>
+                <span>{rateBlockMessage(tb, me).text}</span>
+              </div>
+            )}
             {vip && <p className="vip-opp-note">ℹ️ {t("vipOppNote")}</p>}
           </div>
         </div>

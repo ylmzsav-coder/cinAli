@@ -119,7 +119,8 @@ const genderOf = (v: unknown): Gender | null => (v === "erkek" || v === "kadin" 
 function requireRate(cfg: TableConfig, user: FirebaseFirestore.DocumentData) {
   const played = Number(user.gamesPlayed ?? 0), won = Number(user.gamesWon ?? 0);
   const rate = ratePercent(won, played);
-  if (!rateAllows(cfg, rate)) fail("rateTooLow", { need: cfg.minRate ?? 0, rate, won, played });
+  // Teke Tek ve Sosyete için ayrı uyarı metni (masa adı ve şart)
+  if (!rateAllows(cfg, rate)) fail(cfg.id.startsWith("ozel") ? "rateTooLowOzel" : "rateTooLow", { need: cfg.minRate ?? 0, rate, won, played });
 }
 
 function requireVip(cfg: TableConfig, w: WalletDoc) {
