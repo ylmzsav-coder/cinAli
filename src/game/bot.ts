@@ -40,6 +40,11 @@ export interface BotProfile {
   finishFromRound: number;
 }
 
+/**
+ * 4 kişilik masada bekleme turunun 2 kişiliğe oranı. Ölçüm (Türkçe, 150'şer maç): 0,65'te oyuncu
+ * elde ~6,5 kez sıra alıyordu; 0,9'da ~8–9 kez, destenin tükendiği eller %16–19.
+ */
+const FOUR_FACTOR = 0.9;
 export const BOT_PROFILES: Record<BotLevel, BotProfile> = {
   // Bilgisayar elini hemen açmasın diye bekler: oyunlar çok çabuk bitmesin, oyuncu da kelime arayabilsin.
   // (Ölçüm: orta seviyede 4. turdan önce açmamak bir eli 4,7 turdan 7,5 tura uzatır.)
@@ -265,8 +270,8 @@ export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "o
 
   // Gerçek oyuncu varken erken bitirmesin: tur sınırına kadar ıstakada en az 2 taş kalsın (biri atılır)
   const humanTable = state.players.some((x) => !x.isBot);
-  // 4 kişide deste daha çabuk tükenir: bekleme turu oyuncu sayısına göre kısalır
-  const finishRound = state.players.length > 2 ? Math.round(profile.finishFromRound * 0.65) : profile.finishFromRound;
+  // 4 kişide deste daha çabuk tükenir: bekleme turu 2 kişidekinden biraz kısa
+  const finishRound = state.players.length > 2 ? Math.round(profile.finishFromRound * FOUR_FACTOR) : profile.finishFromRound;
   const keep = humanTable && roundOf(state) + 1 < finishRound ? 2 : 1;
   const tryExtend = () => {
     const ext = findExtension(dict, state, p.rack, profile.extendMaxTiles, keep);
