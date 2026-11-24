@@ -137,7 +137,13 @@ function runBots(state: GameState, level: BotLevel): GameState {
   const dict = dictFor(state.lang);
   let guard = 0;
   while ((state.phase === "draw" || state.phase === "play") && state.players[state.current].isBot) {
-    state = botStep(dict, state, level);
+    // Bilgisayar hamlesinde beklenmedik bir hata olursa masa takılmasın: süre dolmuş gibi oynanır
+    try {
+      state = botStep(dict, state, level);
+    } catch (e) {
+      console.error("botStep", e);
+      state = timeoutMove(state);
+    }
     if (++guard > 400) break;
   }
   return state;

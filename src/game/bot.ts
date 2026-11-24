@@ -29,14 +29,25 @@ export interface BotProfile {
   openThreshold?: number;
   /** Bilgisayar en erken kaçıncı turda elini açar (1 = ilk tur). */
   openFromRound?: number;
+  /** Kelime koyma hakkı bittikten sonra aynı turda yapabileceği ek işleme sayısı. */
+  extraExtends: number;
+  /** Bir işlemede en fazla kaç harf ekler (1: tek harf, 2: iki harfe kadar). */
+  extendMaxTiles: number;
+  /**
+   * Gerçek oyuncunun olduğu masada bilgisayar bu turdan önce eli bitirmez
+   * (ıstakasında en az bir taş fazla tutar): oyun çabuk bitmesin, oyuncu da kelime kurabilsin.
+   */
+  finishFromRound: number;
 }
 
 export const BOT_PROFILES: Record<BotLevel, BotProfile> = {
   // Bilgisayar elini hemen açmasın diye bekler: oyunlar çok çabuk bitmesin, oyuncu da kelime arayabilsin.
   // (Ölçüm: orta seviyede 4. turdan önce açmamak bir eli 4,7 turdan 7,5 tura uzatır.)
-  kolay: { vocabulary: 1500, maxOpenWords: 2, playsPerTurn: 1, openStyle: "az", openFromRound: 5 },
-  orta: { vocabulary: 4000, maxOpenWords: 3, playsPerTurn: 1, openStyle: "az", openFromRound: 4 },
-  zor: { vocabulary: 10000, maxOpenWords: 3, playsPerTurn: 2, openStyle: "az", openFromRound: 3 },
+  // İşleme: bilgisayar yerdeki kelimelere harf eklemeyi yeni kelime koymaktan önce dener ve
+  // kelime hakkı bitse de ek işleme yapabilir; bitirme ise gerçek oyuncu varken geciktirilir.
+  kolay: { vocabulary: 1500, maxOpenWords: 2, playsPerTurn: 1, openStyle: "az", openFromRound: 5, extraExtends: 1, extendMaxTiles: 1, finishFromRound: 10 },
+  orta: { vocabulary: 4000, maxOpenWords: 3, playsPerTurn: 1, openStyle: "az", openFromRound: 4, extraExtends: 1, extendMaxTiles: 2, finishFromRound: 9 },
+  zor: { vocabulary: 10000, maxOpenWords: 3, playsPerTurn: 2, openStyle: "az", openFromRound: 3, extraExtends: 2, extendMaxTiles: 2, finishFromRound: 8 },
 };
 
 const vocabCache = new WeakMap<Dictionary, Map<BotLevel, DictWord[]>>();
@@ -252,8 +263,27 @@ export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "o
     return drawFromDeck(state);
   }
 
+  // Gerçek oyuncu varken erken bitirmesin: tur sınırına kadar ıstakada en az 2 taş kalsın (biri atılır)
+  const humanTable = state.players.some((x) => !x.isBot);
+  // 4 kişide deste daha çabuk tükenir: bekleme turu oyuncu sayısına göre kısalır
+  const finishRound = state.players.length > 2 ? Math.round(profile.finishFromRound * 0.65) : profile.finishFromRound;
+  const keep = humanTable && roundOf(state) + 1 < finishRound ? 2 : 1;
+  const tryExtend = () => {
+    const ext = findExtension(dict, state, p.rack, profile.extendMaxTiles, keep);
+    if (!ext) return null;
+    try {
+      return extendWord(dict, state, ext.wordId, ext.side, { tileIds: ext.tileIds, jokerLetters: [] });
+    } catch {
+      return null;
+    }
+  };
+
   if (state.turnPlays >= profile.playsPerTurn) {
-    // Bu turluk hamle hakkı bitti
+    // Kelime hakkı bitti; işleme hevesi: birkaç ek işleme daha yapabilir
+    if (p.opened && state.turnPlays < profile.playsPerTurn + profile.extraExtends) {
+      const next = tryExtend();
+      if (next) return next;
+    }
   } else if (!p.opened && roundOf(state) + 1 >= (profile.openFromRound ?? 1)) {
     const plan = planOpening(vocab, p.rack, profile.maxOpenWords, profile.openStyle, Math.max(RULES.openThreshold, profile.openThreshold ?? 0));
     if (plan) {
@@ -273,10 +303,12 @@ export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "o
         }
       }
     }
-  } else {
-    // Yeni kelime koy (en uzun önce)
+  } else if (p.opened) {
+    // Önce yerdeki kelimelere işle (oyunu hareketlendirir), sonra yeni kelime koy (en uzun önce)
+    const next = tryExtend();
+    if (next) return next;
     const cands = candidateWords(vocab, p.rack)
-      .filter((w) => w.len <= p.rack.length - 1)
+      .filter((w) => w.len <= p.rack.length - keep)
       .sort((a, b) => b.len - a.len || b.value - a.value);
     for (const w of cands.slice(0, 20)) {
       const spec = specFor(w.word, p.rack);
@@ -287,29 +319,41 @@ export function botStep(dict: Dictionary, state: GameState, level: BotLevel = "o
         /* sıradakini dene */
       }
     }
-    // Yerdeki kelimelere tek harf işle
-    if (p.rack.length > 1) {
-      for (const tw of state.table) {
-        if (tw.pair) continue; // çiftler işlenmez
-        const base = wordString(tw.tiles);
-        for (const t of p.rack) {
-          const letters = t.letter ? [t.letter] : alphabet().slice().sort((a, b) => letterValue(b) - letterValue(a));
-          for (const l of letters) {
-            for (const side of ["end", "start"] as const) {
-              const w = side === "end" ? base + l : l + base;
-              if (!dict.has(w) || !knows(vocab, w)) continue;
-              return extendWord(dict, state, tw.id, side, {
-                tileIds: [t.id],
-                jokerLetters: t.letter ? [] : [l],
-              });
-            }
-          }
-        }
-      }
-    }
   }
 
   return discardTile(state, chooseDiscard(state, vocab).id);
+}
+
+/**
+ * Yerdeki kelimelere eklenebilecek en iyi harf(ler)i bulur: tek harf ya da (maxTiles 2 ise)
+ * iki harf, başa veya sona. Joker işlemede harcanmaz. Daha çok harf ve daha yüksek değer önce.
+ * Sözlüğün tamamı kullanılır (bilgisayar, kelimenin çekimli hâllerini de tanır).
+ */
+function findExtension(dict: Dictionary, state: GameState, rack: Tile[], maxTiles: number, keep: number) {
+  const letters = rack.filter((t) => t.letter !== null);
+  let best: { wordId: number; side: "start" | "end"; tileIds: number[]; score: number } | null = null;
+  const consider = (wordId: number, side: "start" | "end", tiles: Tile[], word: string) => {
+    if (rack.length - tiles.length < keep || !dict.has(word)) return;
+    const score = tiles.length * 100 + tiles.reduce((n, t) => n + letterValue(t.letter!), 0);
+    if (!best || score > best.score) best = { wordId, side, tileIds: tiles.map((t) => t.id), score };
+  };
+  for (const tw of state.table) {
+    if (tw.pair) continue; // çiftler işlenmez
+    const base = wordString(tw.tiles);
+    for (let i = 0; i < letters.length; i++) {
+      const a = letters[i];
+      consider(tw.id, "end", [a], base + a.letter);
+      consider(tw.id, "start", [a], a.letter + base);
+      if (maxTiles < 2) continue;
+      for (let j = 0; j < letters.length; j++) {
+        if (j === i) continue;
+        const b = letters[j];
+        consider(tw.id, "end", [a, b], base + a.letter + b.letter);
+        consider(tw.id, "start", [a, b], a.letter! + b.letter + base);
+      }
+    }
+  }
+  return best as { wordId: number; side: "start" | "end"; tileIds: number[]; score: number } | null;
 }
 
 const knownSets = new WeakMap<DictWord[], Set<string>>();
