@@ -486,6 +486,28 @@ describe("iki harfli kelimeler", () => {
     // Sözlükte olmayan 4 harfli dizi reddedilir
     expectErr(() => layWord(dict, o, { tileIds: kzal.map((x) => x.id) }), "notInDict", { word: "KZAL" });
   });
+  it("VIP, Teke Tek, Çayhane: 2, 3 ve 4 harfli kelimelerle açılır, koyulur ve işlenir", () => {
+    for (const id of ["vip2", "ozel2", "ozel2u", "ozel2b", "caylak"]) {
+      const cfg = TABLES.find((x) => x.id === id)!;
+      expect(cfg.minWord, id).toBeUndefined();
+      const g = newGame(["A", "B"], [false, true], 1, 5, cfg.minWord);
+      expect(g.minWord, id).toBeUndefined();
+      const st = { ...base, minWord: g.minWord };
+      const ek = tiles("EK"), sut = tiles("SÜT"), kuzu = tiles("KUZU"), at = tiles("AT"), kar = tiles("KAR"), kale = tiles("KALE"), m = t("M"), a = t("A");
+      const s = rig(st, [...ek, ...sut, ...kuzu, ...at, ...kar, ...kale, m, a, t("Z")]);
+      // Karışık açılış: EK (2) + SÜT (3) + KUZU (4) = 185
+      let o = openHand(dict, s, [ek, sut, kuzu].map((w) => ({ tileIds: w.map((x) => x.id) })));
+      expect(o.table.map((w) => w.tiles.length), id).toEqual([2, 3, 4]);
+      o = layWord(dict, o, { tileIds: at.map((x) => x.id) });
+      o = layWord(dict, o, { tileIds: kar.map((x) => x.id) });
+      o = layWord(dict, o, { tileIds: kale.map((x) => x.id) });
+      expect(o.table.slice(3).map((w) => w.tiles.map((x) => x.letter).join("")), id).toEqual(["AT", "KAR", "KALE"]);
+      const word = (w: string) => o.table.find((x) => x.tiles.map((y) => y.letter).join("") === w)!.id;
+      o = extendWord(dict, o, word("KALE"), "end", { tileIds: [m.id] }); // 4 → 5: KALEM
+      o = extendWord(dict, o, word("KAR"), "end", { tileIds: [a.id] }); // 3 → 4: KARA
+      expect(o.table.map((w) => w.tiles.map((x) => x.letter).join("")).sort(), id).toEqual(["AT", "EK", "KALEM", "KARA", "KUZU", "SÜT"]);
+    }
+  });
   it("Sosyete: bilgisayarlar yere hiç 2 harfli kelime koymaz ve oyunlar biter", () => {
     let hands = 0, wins = 0;
     for (let seed = 1; seed <= 4; seed++) {

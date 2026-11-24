@@ -184,6 +184,35 @@ const TABLES = [
     check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
   }
 
+  console.log("\n== 5. Kelime uzunlukları: 2, 3, 4 harf (Sosyete'de 2 harf geçersiz)");
+  {
+    const p = await fresh(browser, "Pixel 7 landscape");
+    const pick = (n) => TABLES.find((x) => x.name === n);
+    const WORDS = [["EK", 20], ["SÜT", 72], ["KUZU", 93], ["KZAL", null]];
+    for (const tb of [pick("VIP"), pick("Teke Tek 100"), pick("Çayhane"), pick("Sosyete 500")]) {
+      const pro = tb.name.startsWith("Sosyete");
+      for (const [word, value] of WORDS) {
+        await toHub(p);
+        await tb.open(p); await W(p, 1500);
+        // Sırayı oyuncuya ver, ıstakaya yalnızca bu kelimeyi diz
+        await p.evaluate((word) => {
+          const g = JSON.parse(localStorage.getItem("cinali.game")); const s = g.state;
+          const me = s.players.findIndex((x) => !x.isBot); const tpl = s.players[me].rack.find((x) => x.letter !== null);
+          s.players[me].rack = [...word].map((ch, i) => ({ ...tpl, id: 9000 + i, letter: ch }));
+          s.current = me; s.phase = "play"; localStorage.setItem("cinali.game", JSON.stringify(g));
+        }, word);
+        await p.reload(); await W(p, 900);
+        if (await p.locator(".splash-hit").count()) { await p.locator(".splash-hit").tap(); await W(p, 400); }
+        if (!(await p.locator(".group-chip").count())) { await p.locator(".hub-right button.primary, .hub-right .resume").first().tap().catch(() => {}); await W(p, 1200); }
+        const chip = (await p.locator(".group-chip").allInnerTexts()).join(" ");
+        const ok = (await p.locator(".group-chip.ok").count()) === 1;
+        const want = value !== null && !(pro && word.length === 2);
+        check(`${tb.name}: ${word} (${word.length} harf) ${want ? "geçerli" : "geçersiz"}`, ok === want && (!want || chip.includes(String(value))), chip);
+      }
+    }
+    check("tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
+  }
+
   await browser.close();
   console.log(fails ? `\n✗ ${fails} DENETİM BAŞARISIZ` : "\nHEPSİ GEÇTİ");
   process.exit(fails ? 1 : 0);
