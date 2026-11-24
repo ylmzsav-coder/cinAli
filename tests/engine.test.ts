@@ -467,6 +467,25 @@ describe("iki harfli kelimeler", () => {
     const o2 = openHand(dict, rig(pro, [...zkt, ...sut2, ...tuz2, z]), [sut2, tuz2].map((w) => ({ tileIds: w.map((x) => x.id) })));
     expectErr(() => layWord(dict, o2, { tileIds: zkt.map((x) => x.id) }), "notInDict", { word: "ZKT" });
   });
+  it("Sosyete: 4 harfli kelimelerle açılır, 4 harfli kelime koyulur ve işlenir", () => {
+    const pro = { ...base, minWord: 3 };
+    const kuzu = tiles("KUZU"), arzu = tiles("ARZU"), elma = tiles("ELMA"), kale = tiles("KALE"), m = t("M"), kzal = tiles("KZAL"), z = t("Z");
+    const s = rig(pro, [...kuzu, ...arzu, ...elma, ...kale, m, ...kzal, z]);
+    // Yalnızca 4 harfli kelimelerle açılış (KUZU 93 + ARZU 76 = 169 ≥ 101)
+    let o = openHand(dict, s, [kuzu, arzu].map((w) => ({ tileIds: w.map((x) => x.id) })));
+    expect(o.table.map((w) => w.tiles.map((x) => x.letter).join(""))).toEqual(["KUZU", "ARZU"]);
+    // Tek 4 harfli kelime eşiğe yetmezse açılmaz (ELMA 38)
+    expectErr(() => openHand(dict, s, [{ tileIds: elma.map((x) => x.id) }]), "openNeeds", { need: 101, total: 38 });
+    // Açtıktan sonra 4 harfli kelime koyma
+    o = layWord(dict, o, { tileIds: elma.map((x) => x.id) });
+    o = layWord(dict, o, { tileIds: kale.map((x) => x.id) });
+    // 4 harfli kelimeye işleme: KALE → KALEM
+    const kaleId = o.table.find((w) => w.tiles.map((x) => x.letter).join("") === "KALE")!.id;
+    o = extendWord(dict, o, kaleId, "end", { tileIds: [m.id] });
+    expect(o.table.find((w) => w.id === kaleId)!.tiles.map((x) => x.letter).join("")).toBe("KALEM");
+    // Sözlükte olmayan 4 harfli dizi reddedilir
+    expectErr(() => layWord(dict, o, { tileIds: kzal.map((x) => x.id) }), "notInDict", { word: "KZAL" });
+  });
   it("Sosyete: bilgisayarlar yere hiç 2 harfli kelime koymaz ve oyunlar biter", () => {
     let hands = 0, wins = 0;
     for (let seed = 1; seed <= 4; seed++) {
