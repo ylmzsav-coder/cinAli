@@ -16,6 +16,7 @@ for (const [type, [entry, n]] of Object.entries(want)) {
   const call = (nm, d) => httpsCallable(fns, nm)(d).then((r) => r.data);
   await call("bootstrap", { name: "T" });
   await call("testPurchase", { chips: 15000, productId: "wordokey_cip_15k" });
+  await call("testSetStats", { played: 10, won: 9 }); // Sosyete şartı: başarı oranı en az %76
   if (type.startsWith("vip")) { await call("testSubscribeVip"); await call("heartbeat", { name: "T", adult: true }); }
   const bal = async () => (await getDoc(doc(db, "wallets", user.uid))).data().balance;
   const b0 = await bal();

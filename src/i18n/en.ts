@@ -572,6 +572,7 @@ const en: Messages = {
   "err.adsSoon": "Ads coming soon.",
   "err.network": "Connection error. Check your internet and try again.",
   "err.signIn": "Could not sign in.",
+  "err.rateTooLow": "High Society is a professional table: only players with a win rate of {need}% or more can sit. Your win rate is {rate}% ({won} wins in {played} games). Win at the Tea House and One on One to raise it.",
   "err.noWallet": "Your account is being set up; try again in a moment.",
   "err.userNotFound": "Player not found.",
   "err.tableOver": "The game at this table is over.",

@@ -82,6 +82,16 @@ export const testPurchase = onCall(async (req) => {
 });
 
 /** Test VIP aboneliği: yalnızca emülatörde. Gerçek abonelik RevenueCat web kancasıyla gelecek. */
+/** Yalnızca emülatörde: başarı oranı testleri için oyuncunun oyun sayılarını ayarlar. */
+export const testSetStats = onCall(async (req) => {
+  const uid = uidOf(req);
+  if (!IS_EMULATOR) fail("storeSoon");
+  const played = Math.max(0, Math.floor(Number(req.data?.played ?? 0)));
+  const won = Math.min(played, Math.max(0, Math.floor(Number(req.data?.won ?? 0))));
+  await db.collection("users").doc(uid).set({ gamesPlayed: played, gamesWon: won }, { merge: true });
+  return { ok: true };
+});
+
 export const testSubscribeVip = onCall(async (req) => {
   const uid = uidOf(req);
   if (!IS_EMULATOR) fail("storeSoon");

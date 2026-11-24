@@ -27,6 +27,20 @@ export function rateAllows(t: TableConfig, rate: number): boolean {
   return !t.minRate || rate >= t.minRate;
 }
 
+/** Başarı oranı (yüzde): kazanılan / oynanan oyun. Hiç oyun yoksa 0. */
+export function ratePercent(won: number, played: number): number {
+  return played > 0 ? Math.round((won / played) * 100) : 0;
+}
+
+/**
+ * Bitmiş oyunun oyuncu için sonucu (başarı oranına işlenir): ıstakasını ilk bitiren
+ * kazanır, diğerleri kaybeder. Deste bitip kimse bitiremediyse oyun sayılmaz (null).
+ */
+export function gameOutcome(state: { phase: string; lastResult: { reason: string } | null }, winners: number[], seat: number): "won" | "lost" | null {
+  if (state.phase !== "gameOver" || noWinnerGame(state)) return null;
+  return winners.includes(seat) ? "won" : "lost";
+}
+
 /** Kasa payı: pottan düşülen oran. Çiplerin zamanla erimesini sağlar. */
 export const HOUSE_CUT = 0.1;
 export const PLAYERS_PER_TABLE = 4;

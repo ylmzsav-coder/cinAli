@@ -190,8 +190,18 @@ export const avgMove = (s: PlayerStats) => (s.moves ? s.movePoints / s.moves : 0
 /** Kazanma oranı (yüzde, tam sayı). */
 export const winRate = (won: number, played: number) => (played ? Math.round((won / played) * 100) : 0);
 
-/** Bu cihazdaki oyuncunun başarı oranı (yüzde), kazanılan ve oynanan oyun sayısı. */
+/** Çevrimiçi modda sunucudaki oyun sayıları (Sosyete şartı sunucuda bunlarla denetlenir). */
+let serverCounts: { played: number; won: number } | null = null;
+export function setServerCounts(played: number, won: number) {
+  serverCounts = { played, won };
+}
+
+/**
+ * Oyuncunun başarı oranı (yüzde), kazanılan ve oynanan oyun sayısı. Çevrimiçi modda
+ * sunucudaki sayılar, değilse bu cihazdaki istatistik kullanılır.
+ */
 export function myRate(): { rate: number; won: number; played: number } {
+  if (serverCounts) return { rate: winRate(serverCounts.won, serverCounts.played), won: serverCounts.won, played: serverCounts.played };
   const s = loadStats();
   return { rate: winRate(s.gamesWon, s.gamesPlayed), won: s.gamesWon, played: s.gamesPlayed };
 }

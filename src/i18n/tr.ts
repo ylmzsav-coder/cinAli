@@ -577,6 +577,7 @@ const tr = {
   "err.adsSoon": "Reklamlar yakında.",
   "err.network": "Bağlantı hatası. İnternetinizi kontrol edip tekrar deneyin.",
   "err.signIn": "Oturum açılamadı.",
+  "err.rateTooLow": "Sosyete profesyonel masadır: yalnızca başarı oranı %{need} ve üzeri olan oyuncular oturabilir. Senin başarı oranın %{rate} ({played} oyunda {won} galibiyet). Çayhane ve Teke Tek'te kazanarak oranını yükseltebilirsin.",
   "err.noWallet": "Hesabınız hazırlanıyor, birazdan tekrar deneyin.",
   "err.userNotFound": "Oyuncu bulunamadı.",
   "err.tableOver": "Bu masadaki oyun bitti.",

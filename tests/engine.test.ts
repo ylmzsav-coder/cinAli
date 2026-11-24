@@ -761,3 +761,20 @@ describe("Sosyete giriş şartı (başarı oranı)", () => {
     }
   });
 });
+
+import { gameOutcome, ratePercent } from "../src/economy/tables";
+describe("başarı oranı (sunucu ve cihaz aynı kural)", () => {
+  it("oran yuvarlanır; hiç oyun yoksa %0", () => {
+    expect(ratePercent(0, 0)).toBe(0);
+    expect(ratePercent(3, 4)).toBe(75);
+    expect(ratePercent(19, 25)).toBe(76);
+    expect(ratePercent(19, 26)).toBe(73);
+  });
+  it("ilk bitiren kazanır, diğerleri kaybeder; kimse bitiremezse sayılmaz", () => {
+    const over = { phase: "gameOver", lastResult: { reason: "finished" } };
+    expect(gameOutcome(over, [2], 2)).toBe("won");
+    expect(gameOutcome(over, [2], 0)).toBe("lost");
+    expect(gameOutcome({ phase: "gameOver", lastResult: { reason: "deckEmpty" } }, [], 0)).toBeNull();
+    expect(gameOutcome({ phase: "play", lastResult: null }, [], 0)).toBeNull();
+  });
+});

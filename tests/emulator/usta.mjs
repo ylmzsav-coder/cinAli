@@ -12,6 +12,7 @@ const call = (n, d) => httpsCallable(fns, n)(d).then((r) => r.data);
 await call("bootstrap", { name: "Usta" });
 const bal = async () => (await getDoc(doc(db, "wallets", user.uid))).data().balance;
 const b0 = await bal();
+await call("testSetStats", { played: 10, won: 9 }); // Sosyete şartı: başarı oranı en az %76
 const j = await call("joinTable", { type: "usta", lang: "tr", name: "Usta" });
 await call("startTable", { tableId: j.tableId });
 const tb = (await getDoc(doc(db, "tables", j.tableId))).data();

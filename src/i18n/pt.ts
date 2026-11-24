@@ -572,6 +572,7 @@ const pt: Messages = {
   "err.adsSoon": "Anúncios em breve.",
   "err.network": "Erro de conexão. Verifique sua internet e tente novamente.",
   "err.signIn": "Não foi possível entrar.",
+  "err.rateTooLow": "Alta Sociedade é uma mesa profissional: só podem sentar jogadores com taxa de vitórias de pelo menos {need}%. A sua é {rate}% ({won} vitórias em {played} jogos). Vença na Casa de chá e no Um contra um para aumentá-la.",
   "err.noWallet": "Sua conta está sendo preparada; tente novamente em instantes.",
   "err.userNotFound": "Jogador não encontrado.",
   "err.tableOver": "A partida desta mesa terminou.",

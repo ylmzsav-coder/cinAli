@@ -12,7 +12,7 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { Transaction } from "firebase-admin/firestore";
+import { FieldValue, type Transaction } from "firebase-admin/firestore";
 import { onCall } from "firebase-functions/v2/https";
 import { BotLevel, botStep } from "../../src/game/bot";
 import { Dictionary } from "../../src/game/dictionary";
@@ -37,7 +37,7 @@ import {
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { assertNotBanned } from "./admin";
 import { blockedWithAny } from "./blocks";
-import { TABLES, TableConfig, noWinnerGame, payout, tableById } from "../../src/economy/tables";
+import { TABLES, TableConfig, gameOutcome, noWinnerGame, payout, rateAllows, ratePercent, tableById } from "../../src/economy/tables";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 import { publicView, type Action, type PublicView, type SeatInfo } from "../../src/online/view";
@@ -115,6 +115,13 @@ export type Gender = "erkek" | "kadin";
 const genderOf = (v: unknown): Gender | null => (v === "erkek" || v === "kadin" ? v : null);
 
 /** VIP masaya yalnızca aboneliği süren oyuncular oturur. */
+/** Sosyete giriş şartı: başarı oranı en az %76 (sunucudaki istatistiğe göre). */
+function requireRate(cfg: TableConfig, user: FirebaseFirestore.DocumentData) {
+  const played = Number(user.gamesPlayed ?? 0), won = Number(user.gamesWon ?? 0);
+  const rate = ratePercent(won, played);
+  if (!rateAllows(cfg, rate)) fail("rateTooLow", { need: cfg.minRate ?? 0, rate, won, played });
+}
+
 function requireVip(cfg: TableConfig, w: WalletDoc) {
   if (cfg.vip && !(w.vipUntil && w.vipUntil > Date.now())) fail("vipOnly", {}, "permission-denied");
 }
@@ -198,7 +205,16 @@ async function persist(t: Transaction, id: string, table: TableDoc, state: GameS
   if (state.phase === "gameOver" && table.status === "playing") {
     next.status = "finished";
     next.payouts = await settle(t, table, state, wallets);
-    for (const uid of table.uids) t.set(userRef(uid), { activeTable: null }, { merge: true });
+    // Başarı oranı: ilk bitiren kazanır, diğerleri kaybeder; kimse bitiremediyse sayılmaz
+    const winners = gameWinners(state);
+    for (const uid of table.uids) {
+      const seat = table.seats.findIndex((s) => s.uid === uid);
+      const outcome = seat >= 0 ? gameOutcome(state, winners, seat) : null;
+      t.set(userRef(uid), {
+        activeTable: null,
+        ...(outcome ? { gamesPlayed: FieldValue.increment(1), ...(outcome === "won" ? { gamesWon: FieldValue.increment(1) } : {}) } : {}),
+      }, { merge: true });
+    }
   }
   next.view = JSON.stringify(publicView(state, next.seats));
   t.set(tableRef(id), next);
@@ -272,6 +288,7 @@ export const createPrivateTable = onCall(async (req) => {
       const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
       if (!w) return fail("noWallet");
       requireVip(cfg, w);
+      if (cfg.minRate) requireRate(cfg, (await t.get(userRef(uid))).data() ?? {});
       if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
       applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
       const id = db.collection("tables").doc().id;
@@ -312,6 +329,7 @@ export const joinPrivateTable = onCall(async (req) => {
     // VIP abonenin özel odasına davetle gelen misafir: abonelik şartı yok, ücretsiz oturur
     const guest = !!cfg.vip;
     if (guest && (await t.get(userRef(uid))).data()?.adult === false) fail("vipAdultOnly", {}, "permission-denied");
+    if (cfg.minRate) requireRate(cfg, (await t.get(userRef(uid))).data() ?? {});
     if (!guest) {
       if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
       applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
@@ -348,6 +366,7 @@ export const joinTable = onCall(async (req) => {
     if (!w) return fail("noWallet");
     if (cfg.vip && user.adult === false) fail("vipAdultOnly", {}, "permission-denied");
     requireVip(cfg, w);
+    requireRate(cfg, user);
     if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
 
     const now = Date.now();
@@ -550,6 +569,8 @@ export const leaveTable = onCall(async (req) => {
     t.set(userRef(uid), { activeTable: null }, { merge: true });
     if (seat < 0) return { ok: true };
     const seats = table.seats.map((s, i) => (i === seat ? { uid: null, name: s.name, bot: true } : s));
+    // Oyun sürerken masadan kalkan oyuncu yenilmiş sayılır (başarı oranına işlenir)
+    if (table.status === "playing" && state && state.phase !== "gameOver") t.set(userRef(uid), { gamesPlayed: FieldValue.increment(1) }, { merge: true });
     if (table.status === "waiting") {
       // Başlamamış masadan kalkan oyuncuya giriş ücreti iade edilir.
       // Misafir ücret ödemediği için iade yok

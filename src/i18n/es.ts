@@ -572,6 +572,7 @@ const es: Messages = {
   "err.adsSoon": "Anuncios próximamente.",
   "err.network": "Error de conexión. Revisa tu internet e inténtalo de nuevo.",
   "err.signIn": "No se pudo iniciar sesión.",
+  "err.rateTooLow": "Alta Sociedad es una mesa profesional: solo pueden sentarse jugadores con un porcentaje de victorias de al menos {need} %. El tuyo es {rate} % ({won} victorias en {played} partidas). Gana en la Casa de té y en Uno contra uno para subirlo.",
   "err.noWallet": "Tu cuenta se está preparando; inténtalo en un momento.",
   "err.userNotFound": "Jugador no encontrado.",
   "err.tableOver": "La partida de esta mesa terminó.",

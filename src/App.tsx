@@ -1,7 +1,7 @@
 import { SETTINGS_EVENT } from "./ui/Profile";
 import { BACK_EVENT, setupBackButton } from "./backButton";
 import { useCallback, useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { PLAYERS_PER_TABLE, TableConfig, noWinnerGame, payout, rateAllows, tableById, winnerPrize } from "./economy/tables";
 import { wallet } from "./economy/wallet";
 import { Dictionary } from "./game/dictionary";
@@ -18,7 +18,7 @@ import type { TwoMode } from "./ui/TwoPlayer";
 import { enterFullscreenLandscape } from "./display";
 import { startMusic, stopMusic } from "./music";
 import { flushFeedback } from "./feedbackBox";
-import { myRate, recordProgress, recordQuit } from "./stats";
+import { myRate, recordProgress, recordQuit, setServerCounts } from "./stats";
 import { OnlineTable, type OnlineEntry } from "./ui/OnlineTable";
 import { Terms } from "./ui/Terms";
 import { Admin } from "./ui/Admin";
@@ -139,6 +139,11 @@ export function App() {
     wallet.start?.(settings.name);
     currentUser()
       .then(async (u) => {
+        // Başarı oranı sunucuda tutulur (Sosyete şartı): lobi ve uyarılar bu sayıları gösterir
+        onSnapshot(doc(firestore(), "users", u.uid), (snap) => {
+          const d = snap.data() ?? {};
+          setServerCounts(Number(d.gamesPlayed ?? 0), Number(d.gamesWon ?? 0));
+        }, () => {});
         const active = (await getDoc(doc(firestore(), "users", u.uid))).data()?.activeTable as string | undefined;
         if (!active) return;
         const tb = (await getDoc(doc(firestore(), "tables", active))).data();

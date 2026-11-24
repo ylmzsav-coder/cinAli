@@ -572,6 +572,7 @@ const fr: Messages = {
   "err.adsSoon": "Publicités bientôt disponibles.",
   "err.network": "Erreur de connexion. Vérifiez votre connexion et réessayez.",
   "err.signIn": "Connexion impossible.",
+  "err.rateTooLow": "La Haute Société est une table pro : seuls les joueurs avec un taux de victoire d’au moins {need} % peuvent s’asseoir. Ton taux est de {rate} % ({won} victoires sur {played} parties). Gagne au Salon de thé et au Face à face pour l’augmenter.",
   "err.noWallet": "Votre compte est en cours de création ; réessayez dans un instant.",
   "err.userNotFound": "Joueur introuvable.",
   "err.tableOver": "La partie à cette table est terminée.",

@@ -572,6 +572,7 @@ const it: Messages = {
   "err.adsSoon": "Pubblicità in arrivo.",
   "err.network": "Errore di connessione. Controlla internet e riprova.",
   "err.signIn": "Accesso non riuscito.",
+  "err.rateTooLow": "L’Alta Società è un tavolo pro: possono sedersi solo i giocatori con una percentuale di vittorie di almeno il {need}%. La tua è {rate}% ({won} vittorie su {played} partite). Vinci alla Sala da tè e all’Uno contro uno per aumentarla.",
   "err.noWallet": "Il tuo account è in preparazione; riprova tra poco.",
   "err.userNotFound": "Giocatore non trovato.",
   "err.tableOver": "La partita a questo tavolo è finita.",

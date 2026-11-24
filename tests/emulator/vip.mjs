@@ -151,6 +151,7 @@ const tbl = async (c, id) => (await getDoc(doc(c.db, "tables", id))).data();
   // Yüksek girişli masada (Sosyete 1.000) bekleyen oyuncu VIP (100) ile eşleşmez
   await H1.call("testPurchase", { chips: 5000, productId: "wordokey_cip_5k" });
   const h0 = (await H1.wallet()).balance;
+  await H1.call("testSetStats", { played: 10, won: 9 }); await S1.call("testSetStats", { played: 10, won: 9 });
   const hj = await H1.call("joinTable", { type: "usta2", lang: "de", name: "Hakan" });
   const T1 = await client("Tamer");
   const tj = await T1.call("joinTable", { type: "ozel2u", lang: "de", name: "Tamer" });
@@ -181,6 +182,7 @@ const tbl = async (c, id) => (await getDoc(doc(c.db, "tables", id))).data();
   const VA = await client("Vusat"), VB = await client("Vildan"), VC = await client("Vecdi");
   for (const v of [VA, VB, VC]) await v.call("testSubscribeVip");
   const cj = await P3.call("joinTable", { type: "caylak", lang: "es", name: "Peri" });
+  await P2.call("testSetStats", { played: 10, won: 9 });
   const sj = await P2.call("joinTable", { type: "usta", lang: "es", name: "Polat" });
   const oj = await P1.call("joinTable", { type: "ozel2", lang: "es", name: "Pelin" });
   const a = await VA.call("joinTable", { type, lang: "es", name: "Vusat" });

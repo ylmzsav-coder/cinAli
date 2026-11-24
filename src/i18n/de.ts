@@ -572,6 +572,7 @@ const de: Messages = {
   "err.adsSoon": "Werbung kommt bald.",
   "err.network": "Verbindungsfehler. Prüfe dein Internet und versuche es erneut.",
   "err.signIn": "Anmeldung fehlgeschlagen.",
+  "err.rateTooLow": "High Society ist ein Profitisch: Nur Spieler mit einer Siegquote von mindestens {need} % dürfen sich setzen. Deine Siegquote liegt bei {rate} % ({won} Siege in {played} Spielen). Gewinne im Teehaus und bei Eins gegen Eins, um sie zu erhöhen.",
   "err.noWallet": "Dein Konto wird eingerichtet; versuche es gleich noch einmal.",
   "err.userNotFound": "Spieler nicht gefunden.",
   "err.tableOver": "Das Spiel an diesem Tisch ist beendet.",
