@@ -7,7 +7,7 @@
       {
         "h": "Sözlükler",
         "items": [
-          "Türkçe: Vikisözlük kelime listesi (mertemin/turkish-word-list) — CC BY-SA; ek kelimeler: CanNuhlar/Turkce-Kelime-Listesi; sıklık sırası: an-array-of-turkish-words — MIT.",
+          "Türkçe: Vikisözlük kelime listesi (mertemin/turkish-word-list) — CC BY-SA; kelime doğrulama ve fiil kökleri: Zemberek-NLP sözlükleri (ahmetaa/zemberek-nlp) — Apache-2.0; sıklık sırası: an-array-of-turkish-words — MIT. Fiillerin düzenli türevleri (-ma, -maz, -abilmek, -ivermek) bu lisanslı köklerden dil bilgisi kurallarıyla üretilmiştir.",
           "Almanca ve İtalyanca: Vikisözlük (Wiktionary) veri dosyaları — CC BY-SA 4.0.",
           "İngilizce: Hunspell dictionary-en (SCOWL) — MIT ve BSD.",
           "Fransızca: Hunspell dictionary-fr — MPL-2.0. İspanyolca: Hunspell dictionary-es — MPL-1.1. Portekizce: Hunspell dictionary-pt — MPL-2.0.",
@@ -49,7 +49,7 @@
       {
         "h": "Dictionaries",
         "items": [
-          "Turkish: Wiktionary word list (mertemin/turkish-word-list) — CC BY-SA; extra words: CanNuhlar/Turkce-Kelime-Listesi; frequency order: an-array-of-turkish-words — MIT.",
+          "Turkish: Wiktionary word list (mertemin/turkish-word-list) — CC BY-SA; word validation and verb roots: Zemberek-NLP dictionaries (ahmetaa/zemberek-nlp) — Apache-2.0; frequency order: an-array-of-turkish-words — MIT. Regular verb forms (-ma, -maz, -abilmek, -ivermek) are generated from these licensed roots by grammar rules.",
           "German and Italian: Wiktionary data dumps — CC BY-SA 4.0.",
           "English: Hunspell dictionary-en (SCOWL) — MIT and BSD.",
           "French: Hunspell dictionary-fr — MPL-2.0. Spanish: Hunspell dictionary-es — MPL-1.1. Portuguese: Hunspell dictionary-pt — MPL-2.0.",

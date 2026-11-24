@@ -550,6 +550,13 @@ describe("iki harfli kelimeler", () => {
   }, 120000);
 });
 
+describe("Türkçe sözlük (lisanslı kaynaklar)", () => {
+  it("isimlerden yanlış türetilmiş anlamsız kelimeler yok, düzenli fiil türevleri var", () => {
+    for (const w of ["PARMAZ", "DAMAZ", "RAMAZ", "IRMAZ", "BAŞMAZ"]) expect(dict.has(w), w).toBe(false);
+    for (const w of ["YAPMAZ", "OKUMAZ", "GİTMEZ", "GİDEBİLMEK", "EDEBİLMEK", "OKUYABİLMEK", "YAPIVERMEK", "OKUMA", "GİTME", "KALEM", "KUZU", "ADANA", "TÜRKÇE"]) expect(dict.has(w), w).toBe(true);
+  });
+});
+
 import { LANGS, TWO_LETTER_WORDS } from "../src/game/lang";
 describe("iki harfli kelimeler bütün dillerde", () => {
   it("her oynanabilir dilin listesi var ve yalnızca o dilin harflerinden oluşur", () => {

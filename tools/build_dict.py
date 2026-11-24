@@ -6,8 +6,8 @@ oyuncuları zorluk seviyesine göre listenin başından belirli sayıda kelime
 "bilir".
 
 Kaynaklar (lisanslar README'de):
-- tr: Vikisözlük kelime listesi (mertemin/turkish-word-list, CC BY-SA)
-      + sıklık: an-array-of-turkish-words (MIT)
+- tr: tools/tr_lisansli.py ile kurulur: Vikisözlük kelime listesi (mertemin/turkish-word-list,
+      CC BY-SA) + Zemberek-NLP (Apache-2.0) + sıklık: an-array-of-turkish-words (MIT)
 - de/it: Vikisözlük (CC BY-SA) madde başlıkları; tools/wiktionary_lemmas.py
       ile çıkarılır, yalnızca temel sözcük türleri (çekimli hâller, özel
       adlar ve kısaltmalar hariç)
