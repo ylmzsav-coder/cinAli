@@ -309,10 +309,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           <div className="hub-row">
             <button type="button" className="big ozel-hub caylak-hub" onClick={() => setOzelOpen(true)}>
               <span className="ozel-top"><span className="duo-icons" aria-hidden><PlayerIcon /><PlayerIcon /></span> {t("ozelShort")}</span>
-              <span className="rate-badge" aria-label={t("rateTag", { n: tableById("ozel2")!.minRate ?? 50 })}>
-                <b>{t("rateBadgeValue", { n: tableById("ozel2")!.minRate ?? 50 })}</b>
-                <small>{t("rateBadgeLabel")}</small>
-              </span>
+              <span className="ozel-rate">{t("rateTag", { n: tableById("ozel2")!.minRate ?? 50 })}</span>
             </button>
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub usta-hub`} onClick={() => openSosyete()}>
               <span className="sosyete-tags"><small className="pro-tag chat-tag">💬 {t("sosyeteChatTag")}</small></span>
