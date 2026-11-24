@@ -562,6 +562,8 @@ const es: Messages = {
   rule_rate: "Requisito de Alta Sociedad: solo pueden sentarse en esta mesa profesional los jugadores con un porcentaje de victorias (partidas ganadas sobre jugadas) de al menos 76 %. Por debajo, se bloquea la entrada y se explica el motivo en pantalla; se puede subir ganando en la Casa de té y en Fifty Cent.",
   sosyeteTermsTitle: "Normas del chat de Alta Sociedad",
   sosyeteTerms5: "El chat de Alta Sociedad es para mayores de 18; los más jóvenes pueden jugar allí pero no escribir.",
+  rateBadgeValue: "{n} %",
+  rateBadgeLabel: "VICTORIAS",
   rateTag: "Victorias {n} %",
   sosyeteChatTag: "Chat gratis",
   sosyeteChat: "Partida con chat · gratis",

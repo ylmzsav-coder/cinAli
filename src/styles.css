@@ -1693,3 +1693,23 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
   .hub-right .ozel-hub .ozel-top { font-size: 0.85em; }
 }
 .pro-tag.rate-tag { background: #2e7d32; color: #ffffff; border-color: rgba(200, 230, 201, 0.9); }
+
+/* Fifty Cent: yuvarlak başarı oranı rozeti (mühür gibi, düğmenin boş alt kısmına yerleşir; düğmeyi uzatmaz) */
+.ozel-hub { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+.rate-badge {
+  --d: clamp(46px, 8vw, 78px);
+  position: absolute; left: 50%; bottom: 7%;
+  width: var(--d); height: var(--d); border-radius: 50%;
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  background: radial-gradient(circle at 35% 30%, #66bb6a, #2e7d32 60%, #1b5e20);
+  color: #fff; border: 3px solid #fff; box-shadow: 0 0 0 2px #1b5e20, 0 3px 8px rgba(0, 0, 0, 0.35), inset 0 0 0 3px rgba(255, 255, 255, 0.25);
+  text-align: center; line-height: 1; transform: translateX(-50%) rotate(-8deg); pointer-events: none;
+}
+.rate-badge b { font-size: calc(var(--d) * 0.27); font-weight: 900; letter-spacing: -0.03em; }
+.rate-badge small { font-size: calc(var(--d) * 0.1); font-weight: 800; letter-spacing: 0.03em; max-width: 80%; white-space: normal; }
+@media (max-height: 420px) { .rate-badge { --d: 46px; bottom: 6%; } }
+/* Dar ekranda rozete yer açmak için iki kişi simgesi gizlenir, ad tek satır */
+@media (max-width: 760px) {
+  .hub-right .ozel-hub .duo-icons { display: none; }
+  .hub-right .ozel-hub .ozel-top { font-size: 0.85em; white-space: nowrap; }
+}

@@ -562,6 +562,8 @@ const de: Messages = {
   rule_rate: "Zugangsbedingung High Society: Am Profitisch High Society dürfen nur Spieler mit einer Siegquote (gewonnene von gespielten Spielen) von mindestens 76 % sitzen. Spieler darunter werden abgewiesen und erfahren den Grund auf dem Bildschirm; sie können ihre Quote im Teehaus und bei Fifty Cent verbessern.",
   sosyeteTermsTitle: "Chat-Regeln für High Society",
   sosyeteTerms5: "Der High-Society-Chat ist für Erwachsene (ab 18); jüngere Spieler können dort spielen, aber nicht schreiben.",
+  rateBadgeValue: "{n} %",
+  rateBadgeLabel: "SIEGQUOTE",
   rateTag: "Siegquote {n} %",
   sosyeteChatTag: "Gratis-Chat",
   sosyeteChat: "Spiel mit Chat · kostenlos",
