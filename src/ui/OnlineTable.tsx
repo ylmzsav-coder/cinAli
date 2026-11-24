@@ -37,6 +37,9 @@ type RawChat = { uid: string; kind: "msg" | "emoji" | "text" | "gift"; id: strin
 interface TableDoc {
   type: string;
   private?: boolean;
+  /** Arkadaşla oyna: davet edilenler ve reddedenler (uid → ad). */
+  invited?: Record<string, string>;
+  declined?: Record<string, string>;
   code?: string | null;
   lang: LangCode;
   status: "waiting" | "playing" | "finished" | "abandoned";
@@ -304,7 +307,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
         </div>
         {doc_.private ? (
           <PrivateLobby code={doc_.code ?? ""} isHost={doc_.seats[0]?.uid === uid} onStart={() => call("startTable", { tableId })}
-            tableId={tableId!} vip={!!cfg.vip} seatedUids={doc_.uids} />
+            tableId={tableId!} vip={!!cfg.vip} seatedUids={doc_.uids} invitedMap={doc_.invited ?? {}} declinedMap={doc_.declined ?? {}} />
         ) : (
           <>
             <p className="muted">{t("waitingDesc", { n: left })}</p>
@@ -356,19 +359,24 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
 }
 
 /** Özel masa bekleme alanı: davet kodu, paylaş, (kurucu için) başlat. */
-function PrivateLobby({ code, isHost, onStart, tableId, vip, seatedUids }: { code: string; isHost: boolean; onStart: () => Promise<unknown>; tableId: string; vip: boolean; seatedUids: string[] }) {
-  // Arkadaş listesinden doğrudan davet (VIP odada misafir: abonelik ve ücret yok)
-  const [friends, setFriends] = useState<FriendStatus[]>([]);
-  const [invited, setInvited] = useState<Set<string>>(new Set());
+function PrivateLobby({ code, isHost, onStart, tableId, vip, seatedUids, invitedMap, declinedMap }: { code: string; isHost: boolean; onStart: () => Promise<unknown>; tableId: string; vip: boolean; seatedUids: string[]; invitedMap: Record<string, string>; declinedMap: Record<string, string> }) {
+  // Arkadaş listesinden doğrudan davet (VIP odada misafir: abonelik ve ücret yok).
+  // Liste 10 sn'de bir yenilenir: çevrimiçi / oyunda / çevrimdışı durumu canlı görünür.
+  const [friends, setFriends] = useState<FriendStatus[] | null>(null);
+  const [sent, setSent] = useState<Set<string>>(new Set());
+  const invited = new Set([...sent, ...Object.keys(invitedMap)]);
   useEffect(() => {
     if (!isHost) return;
-    friendsStatus().then((r) => setFriends(r.friends), () => {});
+    const load = () => friendsStatus().then((r) => setFriends(r.friends), () => setFriends((f) => f ?? []));
+    load();
+    const id = setInterval(load, 10_000);
+    return () => clearInterval(id);
   }, [isHost]);
   const inviteOne = async (f: FriendStatus) => {
     try {
       await inviteFriend(tableId, f.uid);
-      setInvited((s) => new Set(s).add(f.uid));
-      setMsg(t("inviteSentTo", { name: f.name }));
+      setSent((s) => new Set(s).add(f.uid));
+      setMsg(t(f.tableStatus === "playing" ? "inviteQueuedTo" : "inviteSentTo", { name: f.name }));
     } catch (e) {
       setMsg(errorText(e));
     }
@@ -391,24 +399,33 @@ function PrivateLobby({ code, isHost, onStart, tableId, vip, seatedUids }: { cod
   };
   return (
     <div className="private-lobby">
+      {isHost && (
+        <div className="friend-list lobby-friends">
+          <div className="stat-label">👥 {t("inviteFromFriends")}</div>
+          {friends === null ? <p className="muted small">…</p> : friends.filter((f) => !seatedUids.includes(f.uid)).length === 0 ? (
+            <p className="muted small">{t("noFriendsYet")}</p>
+          ) : (
+            friends.filter((f) => !seatedUids.includes(f.uid)).slice(0, 12).map((f) => {
+              const declined = !!declinedMap[f.uid];
+              const done = invited.has(f.uid) && !declined;
+              const status = !f.online ? t("offline") : f.tableStatus === "playing" ? t("friendInGame") : f.tableStatus === "waiting" ? t("friendAtTable") : t("friendFree");
+              return (
+                <div key={f.uid} className={`friend-row ${f.online ? "" : "is-offline"}`}>
+                  <span className="friend-ava"><Avatar name={f.name} seat={1} size="sm" /><i className={`presence ${f.online ? "on" : ""}`} aria-hidden /></span>
+                  <span className="friend-name">{f.name}<small className="muted">{declined ? `✖ ${t("inviteDeclined")}` : done ? `✓ ${f.tableStatus === "playing" ? t("inviteWaitsGame") : t("inviteSent")}` : status}</small></span>
+                  <button type="button" className="primary small-btn" disabled={!f.online || done} title={!f.online ? t("offline") : undefined} onClick={() => void inviteOne(f)}>
+                    {done ? "✓" : declined ? t("inviteAgain") : t("inviteSeat")}
+                  </button>
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
       <div className="muted small">{t("tableCode")}</div>
       <div className="invite-code" aria-label={t("tableCode")}>{code}</div>
       <button type="button" className="primary big" onClick={share}>📨 {t("invite")}</button>
       {vip && <p className="muted small">{t("vipGuestNote")}</p>}
-      {isHost && friends.length > 0 && (
-        <div className="friend-list lobby-friends">
-          <div className="stat-label">{t("inviteFromFriends")}</div>
-          {friends.filter((f) => !seatedUids.includes(f.uid)).slice(0, 8).map((f) => (
-            <div key={f.uid} className="friend-row">
-              <span className="friend-ava"><Avatar name={f.name} seat={1} size="sm" /><i className={`presence ${f.online ? "on" : ""}`} aria-hidden /></span>
-              <span className="friend-name">{f.name}<small className="muted">{f.online ? t("online") : t("offline")}</small></span>
-              <button type="button" className="primary small-btn" disabled={invited.has(f.uid)} onClick={() => void inviteOne(f)}>
-                {invited.has(f.uid) ? "✓" : t("inviteSeat")}
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
       {msg && <div className="toast">{msg}</div>}
       {isHost ? (
         <button type="button" className="big" disabled={starting} onClick={() => {

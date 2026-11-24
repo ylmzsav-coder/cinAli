@@ -1505,3 +1505,5 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .okey .topbar-me .avatar { border-radius: 9px; width: 36px; height: 36px; }
 .okey .topbar-me .avatar-vip { border-radius: 9px; }
 @media (max-width: 800px) { .okey .topbar-me .avatar { width: 30px; height: 30px; border-radius: 7px; } }
+.lobby-friends .friend-row.is-offline { opacity: 0.55; }
+.lobby-friends { max-height: 40vh; overflow-y: auto; }

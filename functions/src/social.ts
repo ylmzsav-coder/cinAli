@@ -8,6 +8,7 @@
  */
 import { assertNotBanned } from "./admin";
 import { blockedEither } from "./blocks";
+import { FieldValue } from "firebase-admin/firestore";
 import { onCall } from "firebase-functions/v2/https";
 import { db, fail, uidOf } from "./common";
 import { cleanName } from "./profanity";
@@ -107,6 +108,8 @@ export const friendsStatus = onCall(async (req) => {
     userRef(uid).collection("invites").orderBy("at", "desc").limit(10).get(),
   ]);
   const now = Date.now();
+  const invTables = invites.empty ? [] : await db.getAll(...invites.docs.map((d) => tableRef(d.id)));
+  const inviteTables = new Map(invTables.map((s) => [s.id, s.data()?.status as string | undefined]));
   const users = friends.empty ? [] : await db.getAll(...friends.docs.map((d) => userRef(d.id)));
   const wallets = friends.empty ? [] : await db.getAll(...friends.docs.map((d) => db.collection("wallets").doc(d.id)));
   const tableIds = [...new Set(users.map((u) => u.data()?.activeTable as string | undefined).filter((x): x is string => !!x))];
@@ -131,16 +134,17 @@ export const friendsStatus = onCall(async (req) => {
   return {
     friends: list,
     requests: requests.docs.map((r) => ({ uid: r.id, name: (r.data().name as string) || "?" })),
-    // Süresi geçmemiş masa davetleri
+    // Geçerli masa davetleri: davet eden masa hâlâ açık (bekliyor) ve süre dolmadı.
+    // Oyundaki arkadaşın daveti bekler; oyunu bitip menüye dönünce görür.
     invites: invites.docs
-      .filter((d) => now - (d.data().at as number) < INVITE_MS)
+      .filter((d) => now - (d.data().at as number) < INVITE_MS && inviteTables.get(d.id) === "waiting")
       .map((d) => ({ tableId: d.id, name: d.data().name as string, code: d.data().code as string, type: d.data().type as string })),
   };
 });
 
 
-/** Masa daveti geçerlilik süresi. */
-export const INVITE_MS = 15 * 60_000;
+/** Masa daveti en fazla bu kadar geçerli (masa kapanınca daha önce düşer). */
+export const INVITE_MS = 60 * 60_000;
 const inviteRef = (uid: string, tableId: string) => userRef(uid).collection("invites").doc(tableId);
 
 /**
@@ -168,6 +172,8 @@ export const inviteFriend = onCall(async (req) => {
       type: table.type,
       at: Date.now(),
     });
+    // Davet eden, bekleme ekranında davetin durumunu görür (gönderildi / reddetti)
+    t.update(tableRef(id), { [`invited.${fid}`]: (target.data()?.name as string) || "?", [`declined.${fid}`]: FieldValue.delete() });
     return { ok: true };
   });
 });
@@ -176,7 +182,13 @@ export const inviteFriend = onCall(async (req) => {
 export const declineInvite = onCall(async (req) => {
   const uid = uidOf(req);
   const id = str(req.data?.tableId);
-  if (id) await inviteRef(uid, id).delete();
+  if (!id) return { ok: true };
+  await inviteRef(uid, id).delete();
+  // Davet edene "reddetti" bilgisi (masa hâlâ bekliyorsa)
+  const [tb, me] = await Promise.all([tableRef(id).get(), userRef(uid).get()]);
+  if (tb.exists && tb.data()?.status === "waiting") {
+    await tableRef(id).update({ [`declined.${uid}`]: (me.data()?.name as string) || "?" }).catch(() => {});
+  }
   return { ok: true };
 });
 
