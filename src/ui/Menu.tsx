@@ -314,8 +314,9 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <span className="ozel-top"><span className="duo-icons" aria-hidden><PlayerIcon /><PlayerIcon /></span> {t("ozelShort")}</span>
             </button>
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub usta-hub`} onClick={() => openSosyete()}>
+              <span className="sosyete-tags"><small className="pro-tag chat-tag">💬 {t("sosyeteChatTag")}</small></span>
               <span>🚘 {t("playUsta")}</span>
-              <span className="sosyete-tags"><small className="pro-tag">{t("proLabel")}</small><small className="pro-tag chat-tag">💬 {t("sosyeteChatTag")}</small></span>
+              <span className="sosyete-tags"><small className="pro-tag">{t("proLabel")}</small></span>
               <span className="caylak-sub">{t("entry")} <Chips amount={tableById("usta")!.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
             </button>
           </div>
