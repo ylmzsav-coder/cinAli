@@ -503,14 +503,13 @@ const TABLES = [
       check(`emoji şeridi (${d}): 13 emoji, hepsi görünüyor, kaydırma yok, tek satır`, r.list === "😂😮😅😢😡👍👏👋👌✌️🙏❤️🔥" && r.visible === 13 && !r.scroll && r.rows === 1, JSON.stringify(r));
       await h.context().close();
     }
-    // Hazır mesaj "Seri olalım lütfen 😒"
+    // "Seri olalım lütfen" hazır mesajı kaldırıldı
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 9 });
       await TABLES[0].open(h); await W(h, 1500);
       await h.locator(".chat-room-btn").first().tap(); await W(h, 400);
-      await h.locator(".chat-msgs button", { hasText: "Seri olalım lütfen" }).tap(); await W(h, 400);
-      const bubble = (await h.locator(".bubble, .chat-bubble").allInnerTexts()).join(" | ");
-      check("hazır mesaj 'Seri olalım lütfen 😒' gönderiliyor, balonda görünüyor", bubble.includes("Seri olalım lütfen 😒"), bubble);
+      const msgs = await h.locator(".chat-msgs button").allInnerTexts();
+      check("hazır mesajlarda 'Seri olalım lütfen' yok (11 mesaj)", !msgs.some((m) => m.includes("Seri olalım")) && msgs.length === 11, msgs.join(" | "));
       await h.context().close();
     }
     // Ücretsiz destek: çipi biten oyuncuya 12 saat sonra 99 çip kendiliğinden yüklenir (düğme yok)

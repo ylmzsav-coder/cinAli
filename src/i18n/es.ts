@@ -91,7 +91,6 @@ const es: Messages = {
   chat_wellPlayed: "¡Bien jugado!",
   chat_thinking: "Estoy pensando…",
   chat_hurry: "¡Date prisa!",
-  chat_quickPlease: "Seamos rápidos, por favor 😒",
   chat_almost: "¡Casi!",
   chat_oops: "¡Ups!",
   chat_thanks: "¡Gracias!",

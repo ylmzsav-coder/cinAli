@@ -91,7 +91,6 @@ const pt: Messages = {
   chat_wellPlayed: "Boa jogada!",
   chat_thinking: "Pensando…",
   chat_hurry: "Anda logo!",
-  chat_quickPlease: "Vamos ser rápidos, por favor 😒",
   chat_almost: "Quase!",
   chat_oops: "Opa!",
   chat_thanks: "Obrigado!",

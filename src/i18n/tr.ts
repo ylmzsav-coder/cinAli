@@ -92,7 +92,6 @@ const tr = {
   chat_wellPlayed: "İyi oyundu!",
   chat_thinking: "Düşünüyorum…",
   chat_hurry: "Hadi biraz hızlı!",
-  chat_quickPlease: "Seri olalım lütfen 😒",
   chat_almost: "Az kaldı!",
   chat_oops: "Eyvah!",
   chat_thanks: "Teşekkürler!",
