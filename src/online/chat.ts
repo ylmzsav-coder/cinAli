@@ -6,7 +6,7 @@
 export const CHAT_MESSAGES = [
   // "Teşekkürler" başta: panelde kaydırmadan görünsün
   "hello", "thanks", "goodLuck", "niceWord", "wellPlayed", "thinking",
-  "hurry", "almost", "oops", "gg",
+  "hurry", "quickPlease", "almost", "oops", "gg",
   // Masaya selam: her masada yalnızca o masanınki görünür (sonunda el sallayan yüz)
   "helloCayhane", "helloCarli", "helloFifty", "helloSosyete",
 ] as const;
@@ -49,6 +49,7 @@ export const BOT_REPLIES: Partial<Record<ChatMessageId, ChatMessageId[]>> = {
   niceWord: ["thanks"],
   wellPlayed: ["thanks"],
   hurry: ["thinking"],
+  quickPlease: ["thinking"],
   thanks: [],
   gg: ["thanks", "wellPlayed"],
   helloCayhane: ["helloCayhane", "hello"],

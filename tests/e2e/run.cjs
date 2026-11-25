@@ -494,6 +494,16 @@ const TABLES = [
       check(`${name}: hazır mesajlarda en başta '${want}' + el sallayan yüz, başka masanın selamı yok; balonda da yüz`, msgs[0]?.t === want && msgs[0]?.face && !msgs.some((m) => others.includes(m.t)) && bubble, JSON.stringify(msgs.slice(0, 2)));
       await h.context().close();
     }
+    // Hazır mesaj "Seri olalım lütfen 😒"
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 9 });
+      await TABLES[0].open(h); await W(h, 1500);
+      await h.locator(".chat-room-btn").first().tap(); await W(h, 400);
+      await h.locator(".chat-msgs button", { hasText: "Seri olalım lütfen" }).tap(); await W(h, 400);
+      const bubble = (await h.locator(".bubble, .chat-bubble").allInnerTexts()).join(" | ");
+      check("hazır mesaj 'Seri olalım lütfen 😒' gönderiliyor, balonda görünüyor", bubble.includes("Seri olalım lütfen 😒"), bubble);
+      await h.context().close();
+    }
     // Ücretsiz destek: çipi biten oyuncuya 12 saat sonra 99 çip kendiliğinden yüklenir (düğme yok)
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 4 });

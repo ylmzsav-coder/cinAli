@@ -91,6 +91,7 @@ const de: Messages = {
   chat_wellPlayed: "Gut gespielt!",
   chat_thinking: "Moment, ich überlege…",
   chat_hurry: "Mach schneller!",
+  chat_quickPlease: "Bitte etwas schneller 😒",
   chat_almost: "Fast geschafft!",
   chat_oops: "Hoppla!",
   chat_thanks: "Danke!",

@@ -91,6 +91,7 @@ const fr: Messages = {
   chat_wellPlayed: "Bien joué !",
   chat_thinking: "Je réfléchis…",
   chat_hurry: "Plus vite !",
+  chat_quickPlease: "Soyons rapides, s’il te plaît 😒",
   chat_almost: "Presque !",
   chat_oops: "Oups !",
   chat_thanks: "Merci !",
