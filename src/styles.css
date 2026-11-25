@@ -1781,3 +1781,6 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .hub .usta-hub .chat-tag { display: inline-flex; align-items: center; justify-content: center; gap: 0.35em; }
 .hub .usta-hub .chat-tag .chat-ico.ghost { visibility: hidden; }
 .hub .usta-hub .sosyete-top { transform: translateX(-0.55em); }
+/* Masaya selam hazır mesajı: el sallayan yüzle */
+.hello-face { display: inline-block; vertical-align: -0.35em; }
+.chat-msgs button.chat-hello { font-weight: 800; }

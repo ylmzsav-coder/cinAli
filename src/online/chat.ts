@@ -7,6 +7,8 @@ export const CHAT_MESSAGES = [
   // "Teşekkürler" başta: panelde kaydırmadan görünsün
   "hello", "thanks", "goodLuck", "niceWord", "wellPlayed", "thinking",
   "hurry", "almost", "oops", "gg",
+  // Masaya selam: her masada yalnızca o masanınki görünür (sonunda el sallayan yüz)
+  "helloCayhane", "helloCarli", "helloFifty", "helloSosyete",
 ] as const;
 export type ChatMessageId = (typeof CHAT_MESSAGES)[number];
 
@@ -49,4 +51,19 @@ export const BOT_REPLIES: Partial<Record<ChatMessageId, ChatMessageId[]>> = {
   hurry: ["thinking"],
   thanks: [],
   gg: ["thanks", "wellPlayed"],
+  helloCayhane: ["helloCayhane", "hello"],
+  helloCarli: ["helloCarli", "hello"],
+  helloFifty: ["helloFifty", "hello"],
+  helloSosyete: ["helloSosyete", "hello"],
 };
+
+/** Masaya selam mesajı (masa türüne göre); VIP Oda ve Pratik'te yok. */
+export function helloFor(tableId: string | undefined): ChatMessageId | null {
+  if (!tableId) return null;
+  if (tableId.startsWith("caylak")) return "helloCayhane";
+  if (tableId.startsWith("carli")) return "helloCarli";
+  if (tableId.startsWith("ozel")) return "helloFifty";
+  if (tableId.startsWith("usta")) return "helloSosyete";
+  return null;
+}
+export const HELLO_MESSAGES: readonly ChatMessageId[] = ["helloCayhane", "helloCarli", "helloFifty", "helloSosyete"];

@@ -180,6 +180,10 @@ const tilesOnRack = (p) => p.locator(".okey-rack .rack-slot .tile");
   await W(D, 2500);
   const leaked = (await D.locator(".bubble-text").allInnerTexts()).some((x) => /siktir/i.test(x));
   check("küfürlü mesaj gönderilmedi: Cem uyarı aldı, Deniz görmedi", note && !leaked, (await C.locator(".chat-note").innerText().catch(() => "")).slice(0, 80));
+  // Hazır "Hello Sosyete" mesajı (güvenlik kuralı yeni kimliğe izin veriyor) rakibe ulaşıyor
+  await C.locator(".chat-msgs .chat-hello").tap();
+  const hello = await until(async () => (await D.locator(".bubble, .chat-bubble").allInnerTexts()).some((x) => x.includes("Hello Sosyete")), 8000);
+  check("Cem'in 'Hello Sosyete' hazır mesajı Deniz'e ulaştı", hello);
   check("Sosyete testinde tarayıcı hatası yok", !C.errors.length && !D.errors.length, [...C.errors, ...D.errors].slice(0, 2).join(" | "));
 
   // ---- Sosyete: arkadaşla oyna (özel masa, davet koduyla katılma) ----

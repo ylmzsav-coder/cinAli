@@ -38,7 +38,8 @@ import { KumbaraIcon } from "./Kumbara";
 import { Chips } from "./Chips";
 import { useWallet } from "../economy/useWallet";
 import { lookupMeaning, type Meaning } from "../meaning";
-import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TEXT, type ChatEvent, type ChatMessageId, type SendTextResult } from "../online/chat";
+import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, HELLO_MESSAGES, MAX_TEXT, helloFor, type ChatEvent, type ChatMessageId, type SendTextResult } from "../online/chat";
+import { HelloFace } from "./HelloFace";
 import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
@@ -295,7 +296,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
     if (!e) return null;
     return (
       <span key={e.at} className={`bubble ${e.kind === "emoji" ? "bubble-emoji" : ""} ${e.kind === "text" ? "bubble-text" : ""}`} role="status">
-        {e.kind === "emoji" ? e.id : e.kind === "text" ? e.text : e.kind === "gift" ? <>🎁 <GiftIcon id={e.id} size="1.4em" /> → {e.text ?? ""}</> : t(`chat_${e.id}` as "chat_hello")}
+        {e.kind === "emoji" ? e.id : e.kind === "text" ? e.text : e.kind === "gift" ? <>🎁 <GiftIcon id={e.id} size="1.4em" /> → {e.text ?? ""}</> : <>{t(`chat_${e.id}` as "chat_hello")}{HELLO_MESSAGES.includes(e.id as ChatMessageId) && <> <HelloFace /></>}</>}
       </span>
     );
   };
@@ -1148,8 +1149,9 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                 ))}
               </div>
               <div className="chat-msgs">
-                {CHAT_MESSAGES.map((m) => (
-                  <button type="button" key={m} onClick={() => sendChat("msg", m)}>{t(`chat_${m}`)}</button>
+                {/* Masaya selam (yalnızca bu masanınki) en başta, ardından genel hazır mesajlar */}
+                {[...(helloFor(tableId) ? [helloFor(tableId)!] : []), ...CHAT_MESSAGES.filter((m) => !HELLO_MESSAGES.includes(m))].map((m) => (
+                  <button type="button" key={m} className={HELLO_MESSAGES.includes(m) ? "chat-hello" : undefined} onClick={() => sendChat("msg", m)}>{t(`chat_${m}`)}{HELLO_MESSAGES.includes(m) && <> <HelloFace /></>}</button>
                 ))}
               </div>
               {chatRoom && (

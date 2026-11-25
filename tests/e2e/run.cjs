@@ -483,6 +483,17 @@ const TABLES = [
       check("Mağaza ve Kurallar Pratik ile aynı sarı, yazı siyah", r[".shop-hub"][0] === r[".practice-hub"][0] && r[".rules-hub"][0] === r[".practice-hub"][0] && r[".shop-hub"][1] === "none" && r[".rules-hub"][1] === "none" && r[".shop-hub"][2] === "rgb(17, 17, 17)" && r[".rules-hub"][2] === "rgb(17, 17, 17)", JSON.stringify(r));
       await h.context().close();
     }
+    // Masaya selam hazır mesajı: her masada yalnızca o masanınki, en başta, el sallayan yüzle
+    for (const [name, want, others] of [["Çayhane 25", "Hello Çayhane", ["Hello Sosyete", "Hello Çarli", "Hello Fifty Cent"]], ["Çarli 100", "Hello Çarli", ["Hello Çayhane"]], ["Fifty Cent 100", "Hello Fifty Cent", ["Hello Çayhane"]], ["Sosyete 100", "Hello Sosyete", ["Hello Çayhane"]]]) {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 9 });
+      await TABLES.find((x) => x.name === name).open(h); await W(h, 1500);
+      await h.locator(".chat-room-btn").first().tap(); await W(h, 400);
+      const msgs = await h.evaluate(() => [...document.querySelectorAll(".chat-msgs button")].map((x) => ({ t: x.textContent.trim(), face: !!x.querySelector(".hello-face") })));
+      await h.locator(".chat-msgs .chat-hello").tap(); await W(h, 400);
+      const bubble = await h.evaluate(() => [...document.querySelectorAll(".bubble, .chat-bubble")].some((x) => x.querySelector(".hello-face")));
+      check(`${name}: hazır mesajlarda en başta '${want}' + el sallayan yüz, başka masanın selamı yok; balonda da yüz`, msgs[0]?.t === want && msgs[0]?.face && !msgs.some((m) => others.includes(m.t)) && bubble, JSON.stringify(msgs.slice(0, 2)));
+      await h.context().close();
+    }
     // Ücretsiz destek: çipi biten oyuncuya 12 saat sonra 99 çip kendiliğinden yüklenir (düğme yok)
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 4 });
