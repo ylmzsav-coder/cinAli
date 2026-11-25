@@ -231,6 +231,7 @@ const tilesOnRack = (p) => p.locator(".okey-rack .rack-slot .tile");
   const G = await player(browser, "Gül"), H = await player(browser, "Hakan");
   const hUid = await H.evaluate(() => window.__woTest.uid());
   await G.evaluate(async (h) => {
+    await window.__woTest.call("testSetStats", { played: 10, won: 9 }); // Fifty Cent özel masası için oran %50+
     await window.__woTest.call("sendFriendRequest", { targetUid: h });
     const r = await window.__woTest.call("createPrivateTable", { type: "ozel2", lang: "tr", name: "Gül" });
     await window.__woTest.call("inviteFriend", { tableId: r.tableId, friendUid: h });
