@@ -206,6 +206,8 @@ const tilesOnRack = (p) => p.locator(".okey-rack .rack-slot .tile");
   const started2 = await until(async () => (await E.locator(".okey-rack").count()) > 0 && (await F.locator(".okey-rack").count()) > 0, 20000);
   check("Ece oyunu başlattı, ikisi aynı masada oynuyor", started2);
   check("rakip Fikret (bilgisayar oyuncusu yok)", /Fikret/.test(await opp(E)) && /Ece/.test(await opp(F)), `${await opp(E)} / ${await opp(F)}`);
+  const oppRate = async (p) => p.evaluate(() => [...document.querySelectorAll(".opp .avatar-rate, .topbar-center .avatar-rate")].map((x) => x.textContent));
+  check("rakibin avatarının altında başarı oranı (90) görünüyor", (await oppRate(E)).includes("90") && (await oppRate(F)).includes("90"), `${await oppRate(E)} / ${await oppRate(F)}`);
   check("özel Sosyete masasında sohbet var", (await E.locator(".chat-room-btn").count()) > 0);
   // Sıraları arka arkaya 2 kez otomatik oynanınca iki oyuncuya da uyarı
   await E.evaluate(async () => { const r = await window.__woTest.call("createPrivateTable", { type: "ustaozel", lang: "tr", name: "Ece" }); await window.__woTest.call("testRunTimeouts", { tableId: r.tableId, turns: 4 }); });

@@ -44,6 +44,13 @@ async function pair(type, a, b) {
   check("Sosyete Özel: iki oyuncunun 100 çipi yandı", (await A.balance()) === a0 - 100 && (await B.balance()) === b0 - 100, `${a0}→${await A.balance()} / ${b0}→${await B.balance()}`);
 }
 
+// 1b) Koltuklarda başarı oranı (avatarın altında gösterilir): %90
+{
+  const { table } = await pair("ustaozel", "Lale", "Mert");
+  const t = await table();
+  check("koltuklarda oyuncuların başarı oranı var (90)", t.seats.every((x) => x.rate === 90), JSON.stringify(t.seats.map((x) => x.rate)));
+}
+
 // 2) Biri yalnızca bir hamle yaptı (gerisi otomatik): yarısından az → onun da çipi yanar
 {
   const { A, B, a0, b0, tableId, table } = await pair("ustaozel", "Cansu", "Doruk");

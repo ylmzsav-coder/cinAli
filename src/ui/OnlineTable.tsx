@@ -337,6 +337,10 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       onChatEnabled={onChat && ((on) => onChat(on, !!doc_.private))}
       chatRoom={isChatType(doc_.type) && isAdult()}
       playerMenu={playerMenu}
+      seatRates={doc_.seats.map((_, i) => {
+        const s = doc_.seats[(i + rack.seat) % doc_.seats.length];
+        return s && !s.bot && typeof s.rate === "number" ? s.rate : null;
+      })}
       vipSeats={doc_.seats.map((_, i) => {
         const s = doc_.seats[(i + rack.seat) % doc_.seats.length];
         return !s?.bot && !!s?.vipUntil && s.vipUntil > Date.now();

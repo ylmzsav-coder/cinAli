@@ -1742,3 +1742,10 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .hub button.shop-hub, .hub button.rules-hub { background: var(--accent) !important; color: #111 !important; border: 1px solid rgba(0, 0, 0, 0.15) !important; }
 /* Profildeki en uzun kelime: taşların altında puan yazmaz */
 .word-tiles.no-values .tile-value { display: none; }
+/* Başarı oranı rozeti: avatarın alt kenarında, seviye renginde */
+.avatar.avatar-rated { position: relative; overflow: visible; }
+.avatar-rate { position: absolute; left: 50%; bottom: -0.45em; transform: translateX(-50%); min-width: 1.9em; padding: 0 0.3em; border-radius: 999px; font-size: 0.5em; font-weight: 900; line-height: 1.45; color: #111; border: 1.5px solid #0b2e20; text-align: center; letter-spacing: 0; pointer-events: none; white-space: nowrap; }
+.avatar-sm .avatar-rate { font-size: 0.62em; bottom: -0.55em; }
+.avatar-lg .avatar-rate { font-size: 0.55em; bottom: -0.4em; border-width: 2px; }
+/* Profilde fotoğraf düğmesi sağ üstte: alttaki başarı oranı rozetini kapatmaz */
+.photo-pick .photo-edit { top: -4px; bottom: auto; }

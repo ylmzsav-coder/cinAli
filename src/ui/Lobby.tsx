@@ -74,7 +74,7 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
         {(table.players ?? 4) > 2 && <InviteSeat className="seat-left" onInvite={() => void invite()} />}
         {(table.players ?? 4) > 2 && <InviteSeat className="seat-right" onInvite={() => void invite()} />}
         <div className="lobby-me">
-          <Avatar name={name} seat={0} size="md" vip={wallet.isVip()} />
+          <Avatar name={name} seat={0} size="md" vip={wallet.isVip()} rate={myRate().rate} />
           <span>{name}</span>
         </div>
 
@@ -126,7 +126,7 @@ export function SosyeteLobby({ name, onClose, onPick, room = "sosyete" }: { name
           {carli ? <><DiceIcon size="1.5em" /> {t("carliTitle")}</> : <><span className="vip-radar small" aria-hidden><span>🚘</span></span> {t("playUsta")}</>}
         </div>
         <div className="lobby-me">
-          <Avatar name={name} seat={0} size="md" vip={wallet.isVip()} />
+          <Avatar name={name} seat={0} size="md" vip={wallet.isVip()} rate={myRate().rate} />
           <span>{name}</span>
         </div>
         <div className="lobby-panel">
@@ -193,7 +193,7 @@ export function TwoLobby({ vip = false, name, gender, onGender, onClose, onPick,
         <button type="button" className="leave-round" onClick={onClose}>{t("leaveTableShort")}</button>
         <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>{vip ? "👑" : "🎲"}</span></span> {vip ? t("table_vip2") : t("ozelTitle")}</div>
         <div className="lobby-me">
-          <Avatar name={name} seat={0} size="md" vip={wallet.isVip()} />
+          <Avatar name={name} seat={0} size="md" vip={wallet.isVip()} rate={myRate().rate} />
           <span>{name}</span>
         </div>
         <div className="lobby-panel">

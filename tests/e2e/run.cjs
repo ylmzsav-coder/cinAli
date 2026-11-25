@@ -391,6 +391,18 @@ const TABLES = [
       check("profilde 'en yüksek puanlı kelime' yok, en uzun kelime (KALEMLİK) var, altında puan yok", !/puanlı/i.test(r.text) && !r.text.includes("99") && r.tiles === 8 && r.vals === 0 && /En uzun kelime/i.test(r.text), JSON.stringify(r).slice(0, 220));
       await h.context().close();
     }
+    // Avatarın altında başarı oranı rozeti (seviye renginde); bilgisayar oyuncularında yok
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 100, won: 77 });
+      await h.locator(".hub-rate").tap(); await W(h, 400);
+      const prof = await h.evaluate(() => { const b = document.querySelector(".profile-banner .avatar-rate"); return b ? { text: b.textContent, bg: getComputedStyle(b).backgroundColor } : null; });
+      check("profil resminin altında başarı oranı rozeti: 77, kırmızı (Sosyete)", prof?.text === "77" && prof.bg === "rgb(229, 57, 53)", JSON.stringify(prof));
+      await h.locator(".profile-close").tap(); await W(h, 300);
+      await TABLES[0].open(h); await W(h, 1200);
+      const g = await h.evaluate(() => ({ me: document.querySelector(".topbar-me .avatar-rate")?.textContent ?? null, bots: document.querySelectorAll(".opp .avatar-rate").length }));
+      check("oyun masasında kendi rozetin (77) var, bilgisayar oyuncularında rozet yok", g.me === "77" && g.bots === 0, JSON.stringify(g));
+      await h.context().close();
+    }
     // Mağaza ve Kurallar: Pratik gibi sarı, yazı siyah
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });

@@ -288,6 +288,11 @@ function newCode(): string {
   return s;
 }
 
+/** Oyuncunun başarı oranı (yüzde): koltukta gösterilir (avatarın altında). */
+function rateOfUser(u: { gamesWon?: number; gamesPlayed?: number }): number {
+  return ratePercent(u.gamesWon ?? 0, u.gamesPlayed ?? 0);
+}
+
 /** Oyuncu zaten bir masadaysa o masanın kimliği. */
 async function activeTableOf(t: Transaction, uid: string): Promise<string | null> {
   const user = (await t.get(userRef(uid))).data() ?? {};
@@ -314,14 +319,15 @@ export const createPrivateTable = onCall(async (req) => {
       const w = (await t.get(walletRef(uid))).data() as WalletDoc | undefined;
       if (!w) return fail("noWallet");
       requireVip(cfg, w);
-      if (cfg.minRate) requireRate(cfg, (await t.get(userRef(uid))).data() ?? {});
+      const me = (await t.get(userRef(uid))).data() ?? {};
+      if (cfg.minRate) requireRate(cfg, me);
       if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
       applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
       const id = db.collection("tables").doc().id;
       const now = Date.now();
       const table: TableDoc = {
         type: cfg.id, private: true, code, lang, status: "waiting",
-        seats: [{ uid, name, bot: false, ...vipOf(w) }], uids: [uid],
+        seats: [{ uid, name, bot: false, rate: rateOfUser(me), ...vipOf(w) }], uids: [uid],
         createdAt: now, startAt: now + 24 * 3600_000, deadline: null, version: 0, view: null,
       };
       t.set(tableRef(id), table);
@@ -354,8 +360,9 @@ export const joinPrivateTable = onCall(async (req) => {
     if (!w) return fail("noWallet");
     // VIP abonenin özel odasına davetle gelen misafir: abonelik şartı yok, ücretsiz oturur
     const guest = !!cfg.vip;
-    if (guest && (await t.get(userRef(uid))).data()?.adult === false) fail("vipAdultOnly", {}, "permission-denied");
-    if (cfg.minRate) requireRate(cfg, (await t.get(userRef(uid))).data() ?? {});
+    const me = (await t.get(userRef(uid))).data() ?? {};
+    if (guest && me.adult === false) fail("vipAdultOnly", {}, "permission-denied");
+    if (cfg.minRate) requireRate(cfg, me);
     if (!guest) {
       if (w.balance < cfg.entry) fail("notEnoughChips", { need: cfg.entry, have: w.balance });
       applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);
@@ -364,7 +371,7 @@ export const joinPrivateTable = onCall(async (req) => {
     t.delete(userRef(uid).collection("invites").doc(snap.id));
     t.set(tableRef(snap.id), {
       ...table,
-      seats: [...table.seats, { uid, name, bot: false, ...(guest ? { guest: true } : {}), ...vipOf(w) }],
+      seats: [...table.seats, { uid, name, bot: false, rate: rateOfUser(me), ...(guest ? { guest: true } : {}), ...vipOf(w) }],
       uids: [...table.uids, uid],
       version: table.version + 1,
     });
@@ -455,7 +462,7 @@ export const joinTable = onCall(async (req) => {
     if (candidate) {
       id = candidate.id;
       const table = candidate.data() as TableDoc;
-      const seats = [...table.seats, { uid, name, bot: false, ...vipOf(w) }];
+      const seats = [...table.seats, { uid, name, bot: false, rate: rateOfUser(user), ...vipOf(w) }];
       const next: TableDoc = {
         ...table, seats, uids: [...table.uids, uid], version: table.version + 1,
         // Özel odadan gelen eşleşmede masa VIP masası olur (izleyici yok, sohbet açık)
@@ -471,7 +478,7 @@ export const joinTable = onCall(async (req) => {
       id = db.collection("tables").doc().id;
       const table: TableDoc = {
         type: cfg.id, private: false, code: null, lang, status: "waiting",
-        seats: [{ uid, name, bot: false, ...vipOf(w) }], uids: [uid],
+        seats: [{ uid, name, bot: false, rate: rateOfUser(user), ...vipOf(w) }], uids: [uid],
         createdAt: now, startAt: now + (cfg.vip || cfg.players === 2 ? VIP_WAIT_MS : WAIT_MS), deadline: null, version: 0, view: null,
         ...(byGender ? { hostGender: gender!, seekGender: want! } : {}),
       };

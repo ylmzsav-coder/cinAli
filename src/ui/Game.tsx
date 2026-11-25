@@ -38,6 +38,7 @@ import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
 import { Avatar, SeatStatsModal } from "./Profile";
+import { myRate } from "../stats";
 import { GiftSendModal } from "./Gifts";
 import { type Gift } from "../economy/gifts";
 import { GiftIcon } from "./GiftIcon";
@@ -153,6 +154,8 @@ interface Props {
   carry?: { entry: number; onReplay: () => void; onLeave: () => void };
   /** Oturan oyuncuların VIP rozeti (gösterilen koltuk sırasıyla). */
   vipSeats?: boolean[];
+  /** Koltuklardaki oyuncuların başarı oranı (bilgisayar oyuncusunda null); verilmezse yalnızca sizinki. */
+  seatRates?: (number | null)[];
   /** Masanın birinciye ödülü (eşitlikte paylaşılır). */
   prize?: number;
   /** Masa kimliği: başlıkta simge (Çayhane çay, Sosyete araba) */
@@ -163,7 +166,9 @@ interface Props {
   idleStreak?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, carry, tableId, vipSeats = [], payout, prize = 0, idleStreak = 0 }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, carry, tableId, vipSeats = [], seatRates, payout, prize = 0, idleStreak = 0 }: Props) {
+  // Başarı oranı rozetleri: sizinki her zaman (güncel), çevrimiçi rakiplerinki sunucudan
+  const rates = state.players.map((p, i) => (i === ME && !p.isBot ? myRate().rate : seatRates?.[i] ?? null));
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -920,7 +925,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         style={timerStyle(i)}>
         {bubbleFor(i)}
         <div className="opp-name">
-          <Avatar name={p.name} seat={i} size="sm" vip={!!vipSeats[i]} onClick={() => setProfileSeat(i)} />{" "}
+          <Avatar name={p.name} seat={i} size="sm" vip={!!vipSeats[i]} rate={rates[i]} onClick={() => setProfileSeat(i)} />{" "}
           {playerMenu?.available(i) ? (
             <button type="button" className="name-btn" onClick={() => setMenuSeat(menuSeat === i ? null : i)}
               aria-haspopup="menu" aria-expanded={menuSeat === i}>
@@ -1011,7 +1016,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         <div className="topbar-actions">
           {/* Oyuncu profili (S): Satın al ile mesaj düğmesinin arasında */}
           <button type="button" className="me-slot topbar-me" onClick={() => setProfileSeat(ME)} aria-label={t("profileOf", { name: me.name })}>
-            <Avatar name={me.name} seat={ME} size="sm" vip={!!vipSeats[ME]} />
+            <Avatar name={me.name} seat={ME} size="sm" vip={!!vipSeats[ME]} rate={rates[ME]} />
             <span className="topbar-me-name">{me.name}</span>
           </button>
           {/* Sarı mesaj düğmesi: bütün masalarda aynı (VIP'te serbest yazı, diğerlerinde hazır mesaj ve emoji) */}
@@ -1024,7 +1029,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         </div>
       </header>
       {profileSeat !== null && (
-        <SeatStatsModal state={state} seat={profileSeat} vip={!!vipSeats[profileSeat]} vipRoom={!!tableId?.startsWith("vip")} onClose={() => setProfileSeat(null)}
+        <SeatStatsModal state={state} seat={profileSeat} rate={rates[profileSeat]} vip={!!vipSeats[profileSeat]} vipRoom={!!tableId?.startsWith("vip")} onClose={() => setProfileSeat(null)}
           onAddFriend={playerMenu?.addFriend && playerMenu.available(profileSeat) ? () => addFriendAt(profileSeat) : undefined}
           onGift={canGift(profileSeat) ? () => setGiftSeat(profileSeat) : undefined} />
       )}

@@ -25,6 +25,8 @@ export interface SeatInfo {
   guest?: boolean;
   /** VIP üyeliğin bittiği an: rozet bu ana kadar gösterilir. */
   vipUntil?: number;
+  /** Oturduğu andaki başarı oranı (yüzde); avatarın altında gösterilir. */
+  rate?: number;
   /** Oyuncunun kendi eliyle tamamladığı hamle (sıra) sayısı. */
   manual?: number;
   /** Süre dolunca otomatik oynanan hamle (sıra) sayısı. */
