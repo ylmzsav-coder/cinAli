@@ -65,6 +65,35 @@ function GLetter({ apart }: { apart: boolean }) {
   );
 }
 
+/** Kavisli harfler: her hareket bir SVG yolu; parça parça halde yollar sağa kaydırılır. Rozet konumları yol başına. */
+interface PathStroke { d: string; apartDx: number; badge: [number, number] }
+const P_STROKES: PathStroke[] = [
+  { d: "M 12 8 L 12 72", apartDx: -6, badge: [6, 56] },
+  { d: "M 12 8 L 32 8 A 16 16 0 0 1 32 40 L 12 40", apartDx: 8, badge: [48, 24] },
+];
+const B_STROKES: PathStroke[] = [
+  { d: "M 12 8 L 12 72", apartDx: -6, badge: [6, 56] },
+  { d: "M 12 8 L 30 8 A 15 16 0 0 1 30 40 L 12 40", apartDx: 8, badge: [45, 24] },
+  { d: "M 12 40 L 34 40 A 16 16 0 0 1 34 72 L 12 72", apartDx: 8, badge: [52, 56] },
+];
+function PathLetter({ strokes, apart, label }: { strokes: PathStroke[]; apart: boolean; label: string }) {
+  return (
+    <svg className="stroke-letter" viewBox="-6 -6 72 92" role="img" aria-label={label}>
+      {strokes.map((st, i) => (
+        <path key={i} d={st.d} transform={apart ? `translate(${st.apartDx} 0)` : undefined} fill="none"
+          stroke={apart ? COLORS[i % COLORS.length] : "#222"} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round"
+          pathLength={1} className={apart ? "stroke-draw" : undefined} style={apart ? { animationDelay: `${i * 0.6}s`, animationDuration: "0.5s" } : undefined} />
+      ))}
+      {apart && strokes.map((st, i) => (
+        <g key={`n${i}`} className="stroke-num" style={{ animationDelay: `${i * 0.6 + 0.4}s` }}>
+          <circle cx={st.badge[0]} cy={st.badge[1]} r={8} fill="#fff" stroke={COLORS[i % COLORS.length]} strokeWidth={2.5} />
+          <text x={st.badge[0]} y={st.badge[1] + 4} textAnchor="middle" fontSize={11} fontWeight={800} fill="#111">{i + 1}</text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 /** "Nasıl sayılır?" kartı: ET kelimesi çizgi çizgi ve bütün harflerin hareket sayıları. */
 export function StrokeDemo() {
   const groups = new Map<number, string[]>();
@@ -104,6 +133,14 @@ export function StrokeDemo() {
           <div className="stroke-row"><small>{t("strokeJoined")}</small><div className="stroke-pair"><GLetter apart={false} /></div></div>
         </div>
         <p className="stroke-sum"><b>G</b> = 1 + 1 = <b>2</b> · <b>Ğ</b> = 2 + 1 = <b>3</b></p>
+      </div>
+      <div className="stroke-g">
+        <h4>🔍 {t("strokePBTitle")}</h4>
+        <p>{t("strokePBText")}</p>
+        <div className="stroke-rows">
+          <div className="stroke-row"><small>P</small><div className="stroke-pair"><PathLetter strokes={P_STROKES} apart label="P" /><PathLetter strokes={P_STROKES} apart={false} label="P" /></div><b className="stroke-total">P = 2</b></div>
+          <div className="stroke-row"><small>B</small><div className="stroke-pair"><PathLetter strokes={B_STROKES} apart label="B" /><PathLetter strokes={B_STROKES} apart={false} label="B" /></div><b className="stroke-total">B = 3</b></div>
+        </div>
       </div>
       <details className="stroke-table">
         <summary>{t("strokeAlphabet")}</summary>

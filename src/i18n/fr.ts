@@ -74,6 +74,8 @@ const fr: Messages = {
   strokeAlphabet: "Traits de chaque lettre",
   strokeGTitle: "Erreur fréquente : G compte 2 traits, pas 1",
   strokeGText: "1) La courbe part du haut, descend et remonte : un trait. 2) On lève le stylo ; la barre droite de droite à gauche : deuxième trait.",
+  strokePBTitle: "P et B côte à côte : l'un fait 2, l'autre 3",
+  strokePBText: "Les deux commencent par un trait vertical. P a une seule boucle : 1 + 1 = 2. B en a deux, tracées séparément : 1 + 1 + 1 = 3.",
   famousSevens: "Les sept célèbres",
   wordNumAll: "Afficher tous les sept",
   wordNumHide: "Fermer la liste",

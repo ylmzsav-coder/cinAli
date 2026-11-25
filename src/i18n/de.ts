@@ -74,6 +74,8 @@ const de: Messages = {
   strokeAlphabet: "Striche aller Buchstaben",
   strokeGTitle: "Häufiger Fehler: G hat 2 Striche, nicht 1",
   strokeGText: "1) Der Bogen beginnt oben, geht nach unten und wieder hoch: ein Strich. 2) Stift absetzen; der gerade Querstrich von rechts nach links: zweiter Strich.",
+  strokePBTitle: "P und B nebeneinander: einmal 2, einmal 3",
+  strokePBText: "Beide beginnen mit einem senkrechten Strich. P hat einen Bogen: 1 + 1 = 2. B hat zwei Bögen, getrennt gezogen: 1 + 1 + 1 = 3.",
   famousSevens: "Berühmte Siebener",
   wordNumAll: "Alle Siebenen zeigen",
   wordNumHide: "Liste schließen",

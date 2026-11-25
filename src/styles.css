@@ -1875,3 +1875,4 @@ button.wordnum-famous-btn { display: block; width: 100%; max-width: none !import
 .stroke-g { margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(255, 213, 79, 0.45); }
 .stroke-g h4 { margin: 0 0 4px; color: #ffd54f; }
 .stroke-g p { margin: 0 0 8px; }
+.stroke-total { font-size: 1.1rem; color: #ffd54f; }

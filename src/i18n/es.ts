@@ -74,6 +74,8 @@ const es: Messages = {
   strokeAlphabet: "Trazos de cada letra",
   strokeGTitle: "Error frecuente: la G tiene 2 trazos, no 1",
   strokeGText: "1) La curva empieza arriba, baja y vuelve a subir: un trazo. 2) Se levanta el lápiz; la barra recta de derecha a izquierda: segundo trazo.",
+  strokePBTitle: "P y B juntas: una es 2, la otra 3",
+  strokePBText: "Las dos empiezan con una línea vertical. La P tiene una curva: 1 + 1 = 2. La B tiene dos, trazadas por separado: 1 + 1 + 1 = 3.",
   famousSevens: "Sietes famosos",
   wordNumAll: "Mostrar todos los sietes",
   wordNumHide: "Cerrar la lista",

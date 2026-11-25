@@ -74,6 +74,8 @@ const en: Messages = {
   strokeAlphabet: "Strokes of every letter",
   strokeGTitle: "Common mistake: G is 2 strokes, not 1",
   strokeGText: "1) The curve starts at the top, goes down and comes back up: one stroke. 2) Lift the pen; the straight bar going in from right to left: the second stroke.",
+  strokePBTitle: "P and B side by side: one is 2, the other 3",
+  strokePBText: "Both start with a vertical line. P has one curve: 1 + 1 = 2. B has two curves, drawn separately: 1 + 1 + 1 = 3.",
   famousSevens: "Famous Sevens",
   wordNumAll: "Show all the sevens",
   wordNumHide: "Close the list",

@@ -75,6 +75,8 @@ const tr = {
   strokeAlphabet: "Bütün harflerin hareket sayısı",
   strokeGTitle: "Sık yanılgı: G tek hareket değil, 2 harekettir",
   strokeGText: "1) Kavis üstten başlar, aşağı iner ve yukarı çıkar: tek hareket. 2) Kalem kalkar; sağdan sola içeri giren düz çizgi: ikinci hareket.",
+  strokePBTitle: "P ile B yan yana: biri 2, biri 3",
+  strokePBText: "İkisi de dikey çizgiyle başlar. P'de tek kavis vardır: 1 + 1 = 2. B'de iki kavis vardır, üst ve alt ayrı çizilir: 1 + 1 + 1 = 3.",
   famousSevens: "Ünlü 7'liler",
   wordNumAll: "Bütün yedileri göster",
   wordNumHide: "Listeyi kapat",
