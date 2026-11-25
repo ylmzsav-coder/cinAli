@@ -309,7 +309,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
           {/* Masalar: [Çayhane, Çarli] [Fifty Cent, Sosyete]; ardından [Pratik, Mağaza, Kurallar] */}
           <div className="hub-row">
-            <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub`} onClick={() => onSitTable(tableById("caylak")!)}>
+            <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub cayhane-hub`} onClick={() => onSitTable(tableById("caylak")!)}>
               <span>🫖 {t("playCaylak")}</span>
               <span className="caylak-sub">{t("entry")} <Chips amount={tableById("caylak")!.entry} /> · {t("toWinner")} <Chips amount={winnerPrize(tableById("caylak")!)} /></span>
             </button>

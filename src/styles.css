@@ -1727,3 +1727,11 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 @media (max-height: 400px) {
   .hub-left .tagline { display: none; }
 }
+
+/* Ana menü oyun düğmeleri seviye renklerinde (başarı oranı halkasıyla aynı):
+   Çayhane turuncu, Çarli sarı, Fifty Cent yeşil, Sosyete kırmızı */
+.hub button.cayhane-hub { background: linear-gradient(180deg, #ffa24d, #ef6c00) !important; color: #2b1300 !important; border: 1px solid #b85200 !important; }
+.hub button.carli-hub { background: linear-gradient(180deg, #ffe680, #f5c518) !important; color: #2a1f00 !important; border: 1px solid #b89200 !important; }
+.hub button.ozel-hub { background: linear-gradient(180deg, #6ee7a4, #1fa85a) !important; color: #052b14 !important; border: 1px solid #13753d !important; }
+.hub button.usta-hub { background: linear-gradient(180deg, #ff6f6f, #d32f2f) !important; color: #fff !important; border: 1px solid #9a1c1c !important; }
+.hub button.usta-hub .caylak-sub { opacity: 1; }
