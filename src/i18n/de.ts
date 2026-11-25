@@ -245,7 +245,6 @@ const de: Messages = {
   stGames: "Spiele",
   stGamesWon: "Gewonnene Spiele",
   stWinRate: "Gewinnquote",
-  tierPlayer: "{room}-Spieler",
   tierGames: "{won} Siege in {played} Spielen",
   tierNext: "{room} braucht {need} %: noch {left} %. Mit jedem Sieg steigt deine Quote.",
   tierTop: "Glückwunsch, du bist auf der höchsten Stufe! Alle Tische stehen dir offen; halte deine Quote.",

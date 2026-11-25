@@ -21,9 +21,9 @@ export function RateRing({ rate, size = 96 }: { rate: number; size?: number }) {
   );
 }
 
-/** Oyuncunun seviyesi: "Sosyete oyuncusu" gibi, seviyenin renginde. */
+/** Oyuncunun seviyesi: yalnızca masa adı (Çayhane, Çarli, Fifty Cent, Sosyete). */
 export function tierName(rate: number): string {
-  return t("tierPlayer", { room: t(`table_${rateTier(rate).tier.table}` as "table_vip") });
+  return t(`table_${rateTier(rate).tier.table}` as "table_vip");
 }
 
 /** Profil kartı: halka, seviye adı ve bir üst seviyeye ne kadar kaldığı. */

@@ -245,7 +245,6 @@ const en: Messages = {
   stGames: "Games",
   stGamesWon: "Games won",
   stWinRate: "Win rate",
-  tierPlayer: "{room} player",
   tierGames: "{won} wins in {played} games",
   tierNext: "{room} needs {need}%: {left}% to go. Your rate rises as you win.",
   tierTop: "Congratulations, you're at the top level! Every table is open to you; keep your rate up.",

@@ -245,7 +245,6 @@ const it: Messages = {
   stGames: "Partite",
   stGamesWon: "Partite vinte",
   stWinRate: "Percentuale di vittorie",
-  tierPlayer: "Giocatore {room}",
   tierGames: "{won} vittorie in {played} partite",
   tierNext: "{room} richiede il {need}%: ti manca il {left}%. La percentuale sale quando vinci.",
   tierTop: "Complimenti, sei al livello più alto! Tutti i tavoli sono aperti per te; mantieni la tua percentuale.",
