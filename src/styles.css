@@ -1876,3 +1876,8 @@ button.wordnum-famous-btn { display: block; width: 100%; max-width: none !import
 .stroke-g h4 { margin: 0 0 4px; color: #ffd54f; }
 .stroke-g p { margin: 0 0 8px; }
 .stroke-total { font-size: 1.1rem; color: #ffd54f; }
+/* Davet penceresi: Engelle */
+.invite-modal .modal-actions { flex-wrap: wrap; }
+.invite-modal button.invite-block { background: #424242; color: #fff; border: 1px solid #212121; }
+.invite-block-ask { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 82, 82, 0.6); text-align: center; }
+.invite-block-ask p { margin: 0 0 6px; }

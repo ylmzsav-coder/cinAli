@@ -142,5 +142,5 @@ export async function call<T = unknown>(name: string, data?: unknown): Promise<T
 // Yalnızca emülatör (test) derlemesinde: uçtan uca testlerin sunucu test fonksiyonlarını
 // (testSetStats, testSubscribeVip…) çağırabilmesi için. Gerçek sürümde bulunmaz.
 if (import.meta.env.VITE_FIREBASE_EMULATOR === "1" && typeof window !== "undefined") {
-  (window as unknown as { __woTest?: unknown }).__woTest = { call };
+  (window as unknown as { __woTest?: unknown }).__woTest = { call, uid: async () => (await currentUser()).uid };
 }

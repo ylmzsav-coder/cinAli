@@ -61,5 +61,18 @@ await C.call("sendFriendRequest", { targetUid: B.uid });
 await C.call("inviteFriend", { tableId: pt2.tableId, friendUid: B.uid });
 await C.call("leaveTable", { tableId: pt2.tableId });
 check("kapanan masanın daveti görünmez", !(await B.call("friendsStatus")).invites.some((i) => i.tableId === pt2.tableId));
+
+// Davet gelen oyuncu daveti göndereni engelleyebilir: davet düşer, bir daha davet edemez
+const D = await client("Deniz");
+await D.call("sendFriendRequest", { targetUid: B.uid });
+const pt3 = await D.call("createPrivateTable", { type: "ozel2", lang: "tr", name: "Deniz" });
+check("Deniz, Bea'yı davet eder", (await D.call("inviteFriend", { tableId: pt3.tableId, friendUid: B.uid })).ok === true);
+const inv3 = (await B.call("friendsStatus")).invites.find((i) => i.tableId === pt3.tableId);
+check("davette gönderenin kimliği var (engellemek için)", inv3?.fromUid === D.uid && inv3?.name === "Deniz", JSON.stringify(inv3));
+check("Bea, daveti gönderen Deniz'i engeller", (await B.call("blockPlayer", { targetUid: D.uid, name: "Deniz" })).ok === true);
+check("engelleyince davet kutusundan düşer", !(await B.call("friendsStatus")).invites.some((i) => i.tableId === pt3.tableId));
+const again = await D.call("inviteFriend", { tableId: pt3.tableId, friendUid: B.uid }).then(() => "BAŞARI", (e) => e.details?.code ?? e.code);
+check("engellenen oyuncu bir daha davet gönderemez", again !== "BAŞARI", again);
+check("engellenen Bea'nın engel listesinde", (await B.call("blockedList")).blocked.some((x) => x.uid === D.uid && x.name === "Deniz"));
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

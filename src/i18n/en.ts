@@ -529,6 +529,8 @@ const en: Messages = {
   unblock: "Unblock",
   blockConfirm: "Block {name}? You will not see their messages; they cannot invite you or send you friend requests or gifts, and you will not be matched at the same table. If you are friends, the friendship is removed.",
   blockedDone: "{name} has been blocked.",
+  blockAsk: "Block {name}?",
+  blockInviteHint: "A blocked player can no longer send you invites, friend requests or gifts, and you won't be seated together. You can unblock in Profile → Settings.",
   unblocked: "{name} has been unblocked.",
   blockedTag: "blocked",
   blockedTitle: "Blocked players",

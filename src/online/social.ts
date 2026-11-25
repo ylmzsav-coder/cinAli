@@ -21,6 +21,8 @@ export interface TableInvite {
   name: string;
   code: string;
   type: string;
+  /** Davet eden oyuncu (engellemek için). */
+  fromUid?: string;
 }
 export const friendsStatus = () => call<{ friends: FriendStatus[]; requests: FriendRequest[]; invites: TableInvite[] }>("friendsStatus");
 export const inviteFriend = (tableId: string, friendUid: string) => call("inviteFriend", { tableId, friendUid });

@@ -226,6 +226,36 @@ const tilesOnRack = (p) => p.locator(".okey-rack .rack-slot .tile");
   check("'Anladım, oynuyorum' ile uyarı kapanıyor", (await E.locator(".idle-warn").count()) === 0);
   check("arkadaşla oyna testinde tarayıcı hatası yok", !E.errors.length && !F.errors.length, [...E.errors, ...F.errors].slice(0, 2).join(" | "));
 
+  // Masa daveti: Kabul et · Reddet · Engelle (engellemeden önce onay sorulur)
+  console.log("\n== Çevrimiçi: gelen davette Kabul et / Reddet / Engelle");
+  const G = await player(browser, "Gül"), H = await player(browser, "Hakan");
+  const hUid = await H.evaluate(() => window.__woTest.uid());
+  await G.evaluate(async (h) => {
+    await window.__woTest.call("sendFriendRequest", { targetUid: h });
+    const r = await window.__woTest.call("createPrivateTable", { type: "ozel2", lang: "tr", name: "Gül" });
+    await window.__woTest.call("inviteFriend", { tableId: r.tableId, friendUid: h });
+  }, hUid);
+  const gotInvite = await until(async () => (await H.locator(".invite-modal").count()) > 0, 25000);
+  check("Hakan'a davet penceresi geldi", gotInvite);
+  const btns = await H.locator(".invite-modal .modal-actions button").allInnerTexts();
+  check("davette üç seçenek: Kabul et · Reddet · Engelle", btns.length === 3 && /Kabul et/.test(btns[0]) && /Reddet/.test(btns[1]) && /Engelle/.test(btns[2]), btns.join(" | "));
+  await H.locator(".invite-modal .invite-block").tap(); await W(H, 200);
+  check("Engelle'ye basınca önce onay sorulur", /Gül engellensin mi\?/.test(await H.locator(".invite-block-ask").innerText().catch(() => "")));
+  await H.locator(".invite-block-ask button:not(.danger)").tap(); await W(H, 200);
+  check("Vazgeç ile onay kapanır, davet durur", (await H.locator(".invite-block-ask").count()) === 0 && (await H.locator(".invite-modal").count()) === 1);
+  await H.locator(".invite-modal .invite-block").tap(); await W(H, 200);
+  await H.locator(".invite-block-ask button.danger").tap();
+  const blockedOk = await until(async () => (await H.locator(".invite-modal").count()) === 0 && /Gül engellendi/.test(await H.locator(".toast").innerText().catch(() => "")), 8000);
+  check("engelleyince davet kapanır, 'Gül engellendi.' yazar", blockedOk);
+  const listed = await H.evaluate(async () => (await window.__woTest.call("blockedList")).blocked.map((x) => x.name));
+  check("Gül, Hakan'ın engel listesinde", listed.includes("Gül"), JSON.stringify(listed));
+  const again = await G.evaluate(async (h) => {
+    const r = await window.__woTest.call("createPrivateTable", { type: "ozel2", lang: "tr", name: "Gül" }).catch(() => null);
+    return window.__woTest.call("inviteFriend", { tableId: r?.tableId, friendUid: h }).then(() => "BAŞARI", (e) => e.details?.code ?? e.code);
+  }, hUid);
+  check("engellenen Gül bir daha davet gönderemez", again !== "BAŞARI", again);
+  check("davet testinde tarayıcı hatası yok", !G.errors.length && !H.errors.length, [...G.errors, ...H.errors].slice(0, 2).join(" | "));
+
   await browser.close();
   console.log(fails ? `\n✗ ${fails} DENETİM BAŞARISIZ` : "\nHEPSİ GEÇTİ");
   process.exit(fails ? 1 : 0);

@@ -27,7 +27,7 @@ import { BlackCarIcon } from "./CarIcon";
 import { myRate } from "../stats";
 import { VipModal } from "./Vip";
 import { CLOUD } from "../online/cloud";
-import { type TableInvite, declineInvite, friendsStatus } from "../online/social";
+import { type TableInvite, blockPlayer, declineInvite, friendsStatus } from "../online/social";
 import { Avatar, MyStatsModal } from "./Profile";
 
 interface HubProps {
@@ -106,6 +106,8 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const ownerTaps = useRef(0);
   // Gelen masa davetleri (sunucu açıkken yarım dakikada bir bakılır)
   const [invite, setInvite] = useState<TableInvite | null>(null);
+  // Daveti gönderen oyuncuyu engelleme onayı
+  const [blockAsk, setBlockAsk] = useState(false);
   useEffect(() => {
     if (!CLOUD || !onJoinInvite || settings.invites === false) return;
     const check = () => friendsStatus().then((r) => setInvite(r.invites?.[0] ?? null), () => {});
@@ -331,7 +333,29 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
                 <div className="modal-actions">
                   <button type="button" className="primary" onClick={() => { const c = invite.code; setInvite(null); onJoinInvite(c); }}>✅ {t("inviteAccept")}</button>
                   <button type="button" className="danger" onClick={() => { void declineInvite(invite.tableId); setInvite(null); }}>✖ {t("decline")}</button>
+                  {invite.fromUid && <button type="button" className="invite-block" onClick={() => setBlockAsk(true)}>🚫 {t("block")}</button>}
                 </div>
+                {blockAsk && invite.fromUid && (
+                  <div className="invite-block-ask" role="alertdialog" aria-label={t("blockAsk", { name: invite.name })}>
+                    <p>{t("blockAsk", { name: invite.name })}</p>
+                    <p className="muted small">{t("blockInviteHint")}</p>
+                    <div className="modal-actions">
+                      <button type="button" className="danger" onClick={async () => {
+                        const inv = invite;
+                        setBlockAsk(false);
+                        setInvite(null);
+                        try {
+                          await blockPlayer(inv.fromUid!, inv.name);
+                          void declineInvite(inv.tableId).catch(() => {});
+                          setToast(t("blockedDone", { name: inv.name }));
+                        } catch (e) {
+                          setToast(errorText(e));
+                        }
+                      }}>🚫 {t("block")}</button>
+                      <button type="button" onClick={() => setBlockAsk(false)}>{t("cancel")}</button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

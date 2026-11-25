@@ -529,6 +529,8 @@ const pt: Messages = {
   unblock: "Desbloquear",
   blockConfirm: "Bloquear {name}? Não verás as mensagens dele; não te poderá convidar nem enviar pedidos de amizade ou presentes, e não serão colocados na mesma mesa. Se forem amigos, a amizade é removida.",
   blockedDone: "{name} foi bloqueado.",
+  blockAsk: "Bloquear {name}?",
+  blockInviteHint: "Um jogador bloqueado não pode mais enviar convites, pedidos de amizade ou presentes, e vocês não serão colocados juntos. Desbloqueie em Perfil → Configurações.",
   unblocked: "{name} foi desbloqueado.",
   blockedTag: "bloqueado",
   blockedTitle: "Jogadores bloqueados",

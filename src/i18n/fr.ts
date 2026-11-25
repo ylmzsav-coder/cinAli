@@ -529,6 +529,8 @@ const fr: Messages = {
   unblock: "Débloquer",
   blockConfirm: "Bloquer {name} ? Tu ne verras plus ses messages ; il ne pourra ni t’inviter ni t’envoyer de demandes d’ami ou de cadeaux, et vous ne serez pas placés à la même table. Une amitié éventuelle est supprimée.",
   blockedDone: "{name} a été bloqué.",
+  blockAsk: "Bloquer {name} ?",
+  blockInviteHint: "Un joueur bloqué ne peut plus t'envoyer d'invitations, de demandes d'ami ni de cadeaux, et vous ne serez pas placés ensemble. Débloquer dans Profil → Réglages.",
   unblocked: "{name} a été débloqué.",
   blockedTag: "bloqué",
   blockedTitle: "Joueurs bloqués",

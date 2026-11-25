@@ -529,6 +529,8 @@ const de: Messages = {
   unblock: "Blockierung aufheben",
   blockConfirm: "{name} blockieren? Du siehst keine Nachrichten mehr; Einladungen, Freundschaftsanfragen und Geschenke sind nicht möglich, und ihr werdet nicht am selben Tisch zusammengelost. Eine Freundschaft wird entfernt.",
   blockedDone: "{name} wurde blockiert.",
+  blockAsk: "{name} blockieren?",
+  blockInviteHint: "Ein blockierter Spieler kann dir keine Einladungen, Freundschaftsanfragen oder Geschenke mehr senden, und ihr werdet nicht zusammen gesetzt. Aufheben unter Profil → Einstellungen.",
   unblocked: "Blockierung von {name} aufgehoben.",
   blockedTag: "blockiert",
   blockedTitle: "Blockierte Spieler",

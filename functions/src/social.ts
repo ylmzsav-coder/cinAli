@@ -138,7 +138,7 @@ export const friendsStatus = onCall(async (req) => {
     // Oyundaki arkadaşın daveti bekler; oyunu bitip menüye dönünce görür.
     invites: invites.docs
       .filter((d) => now - (d.data().at as number) < INVITE_MS && inviteTables.get(d.id) === "waiting")
-      .map((d) => ({ tableId: d.id, name: d.data().name as string, code: d.data().code as string, type: d.data().type as string })),
+      .map((d) => ({ tableId: d.id, name: d.data().name as string, code: d.data().code as string, type: d.data().type as string, fromUid: d.data().fromUid as string })),
   };
 });
 

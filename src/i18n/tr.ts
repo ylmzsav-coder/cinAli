@@ -533,6 +533,8 @@ const tr = {
   unblock: "Engeli kaldır",
   blockConfirm: "{name} engellensin mi? Mesajlarını görmezsin; seni davet edemez, arkadaşlık isteği ve hediye gönderemez, aynı masaya eşleşmezsiniz. Arkadaşsanız arkadaşlık silinir.",
   blockedDone: "{name} engellendi.",
+  blockAsk: "{name} engellensin mi?",
+  blockInviteHint: "Engellenen oyuncu sana bir daha davet, arkadaşlık isteği ve hediye gönderemez; aynı masaya oturtulmazsınız. Engeli Profil → Ayarlar'dan kaldırabilirsin.",
   unblocked: "{name} için engel kaldırıldı.",
   blockedTag: "engellendi",
   blockedTitle: "Engellenen oyuncular",
