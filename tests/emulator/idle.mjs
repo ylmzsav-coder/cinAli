@@ -101,7 +101,14 @@ async function pair(type, a, b) {
 
 // 3) Sosyete 4 kişilik masa (sohbetli): oynamayan insanların girişi yanar
 {
-  const { A, B, a0, b0, tableId, table } = await pair("usta", "Ece", "Ferhat");
+  // Herkese açık Sosyete masası: iki oyuncu aynı masaya oturur, boş koltuklara bilgisayar gelir
+  const A = await client("Ece"), B = await client("Ferhat");
+  const a0 = await A.balance(), b0 = await B.balance();
+  const { tableId } = await A.call("joinTable", { type: "usta", lang, name: "Ece" });
+  const jb = await B.call("joinTable", { type: "usta", lang, name: "Ferhat" });
+  check("Ece ve Ferhat aynı Sosyete masasında", jb.tableId === tableId);
+  await A.call("startTable", { tableId });
+  const table = async () => (await getDoc(doc(A.db, "tables", tableId))).data();
   await A.call("testRunTimeouts", { tableId });
   const t = await table();
   check("Sosyete (4 kişilik, botlu): hiç oynamayan iki insana iade yok", t.payouts[A.uid] === 0 && t.payouts[B.uid] === 0 && (await A.balance()) === a0 - 100 && (await B.balance()) === b0 - 100, JSON.stringify(t.payouts));

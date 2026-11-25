@@ -123,9 +123,18 @@ export function sosyetePrivateOf(t: TableConfig): TableConfig {
   return SOSYETE_PRIVATE_TABLES.find((x) => x.entry === t.entry) ?? SOSYETE_PRIVATE_TABLES[0];
 }
 
-/** Özel masa (davet kodlu) kurulabilen türler: tüm güncel masalar ve Sosyete Özel. */
+/**
+ * Arkadaşla oynanabilen masalar: VIP Oda, Fifty Cent ve Sosyete (Sosyete Özel).
+ * Çayhane ve Çarli'de arkadaş daveti yoktur. Arkadaş da masanın başarı oranı şartını karşılamalıdır.
+ */
+export function friendsAllowed(t: TableConfig | undefined): boolean {
+  return !!t && (!!t.vip || t.id.startsWith("ozel") || SOSYETE_PRIVATE_TABLES.some((x) => x.id === t.id));
+}
+
+/** Özel masa (davet kodlu) kurulabilen türler: yalnızca arkadaşla oynanabilen masalar. */
 export function privateTableById(id: string | undefined): TableConfig | undefined {
-  return TABLES.find((t) => t.id === id) ?? SOSYETE_PRIVATE_TABLES.find((t) => t.id === id);
+  const t = TABLES.find((x) => x.id === id) ?? SOSYETE_PRIVATE_TABLES.find((x) => x.id === id);
+  return friendsAllowed(t) ? t : undefined;
 }
 
 /** VIP oda türü mü (serbest sohbet, izleyici yok, süre yok). */

@@ -1772,3 +1772,5 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 /* Profil kartı: toplam kazanılan çip */
 .stat.total-chips { background: rgba(242, 179, 61, 0.18); }
 .stat.total-chips .stat-value { font-size: 1.25rem; }
+/* Boş koltuk (Çayhane, Çarli: arkadaş daveti yok) */
+.invite-seat.empty-seat { cursor: default; opacity: 0.75; }

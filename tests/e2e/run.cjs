@@ -315,7 +315,7 @@ const TABLES = [
     const kb = await p.evaluate(() => { const el = document.querySelector(".kumbara-balance"); return { icon: !!el?.querySelector(".kumbara-icon"), label: el?.querySelector(".kumbara-label")?.textContent ?? "" }; });
     const KB = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" };
     check(`Menü (${lang}): çipler kumbarada — resim ve "${KB[lang]}" yazısı`, kb.icon && kb.label === KB[lang], JSON.stringify(kb));
-    check(`Kurallar (${lang}): 21 madde, 12 satırlık masa tablosu, taşma yok`, r.rows === 12 && r.items === 21 && !r.hscroll && !r.raw, JSON.stringify(r));
+    check(`Kurallar (${lang}): 22 madde, 12 satırlık masa tablosu, taşma yok`, r.rows === 12 && r.items === 22 && !r.hscroll && !r.raw, JSON.stringify(r));
     await p.context().close();
   }
   }
@@ -441,6 +441,26 @@ const TABLES = [
       await h.locator(".opp .avatar").first().tap(); await W(h, 400);
       const bot = (await h.locator(".profile-modal .total-chips").innerText().catch(() => "")).replace(/\n/g, " ");
       check("bilgisayar oyuncusunun kartında 'Toplam kazanılan çip: –'", bot.includes("Toplam kazanılan çip") && bot.includes("–"), bot);
+      await h.context().close();
+    }
+    // Arkadaşla oyna yalnızca VIP Oda, Sosyete ve Fifty Cent'te: Çayhane ve Çarli bekleme masasında davet yok
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 9 });
+      const seats = async () => h.evaluate(() => ({ invite: document.querySelectorAll(".invite-seat:not(.empty-seat)").length, empty: document.querySelectorAll(".invite-seat.empty-seat").length, text: [...document.querySelectorAll(".invite-seat")].map((x) => x.textContent).join("|") }));
+      await h.locator(".cayhane-hub").tap(); await W(h, 500);
+      const cay = await seats();
+      check("Çayhane bekleme masası: davet yok, 3 koltuk 'Bekleniyor'", cay.invite === 0 && cay.empty === 3 && cay.text.includes("Bekleniyor"), JSON.stringify(cay));
+      await h.locator(".leave-round").tap(); await W(h, 400);
+      await h.locator(".carli-hub").tap(); await W(h, 400);
+      check("Çarli lobisinde 'Arkadaşla oyna' yok", (await h.locator(".sosyete-friend, .two-choices").count()) === 0);
+      await h.locator(".carli-lobby .sosyete-sit").tap(); await W(h, 500);
+      const car = await seats();
+      check("Çarli bekleme masası: davet yok, 3 koltuk 'Bekleniyor'", car.invite === 0 && car.empty === 3, JSON.stringify(car));
+      await h.locator(".leave-round").tap(); await W(h, 400);
+      await h.locator(".ozel-hub").tap(); await W(h, 400);
+      await h.locator(".two-choices button").nth(1).tap(); await W(h, 500);
+      const oz = await seats();
+      check("Fifty Cent 'Arkadaşla oyna': davet koltuğu var", oz.invite === 1 && oz.empty === 0, JSON.stringify(oz));
       await h.context().close();
     }
     // Mağaza ve Kurallar: Pratik gibi sarı, yazı siyah

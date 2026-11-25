@@ -33,8 +33,10 @@ check("ikinci kez dönüştürülemez", (await errCode(B.call("convertGift", { i
 check("başkasının hediyesi dönüştürülemez", (await errCode(A.call("convertGift", { id: gifts[0].id }))) === "giftNotFound");
 check("yetersiz çip", (await errCode(A.call("sendGift", { toUid: B.uid, giftId: "araba" }).then(() => A.call("sendGift", { toUid: B.uid, giftId: "araba" })))) === "notEnoughChips");
 // Masadaki oyuncuya (arkadaş değil) hediye
-const room = await C.call("createPrivateTable", { type: "caylak", lang: "tr", name: "Can" });
+await C.call("testSetStats", { played: 10, won: 9 });
+const room = await C.call("createPrivateTable", { type: "ozel2", lang: "tr", name: "Can" });
 const D = await client("Dio");
+await D.call("testSetStats", { played: 10, won: 9 });
 await D.call("joinPrivateTable", { code: room.code, name: "Dio" });
 await C.call("startTable", { tableId: room.tableId });
 await C.call("sendGift", { toUid: D.uid, giftId: "abakus_h", tableId: room.tableId });

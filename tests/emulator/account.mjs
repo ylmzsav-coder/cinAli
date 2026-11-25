@@ -30,7 +30,12 @@ const exists = async (path) => (await fetch(`${BASE}/${path}`, { headers: owner 
 const A = await client("Ali"), B = await client("Bea");
 await A.call("sendFriendRequest", { targetUid: B.uid });
 await B.call("sendFriendRequest", { targetUid: A.uid });
-const pt = await A.call("createPrivateTable", { type: "caylak", lang: "tr", name: "Ali" });
+// Arkadaşla oyun yalnızca VIP Oda, Fifty Cent ve Sosyete Özel'de (Fifty Cent: başarı oranı %50+)
+await A.call("testSetStats", { played: 10, won: 9 });
+for (const type of ["caylak", "carli", "usta"]) {
+  check(`${type} masasında arkadaşla özel masa açılamaz`, (await errCode(A.call("createPrivateTable", { type, lang: "tr", name: "Ali" }))) === "badRequest");
+}
+const pt = await A.call("createPrivateTable", { type: "ozel2", lang: "tr", name: "Ali" });
 
 // Oyun davetleri kapalı
 await B.call("heartbeat", { name: "Bea", invites: false });

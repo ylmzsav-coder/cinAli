@@ -1,7 +1,7 @@
 import { wallet } from "../economy/wallet";
 import { useEffect, useState } from "react";
 import type { TableConfig } from "../economy/tables";
-import { rateAllows, tableById, winnerPrize } from "../economy/tables";
+import { friendsAllowed, rateAllows, tableById, winnerPrize } from "../economy/tables";
 import { myRate } from "../stats";
 import { rateBlockMessage } from "./rateBlock";
 import { TwoPlayerChoices, type TwoMode } from "./TwoPlayer";
@@ -33,6 +33,16 @@ export async function shareInvite(code?: string): Promise<string | null> {
 }
 
 /** Boş koltuk: "+ DAVET ET". */
+/** Boş koltuk (arkadaş daveti olmayan masalarda): oyuncu bekleniyor. */
+export function EmptySeat({ className = "" }: { className?: string }) {
+  return (
+    <div className={`invite-seat empty-seat ${className}`} aria-label={t("seatWaiting")}>
+      <span className="invite-plus" aria-hidden>…</span>
+      <span className="invite-label">{t("seatWaiting")}</span>
+    </div>
+  );
+}
+
 export function InviteSeat({ onInvite, className = "" }: { onInvite: () => void; className?: string }) {
   return (
     <button type="button" className={`invite-seat ${className}`} onClick={onInvite}>
@@ -61,6 +71,8 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
   }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const invite = async () => setMsg(await shareInvite());
+  // Arkadaş daveti yalnızca VIP Oda, Fifty Cent ve Sosyete Özel'de (Çayhane ve Çarli'de yok)
+  const friends = friendsAllowed(table);
 
   return (
     <div className="lobby">
@@ -68,11 +80,13 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
         <button type="button" className="leave-round" onClick={onLeave}>{t("leaveTableShort")}</button>
         {table.vip ? (
           <div className="seat-top vip-search-seat"><span className="vip-radar small" aria-hidden><span>{want === "kadin" ? "👩" : want === "erkek" ? "👨" : "👑"}</span></span> {searchTitle}</div>
-        ) : (
+        ) : friends ? (
           <InviteSeat className="seat-top" onInvite={() => void invite()} />
+        ) : (
+          <EmptySeat className="seat-top" />
         )}
-        {(table.players ?? 4) > 2 && <InviteSeat className="seat-left" onInvite={() => void invite()} />}
-        {(table.players ?? 4) > 2 && <InviteSeat className="seat-right" onInvite={() => void invite()} />}
+        {(table.players ?? 4) > 2 && (friends ? <InviteSeat className="seat-left" onInvite={() => void invite()} /> : <EmptySeat className="seat-left" />)}
+        {(table.players ?? 4) > 2 && (friends ? <InviteSeat className="seat-right" onInvite={() => void invite()} /> : <EmptySeat className="seat-right" />)}
         <div className="lobby-me">
           <Avatar name={name} seat={0} size="md" vip={wallet.isVip()} rate={myRate().rate} />
           <span>{name}</span>

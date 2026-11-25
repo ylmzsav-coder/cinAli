@@ -1,10 +1,10 @@
 import { addDoc, collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp } from "firebase/firestore";
-import { InviteSeat, shareInvite } from "./Lobby";
+import { EmptySeat, InviteSeat, shareInvite } from "./Lobby";
 import { type FriendStatus, friendsStatus, inviteFriend, sendFriendRequest, blockPlayer, blockedList, unblockPlayer } from "../online/social";
 import { Avatar } from "./Profile";
 import { sendGiftTo } from "../online/gifts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { isChatType, tableById, turnSecondsFor, winnerPrize, type TableConfig } from "../economy/tables";
+import { friendsAllowed, isChatType, tableById, turnSecondsFor, winnerPrize, type TableConfig } from "../economy/tables";
 import { isAdult } from "../age";
 import type { Dictionary } from "../game/dictionary";
 import { setGameLang, type LangCode } from "../game/lang";
@@ -302,7 +302,9 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
         <div className="waiting-seats">
           {seats.map((s, i) => (
             s ? <div key={i} className="waiting-seat taken">{s.name}{s.guest && <small className="guest-tag"> · {t("guestTag")}</small>}</div>
-              : <InviteSeat key={i} className="waiting-seat" onInvite={() => void shareInvite(doc_.private ? doc_.code ?? undefined : undefined)} />
+              : doc_.private && friendsAllowed(cfg)
+                ? <InviteSeat key={i} className="waiting-seat" onInvite={() => void shareInvite(doc_.code ?? undefined)} />
+                : <EmptySeat key={i} className="waiting-seat" />
           ))}
         </div>
         {doc_.private ? (
