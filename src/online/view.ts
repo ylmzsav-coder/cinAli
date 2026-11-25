@@ -25,8 +25,10 @@ export interface SeatInfo {
   guest?: boolean;
   /** VIP üyeliğin bittiği an: rozet bu ana kadar gösterilir. */
   vipUntil?: number;
-  /** Oyuncu bu oyunda en az bir hamleyi kendisi yaptı (tümü süre dolumuyla otomatik değil). */
-  moved?: boolean;
+  /** Oyuncunun kendi eliyle tamamladığı hamle (sıra) sayısı. */
+  manual?: number;
+  /** Süre dolunca otomatik oynanan hamle (sıra) sayısı. */
+  auto?: number;
 }
 
 export interface PublicView extends Omit<GameState, "players" | "deck"> {

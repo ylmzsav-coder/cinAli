@@ -37,7 +37,7 @@ import {
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { assertNotBanned } from "./admin";
 import { blockedWithAny } from "./blocks";
-import { TABLES, TableConfig, isChatType, privateTableById, turnSecondsFor, gameOutcome, noWinnerGame, payout, rateAllows, ratePercent, tableById } from "../../src/economy/tables";
+import { TABLES, TableConfig, idleRefundDenied, isChatType, privateTableById, turnSecondsFor, gameOutcome, noWinnerGame, payout, rateAllows, ratePercent, tableById } from "../../src/economy/tables";
 import { IS_EMULATOR, WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 import { publicView, type Action, type PublicView, type SeatInfo } from "../../src/online/view";
@@ -173,9 +173,21 @@ function runBots(state: GameState, level: BotLevel): GameState {
 
 function deadlineFor(state: GameState, now: number, cfg: TableConfig): number | null {
   if (state.phase === "handOver") return now + HAND_BREAK_MS;
-  // Hamle süresi: Çayhane, Teke Tek, Sosyete 60 sn; VIP Oda 3 dk
+  // Hamle süresi: bütün masalarda 60 sn
   if (state.phase === "draw" || state.phase === "play") return now + turnSecondsFor(cfg) * 1000;
   return null;
+}
+
+/** Oyuncu hamlelerinin yarısından azını kendisi yaptı mı (geri kalanı süre dolumuyla otomatik). */
+function idleSeat(seat: SeatInfo): boolean {
+  return idleRefundDenied(seat.manual ?? 0, seat.auto ?? 0);
+}
+/** Sırası süre dolumuyla otomatik oynanan insan oyuncunun sayacını artırır. */
+function countAuto(table: TableDoc, state: GameState) {
+  const i = state.current;
+  if ((state.phase === "draw" || state.phase === "play") && table.seats[i]?.uid && !table.seats[i].bot) {
+    table.seats = table.seats.map((x, k) => (k === i ? { ...x, auto: (x.auto ?? 0) + 1 } : x));
+  }
 }
 
 /** Oyun bittiyse insan oyunculara ödül öder (bir kez). Bot payları kasada kalır. */
@@ -183,13 +195,13 @@ async function settle(t: Transaction, table: TableDoc, state: GameState, wallets
   const cfg = configFor(table.type);
   const payouts: Record<string, number> = {};
   // Kimse bitiremedi: kaybeden yok, giriş ücreti kesintisiz iade (davetli misafir ücret ödemedi).
-  // Sohbetli odalarda (VIP, Sosyete) oyun boyunca hiç hamle yapmayan, tüm hamleleri süre
-  // dolumuyla otomatik oynanan oyuncunun girişi iade edilmez: çipi yanar.
+  // Sohbetli odalarda (VIP, Sosyete) hamlelerinin en az yarısını kendisi yapmayan (çoğu süre
+  // dolunca otomatik oynanan) oyuncunun girişi iade edilmez: çipi yanar.
   if (noWinnerGame(state)) {
     const chat = isChatType(table.type);
     table.seats.forEach((seat) => {
       if (!seat.uid || seat.guest) return;
-      if (chat && !seat.moved) {
+      if (chat && idleSeat(seat)) {
         payouts[seat.uid] = 0;
         return;
       }
@@ -505,8 +517,7 @@ export const act = onCall(async (req) => {
     const cfg = configFor(table.type);
     setGameLang(state.lang);
     const dict = dictFor(state.lang);
-    // Oyuncu kendi eliyle hamle yaptı (sohbetli odada hiç oynamayanın girişi yanar)
-    if (!table.seats[seat].moved) table.seats = table.seats.map((x, i) => (i === seat ? { ...x, moved: true } : x));
+
     let next = engine(() => {
       switch (action?.type) {
         case "drawDeck": return drawFromDeck(state);
@@ -520,6 +531,8 @@ export const act = onCall(async (req) => {
         default: return fail("badRequest", {}, "invalid-argument");
       }
     });
+    // Oyuncu sırasını kendi eliyle tamamladı (taş attı): sohbetli odada iade oranına sayılır
+    if (action?.type === "discard") table.seats = table.seats.map((x, i) => (i === seat ? { ...x, manual: (x.manual ?? 0) + 1 } : x));
     next = runBots(next, cfg.level);
     const wallets = next.phase === "gameOver" ? await walletsOf(t, table.uids) : new Map();
     await persist(t, id, table, next, wallets);
@@ -545,8 +558,10 @@ export const claimTimeout = onCall(async (req) => {
     if (now + 250 < table.deadline + GRACE_MS) return { ok: false };
     let next: GameState;
     if (state.phase === "handOver") next = dealHand(state);
-    else if (state.phase === "draw" || state.phase === "play") next = timeoutMove(state);
-    else return { ok: false };
+    else if (state.phase === "draw" || state.phase === "play") {
+      countAuto(table, state);
+      next = timeoutMove(state);
+    } else return { ok: false };
     next = runBots(next, cfg.level);
     const wallets = next.phase === "gameOver" ? await walletsOf(t, table.uids) : new Map();
     await persist(t, id, table, next, wallets);
@@ -568,8 +583,17 @@ export const testRunTimeouts = onCall(async (req) => {
     if (table.status !== "playing" || !state) return { ok: false };
     setGameLang(state.lang);
     let next = state;
+    // İsteğe bağlı: önce masadaki insanların "manual" sayıda sırası elle oynanmış sayılır
+    const manualTurns = Math.max(0, Math.floor(Number(req.data?.manualFor?.turns ?? 0)));
+    const manualUid = String(req.data?.manualFor?.uid ?? "");
     for (let guard = 0; next.phase !== "gameOver" && guard < 2000; guard++) {
-      next = next.phase === "handOver" ? dealHand(next) : timeoutMove(next);
+      if (next.phase === "handOver") { next = dealHand(next); continue; }
+      const seat = table.seats[next.current];
+      const counted = table.seats.find((x) => x.uid === manualUid);
+      if (seat?.uid === manualUid && (counted?.manual ?? 0) < manualTurns) {
+        table.seats = table.seats.map((x) => (x.uid === manualUid ? { ...x, manual: (x.manual ?? 0) + 1 } : x));
+      } else countAuto(table, next);
+      next = timeoutMove(next);
     }
     const wallets = await walletsOf(t, table.uids);
     await persist(t, id, table, next, wallets);

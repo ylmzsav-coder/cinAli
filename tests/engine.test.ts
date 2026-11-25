@@ -795,12 +795,12 @@ describe("başarı oranı (sunucu ve cihaz aynı kural)", () => {
 
 import { turnSecondsFor } from "../src/economy/tables";
 describe("hamle süresi", () => {
-  it("Çayhane, Teke Tek, Sosyete 60 sn; VIP Oda 3 dakika", () => {
-    for (const tb of TABLES) expect(turnSecondsFor(tb), tb.id).toBe(tb.vip ? 180 : 60);
+  it("bütün masalarda (VIP dahil) hamle süresi 60 sn", () => {
+    for (const tb of TABLES) expect(turnSecondsFor(tb), tb.id).toBe(60);
   });
 });
 
-import { SOSYETE_PRIVATE_TABLES, isChatType, privateTableById, sosyetePrivateOf, turnSecondsFor } from "../src/economy/tables";
+import { SOSYETE_PRIVATE_TABLES, idleRefundDenied, isChatType, privateTableById, sosyetePrivateOf, turnSecondsFor } from "../src/economy/tables";
 describe("Sosyete arkadaşla oyna: iki kişilik özel oda", () => {
   it("her Sosyete girişinin 2 kişilik, sohbetli, %76 şartlı özel odası var", () => {
     for (const [id, entry] of [["usta", 100], ["usta2", 1000], ["usta5", 10000]] as const) {
@@ -811,7 +811,7 @@ describe("Sosyete arkadaşla oyna: iki kişilik özel oda", () => {
       expect(p.minRate).toBe(76);
       expect(p.minWord).toBe(3);
       expect(isChatType(p.id)).toBe(true);
-      expect(turnSecondsFor(p)).toBe(180);
+      expect(turnSecondsFor(p)).toBe(60);
     }
   });
   it("özel odalar genel listede yok (rastgele eşleşme ve Masalar sayfası), davetle kurulabilir", () => {
@@ -820,5 +820,16 @@ describe("Sosyete arkadaşla oyna: iki kişilik özel oda", () => {
       expect(privateTableById(p.id)).toBe(p);
       expect(tableById(p.id)).toBe(p);
     }
+  });
+});
+
+describe("sohbetli odada iade: hamlelerin en az yarısı elle (%50)", () => {
+  it("8 sıralık oyunda: 8/0, 4/4 iade; 3/5, 1/7, 0/8 yanar", () => {
+    expect(idleRefundDenied(8, 0)).toBe(false);
+    expect(idleRefundDenied(4, 4)).toBe(false);
+    expect(idleRefundDenied(3, 5)).toBe(true);
+    expect(idleRefundDenied(1, 7)).toBe(true);
+    expect(idleRefundDenied(0, 8)).toBe(true);
+    expect(idleRefundDenied(0, 0)).toBe(false);
   });
 });

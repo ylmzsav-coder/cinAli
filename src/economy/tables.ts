@@ -1,5 +1,5 @@
 import type { BotLevel } from "../game/bot";
-import { CARLI_ENTRY, CARLI_PRIZE, CARLI_ORTA_ENTRY, CARLI_ORTA_PRIZE, CARLI_BUYUK_ENTRY, CARLI_BUYUK_PRIZE, TABLE_TURN_SECONDS, VIP_TURN_SECONDS, TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, SOSYETE_ORTA_ENTRY, SOSYETE_ORTA_PRIZE, SOSYETE_BUYUK_ENTRY, SOSYETE_BUYUK_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE, VIP_ORTA_ENTRY, VIP_ORTA_PRIZE, OZEL_ENTRY, OZEL_PRIZE, OZEL_USTA_ENTRY, OZEL_USTA_PRIZE, OZEL_BUYUK_ENTRY, OZEL_BUYUK_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
+import { CARLI_ENTRY, CARLI_PRIZE, CARLI_ORTA_ENTRY, CARLI_ORTA_PRIZE, CARLI_BUYUK_ENTRY, CARLI_BUYUK_PRIZE, TABLE_TURN_SECONDS, TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, SOSYETE_ORTA_ENTRY, SOSYETE_ORTA_PRIZE, SOSYETE_BUYUK_ENTRY, SOSYETE_BUYUK_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE, VIP_ORTA_ENTRY, VIP_ORTA_PRIZE, OZEL_ENTRY, OZEL_PRIZE, OZEL_USTA_ENTRY, OZEL_USTA_PRIZE, OZEL_BUYUK_ENTRY, OZEL_BUYUK_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
 
 export interface TableConfig {
   id: string;
@@ -17,7 +17,7 @@ export interface TableConfig {
   minWord?: number;
   /** Masaya oturmak için gereken en düşük başarı oranı (yüzde). Sosyete: 76. */
   minRate?: number;
-  /** Hamle süresi (saniye); verilmezse TABLE_TURN_SECONDS (60). VIP Oda: 180. */
+  /** Hamle süresi (saniye); verilmezse TABLE_TURN_SECONDS (60). */
   turnSeconds?: number;
   /** Oyuncular arası serbest sohbet (küfür filtreli). VIP'te abonelikle, Sosyete'de ücretsiz. */
   chat?: boolean;
@@ -49,6 +49,16 @@ export function gameOutcome(state: { phase: string; lastResult: { reason: string
   return winners.includes(seat) ? "won" : "lost";
 }
 
+/** Sohbetli odada (VIP, Sosyete) kimse bitiremezse iade için gereken en az kendi hamle oranı (yüzde). */
+export const IDLE_MIN_MANUAL_PERCENT = 50;
+/**
+ * Sohbetli odada iade yok mu: oyuncu sıralarının yarısından azını kendisi oynadıysa
+ * (geri kalanı süre dolunca otomatik) kimse bitiremeyince girişi iade edilmez.
+ */
+export function idleRefundDenied(manual: number, auto: number): boolean {
+  return auto > 0 && manual * 100 < (manual + auto) * IDLE_MIN_MANUAL_PERCENT;
+}
+
 /** Kasa payı: pottan düşülen oran. Çiplerin zamanla erimesini sağlar. */
 export const HOUSE_CUT = 0.1;
 export const PLAYERS_PER_TABLE = 4;
@@ -70,20 +80,20 @@ export const TABLES: TableConfig[] = [
   { id: "ozel2u", name: "Fifty Cent 1000", entry: OZEL_USTA_ENTRY, hands: 1, level: "zor", prize: OZEL_USTA_PRIZE, players: 2, minWord: 3, minRate: TEKE_TEK_MIN_RATE },
   { id: "ozel2b", name: "Fifty Cent 10000", entry: OZEL_BUYUK_ENTRY, hands: 1, level: "zor", prize: OZEL_BUYUK_PRIZE, players: 2, minWord: 3, minRate: TEKE_TEK_MIN_RATE },
   // VIP iki kişilik özel oda: karşılıklı, yalnızca VIP aboneler
-  { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true, minWord: 3, turnSeconds: VIP_TURN_SECONDS },
+  { id: "vip2", name: "VIP", entry: VIP_ENTRY, hands: 1, level: "zor", prize: VIP_PRIZE, players: 2, vip: true, minWord: 3 },
   // VIP Usta: aynı oda, yüksek giriş (VIP kartındaki giriş seçiminden)
 ];
 
 /**
  * Sosyete Özel: Sosyete'de "Arkadaşla oyna" ile açılan iki kişilik özel oda. Yalnızca davet
- * koduyla girilir (genel listede ve rastgele eşleşmede yok). İki arkadaş sakince oynar ve
- * ücretsiz sohbet eder: hamle süresi 3 dakika, başarı oranı şartı Sosyete ile aynı (%76).
+ * koduyla girilir (genel listede ve rastgele eşleşmede yok). İki arkadaş oynar ve ücretsiz
+ * sohbet eder: hamle süresi 60 saniye, başarı oranı şartı Sosyete ile aynı (%76).
  * Giriş Sosyete masasındaki seçimle aynı; birinciye iki girişin toplamı ödenir.
  */
 export const SOSYETE_PRIVATE_TABLES: TableConfig[] = [
-  { id: "ustaozel", name: "Sosyete Özel", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_ENTRY * 2, players: 2, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true, turnSeconds: VIP_TURN_SECONDS },
-  { id: "ustaozel2", name: "Sosyete Özel 1000", entry: SOSYETE_ORTA_ENTRY, hands: 1, level: "zor", prize: SOSYETE_ORTA_ENTRY * 2, players: 2, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true, turnSeconds: VIP_TURN_SECONDS },
-  { id: "ustaozel5", name: "Sosyete Özel 10000", entry: SOSYETE_BUYUK_ENTRY, hands: 1, level: "zor", prize: SOSYETE_BUYUK_ENTRY * 2, players: 2, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true, turnSeconds: VIP_TURN_SECONDS },
+  { id: "ustaozel", name: "Sosyete Özel", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_ENTRY * 2, players: 2, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true },
+  { id: "ustaozel2", name: "Sosyete Özel 1000", entry: SOSYETE_ORTA_ENTRY, hands: 1, level: "zor", prize: SOSYETE_ORTA_ENTRY * 2, players: 2, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true },
+  { id: "ustaozel5", name: "Sosyete Özel 10000", entry: SOSYETE_BUYUK_ENTRY, hands: 1, level: "zor", prize: SOSYETE_BUYUK_ENTRY * 2, players: 2, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true },
 ];
 
 /** Sosyete masasının (usta, usta2, usta5) arkadaşlarla oynanan iki kişilik özel odası. */
@@ -97,7 +107,7 @@ export function privateTableById(id: string | undefined): TableConfig | undefine
 }
 
 /** VIP oda türü mü (serbest sohbet, izleyici yok, süre yok). */
-/** Masanın hamle süresi (saniye): VIP Oda 180, diğer çipli masalar 60. */
+/** Masanın hamle süresi (saniye): bütün masalarda 60 (VIP, Sosyete Özel dahil). */
 export function turnSecondsFor(t: TableConfig): number {
   return t.turnSeconds ?? TABLE_TURN_SECONDS;
 }
@@ -112,8 +122,8 @@ const LEGACY_TABLES: TableConfig[] = [
   { id: "sampiyon", name: "Şampiyon", entry: 10_000, hands: 5, level: "zor" },
   { id: "vip", name: "VIP", entry: 50_000, hands: 5, level: "zor" },
   // VIP Oda artık tek masa (100 → 200): sohbet ve sakin oyun için. Eski seçenekler yalnızca sürmekte olan oyunlar için.
-  { id: "vip2m", name: "VIP 250", entry: VIP_ORTA_ENTRY, hands: 1, level: "zor", prize: VIP_ORTA_PRIZE, players: 2, vip: true, minWord: 3, turnSeconds: VIP_TURN_SECONDS },
-  { id: "vip2u", name: "VIP 500", entry: VIP_USTA_ENTRY, hands: 1, level: "zor", prize: VIP_USTA_PRIZE, players: 2, vip: true, minWord: 3, turnSeconds: VIP_TURN_SECONDS },
+  { id: "vip2m", name: "VIP 250", entry: VIP_ORTA_ENTRY, hands: 1, level: "zor", prize: VIP_ORTA_PRIZE, players: 2, vip: true, minWord: 3 },
+  { id: "vip2u", name: "VIP 500", entry: VIP_USTA_ENTRY, hands: 1, level: "zor", prize: VIP_USTA_PRIZE, players: 2, vip: true, minWord: 3 },
 ];
 
 export function tableById(id: string | undefined): TableConfig | undefined {

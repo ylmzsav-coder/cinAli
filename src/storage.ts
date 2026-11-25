@@ -35,7 +35,7 @@ export interface Settings {
   chatInvite?: boolean;
 }
 
-/** Çipli masalarda hamle süresi (varsayılan 60 sn; VIP Oda 3 dk: turnSecondsFor). */
+/** Hamle süresi: bütün masalarda ve Pratik'te 60 sn (turnSecondsFor). */
 export { TABLE_TURN_SECONDS } from "./economy/config";
 
 function deviceLang(): LangCode {
@@ -48,7 +48,7 @@ function deviceLang(): LangCode {
 
 export function defaultSettings(): Settings {
   const ui = deviceLang();
-  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 45, timerV: 2, sound: true, vibration: true, chat: true, music: true, showPhoto: true, invites: true, chatInvite: true };
+  return { name: "", hands: 5, level: "orta", speed: "normal", uiLang: ui, gameLang: LANGS[ui].playable ? ui : "en", turnSeconds: 60, timerV: 3, sound: true, vibration: true, chat: true, music: true, showPhoto: true, invites: true, chatInvite: true };
 }
 
 const KEY_SETTINGS = "cinali.settings";
@@ -78,10 +78,10 @@ export const loadSettings = (): Settings => {
   if (!LANGS[s.gameLang]?.playable) s.gameLang = "en";
   // Eski sürümlerin varsayılan adı
   if (s.name === "Sen") s.name = "";
-  // Varsayılan hamle süresi 45 sn oldu: eski kayıtlar (30/60 sn) bir kez 45 sn'ye taşınır
-  if (s.timerV !== 2) {
-    if (s.turnSeconds !== 0) s.turnSeconds = 45;
-    s.timerV = 2;
+  // Hamle süresi bütün masalarda ve Pratik'te 60 sn (ayardan değiştirilemez)
+  if (s.timerV !== 3 || s.turnSeconds !== 60) {
+    s.turnSeconds = 60;
+    s.timerV = 3;
     write(KEY_SETTINGS, s);
   }
   return s;

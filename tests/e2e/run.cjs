@@ -503,8 +503,8 @@ const TABLES = [
   }
 
   if (want("9")) {
-  console.log("\n== 9. Hamle süresi: Çayhane, Fifty Cent, Sosyete 60 sn; VIP Oda 3 dk");
-  for (const [name, secs] of [["Çayhane", 60], ["Çarli 100", 60], ["Fifty Cent 100", 60], ["Sosyete 100", 60], ["VIP", 180]]) {
+  console.log("\n== 9. Hamle süresi: bütün masalarda (VIP dahil) 60 sn");
+  for (const [name, secs] of [["Çayhane", 60], ["Çarli 100", 60], ["Fifty Cent 100", 60], ["Sosyete 100", 60], ["VIP", 60]]) {
     const ctx = await browser.newContext({ ...devices["Pixel 7 landscape"] });
     const p = await ctx.newPage(); p.errors = []; p.on("pageerror", (e) => p.errors.push(e.message));
     await p.clock.install();
