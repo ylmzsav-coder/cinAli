@@ -44,7 +44,7 @@ jobs:
           - part: "1/2"
             files: tests/emulator/account.mjs tests/emulator/admin.mjs tests/emulator/fiftycent.mjs tests/emulator/blocks.mjs tests/emulator/chat.mjs tests/emulator/entries.mjs tests/emulator/cayhane.mjs tests/emulator/gifts.mjs tests/emulator/idle.mjs tests/emulator/invites.mjs
           - part: "2/2"
-            files: tests/emulator/carli.mjs tests/emulator/rate.mjs tests/emulator/refill.mjs tests/emulator/social.mjs tests/emulator/tables.mjs tests/emulator/usta.mjs tests/emulator/vip.mjs tests/emulator/vipcarli.mjs tests/emulator/wallet.mjs
+            files: tests/emulator/carli.mjs tests/emulator/rate.mjs tests/emulator/refill.mjs tests/emulator/social.mjs tests/emulator/sosyete.mjs tests/emulator/tables.mjs tests/emulator/usta.mjs tests/emulator/vip.mjs tests/emulator/vipcarli.mjs tests/emulator/wallet.mjs
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

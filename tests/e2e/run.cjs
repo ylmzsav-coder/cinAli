@@ -280,7 +280,7 @@ const TABLES = [
     const WORDS = [["EK", 20], ["SÜT", 72], ["KUZU", 93], ["KZAL", null]];
     // İki harfli kelime yalnızca Çayhane ve Pratik (çipsiz) masada geçerli
     const pratik = { name: "Pratik", open: async (p) => { await p.locator(".practice-hub").tap(); await W(p, 300); await p.locator(".page .primary.big").last().tap(); } };
-    const all = [pick("VIP"), pick("Fifty Cent 100"), pick("Fifty Cent 1000"), pick("Fifty Cent 10000"), pick("Çayhane 25"), pick("Çayhane 50"), pick("Çayhane"), pratik, pick("Çarli 100"), pick("Çarli 200"), pick("Çarli 300"), pick("Sosyete 100")];
+    const all = [pick("VIP"), pick("Fifty Cent 100"), pick("Fifty Cent 1000"), pick("Fifty Cent 10000"), pick("Çayhane 25"), pick("Çayhane 50"), pick("Çayhane"), pratik, pick("Çarli 100"), pick("Çarli 200"), pick("Çarli 300"), pick("Sosyete 100"), pick("Sosyete 1000"), pick("Sosyete 10000")];
     for (const tb of all) {
       const pro = !(tb.name.startsWith("Çayhane") || tb.name === "Pratik");
       for (const [word, value] of WORDS) {
@@ -704,7 +704,7 @@ const TABLES = [
 
   if (want("9")) {
   console.log("\n== 9. Hamle süresi: bütün masalarda (VIP dahil) 60 sn");
-  for (const [name, secs] of [["Çayhane 25", 60], ["Çayhane 50", 60], ["Çayhane", 60], ["Çarli 100", 60], ["Çarli 200", 60], ["Çarli 300", 60], ["Fifty Cent 100", 60], ["Fifty Cent 1000", 60], ["Fifty Cent 10000", 60], ["Sosyete 100", 60], ["VIP", 60]]) {
+  for (const [name, secs] of [["Çayhane 25", 60], ["Çayhane 50", 60], ["Çayhane", 60], ["Çarli 100", 60], ["Çarli 200", 60], ["Çarli 300", 60], ["Fifty Cent 100", 60], ["Fifty Cent 1000", 60], ["Fifty Cent 10000", 60], ["Sosyete 100", 60], ["Sosyete 1000", 60], ["Sosyete 10000", 60], ["VIP", 60]]) {
     const ctx = await browser.newContext({ ...devices["Pixel 7 landscape"] });
     const p = await ctx.newPage(); p.errors = []; p.on("pageerror", (e) => p.errors.push(e.message));
     await p.clock.install();
