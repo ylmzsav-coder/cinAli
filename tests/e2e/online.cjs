@@ -202,7 +202,7 @@ const tilesOnRack = (p) => p.locator(".okey-rack .rack-slot .tile");
   const met2 = await until(async () => { const t = await E.locator(".waiting-seats").innerText(); return t.includes("Ece") && t.includes("Fikret"); }, 20000);
   check("Fikret davet koduyla Ece'nin Sosyete masasına oturdu", met2, (await E.locator(".waiting-seats").innerText().catch(() => "")).replace(/\n/g, " · "));
   check("masa adı Sosyete Özel, iki kişilik (boş koltuk yok)", /Sosyete Özel/.test(await E.locator(".page.menu .muted").first().innerText().catch(() => "")) && (await E.locator(".waiting-seats .invite-seat").count()) === 0);
-  await E.locator(".page.menu button.big:not(.primary)").last().tap();
+  await E.getByRole("button", { name: "Şimdi başlat" }).tap();
   const started2 = await until(async () => (await E.locator(".okey-rack").count()) > 0 && (await F.locator(".okey-rack").count()) > 0, 20000);
   check("Ece oyunu başlattı, ikisi aynı masada oynuyor", started2);
   check("rakip Fikret (bilgisayar oyuncusu yok)", /Fikret/.test(await opp(E)) && /Ece/.test(await opp(F)), `${await opp(E)} / ${await opp(F)}`);
