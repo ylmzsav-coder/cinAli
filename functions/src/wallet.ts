@@ -83,6 +83,17 @@ export const testPurchase = onCall(async (req) => {
 
 /** Test VIP aboneliği: yalnızca emülatörde. Gerçek abonelik RevenueCat web kancasıyla gelecek. */
 /** Yalnızca emülatörde: başarı oranı testleri için oyuncunun oyun sayılarını ayarlar. */
+/** Yalnızca emülatör testleri: kumbarayı ve "çipi bitti" anını ayarlar (12 saatlik bekleme testi). */
+export const testSetWallet = onCall(async (req) => {
+  const uid = uidOf(req);
+  if (!IS_EMULATOR) fail("storeSoon");
+  const patch: Record<string, number | null> = {};
+  if (typeof req.data?.balance === "number") patch.balance = Math.max(0, Math.floor(req.data.balance));
+  if (typeof req.data?.brokeHoursAgo === "number") patch.brokeSince = Date.now() - req.data.brokeHoursAgo * 3_600_000;
+  await walletRef(uid).set(patch, { merge: true });
+  return { ok: true };
+});
+
 export const testSetStats = onCall(async (req) => {
   const uid = uidOf(req);
   if (!IS_EMULATOR) fail("storeSoon");

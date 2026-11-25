@@ -316,7 +316,7 @@ const TABLES = [
     const kb = await p.evaluate(() => { const el = document.querySelector(".kumbara-balance"); return { icon: !!el?.querySelector(".kumbara-icon"), label: el?.querySelector(".kumbara-label")?.textContent ?? "" }; });
     const KB = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" };
     check(`Menü (${lang}): çipler kumbarada — resim ve "${KB[lang]}" yazısı`, kb.icon && kb.label === KB[lang], JSON.stringify(kb));
-    check(`Kurallar (${lang}): 22 madde, 14 satırlık masa tablosu, taşma yok`, r.rows === 14 && r.items === 22 && !r.hscroll && !r.raw, JSON.stringify(r));
+    check(`Kurallar (${lang}): 23 madde, 14 satırlık masa tablosu, taşma yok`, r.rows === 14 && r.items === 23 && !r.hscroll && !r.raw, JSON.stringify(r));
     await p.context().close();
   }
   }
@@ -481,6 +481,19 @@ const TABLES = [
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });
       const r = await h.evaluate(() => Object.fromEntries([".practice-hub", ".shop-hub", ".rules-hub"].map((k) => { const c = getComputedStyle(document.querySelector(k)); return [k, [c.backgroundColor, c.backgroundImage, c.color]]; })));
       check("Mağaza ve Kurallar Pratik ile aynı sarı, yazı siyah", r[".shop-hub"][0] === r[".practice-hub"][0] && r[".rules-hub"][0] === r[".practice-hub"][0] && r[".shop-hub"][1] === "none" && r[".rules-hub"][1] === "none" && r[".shop-hub"][2] === "rgb(17, 17, 17)" && r[".rules-hub"][2] === "rgb(17, 17, 17)", JSON.stringify(r));
+      await h.context().close();
+    }
+    // Ücretsiz destek: çipi biten oyuncuya 12 saat sonra 99 çip kendiliğinden yüklenir (düğme yok)
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 4 });
+      await h.evaluate(() => { const w = JSON.parse(localStorage.getItem("cinali.wallet")); w.balance = 10; w.brokeSince = Date.now() - 3 * 3600_000; localStorage.setItem("cinali.wallet", JSON.stringify(w)); });
+      await h.reload(); await W(h, 800); if (await h.locator(".splash-hit").count()) await h.locator(".splash-hit").tap(); await W(h, 500);
+      const wait = await h.locator(".refill-wait").innerText().catch(() => "");
+      check("çipi biten oyuncu: '9 sa .. dk sonra kumbarana 99 çip ücretsiz yüklenecek' yazıyor", /99 çip ücretsiz yüklenecek/.test(wait) && /8 sa|9 sa/.test(wait), wait);
+      await h.evaluate(() => { const w = JSON.parse(localStorage.getItem("cinali.wallet")); w.brokeSince = Date.now() - 12.1 * 3600_000; localStorage.setItem("cinali.wallet", JSON.stringify(w)); });
+      await h.reload(); await W(h, 800); if (await h.locator(".splash-hit").count()) await h.locator(".splash-hit").tap(); await W(h, 900);
+      const r = await h.evaluate(() => ({ bal: JSON.parse(localStorage.getItem("cinali.wallet")).balance, toast: document.querySelector(".toast")?.textContent ?? "", button: [...document.querySelectorAll("button")].some((b) => /Ücretsiz çipini al/.test(b.textContent)) }));
+      check("12 saat dolunca düğmeye basmadan kumbaraya 99 çip yüklendi (10 → 109), '3 oyun hakkın var' bildirimi", r.bal === 109 && /99 çip yüklendi/.test(r.toast) && /3 oyun/.test(r.toast) && !r.button, JSON.stringify(r));
       await h.context().close();
     }
     // VIP üyelik fiyatı: haftalık 399 ₺ (mağaza kartı ve otomatik yenileme notu)

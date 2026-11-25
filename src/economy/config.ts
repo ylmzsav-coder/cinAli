@@ -52,10 +52,13 @@ export const VIP_MS = VIP_DAYS * 86_400_000;
 /** VIP iki kişilik masa: giriş ve birinciye ödenen çip. */
 export const VIP_ENTRY = 100;
 export const VIP_PRIZE = 200;
-/** Çipi biten oyuncuya hediye: bakiye masa girişinin altına düşünce 12 saat sonra. */
-export const REFILL_CHIPS = 100;
+/**
+ * Ücretsiz destek: çipi biten (en küçük masanın girişi 25'in altına düşen) oyuncunun kumbarasına
+ * 12 saat sonra 99 çip otomatik yüklenir: Çayhane'nin 25'lik masasında 3 oyun hakkı.
+ */
+export const REFILL_CHIPS = 99;
 export const REFILL_HOURS = 12;
-export const REFILL_BELOW = TABLE_ENTRY;
+export const REFILL_BELOW = CAYHANE_KUCUK_ENTRY;
 export const REFILL_MS = REFILL_HOURS * 3_600_000;
 /** Bakiyeye göre "çipi bitti" zamanını günceller (yeterliyse null, yeni bittiyse şimdi). */
 export const nextBrokeSince = (balance: number, prev: number | null | undefined, now = Date.now()): number | null =>

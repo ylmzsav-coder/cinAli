@@ -41,6 +41,7 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
     t("rule_rate_carli"),
     t("rule_chat"),
     t("rule_friends"),
+    t("rule_free"),
     t("rule_idle"),
   ];
   return (

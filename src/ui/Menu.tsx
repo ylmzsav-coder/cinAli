@@ -121,6 +121,17 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
     const id = setInterval(() => setNow(Date.now()), 20_000);
     return () => clearInterval(id);
   }, [refillAt]);
+  // 12 saat dolunca 99 çip kumbaraya kendiliğinden yüklenir (düğmeye basmak gerekmez)
+  const [refillFailed, setRefillFailed] = useState(false);
+  const refillBusy = useRef(false);
+  useEffect(() => {
+    if (refillAt === null || refillAt > now || refillBusy.current || refillFailed) return;
+    refillBusy.current = true;
+    wallet.claimRefill()
+      .then(() => setToast(t("refillToast", { n: REFILL_CHIPS, games: Math.floor(REFILL_CHIPS / (tableById("caylak25")?.entry ?? 25)) })))
+      .catch(() => setRefillFailed(true))
+      .finally(() => { refillBusy.current = false; });
+  }, [refillAt, now, refillFailed]);
   const [closeAsk, setCloseAsk] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   // Yeni oyuncuya hoş geldin hediyesi (bir kez gösterilir)
@@ -191,18 +202,20 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             {t("dailyClaim")}
           </button>
         )}
-        {refillAt !== null && (refillAt <= now ? (
+        {refillAt !== null && (refillAt <= now ? (refillFailed && (
+          // Otomatik yükleme bağlantı yüzünden olmadıysa elle denenebilir
           <button type="button" className="gift big daily-top" onClick={async () => {
             try {
               await wallet.claimRefill();
-              setToast(t("refillToast", { n: REFILL_CHIPS }));
+              setRefillFailed(false);
+              setToast(t("refillToast", { n: REFILL_CHIPS, games: Math.floor(REFILL_CHIPS / (tableById("caylak25")?.entry ?? 25)) }));
             } catch (e) {
               setToast(errorText(e));
             }
           }}>
             {t("refillClaim", { n: REFILL_CHIPS })}
           </button>
-        ) : (
+        )) : (
           <p className="muted refill-wait">{t("refillWait", { n: REFILL_CHIPS, t: refillLeft(refillAt - now) })}</p>
         ))}
         </div>
