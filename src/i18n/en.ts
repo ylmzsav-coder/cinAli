@@ -29,7 +29,7 @@ const en: Messages = {
   legal: "Chips are virtual game currency; they cannot be exchanged for real money or transferred.",
 
   practiceTitle: "Practice",
-  practiceDesc: "Training table for beginners: two players, you against the computer only, no chips. Real players cannot join this table.",
+  practiceDesc: "Training table for beginners: two players, you against the computer only, no chips. Real players cannot join this table. Wins and losses are not recorded on your profile card or success rate.",
   yourName: "Your name",
   handCount: "Number of hands",
   opponentLevel: "Opponent level",

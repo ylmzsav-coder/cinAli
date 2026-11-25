@@ -29,7 +29,7 @@ const fr: Messages = {
   legal: "Les jetons sont une monnaie de jeu virtuelle : ni échangeables contre de l'argent réel, ni transférables.",
 
   practiceTitle: "Entraînement",
-  practiceDesc: "Table d'entraînement pour débutants : à deux, uniquement contre l'ordinateur, sans jetons. Les vrais joueurs ne peuvent pas la rejoindre.",
+  practiceDesc: "Table d'entraînement pour débutants : à deux, uniquement contre l'ordinateur, sans jetons. Les vrais joueurs ne peuvent pas la rejoindre. Les victoires et défaites ne comptent pas sur ta fiche de profil ni ton taux de réussite.",
   yourName: "Votre nom",
   handCount: "Nombre de manches",
   opponentLevel: "Niveau des adversaires",

@@ -30,7 +30,7 @@ const tr = {
 
   // Pratik
   practiceTitle: "Pratik",
-  practiceDesc: "Yeni öğrenenler için eğitim masası: yalnızca bilgisayara karşı, çip harcamadan, iki kişilik oynanır. Gerçek oyuncular bu masaya katılamaz.",
+  practiceDesc: "Yeni öğrenenler için eğitim masası: yalnızca bilgisayara karşı, çip harcamadan, iki kişilik oynanır. Gerçek oyuncular bu masaya katılamaz. Kazanma ve kaybetme profil kartına ve başarı oranına işlenmez.",
   yourName: "Adınız",
   handCount: "El sayısı",
   opponentLevel: "Rakip seviyesi",

@@ -29,7 +29,7 @@ const es: Messages = {
   legal: "Las fichas son dinero virtual del juego; no se pueden canjear por dinero real ni transferir.",
 
   practiceTitle: "Práctica",
-  practiceDesc: "Mesa de entrenamiento para principiantes: dos jugadores, solo contra el ordenador, sin fichas. Los jugadores reales no pueden unirse.",
+  practiceDesc: "Mesa de entrenamiento para principiantes: dos jugadores, solo contra el ordenador, sin fichas. Los jugadores reales no pueden unirse. Las victorias y derrotas no se registran en tu ficha de perfil ni en tu tasa de éxito.",
   yourName: "Tu nombre",
   handCount: "Número de manos",
   opponentLevel: "Nivel de los rivales",

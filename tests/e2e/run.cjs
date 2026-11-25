@@ -10,7 +10,7 @@ const LANGS = ["tr", "en", "de", "fr", "es", "it", "pt"];
  * Paralel çalıştırma: E2E_PART=A|B|C|D ile yalnızca o parçanın bölümleri çalışır
  * (CI'da dört iş aynı anda). E2E_PART yoksa bütün bölümler sırayla çalışır.
  */
-const PARTS = { A: ["3"], B: ["5"], C: ["1", "1b", "2", "2b"], D: ["4", "6", "7", "7b", "7c", "8", "9"] };
+const PARTS = { P: ["2p"], A: ["3"], B: ["5"], C: ["1", "1b", "2", "2b", "2p"], D: ["4", "6", "7", "7b", "7c", "8", "9"] };
 const PART = process.env.E2E_PART || "";
 const want = (id) => !PART || (PARTS[PART] || []).includes(id);
 let fails = 0;
@@ -175,6 +175,44 @@ const TABLES = [
     check("oyun bitti ve doğru ödendi", g.state.phase === "gameOver" && (await bal(p)) === 900 + expected, `bitiren ${g.state.lastResult?.winner ?? "yok"}, puanlar ${tot.join("/")}, bakiye ${await bal(p)}${carry ? " (kimse bitiremedi: ücret devreder)" : ""}`);
     check("sonuç ekranı göründü", (await p.locator(".modal").count()) > 0);
     check("oyun sırasında tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
+  }
+  }
+
+  if (want("2p")) {
+  console.log("\n== 2p. Pratik (çipsiz): kazanma / kaybetme profil kartına işlenmez");
+  {
+    const p = await fresh(browser, "Pixel 7 landscape", { balance: 1000 });
+    await p.evaluate(() => { const s = JSON.parse(localStorage.getItem("cinali.settings")); s.hands = 1; localStorage.setItem("cinali.settings", JSON.stringify(s)); });
+    await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
+    const stats = () => p.evaluate(() => localStorage.getItem("wordokey.stats"));
+    const s0 = await stats(), b0 = await bal(p);
+    await p.locator(".practice-hub").tap(); await W(p, 300); await p.locator(".page .primary.big").last().tap(); await W(p, 1000);
+    check("Pratik başladı (çipsiz, masa yok)", (await game(p))?.state && !(await game(p)).tableId);
+    await p.evaluate(() => { const g = JSON.parse(localStorage.getItem("cinali.game")); g.state.players[0].isBot = true; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); }; });
+    await p.reload(); await W(p, 600); if (await p.locator(".splash-hit").count()) await p.locator(".splash-hit").tap(); await W(p, 400);
+    await p.locator(".hub-right .primary.big").first().tap();
+    let g;
+    for (let k = 0; k < 800; k++) { await W(p, 250); g = await game(p); if (g?.state.phase === "gameOver") break; }
+    await W(p, 800);
+    const won = g?.state.lastResult?.winner === 0;
+    check("Pratik oyunu sonuna kadar oynandı", g?.state.phase === "gameOver", `bitiren ${g?.state.lastResult?.winner ?? "yok"}`);
+    check(`Pratik ${won ? "kazanıldı" : "bitti"} ama profil kartı (oyun, galibiyet, oran) değişmedi`, (await stats()) === s0, `${s0} → ${await stats()}`);
+    check("Pratikte çip alınmadı, verilmedi", (await bal(p)) === b0, `${b0} → ${await bal(p)}`);
+    await p.context().close();
+  }
+  {
+    // Pratik yarıda bırakılınca da yenilgi sayılmaz
+    const p = await fresh(browser, "Pixel 7 landscape", { balance: 1000 });
+    const stats = () => p.evaluate(() => localStorage.getItem("wordokey.stats"));
+    const s0 = await stats();
+    await p.locator(".practice-hub").tap(); await W(p, 300); await p.locator(".page .primary.big").last().tap(); await W(p, 1000);
+    await p.locator(".quit-btn").tap(); await W(p, 300); await p.locator(".quit-modal button.danger").tap(); await W(p, 600);
+    check("Pratikten çıkınca yenilgi sayılmaz, kart değişmez", (await stats()) === s0, `${s0} → ${await stats()}`);
+    await p.locator(".profile-chip").tap(); await W(p, 300);
+    const card = await p.locator(".modal").first().innerText();
+    check("profil kartında oyun sayısı yine 10 (Pratik sayılmadı)", /10/.test(card), card.replace(/\n/g, " · ").slice(0, 160));
+    check("Pratik testinde tarayıcı hatası yok", !p.errors.length, p.errors.slice(0, 2).join(" | "));
+    await p.context().close();
   }
   }
 

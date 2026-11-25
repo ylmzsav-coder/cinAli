@@ -29,7 +29,7 @@ const pt: Messages = {
   legal: "Fichas são moeda virtual do jogo; não podem ser trocadas por dinheiro real nem transferidas.",
 
   practiceTitle: "Treino",
-  practiceDesc: "Mesa de treino para iniciantes: dois jogadores, só contra o computador, sem fichas. Jogadores reais não podem entrar.",
+  practiceDesc: "Mesa de treino para iniciantes: dois jogadores, só contra o computador, sem fichas. Jogadores reais não podem entrar. Vitórias e derrotas não são registradas no seu cartão de perfil nem na taxa de sucesso.",
   yourName: "Seu nome",
   handCount: "Número de rodadas",
   opponentLevel: "Nível dos adversários",
