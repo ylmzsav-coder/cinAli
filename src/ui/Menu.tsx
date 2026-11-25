@@ -369,6 +369,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             </button>
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub carli-hub`} onClick={() => setCarliOpen(true)}>
               <span className="carli-top"><DiceIcon /> {t("playCarli")}</span>
+              <span className="tier-rate">{t("rateTag", { n: tableById("carli")!.minRate ?? 31 })}</span>
               <span className="caylak-sub">{t("entry")} <Chips amount={tableById("carli")!.entry} /> – <Chips amount={tableById("carli3")!.entry} /></span>
             </button>
           </div>
@@ -381,6 +382,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               {/* Sohbet etiketi: yazı tam ortada (simgenin karşısında görünmez bir eş boşluk) */}
               <span className="sosyete-tags"><small className="pro-tag chat-tag"><span className="chat-ico" aria-hidden>💬</span><span className="chat-text">{t("sosyeteChatTag")}</span><span className="chat-ico ghost" aria-hidden>💬</span></small></span>
               <span className="sosyete-top"><BlackCarIcon /> <span className="sosyete-name">{t("playUsta")}</span></span>
+              <span className="tier-rate">{t("rateTag", { n: tableById("usta")!.minRate ?? 76 })}</span>
               <span className="sosyete-tags"><small className="pro-tag">{t("proLabel")}</small></span>
               <span className="caylak-sub">{t("entry")} <Chips amount={tableById("usta")!.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
             </button>

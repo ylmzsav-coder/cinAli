@@ -412,6 +412,13 @@ const TABLES = [
         bg[".cayhane-hub"].includes("rgb(239, 108, 0)") && bg[".carli-hub"].includes("rgb(245, 197, 24)") && bg[".ozel-hub"].includes("rgb(19, 235, 4)") && bg[".usta-hub"] === bg[".close-game"], JSON.stringify(bg).slice(0, 200));
       await h.context().close();
     }
+    // Çarli ve Sosyete düğmelerinde başarı oranı şartı siyah yazıyla (Fifty Cent'teki gibi)
+    {
+      const h = await fresh(browser, "Pixel 7 landscape");
+      const r = await h.evaluate(() => [".carli-hub .tier-rate", ".usta-hub .tier-rate", ".ozel-hub .ozel-rate"].map((k) => { const e = document.querySelector(k); return e ? [e.textContent, getComputedStyle(e).color] : null; }));
+      check("Çarli %31, Sosyete %76, Fifty Cent %50 başarı oranı siyah yazıyla", r[0]?.[0] === "Başarı oranı %31" && r[1]?.[0] === "Başarı oranı %76" && r[2]?.[0] === "Başarı oranı %50" && r.every((x) => x?.[1] === "rgb(17, 17, 17)"), JSON.stringify(r));
+      await h.context().close();
+    }
     // Kelimelerin Kök Değeri: kalem hareketleri toplanır, rakamları tek basamağa iner; uzay tablosu altı kelime, hepsi 16 → 7
     {
       const h = await fresh(browser, "Pixel 7 landscape");

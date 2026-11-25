@@ -1881,3 +1881,6 @@ button.wordnum-famous-btn { display: block; width: 100%; max-width: none !import
 .invite-modal button.invite-block { background: #424242; color: #fff; border: 1px solid #212121; }
 .invite-block-ask { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 82, 82, 0.6); text-align: center; }
 .invite-block-ask p { margin: 0 0 6px; }
+/* Çarli ve Sosyete: başarı oranı şartı siyah yazıyla (Fifty Cent'teki gibi) */
+.hub .hub-right .tier-rate { color: #111 !important; text-shadow: none !important; font-weight: 900; font-size: 0.82em; line-height: 1.1; text-align: center; white-space: nowrap; }
+.hub .hub-right .carli-hub, .hub .hub-right .usta-hub { gap: 2px; }
