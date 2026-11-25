@@ -1354,7 +1354,10 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                 ) : (
                   <>
                     {(tableName || remote) && state.lastResult?.reason === "deckEmpty" ? (
-                      <div className="banner">{t("noWinnerRefund")}</div>
+                      // Sohbetli odada hiç hamle yapmayan oyuncuya iade yok (sunucu ödemeyi 0 yazar)
+                      remote && payout === 0
+                        ? <div className="banner idle-burn">{t("noWinnerIdle")}</div>
+                        : <div className="banner">{t("noWinnerRefund")}</div>
                     ) : tableName && (
                       <div className={payout ? "banner" : "muted"}>
                         {payout ? t("chipsWon", { n: payout }) : t("noChipsWon")}

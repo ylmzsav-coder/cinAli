@@ -40,6 +40,7 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
     t("rule_rate_ozel"),
     t("rule_rate_carli"),
     t("rule_chat"),
+    t("rule_idle"),
   ];
   return (
     <div className="page">

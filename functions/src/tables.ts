@@ -37,8 +37,8 @@ import {
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { assertNotBanned } from "./admin";
 import { blockedWithAny } from "./blocks";
-import { TABLES, TableConfig, privateTableById, turnSecondsFor, gameOutcome, noWinnerGame, payout, rateAllows, ratePercent, tableById } from "../../src/economy/tables";
-import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
+import { TABLES, TableConfig, isChatType, privateTableById, turnSecondsFor, gameOutcome, noWinnerGame, payout, rateAllows, ratePercent, tableById } from "../../src/economy/tables";
+import { IS_EMULATOR, WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 import { publicView, type Action, type PublicView, type SeatInfo } from "../../src/online/view";
 
@@ -182,10 +182,17 @@ function deadlineFor(state: GameState, now: number, cfg: TableConfig): number | 
 async function settle(t: Transaction, table: TableDoc, state: GameState, wallets: Map<string, WalletDoc>) {
   const cfg = configFor(table.type);
   const payouts: Record<string, number> = {};
-  // Kimse bitiremedi: kaybeden yok, giriş ücreti kesintisiz iade (davetli misafir ücret ödemedi)
+  // Kimse bitiremedi: kaybeden yok, giriş ücreti kesintisiz iade (davetli misafir ücret ödemedi).
+  // Sohbetli odalarda (VIP, Sosyete) oyun boyunca hiç hamle yapmayan, tüm hamleleri süre
+  // dolumuyla otomatik oynanan oyuncunun girişi iade edilmez: çipi yanar.
   if (noWinnerGame(state)) {
+    const chat = isChatType(table.type);
     table.seats.forEach((seat) => {
       if (!seat.uid || seat.guest) return;
+      if (chat && !seat.moved) {
+        payouts[seat.uid] = 0;
+        return;
+      }
       payouts[seat.uid] = cfg.entry;
       const w = wallets.get(seat.uid);
       if (w) wallets.set(seat.uid, applyTx(t, seat.uid, w, cfg.entry, "iade", cfg.id));
@@ -498,6 +505,8 @@ export const act = onCall(async (req) => {
     const cfg = configFor(table.type);
     setGameLang(state.lang);
     const dict = dictFor(state.lang);
+    // Oyuncu kendi eliyle hamle yaptı (sohbetli odada hiç oynamayanın girişi yanar)
+    if (!table.seats[seat].moved) table.seats = table.seats.map((x, i) => (i === seat ? { ...x, moved: true } : x));
     let next = engine(() => {
       switch (action?.type) {
         case "drawDeck": return drawFromDeck(state);
@@ -542,6 +551,29 @@ export const claimTimeout = onCall(async (req) => {
     const wallets = next.phase === "gameOver" ? await walletsOf(t, table.uids) : new Map();
     await persist(t, id, table, next, wallets);
     return { ok: true };
+  });
+});
+
+/**
+ * Yalnızca emülatör testleri: oyunu, kalan bütün hamleler süre dolumuyla otomatik
+ * oynanmış gibi sonuna kadar götürür (deste biter, kimse bitiremez).
+ */
+export const testRunTimeouts = onCall(async (req) => {
+  const uid = uidOf(req);
+  if (!IS_EMULATOR) fail("storeSoon");
+  const id = String(req.data?.tableId ?? "");
+  return db.runTransaction(async (t) => {
+    const { table, state } = await load(t, id);
+    if (!table.uids.includes(uid)) fail("notAtTable", {}, "permission-denied");
+    if (table.status !== "playing" || !state) return { ok: false };
+    setGameLang(state.lang);
+    let next = state;
+    for (let guard = 0; next.phase !== "gameOver" && guard < 2000; guard++) {
+      next = next.phase === "handOver" ? dealHand(next) : timeoutMove(next);
+    }
+    const wallets = await walletsOf(t, table.uids);
+    await persist(t, id, table, next, wallets);
+    return { ok: true, reason: next.lastResult?.reason ?? null };
   });
 });
 

@@ -315,7 +315,7 @@ const TABLES = [
     const kb = await p.evaluate(() => { const el = document.querySelector(".kumbara-balance"); return { icon: !!el?.querySelector(".kumbara-icon"), label: el?.querySelector(".kumbara-label")?.textContent ?? "" }; });
     const KB = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" };
     check(`Menü (${lang}): çipler kumbarada — resim ve "${KB[lang]}" yazısı`, kb.icon && kb.label === KB[lang], JSON.stringify(kb));
-    check(`Kurallar (${lang}): 20 madde, 12 satırlık masa tablosu, taşma yok`, r.rows === 12 && r.items === 20 && !r.hscroll && !r.raw, JSON.stringify(r));
+    check(`Kurallar (${lang}): 21 madde, 12 satırlık masa tablosu, taşma yok`, r.rows === 12 && r.items === 21 && !r.hscroll && !r.raw, JSON.stringify(r));
     await p.context().close();
   }
   }

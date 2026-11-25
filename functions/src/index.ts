@@ -9,6 +9,7 @@ export {
   leaveTable,
   nextHand,
   startTable,
+  testRunTimeouts,
 } from "./tables";
 export { reportPlayer, sendText } from "./chat";
 export { sendFeedback } from "./feedback";
