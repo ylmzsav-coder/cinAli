@@ -1,4 +1,3 @@
-import { checkPhoto } from "../photoCheck";
 import { appStoreUrl, openStoreReview, playUrl } from "../rate";
 import { loadSettings, saveSettings, type Settings } from "../storage";
 
@@ -14,6 +13,7 @@ import { COLORS, type Tile } from "../game/tiles";
 import { errorText, formatNumber, t, uiLocale } from "../i18n";
 import { loadStats, myRate, winRate, type PlayerStats } from "../stats";
 import { RateCard } from "./RateRing";
+import { loadAccount } from "../account";
 import { rateTier } from "../economy/tables";
 import { TileView } from "./TileView";
 import { FriendsPanel } from "./Friends";
@@ -22,56 +22,34 @@ import { MyGiftsPanel } from "./Gifts";
 const AVATAR_COLORS = ["#C62828", "#1565C0", "#E09100", "#2E7D32", "#6A1B9A", "#00838F"];
 const PHOTO_KEY = "wordokey.avatar";
 
-/** Sizin profil fotoğrafınız (cihazda saklanır, küçültülmüş). */
+/**
+ * Profil resmi: yalnızca sosyal medya (Facebook) ile bağlanan oyuncuda o hesabın resmi.
+ * E-posta (Gmail) ya da misafir girişinde resim yoktur; adın baş harfi görünür.
+ * Uygulamada resim yükleme/değiştirme yoktur.
+ */
 export function loadPhoto(): string | null {
-  if (loadSettings().showPhoto === false) return null;
+  if (loadSettings().showPhoto === false || loadAccount()?.method !== "facebook") return null;
   try {
-    return localStorage.getItem(PHOTO_KEY);
+    const p = localStorage.getItem(PHOTO_KEY);
+    // Eski sürümde cihazdan yüklenen resimler (data:) artık kullanılmaz
+    if (p?.startsWith("data:")) {
+      localStorage.removeItem(PHOTO_KEY);
+      return null;
+    }
+    return p;
   } catch {
     return null;
   }
 }
 
-/** Facebook profil resmi (Facebook ile kayıt olunca varsayılan; oyuncu kendi resmini seçince onun yerine geçer). */
+/** Facebook profil resmi: her Facebook girişinde güncellenir. */
 export function setFacebookPhoto(url: string | null) {
   try {
-    if (url && !localStorage.getItem(PHOTO_KEY)) localStorage.setItem(PHOTO_KEY, url);
+    if (url) localStorage.setItem(PHOTO_KEY, url);
+    else localStorage.removeItem(PHOTO_KEY);
   } catch {
     /* depolama yok */
   }
-}
-
-/**
- * Seçilen resmi 160 piksel kare olarak küçültür, müstehcen içerik denetiminden geçirir
- * ve kaydeder. Reddedilirse "rejected" hatası verir; resim kaydedilmez.
- */
-function savePhoto(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = async () => {
-      const size = 160;
-      const c = document.createElement("canvas");
-      c.width = c.height = size;
-      const g = c.getContext("2d")!;
-      const s = Math.min(img.width, img.height);
-      g.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
-      URL.revokeObjectURL(img.src);
-      try {
-        if ((await checkPhoto(c)) === "rejected") return reject(new Error("photoRejected"));
-      } catch {
-        return reject(new Error("photoCheckFailed"));
-      }
-      const url = c.toDataURL("image/jpeg", 0.85);
-      try {
-        localStorage.setItem(PHOTO_KEY, url);
-      } catch {
-        /* depolama doluysa yalnızca bu oturumda görünür */
-      }
-      resolve(url);
-    };
-    img.onerror = reject;
-    img.src = URL.createObjectURL(file);
-  });
 }
 
 /** Profil resmi: fotoğraf (sizin için) ya da adın baş harfi. Dokununca profil açılır. */
@@ -148,7 +126,7 @@ export function MyStatsModal({ name, onClose, onJoin, gender: genderProp, onGend
   const s = loadStats();
   const [editName, setEditName] = useState(false);
   const shown = (settings?.name ?? name) || t("defaultName");
-  const [photo, setPhoto] = useState(loadPhoto);
+  const photo = settings?.showPhoto === false ? null : loadPhoto();
   const [tab, setTab] = useState<"summary" | "detail" | "friends" | "gifts" | "settings">("summary");
   const [msg, setMsg] = useState<string | null>(null);
   const rate = winRate(s.gamesWon, s.gamesPlayed);
@@ -169,22 +147,7 @@ export function MyStatsModal({ name, onClose, onJoin, gender: genderProp, onGend
       <div className="modal profile-modal" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="profile-close" onClick={onClose} aria-label={t("close")}>✕</button>
         <div className="profile-banner">
-          <label className="photo-pick" title={t("changePhoto")}>
-            <Avatar name={shown} seat={0} size="lg" photo={settings?.showPhoto === false ? null : photo} vip={wallet.isVip()} rate={myRate().rate} />
-            <span className="photo-edit" aria-hidden>📷</span>
-            <input type="file" accept="image/*" hidden onChange={async (e) => {
-              const f = e.target.files?.[0];
-              e.target.value = "";
-              if (!f) return;
-              setMsg(t("photoChecking"));
-              try {
-                setPhoto(await savePhoto(f));
-                setMsg(t("photoSaved"));
-              } catch (err) {
-                setMsg(t((err as Error).message === "photoRejected" ? "photoRejected" : "photoCheckFailed"));
-              }
-            }} />
-          </label>
+          <Avatar name={shown} seat={0} size="lg" photo={photo} vip={wallet.isVip()} rate={myRate().rate} />
           {editName && settings && onSettings ? (
             <form className="name-edit" onSubmit={(e) => { e.preventDefault(); setEditName(false); }}>
               <input autoFocus value={settings.name} maxLength={12} placeholder={t("defaultName")} aria-label={t("yourName")}

@@ -20,7 +20,7 @@
           "Şikâyetler: bir oyuncuyu şikâyet ettiğinde ya da şikâyet edildiğinde, şikâyet kaydı ve o masadaki son mesajlar.",
           "Otomatik toplanan bilgiler: IP adresin, bağlantı ve son görülme zamanların (çevrimiçi durumu için).",
           "Satın almalar: VIP üyelik ve çip satın alımları Google Play veya App Store üzerinden yapılır. Kart ve ödeme bilgilerin bize gelmez; yalnızca satın alma kaydı (ürün, tarih, sipariş numarası) tutulur.",
-          "Toplamadıklarımız: rehberin, konumun, fotoğraf galerin, mikrofonun veya kameran. Profil fotoğrafı seçersen fotoğraf yalnızca kendi cihazında saklanır; müstehcen içerik denetimi de cihazında yapılır, sunucumuza gönderilmez. Facebook ile giriş yaparsan Facebook profil resmin varsayılan profil resmin olur; dilediğin zaman değiştirebilirsin."
+          "Toplamadıklarımız: rehberin, konumun, fotoğraf galerin, mikrofonun veya kameran. Uygulamada profil resmi yüklenmez. Facebook ile giriş yaparsan Facebook profil resmin profil resmin olarak gösterilir; e-posta ile ya da misafir olarak girersen resim yerine adının baş harfi görünür."
         ]
       },
       {
@@ -72,7 +72,7 @@
       {
         "h": "8. Cihazında saklananlar",
         "items": [
-          "Ayarların (dil, ses, müzik), profil fotoğrafın, cihazdaki istatistiklerin ve yarım kalan oyunun yalnızca senin cihazında (tarayıcı/uygulama hafızası) saklanır.",
+          "Ayarların (dil, ses, müzik), Facebook profil resminin bağlantısı, cihazdaki istatistiklerin ve yarım kalan oyunun yalnızca senin cihazında (tarayıcı/uygulama hafızası) saklanır.",
           "Reklam veya izleme amaçlı çerez kullanmayız. Oyunun çalışması için gereken bu yerel kayıtları uygulama verilerini silerek kaldırabilirsin."
         ]
       },
@@ -129,7 +129,7 @@
           "Reports: when you report a player or are reported, the report and the latest messages at that table.",
           "Automatically collected information: your IP address, connection and last-seen times (for online status).",
           "Purchases: VIP membership and chips are bought through Google Play or the App Store. Your card and payment details never reach us; we only keep the purchase record (product, date, order number).",
-          "What we do not collect: your contacts, location, photo gallery, microphone or camera. If you choose a profile photo, it is stored only on your device; the explicit-content check also runs on your device and the photo is never sent to our servers. If you sign in with Facebook, your Facebook profile picture becomes your default profile photo; you can change it at any time."
+          "What we do not collect: your contacts, location, photo gallery, microphone or camera. Profile photos cannot be uploaded in the app. If you sign in with Facebook, your Facebook profile picture is shown as your profile picture; if you sign in with email or play as a guest, the first letter of your name is shown instead."
         ]
       },
       {
@@ -181,7 +181,7 @@
       {
         "h": "8. Stored on your device",
         "items": [
-          "Your settings (language, sound, music), profile photo, on-device statistics and unfinished game are stored only on your device (browser/app storage).",
+          "Your settings (language, sound, music), the link to your Facebook profile picture, on-device statistics and unfinished game are stored only on your device (browser/app storage).",
           "We do not use advertising or tracking cookies. You can remove this local data by clearing the app's data."
         ]
       },

@@ -848,8 +848,6 @@ button.avatar { cursor: pointer; min-height: 0; }
   background: linear-gradient(135deg, #2e7d32 0%, #43a047 50%, #2e7d32 100%);
 }
 .profile-name { background: #fbf6e8; color: #0f3d2b; font-weight: 900; padding: 3px 16px; border-radius: 10px; font-size: 1.1rem; }
-.photo-pick { position: relative; cursor: pointer; display: inline-block; }
-.photo-edit { position: absolute; right: -4px; bottom: -2px; font-size: 1rem; background: #fbf6e8; border-radius: 50%; padding: 2px 4px; }
 .profile-summary, .stats-detail { display: grid; gap: 8px; margin-bottom: 12px; }
 .stat { background: rgba(0, 0, 0, 0.22); border-radius: 12px; padding: 8px 6px; text-align: center; min-width: 0; display: grid; gap: 4px; justify-items: center; }
 .stat-value { font-weight: 900; font-size: 1.4rem; color: var(--accent); overflow-wrap: anywhere; }
@@ -1747,5 +1745,4 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .avatar-rate { position: absolute; left: 50%; bottom: -0.45em; transform: translateX(-50%); min-width: 1.9em; padding: 0 0.3em; border-radius: 999px; font-size: 0.5em; font-weight: 900; line-height: 1.45; color: #111; border: 1.5px solid #0b2e20; text-align: center; letter-spacing: 0; pointer-events: none; white-space: nowrap; }
 .avatar-sm .avatar-rate { font-size: 0.62em; bottom: -0.55em; }
 .avatar-lg .avatar-rate { font-size: 0.55em; bottom: -0.4em; border-width: 2px; }
-/* Profilde fotoğraf düğmesi sağ üstte: alttaki başarı oranı rozetini kapatmaz */
-.photo-pick .photo-edit { top: -4px; bottom: auto; }
+

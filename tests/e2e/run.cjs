@@ -403,6 +403,17 @@ const TABLES = [
       check("oyun masasında kendi rozetin (77) var, bilgisayar oyuncularında rozet yok", g.me === "77" && g.bots === 0, JSON.stringify(g));
       await h.context().close();
     }
+    // Profil resmi: uygulamada yükleme yok; Facebook hesabında Facebook resmi, e-postada baş harf
+    for (const [method, stored, want] of [["facebook", "https://example.com/fb.jpg", "photo"], ["email", "https://example.com/fb.jpg", "letter"], ["facebook", "data:image/jpeg;base64,AAAA", "letter"]]) {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });
+      await h.evaluate(([m, ph]) => { localStorage.setItem("wordokey.account", JSON.stringify({ method: m })); localStorage.setItem("wordokey.avatar", ph); }, [method, stored]);
+      await h.reload(); await W(h, 800); if (await h.locator(".splash-hit").count()) await h.locator(".splash-hit").tap(); await W(h, 400);
+      await h.locator(".hub-rate").tap(); await W(h, 400);
+      const r = await h.evaluate(() => { const a = document.querySelector(".profile-banner .avatar"); return { photo: a.classList.contains("avatar-photo"), bg: a.style.backgroundImage, letter: a.firstChild?.nodeType === 3 ? a.firstChild.textContent : "", camera: document.body.innerText.includes("📷") || !!document.querySelector(".profile-modal input[type=file]"), left: localStorage.getItem("wordokey.avatar") }; });
+      const ok = !r.camera && (want === "photo" ? r.photo && r.bg.includes("fb.jpg") : !r.photo && r.letter === "Y") && (stored.startsWith("data:") ? r.left === null : true);
+      check(`profil resmi (${method}${stored.startsWith("data:") ? ", eskiden yüklenmiş resim" : ""}): ${want === "photo" ? "Facebook resmi" : "adın baş harfi"}, fotoğraf değiştirme yok`, ok, JSON.stringify(r));
+      await h.context().close();
+    }
     // Mağaza ve Kurallar: Pratik gibi sarı, yazı siyah
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });

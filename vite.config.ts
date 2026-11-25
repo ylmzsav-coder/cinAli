@@ -69,7 +69,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
-        manualChunks: (id) => (id.includes("node_modules/@tensorflow") || id.includes("node_modules/nsfwjs") ? "photocheck" : id.includes("node_modules/firebase") || id.includes("node_modules/@firebase") ? "firebase" : id.includes("node_modules/react") ? "react" : undefined),
+        manualChunks: (id) => (id.includes("node_modules/firebase") || id.includes("node_modules/@firebase") ? "firebase" : id.includes("node_modules/react") ? "react" : undefined),
       },
     },
   },

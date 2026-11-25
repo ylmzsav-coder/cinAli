@@ -69,7 +69,6 @@
           "React and React DOM — MIT. Vite, vite-plugin-pwa and Workbox — MIT.",
           "Firebase JavaScript SDK, Firebase Admin SDK and Cloud Functions for Firebase — Apache-2.0.",
           "Capacitor and plugins (App, Haptics, Splash Screen, Status Bar) — MIT.",
-          "Profile photo check: NSFWJS — MIT; TensorFlow.js — Apache-2.0 (runs on device; photos are not uploaded).",
           "The full license texts are included in the source distributions of these packages."
         ]
       },
