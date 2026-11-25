@@ -72,6 +72,8 @@ const en: Messages = {
   strokeApart: "Piece by piece",
   strokeJoined: "Joined",
   strokeAlphabet: "Strokes of every letter",
+  strokeGTitle: "Common mistake: G is 2 strokes, not 1",
+  strokeGText: "1) The curve starts at the top, goes down and comes back up: one stroke. 2) Lift the pen; the straight bar going in from right to left: the second stroke.",
   famousSevens: "Famous Sevens",
   wordNumAll: "Show all the sevens",
   wordNumHide: "Close the list",

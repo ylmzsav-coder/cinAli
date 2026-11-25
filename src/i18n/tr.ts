@@ -73,6 +73,8 @@ const tr = {
   strokeApart: "Parça parça",
   strokeJoined: "Birleşince",
   strokeAlphabet: "Bütün harflerin hareket sayısı",
+  strokeGTitle: "Sık yanılgı: G tek hareket değil, 2 harekettir",
+  strokeGText: "1) Kavis üstten başlar, aşağı iner ve yukarı çıkar: tek hareket. 2) Kalem kalkar; sağdan sola içeri giren düz çizgi: ikinci hareket.",
   famousSevens: "Ünlü 7'liler",
   wordNumAll: "Bütün yedileri göster",
   wordNumHide: "Listeyi kapat",

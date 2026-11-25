@@ -72,6 +72,8 @@ const it: Messages = {
   strokeApart: "Pezzo per pezzo",
   strokeJoined: "Unite",
   strokeAlphabet: "Tratti di ogni lettera",
+  strokeGTitle: "Errore comune: la G ha 2 tratti, non 1",
+  strokeGText: "1) La curva parte dall'alto, scende e risale: un tratto. 2) Si solleva la penna; la barra dritta da destra a sinistra: secondo tratto.",
   famousSevens: "Sette famosi",
   wordNumAll: "Mostra tutti i sette",
   wordNumHide: "Chiudi l’elenco",

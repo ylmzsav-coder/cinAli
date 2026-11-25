@@ -1872,3 +1872,6 @@ button.wordnum-famous-btn { display: block; width: 100%; max-width: none !import
 .stroke-group { display: flex; gap: 10px; align-items: center; }
 .stroke-group b { flex: none; width: 30px; height: 30px; border-radius: 50%; background: #ffd54f; color: #111; display: inline-flex; align-items: center; justify-content: center; }
 .stroke-group span { font-weight: 800; letter-spacing: 0.08em; font-size: 1.05rem; }
+.stroke-g { margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(255, 213, 79, 0.45); }
+.stroke-g h4 { margin: 0 0 4px; color: #ffd54f; }
+.stroke-g p { margin: 0 0 8px; }

@@ -72,6 +72,8 @@ const es: Messages = {
   strokeApart: "Pieza a pieza",
   strokeJoined: "Unidas",
   strokeAlphabet: "Trazos de cada letra",
+  strokeGTitle: "Error frecuente: la G tiene 2 trazos, no 1",
+  strokeGText: "1) La curva empieza arriba, baja y vuelve a subir: un trazo. 2) Se levanta el lápiz; la barra recta de derecha a izquierda: segundo trazo.",
   famousSevens: "Sietes famosos",
   wordNumAll: "Mostrar todos los sietes",
   wordNumHide: "Cerrar la lista",

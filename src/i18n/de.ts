@@ -72,6 +72,8 @@ const de: Messages = {
   strokeApart: "Stück für Stück",
   strokeJoined: "Zusammengesetzt",
   strokeAlphabet: "Striche aller Buchstaben",
+  strokeGTitle: "Häufiger Fehler: G hat 2 Striche, nicht 1",
+  strokeGText: "1) Der Bogen beginnt oben, geht nach unten und wieder hoch: ein Strich. 2) Stift absetzen; der gerade Querstrich von rechts nach links: zweiter Strich.",
   famousSevens: "Berühmte Siebener",
   wordNumAll: "Alle Siebenen zeigen",
   wordNumHide: "Liste schließen",

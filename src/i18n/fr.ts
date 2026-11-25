@@ -72,6 +72,8 @@ const fr: Messages = {
   strokeApart: "Trait par trait",
   strokeJoined: "Assemblé",
   strokeAlphabet: "Traits de chaque lettre",
+  strokeGTitle: "Erreur fréquente : G compte 2 traits, pas 1",
+  strokeGText: "1) La courbe part du haut, descend et remonte : un trait. 2) On lève le stylo ; la barre droite de droite à gauche : deuxième trait.",
   famousSevens: "Les sept célèbres",
   wordNumAll: "Afficher tous les sept",
   wordNumHide: "Fermer la liste",

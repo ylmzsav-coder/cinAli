@@ -39,6 +39,32 @@ function Letter({ segs, numbered, start = 0, label }: { segs: Seg[]; numbered: b
   );
 }
 
+/** G: 1) üstten başlayan kavis aşağı iner ve yukarı çıkar (tek hareket), 2) sağdan sola içeri düz çizgi. */
+const G_CURVE = "M 50 18 A 24 30 0 1 0 52 58 L 52 44";
+function GLetter({ apart }: { apart: boolean }) {
+  const bar = apart ? "M 44 44 L 26 44" : "M 52 44 L 34 44";
+  return (
+    <svg className="stroke-letter" viewBox="-6 -6 72 92" role="img" aria-label="G">
+      <path d={G_CURVE} fill="none" stroke={apart ? COLORS[0] : "#222"} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round"
+        pathLength={1} className={apart ? "stroke-draw" : undefined} style={apart ? { animationDelay: "0.2s", animationDuration: "0.9s" } : undefined} />
+      <path d={bar} fill="none" stroke={apart ? COLORS[1] : "#222"} strokeWidth={7} strokeLinecap="round"
+        pathLength={1} className={apart ? "stroke-draw" : undefined} style={apart ? { animationDelay: "1.2s" } : undefined} />
+      {apart && (
+        <>
+          <g className="stroke-num" style={{ animationDelay: "0.6s" }}>
+            <circle cx={4} cy={40} r={8} fill="#fff" stroke={COLORS[0]} strokeWidth={2.5} />
+            <text x={4} y={44} textAnchor="middle" fontSize={11} fontWeight={800} fill="#111">1</text>
+          </g>
+          <g className="stroke-num" style={{ animationDelay: "1.5s" }}>
+            <circle cx={35} cy={30} r={8} fill="#fff" stroke={COLORS[1]} strokeWidth={2.5} />
+            <text x={35} y={34} textAnchor="middle" fontSize={11} fontWeight={800} fill="#111">2</text>
+          </g>
+        </>
+      )}
+    </svg>
+  );
+}
+
 /** "Nasıl sayılır?" kartı: ET kelimesi çizgi çizgi ve bütün harflerin hareket sayıları. */
 export function StrokeDemo() {
   const groups = new Map<number, string[]>();
@@ -69,6 +95,16 @@ export function StrokeDemo() {
         </div>
       </div>
       <p className="stroke-sum"><b>E</b> = 1 + 1 + 1 + 1 = <b>4</b> · <b>T</b> = 1 + 1 = <b>2</b> · <b>ET</b> = 4 + 2 = <b>6</b></p>
+      <div className="stroke-g">
+        <h4>⚠️ {t("strokeGTitle")}</h4>
+        <p>{t("strokeGText")}</p>
+        <div className="stroke-rows">
+          <div className="stroke-row"><small>{t("strokeApart")}</small><div className="stroke-pair"><GLetter apart /></div></div>
+          <span className="stroke-arrow" aria-hidden>→</span>
+          <div className="stroke-row"><small>{t("strokeJoined")}</small><div className="stroke-pair"><GLetter apart={false} /></div></div>
+        </div>
+        <p className="stroke-sum"><b>G</b> = 1 + 1 = <b>2</b> · <b>Ğ</b> = 2 + 1 = <b>3</b></p>
+      </div>
       <details className="stroke-table">
         <summary>{t("strokeAlphabet")}</summary>
         <div className="stroke-groups">
