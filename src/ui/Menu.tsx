@@ -221,6 +221,9 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           <p className="muted refill-wait">{t("refillWait", { n: REFILL_CHIPS, t: refillLeft(refillAt - now) })}</p>
         ))}
         </div>
+        {canCloseGame() && (
+          <button type="button" className="close-game close-top" onClick={() => setCloseAsk(true)} aria-label={t("closeGame")}><svg className="power-ico" viewBox="0 0 24 24" aria-hidden><path d="M12 3v8" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /><path d="M6.3 6.8a8 8 0 1 0 11.4 0" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /></svg> {t("close")}</button>
+        )}
         <div className="toggles">
           {([
             ["music", "🎵", "🎵"],
@@ -303,10 +306,14 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
         </div>
         <div className="hub-right">
           {/* Özel Oda (2 kişilik): rastgele oyuncu, arkadaş ya da bilgisayar */}
-          <button type="button" className="big vip-hub caylak-hub" onClick={() => (!isAdult() ? setToast(t("vipAdultOnly")) : wallet.isVip() ? openVipLobby() : setVipOpen(true))}>
-            <span>👑 {t("vipShort")}</span>
-            <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
-          </button>
+          {/* İlk sıra: VIP Oda ve Kelimelerin Kök Değeri (diğer düğmelerle aynı ebatta) */}
+          <div className="hub-row">
+            <button type="button" className="big vip-hub caylak-hub" onClick={() => (!isAdult() ? setToast(t("vipAdultOnly")) : wallet.isVip() ? openVipLobby() : setVipOpen(true))}>
+              <span>👑 {t("vipShort")}</span>
+              <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
+            </button>
+            {onWordNum && <button type="button" className="big wordnum-hub" onClick={onWordNum}>🔢 {t("wordNumTitle")}</button>}
+          </div>
           {invite && onJoinInvite && (
             <div className="modal-bg">
               <div className="modal invite-modal" role="alertdialog" aria-label={t("inviteTitle")}>
@@ -358,12 +365,6 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             <button type="button" className="big practice-hub" onClick={onPractice}>{t("practice")}</button>
             <button type="button" className="big shop-hub" onClick={onShop}><CartIcon /> {t("shop")}</button>
             <button type="button" className="big rules-hub" onClick={onRules}>📖 {t("rules")}</button>
-          </div>
-          <div className="hub-row">
-            {onWordNum && <button type="button" className="big wordnum-hub" onClick={onWordNum}>🔢 {t("wordNumTitle")}</button>}
-            {canCloseGame() && (
-              <button type="button" className="big close-game" onClick={() => setCloseAsk(true)}><svg className="power-ico" viewBox="0 0 24 24" aria-hidden><path d="M12 3v8" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /><path d="M6.3 6.8a8 8 0 1 0 11.4 0" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /></svg> {t("closeGame")}</button>
-            )}
           </div>
         </div>
       </div>

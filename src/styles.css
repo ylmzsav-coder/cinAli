@@ -1812,7 +1812,7 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .hub-top .daily-slot { flex-wrap: nowrap; margin-left: auto; }
 .hub-top .toggles { flex-basis: 100%; justify-content: flex-start; }
 .hub-top .daily-slot button.feedback-top, .hub-top .daily-slot button.daily-top { padding: 5px 10px !important; font-size: 0.85rem !important; }
-@media (max-width: 700px) {
+@media (max-width: 800px) {
   .hub-top { gap: 6px; }
   .hub-top .lang-bar { gap: 6px; }
   .hub-top .daily-slot { gap: 4px; }
@@ -1845,3 +1845,9 @@ button.wordnum-famous-btn { display: block; width: 100%; max-width: none !import
 .famous7-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
 .famous7-card b { display: block; margin-bottom: 3px; }
 .famous7-card p { margin: 0; font-size: 0.88rem; line-height: 1.4; opacity: 0.92; }
+/* Kapat: üst sıranın en sağında küçük düğme (simge + "Kapat") */
+.hub-top button.close-top { width: auto; padding: 5px 10px !important; font-size: 0.85rem !important; min-height: 34px; border-radius: 10px; flex: none; }
+@media (max-width: 800px) { .hub-top button.close-top { padding: 4px 7px !important; font-size: 0.76rem !important; } }
+/* VIP Oda ve Kelimelerin Kök Değeri yan yana, diğer düğmelerle aynı ebat */
+.hub-row > .vip-hub, .hub-row > .wordnum-hub { width: 100%; min-width: 0; }
+.hub-row > .vip-hub .caylak-sub { font-size: 0.78em; }
