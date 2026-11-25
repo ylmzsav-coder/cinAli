@@ -381,6 +381,13 @@ const TABLES = [
       check("Çayhane demliği Oyunu kapat tonunda (#ef5350 → #b3261e), emoji yok, başlık hafif sola (simetrik)", r.stops.join() === "#ef5350,#b3261e" && !r.emoji && r.off <= 0 && r.off >= -12, JSON.stringify(r));
       await h.context().close();
     }
+    // Mağaza ve Kurallar: Pratik gibi sarı, yazı siyah
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });
+      const r = await h.evaluate(() => Object.fromEntries([".practice-hub", ".shop-hub", ".rules-hub"].map((k) => { const c = getComputedStyle(document.querySelector(k)); return [k, [c.backgroundColor, c.backgroundImage, c.color]]; })));
+      check("Mağaza ve Kurallar Pratik ile aynı sarı, yazı siyah", r[".shop-hub"][0] === r[".practice-hub"][0] && r[".rules-hub"][0] === r[".practice-hub"][0] && r[".shop-hub"][1] === "none" && r[".rules-hub"][1] === "none" && r[".shop-hub"][2] === "rgb(17, 17, 17)" && r[".rules-hub"][2] === "rgb(17, 17, 17)", JSON.stringify(r));
+      await h.context().close();
+    }
     // Sosyete düğmesinde "PROF." (Profesyonel kısaltıldı)
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });

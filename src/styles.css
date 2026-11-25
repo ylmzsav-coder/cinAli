@@ -1738,3 +1738,5 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 /* Çayhane: demlik ve yazı bir arada, alt satıra göre ortalı görünsün diye biraz sola */
 .hub .cayhane-hub .cayhane-top { display: inline-flex; align-items: center; gap: 6px; transform: translateX(-0.35em); }
 .teapot-icon { flex: none; display: block; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.25)); }
+/* Mağaza ve Kurallar: Pratik gibi sarı, yazı siyah */
+.hub button.shop-hub, .hub button.rules-hub { background: var(--accent) !important; color: #111 !important; border: 1px solid rgba(0, 0, 0, 0.15) !important; }
