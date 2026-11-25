@@ -1822,3 +1822,17 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .hub-top .daily-slot { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; align-items: stretch; }
 .hub-top .daily-slot > button { width: 100%; height: 100%; min-height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; line-height: 1.1; }
 .wordnum-page > .muted:not(.small) { margin-top: 14px; }
+/* Bütün yediler */
+button.wordnum-all-btn { display: block; width: 100%; max-width: none !important; margin: 12px 0 4px; background: linear-gradient(180deg, #ffd54f, #f9a825); color: #111; border: 1px solid rgba(0, 0, 0, 0.2); font-weight: 700; }
+.wordnum-all { margin: 6px 0 10px; }
+.wordnum-count { margin: 0 0 8px; }
+.wordnum-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+button.wordnum-chip { width: auto; padding: 5px 10px; font-size: 0.9rem; font-weight: 700; border-radius: 8px; background: linear-gradient(#fffdf5, #efe6cc); color: #222; border: 1px solid rgba(0, 0, 0, 0.15); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); letter-spacing: 0.02em; }
+/* Uzay altılısı: ayrı renk (gece mavisi–mor, altın kenar), en başta sıralı */
+button.wordnum-chip.space { background: linear-gradient(180deg, #7e57c2, #311b92); color: #fff; border: 2px solid #ffd54f; display: inline-flex; align-items: center; gap: 6px; }
+button.wordnum-chip.space i { font-style: normal; font-size: 0.75rem; background: #ffd54f; color: #311b92; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; }
+.wordnum-more { display: flex; justify-content: center; margin: 10px 0; }
+.wordnum-more button { width: auto; }
+.wordnum-card { text-align: center; }
+.wordnum-card.space { border: 2px solid #ffd54f; background: linear-gradient(180deg, #4527a0, #1a0f4f); color: #fff; }
+.wordnum-card .wordnum-result { margin: 4px 0 10px; }

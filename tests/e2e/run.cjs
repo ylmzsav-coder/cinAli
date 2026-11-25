@@ -386,6 +386,13 @@ const TABLES = [
       check("Kelimelerin Kök Değeri: uzay tablosu 6 kelime, hepsi 16 ve 7", rows.length === 6 && rows.every((r) => /16\s+7/.test(r)), rows.join(" | "));
       await h.locator(".wordnum-input").fill("ampül"); await W(h, 150);
       check("Kelimelerin Kök Değeri: Ü 5 hareket (AMPÜL = 16 → 7)", (await h.locator(".wordnum-sum").innerText()).includes("16"));
+      await h.locator(".wordnum-all-btn").tap(); await W(h, 800);
+      const chips = await h.locator(".wordnum-chip").evaluateAll((es) => es.slice(0, 8).map((e) => `${e.classList.contains("space") ? "*" : ""}${e.textContent}`));
+      const cnt = await h.locator(".wordnum-count").innerText();
+      check("Kelimelerin Kök Değeri: bütün yediler (9.512), ilk altı uzay altılısı ayrı renkte", cnt.includes("9.512") && chips.slice(0, 6).every((c) => c.startsWith("*")) && !chips[6].startsWith("*") && chips[0].includes("ZAMAN") && chips[5].includes("KAİNAT"), `${cnt} | ${chips.join(" ")}`);
+      await h.locator(".wordnum-chip:not(.space)").first().tap(); await W(h, 200);
+      check("Kelimelerin Kök Değeri: listedeki kelimeye dokununca hesabı açılır (7)", (await h.locator(".wordnum-card .wordnum-root b").innerText()).trim() === "7");
+      await h.locator(".wordnum-card .primary").tap();
       check("Kelimelerin Kök Değeri: tarayıcı hatası yok", !h.errors.length, h.errors.slice(0, 2).join(" | "));
       await h.context().close();
     }
