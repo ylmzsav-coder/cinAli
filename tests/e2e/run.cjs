@@ -248,8 +248,8 @@ const TABLES = [
     await p.locator(".name-btn").tap(); await p.locator(".name-edit input").fill("Deneme"); await p.locator(".name-edit button").tap(); await W(p, 200);
     check("profilde ad değişir ve kaydedilir", JSON.parse(await p.evaluate(() => localStorage.getItem("cinali.settings"))).name === "Deneme");
     await p.locator(".profile-actions button").nth(1).tap(); await W(p, 200);
-    await p.locator(".settings-list .switch").nth(4).tap(); await W(p, 200);
-    check("ayar anahtarı kaydedilir (oyun sesleri)", JSON.parse(await p.evaluate(() => localStorage.getItem("cinali.settings"))).sound === true);
+    await p.locator(".settings-list .switch").nth(2).tap(); await W(p, 200);
+    check("ayar anahtarı kaydedilir (oyun sesleri); sohbet anahtarları yok", (await p.locator(".settings-list .switch").count()) === 3 && JSON.parse(await p.evaluate(() => localStorage.getItem("cinali.settings"))).sound === true);
     await p.locator(".profile-close").tap(); await W(p, 300);
     await p.evaluate(() => window.dispatchEvent(new CustomEvent("wordokey:back"))); await W(p, 200);
     check("menüde geri tuşu kapatma onayı sorar", (await p.locator(".quit-modal").count()) === 1);
