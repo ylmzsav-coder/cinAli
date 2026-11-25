@@ -207,6 +207,15 @@ const tilesOnRack = (p) => p.locator(".okey-rack .rack-slot .tile");
   check("Ece oyunu başlattı, ikisi aynı masada oynuyor", started2);
   check("rakip Fikret (bilgisayar oyuncusu yok)", /Fikret/.test(await opp(E)) && /Ece/.test(await opp(F)), `${await opp(E)} / ${await opp(F)}`);
   check("özel Sosyete masasında sohbet var", (await E.locator(".chat-room-btn").count()) > 0);
+  // Sıraları arka arkaya 2 kez otomatik oynanınca iki oyuncuya da uyarı
+  await E.evaluate(async () => { const r = await window.__woTest.call("createPrivateTable", { type: "ustaozel", lang: "tr", name: "Ece" }); await window.__woTest.call("testRunTimeouts", { tableId: r.tableId, turns: 4 }); });
+  const warned = await until(async () => (await E.locator(".idle-warn").count()) > 0 && (await F.locator(".idle-warn").count()) > 0, 10000);
+  check("sırası 2 kez otomatik oynanınca uyarı çıktı (iki oyuncuda da)", warned, (await E.locator(".idle-warn").innerText().catch(() => "")).replace(/\n/g, " · ").slice(0, 120));
+  const warnFits = await E.evaluate(() => { const r = document.querySelector(".idle-warn")?.getBoundingClientRect(); return r ? r.left >= 0 && r.right <= innerWidth && r.top >= 0 : false; });
+  check("uyarı ekrana sığıyor", warnFits);
+  await E.locator(".idle-warn button").tap();
+  await W(E, 400);
+  check("'Anladım, oynuyorum' ile uyarı kapanıyor", (await E.locator(".idle-warn").count()) === 0);
   check("arkadaşla oyna testinde tarayıcı hatası yok", !E.errors.length && !F.errors.length, [...E.errors, ...F.errors].slice(0, 2).join(" | "));
 
   await browser.close();

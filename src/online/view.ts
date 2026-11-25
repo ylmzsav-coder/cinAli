@@ -29,6 +29,8 @@ export interface SeatInfo {
   manual?: number;
   /** Süre dolunca otomatik oynanan hamle (sıra) sayısı. */
   auto?: number;
+  /** Arka arkaya süre dolumuyla otomatik oynanan sıra sayısı (elle hamlede sıfırlanır). */
+  autoStreak?: number;
 }
 
 export interface PublicView extends Omit<GameState, "players" | "deck"> {

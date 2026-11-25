@@ -159,9 +159,11 @@ interface Props {
   tableId?: string;
   /** Oyun sonunda kazanılan çip. */
   payout?: number;
+  /** Sohbetli odada: oyuncunun arka arkaya otomatik oynanan sıra sayısı (2 ve üstünde uyarı). */
+  idleStreak?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, carry, tableId, vipSeats = [], payout, prize = 0 }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, carry, tableId, vipSeats = [], payout, prize = 0, idleStreak = 0 }: Props) {
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -472,6 +474,13 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
       return false;
     }
   };
+
+  // Sohbetli odada sıra arka arkaya 2 kez otomatik oynandıysa uyarı (her yeni otomatik sırada tekrar)
+  const [idleSeen, setIdleSeen] = useState(0);
+  const idleWarn = idleStreak >= 2 && idleSeen !== idleStreak && state.phase !== "gameOver";
+  useEffect(() => {
+    if (idleWarn && vibration) buzz(true);
+  }, [idleWarn, idleStreak]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Son 5 saniye: sizin sıranızda her saniye tık sesi ve titreşim (saniye başına bir kez)
   const warnedRef = useRef("");
@@ -966,6 +975,13 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
 
   return (
     <div className={`game okey ${draggingTile ? "dragging" : ""}`}>
+      {idleWarn && (
+        <div className="idle-warn" role="alert">
+          <b>⚠️ {t("idleWarnTitle")}</b>
+          <span>{t("idleWarnText", { n: idleStreak })}</span>
+          <button type="button" className="primary" onClick={() => setIdleSeen(idleStreak)}>{t("idleWarnOk")}</button>
+        </div>
+      )}
       <header className="topbar">
         {/* Menü bağlantısı yalnızca "Oyundan çık" yokken (el bittiğinde, izlerken) */}
         {!(onLeave && !handOver) && <button type="button" className="link" onClick={onExit}>{t("menu")}</button>}

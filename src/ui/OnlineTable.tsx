@@ -354,6 +354,7 @@ export function OnlineTable({ entry, settings, onChat, onExit, onDone }: Props) 
       onLeave={doc_.status === "playing" ? leave : undefined}
       tableName={t(`table_${cfg.id}` as "table_vip")} tableId={cfg.id} prize={winnerPrize(cfg)}
       payout={doc_.payouts?.[uid]}
+      idleStreak={isChatType(doc_.type) ? doc_.seats.find((x) => x.uid === uid)?.autoStreak ?? 0 : 0}
     />
   );
 }

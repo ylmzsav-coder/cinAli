@@ -76,6 +76,22 @@ async function pair(type, a, b) {
   check("elle atılan taş sunucuda 'elle hamle' olarak sayıldı", sf.manual === 1, JSON.stringify(sf));
 }
 
+// 2d) Uyarı sayacı: arka arkaya otomatik sıralar sayılır, elle hamlede sıfırlanır
+{
+  const { A, B, tableId, table } = await pair("ustaozel", "Işıl", "Kaan");
+  await A.call("testRunTimeouts", { tableId, turns: 4 });
+  let t = await table();
+  const st = (u) => t.seats.find((x) => x.uid === u.uid).autoStreak;
+  check("iki oyuncunun sırası 2'şer kez otomatik: uyarı sayacı 2", st(A) === 2 && st(B) === 2 && t.status === "playing", `${st(A)} / ${st(B)}`);
+  const view = JSON.parse(t.view);
+  const cur = t.seats[view.current].uid === A.uid ? A : B;
+  if (view.phase === "draw") await cur.call("act", { tableId, action: { type: "drawDeck" } });
+  const hand = (await getDoc(doc(cur.db, "tables", tableId, "hands", cur.uid))).data();
+  await cur.call("act", { tableId, action: { type: "discard", tileId: hand.rack[hand.rack.length - 1].id } });
+  t = await table();
+  check(`elle hamle yapan ${cur.name}'ın uyarı sayacı sıfırlandı, diğerininki duruyor`, st(cur) === 0 && st(cur === A ? B : A) === 2);
+}
+
 // 3) Sosyete 4 kişilik masa (sohbetli): oynamayan insanların girişi yanar
 {
   const { A, B, a0, b0, tableId, table } = await pair("usta", "Ece", "Ferhat");

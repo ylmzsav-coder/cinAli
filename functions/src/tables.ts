@@ -186,7 +186,7 @@ function idleSeat(seat: SeatInfo): boolean {
 function countAuto(table: TableDoc, state: GameState) {
   const i = state.current;
   if ((state.phase === "draw" || state.phase === "play") && table.seats[i]?.uid && !table.seats[i].bot) {
-    table.seats = table.seats.map((x, k) => (k === i ? { ...x, auto: (x.auto ?? 0) + 1 } : x));
+    table.seats = table.seats.map((x, k) => (k === i ? { ...x, auto: (x.auto ?? 0) + 1, autoStreak: (x.autoStreak ?? 0) + 1 } : x));
   }
 }
 
@@ -532,7 +532,7 @@ export const act = onCall(async (req) => {
       }
     });
     // Oyuncu sırasını kendi eliyle tamamladı (taş attı): sohbetli odada iade oranına sayılır
-    if (action?.type === "discard") table.seats = table.seats.map((x, i) => (i === seat ? { ...x, manual: (x.manual ?? 0) + 1 } : x));
+    if (action?.type === "discard") table.seats = table.seats.map((x, i) => (i === seat ? { ...x, manual: (x.manual ?? 0) + 1, autoStreak: 0 } : x));
     next = runBots(next, cfg.level);
     const wallets = next.phase === "gameOver" ? await walletsOf(t, table.uids) : new Map();
     await persist(t, id, table, next, wallets);
@@ -586,12 +586,14 @@ export const testRunTimeouts = onCall(async (req) => {
     // İsteğe bağlı: önce masadaki insanların "manual" sayıda sırası elle oynanmış sayılır
     const manualTurns = Math.max(0, Math.floor(Number(req.data?.manualFor?.turns ?? 0)));
     const manualUid = String(req.data?.manualFor?.uid ?? "");
-    for (let guard = 0; next.phase !== "gameOver" && guard < 2000; guard++) {
+    // İsteğe bağlı: yalnızca bu kadar sıra oynatılır (uyarı testi için oyunu bitirmeden)
+    const limit = Math.max(0, Math.floor(Number(req.data?.turns ?? 0))) || Infinity;
+    for (let guard = 0, n = 0; next.phase !== "gameOver" && guard < 2000 && n < limit; guard++, n++) {
       if (next.phase === "handOver") { next = dealHand(next); continue; }
       const seat = table.seats[next.current];
       const counted = table.seats.find((x) => x.uid === manualUid);
       if (seat?.uid === manualUid && (counted?.manual ?? 0) < manualTurns) {
-        table.seats = table.seats.map((x) => (x.uid === manualUid ? { ...x, manual: (x.manual ?? 0) + 1 } : x));
+        table.seats = table.seats.map((x) => (x.uid === manualUid ? { ...x, manual: (x.manual ?? 0) + 1, autoStreak: 0 } : x));
       } else countAuto(table, next);
       next = timeoutMove(next);
     }
