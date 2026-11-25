@@ -374,7 +374,7 @@ const TABLES = [
         bg[".cayhane-hub"].includes("rgb(239, 108, 0)") && bg[".carli-hub"].includes("rgb(245, 197, 24)") && bg[".ozel-hub"].includes("rgb(19, 235, 4)") && bg[".usta-hub"] === bg[".close-game"], JSON.stringify(bg).slice(0, 200));
       await h.context().close();
     }
-    // Kelimenin Sayısı: kalem hareketleri toplanır, rakamları tek basamağa iner; uzay tablosu altı kelime, hepsi 16 → 7
+    // Kelimelerin Kök Değeri: kalem hareketleri toplanır, rakamları tek basamağa iner; uzay tablosu altı kelime, hepsi 16 → 7
     {
       const h = await fresh(browser, "Pixel 7 landscape");
       await h.locator(".wordnum-hub").tap(); await W(h, 300);
@@ -382,11 +382,11 @@ const TABLES = [
       const root = (await h.locator(".wordnum-root b").innerText()).trim();
       const sum = await h.locator(".wordnum-sum").innerText();
       const rows = await h.locator(".wordnum-table tbody tr").allInnerTexts();
-      check("Kelimenin Sayısı: KAİNAT = 3+3+2+3+3+2 = 16 → 7", root === "7" && sum.includes("16"), `${sum} → ${root}`);
-      check("Kelimenin Sayısı: uzay tablosu 6 kelime, hepsi 16 ve 7", rows.length === 6 && rows.every((r) => /16\s+7/.test(r)), rows.join(" | "));
+      check("Kelimelerin Kök Değeri: KAİNAT = 3+3+2+3+3+2 = 16 → 7", root === "7" && sum.includes("16"), `${sum} → ${root}`);
+      check("Kelimelerin Kök Değeri: uzay tablosu 6 kelime, hepsi 16 ve 7", rows.length === 6 && rows.every((r) => /16\s+7/.test(r)), rows.join(" | "));
       await h.locator(".wordnum-input").fill("ampül"); await W(h, 150);
-      check("Kelimenin Sayısı: Ü 5 hareket (AMPÜL = 16 → 7)", (await h.locator(".wordnum-sum").innerText()).includes("16"));
-      check("Kelimenin Sayısı: tarayıcı hatası yok", !h.errors.length, h.errors.slice(0, 2).join(" | "));
+      check("Kelimelerin Kök Değeri: Ü 5 hareket (AMPÜL = 16 → 7)", (await h.locator(".wordnum-sum").innerText()).includes("16"));
+      check("Kelimelerin Kök Değeri: tarayıcı hatası yok", !h.errors.length, h.errors.slice(0, 2).join(" | "));
       await h.context().close();
     }
     // Çayhane demliği: "Oyunu kapat" ile aynı kırmızı (SVG), yazıyla birlikte ortalı
