@@ -429,35 +429,60 @@ export const joinTable = onCall(async (req) => {
       return tb.seats.length < (cfg.players ?? 4) && !tb.uids.includes(uid) && !(await blockedWithAny(uid, tb.uids));
     };
     let candidate: FirebaseFirestore.QueryDocumentSnapshot | undefined;
-    for (const d of open.docs) if (await free(d)) { candidate = d; break; }
-    // VIP oyuncu yoksa sırayla: Fifty Cent (Teke Tek) → Sosyete → Çarli → Çayhane. Yalnızca VIP ile AYNI girişli
-    // (100) masada tek başına bekleyen oyuncuyla eşleşilir; yüksek girişli masalardan oyuncu
-    // alınmaz, çip iadesi gerekmez. Ondan abonelik istenmez, masa VIP masasına dönüşür
-    // (sohbetli, süresiz). 18 yaş altı oyuncu VIP odaya (sohbet) alınmaz.
     let fromOzel = false;
-    if (cfg.vip && !candidate) {
+    // Seviye masasında (VIP değil) tek başına bekleyen, 18 yaşından büyük gerçek oyuncu
+    const lone = async (d: FirebaseFirestore.QueryDocumentSnapshot) => {
+      const tb = d.data() as TableDoc;
+      if (tb.seats.length !== 1 || tb.seats[0].bot || tb.uids.includes(uid) || (await blockedWithAny(uid, tb.uids))) return false;
+      return (await t.get(userRef(tb.seats[0].uid!))).data()?.adult !== false;
+    };
+    // VIP oyuncu sırası: 1) ekli arkadaş, 2) VIP oyuncu, 3) Fifty Cent, 4) Sosyete (yalnızca VIP oyuncunun
+    // başarı oranı Sosyete şartını, %76'yı karşılıyorsa), 5) Çarli, 6) en son Çayhane.
+    // Seviye masalarından yalnızca VIP ile AYNI girişli (100) masada tek başına bekleyen oyuncu alınır;
+    // yüksek girişli masalardan oyuncu alınmaz, çip iadesi gerekmez. Ondan abonelik istenmez,
+    // masa VIP masasına dönüşür (sohbetli). 18 yaş altı oyuncu VIP odaya (sohbet) alınmaz.
+    if (cfg.vip) {
       const same = (x: TableConfig) => !x.vip && x.entry === cfg.entry;
+      const sosyete = TABLES.find((x) => x.id === "usta")!;
+      const myRate = ratePercent(Number(user.gamesWon ?? 0), Number(user.gamesPlayed ?? 0));
       const tiers = [
         TABLES.filter((x) => same(x) && x.players === 2).map((x) => x.id),
-        TABLES.filter((x) => same(x) && x.id.startsWith("usta")).map((x) => x.id),
+        rateAllows(sosyete, myRate) ? TABLES.filter((x) => same(x) && x.id.startsWith("usta")).map((x) => x.id) : [],
         TABLES.filter((x) => same(x) && x.id.startsWith("carli")).map((x) => x.id),
         TABLES.filter((x) => same(x) && x.id === "caylak").map((x) => x.id),
       ];
-      search: for (const types of tiers) {
+      const tierDocs: FirebaseFirestore.QueryDocumentSnapshot[][] = [];
+      for (const types of tiers) {
+        const docs: FirebaseFirestore.QueryDocumentSnapshot[] = [];
         for (const oz of types) {
           const os = await t.get(db.collection("tables").where("status", "==", "waiting").where("private", "==", false)
             .where("type", "==", oz).where("lang", "==", lang).where("startAt", ">", now + 500).limit(5));
-          for (const d of os.docs) {
-            const tb = d.data() as TableDoc;
-            // Yalnızca tek başına bekleyen gerçek oyuncu (başka oyuncuların masası bozulmaz)
-            if (tb.seats.length !== 1 || tb.seats[0].bot || tb.uids.includes(uid) || (await blockedWithAny(uid, tb.uids))) continue;
-            if ((await t.get(userRef(tb.seats[0].uid!))).data()?.adult === false) continue;
-            candidate = d;
-            fromOzel = true;
-            break search;
+          docs.push(...os.docs);
+        }
+        tierDocs.push(docs);
+      }
+      // 1) Arkadaş önceliği: bekleyen VIP masasında ya da sıradaki seviye masalarında tek başına bekleyen ekli arkadaş
+      const friends = new Set((await t.get(userRef(uid).collection("friends").limit(200))).docs.map((d) => d.id));
+      const host = (d: FirebaseFirestore.QueryDocumentSnapshot) => (d.data() as TableDoc).seats[0]?.uid ?? "";
+      if (friends.size) {
+        const vipAll = byGender ? (await t.get(base)).docs : open.docs;
+        for (const d of vipAll) if (friends.has(host(d)) && (await free(d))) { candidate = d; break; }
+        if (!candidate) {
+          search: for (const docs of tierDocs) for (const d of docs) {
+            if (friends.has(host(d)) && (await lone(d))) { candidate = d; fromOzel = true; break search; }
           }
         }
       }
+      // 2) VIP oyuncu
+      if (!candidate) for (const d of open.docs) if (await free(d)) { candidate = d; break; }
+      // 3–6) Seviye masaları sırayla
+      if (!candidate) {
+        search: for (const docs of tierDocs) for (const d of docs) {
+          if (await lone(d)) { candidate = d; fromOzel = true; break search; }
+        }
+      }
+    } else {
+      for (const d of open.docs) if (await free(d)) { candidate = d; break; }
     }
 
     applyTx(t, uid, w, -cfg.entry, "masa-giris", cfg.id);

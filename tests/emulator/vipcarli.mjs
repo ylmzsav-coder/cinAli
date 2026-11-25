@@ -1,4 +1,4 @@
-// Emülatöre karşı VIP Oda eşleşme sırasında Çarli: Fifty Cent → Sosyete → Çarli → Çayhane
+// Emülatöre karşı VIP Oda eşleşme sırası: ekli arkadaş → VIP → Fifty Cent → Sosyete (oran %76+) → Çarli → Çayhane
 // (yalnızca giriş 100 olan masalarda tek başına bekleyen oyuncuyla). Temiz emülatörde çalışır.
 // node tests/emulator/vipcarli.mjs
 import { initializeApp } from "firebase/app";
@@ -51,6 +51,43 @@ const tbl = async (c, id) => (await getDoc(doc(c.db, "tables", id))).data();
   const got = [];
   for (const v of V) got.push((await v.call("joinTable", { type, lang: "pt", name: "V" })).tableId);
   check("öncelik sırası: Fifty Cent → Sosyete → Çarli → Çayhane", got[0] === oj.tableId && got[1] === sj.tableId && got[2] === rj.tableId && got[3] === cj.tableId, JSON.stringify(got.map((g) => [oj, sj, rj, cj].findIndex((x) => x.tableId === g))));
+}
+
+{
+  // Başarı oranı %76'nın altındaki VIP oyuncu Sosyete oyuncusuyla eşleşmez; sıradaki Çarli'ye geçer
+  const S = await client("Selin"), R = await client("Rüştü");
+  await R.call("testSetStats", { played: 10, won: 5 });
+  const V = await client("Veli");
+  await V.call("testSubscribeVip");
+  await V.call("testSetStats", { played: 10, won: 5 }); // %50
+  const sj = await S.call("joinTable", { type: "usta", lang: "it", name: "Selin" });
+  const rj = await R.call("joinTable", { type: "carli", lang: "it", name: "Rüştü" });
+  const vj = await V.call("joinTable", { type, lang: "it", name: "Veli" });
+  const st = await tbl(S, sj.tableId);
+  check("%76 altı VIP (%50) Sosyete oyuncusuyla eşleşmez, Çarli'deki oyuncuya geçer", vj.tableId === rj.tableId && st.type === "usta" && st.seats.length === 1, `VIP → ${vj.tableId === rj.tableId ? "Çarli" : vj.tableId === sj.tableId ? "Sosyete" : "yeni masa"}`);
+  // %76 ve üstü VIP Sosyete oyuncusuyla eşleşir
+  const V2 = await client("Vildan");
+  await V2.call("testSubscribeVip");
+  await V2.call("testSetStats", { played: 100, won: 76 }); // tam %76
+  const v2 = await V2.call("joinTable", { type, lang: "it", name: "Vildan" });
+  check("%76 VIP Sosyete oyuncusuyla eşleşir", v2.tableId === sj.tableId, `VIP → ${v2.tableId === sj.tableId ? "Sosyete" : "başka"}`);
+}
+{
+  // Arkadaş önceliği: VIP oyuncu, ekli arkadaşı Çayhane'de bekliyorsa Fifty Cent'teki yabancı yerine onunla eşleşir
+  const F = await client("Fadime"), O = await client("Orhan");
+  await F.call("testSetStats", { played: 10, won: 5 });
+  const V = await client("Vural");
+  await V.call("testSubscribeVip");
+  check("Vural, Fadime'yi arkadaş listesine ekler", (await V.call("sendFriendRequest", { targetUid: F.uid })).status === "friends");
+  const oj = await O.call("joinTable", { type: "ozel2", lang: "es", name: "Orhan" });
+  const fj = await F.call("joinTable", { type: "caylak", lang: "es", name: "Fadime" });
+  const vj = await V.call("joinTable", { type, lang: "es", name: "Vural" });
+  const ft = await tbl(F, fj.tableId), ot = await tbl(O, oj.tableId);
+  check("ekli arkadaş önce: Çayhane'deki arkadaşla eşleşir, Fifty Cent'teki yabancı beklemeye devam eder", vj.tableId === fj.tableId && ft.type === "vip2" && ft.status === "playing" && ot.type === "ozel2" && ot.seats.length === 1, `VIP → ${vj.tableId === fj.tableId ? "arkadaş" : vj.tableId === oj.tableId ? "Fifty Cent" : "yeni masa"}`);
+  // Arkadaşı olmayan VIP için sıra değişmez: Fifty Cent önce
+  const V2 = await client("Vesile");
+  await V2.call("testSubscribeVip");
+  check("arkadaşı beklemeyen VIP için sıra aynı: Fifty Cent", (await V2.call("joinTable", { type, lang: "es", name: "Vesile" })).tableId === oj.tableId);
 }
 
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
