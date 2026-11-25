@@ -59,7 +59,7 @@ service cloud.firestore {
                  "helloCayhane", "helloCarli", "helloFifty", "helloSosyete"])
               || (request.resource.data.kind == "emoji" && request.resource.data.id in
                 ["❤️", "👍", "👏", "😂", "😮", "😅", "😢", "😡", "🔥",
-                 "👋", "👌", "✌️", "🙏", "🎉", "🏆", "🎷", "✏️", "✒️"]));
+                 "👋", "👌", "✌️", "🙏"]));
         allow update, delete: if false;
       }
       // Yazışma hız sınırı ve ihlal sayaçları: yalnızca sunucu

@@ -494,15 +494,13 @@ const TABLES = [
       check(`${name}: hazır mesajlarda en başta '${want}' + el sallayan yüz, başka masanın selamı yok; balonda da yüz`, msgs[0]?.t === want && msgs[0]?.face && !msgs.some((m) => others.includes(m.t)) && bubble, JSON.stringify(msgs.slice(0, 2)));
       await h.context().close();
     }
-    // Emoji şeridi: yeni emojiler (👋👌✌️🙏🎉🏆🎷✏️✒️), tek satırda yana kayar, gönderilir
-    {
-      const h = await fresh(browser, "iPhone SE landscape", { played: 10, won: 9 });
+    // Emoji şeridi: 13 emoji, kaydırma yok, hepsi tek satırda ekrana sığıyor (farklı telefonlarda)
+    for (const d of ["Pixel 7 landscape", "Galaxy S8 landscape", "iPhone SE landscape"]) {
+      const h = await fresh(browser, d, { played: 10, won: 9 });
       await TABLES[0].open(h); await W(h, 1500);
       await h.locator(".chat-room-btn").first().tap(); await W(h, 400);
-      const r = await h.evaluate(() => { const c = document.querySelector(".chat-emojis"); return { list: [...c.querySelectorAll("button")].map((x) => x.textContent).join(""), h: Math.round(c.getBoundingClientRect().height), hs: document.documentElement.scrollWidth > innerWidth + 2 }; });
-      await h.locator(".chat-emojis button", { hasText: "🎷" }).scrollIntoViewIfNeeded(); await h.locator(".chat-emojis button", { hasText: "🎷" }).tap(); await W(h, 400);
-      const bubble = (await h.locator(".bubble, .chat-bubble").allInnerTexts()).join("|");
-      check("emoji şeridinde 18 emoji (havuç, salatalık, muz yok), tek satır, sayfa taşmıyor; 🎷 gönderildi", r.list === "❤️👍👏😂😮😅😢😡🔥👋👌✌️🙏🎉🏆🎷✏️✒️" && r.h > 20 && r.h < 50 && !r.hs && bubble.includes("🎷"), JSON.stringify({ ...r, bubble }));
+      const r = await h.evaluate(() => { const c = document.querySelector(".chat-emojis"); const cr = c.getBoundingClientRect(); const bs = [...c.querySelectorAll("button")]; return { list: bs.map((x) => x.textContent).join(""), visible: bs.filter((x) => { const q = x.getBoundingClientRect(); return q.left >= cr.left - 1 && q.right <= cr.right + 1 && q.top >= cr.top - 1 && q.bottom <= cr.bottom + 1; }).length, scroll: c.scrollWidth > c.clientWidth + 1, rows: new Set(bs.map((x) => Math.round(x.getBoundingClientRect().top))).size, size: parseFloat(getComputedStyle(bs[0]).fontSize) }; });
+      check(`emoji şeridi (${d}): 13 emoji, hepsi görünüyor, kaydırma yok, tek satır`, r.list === "❤️👍👏😂😮😅😢😡🔥👋👌✌️🙏" && r.visible === 13 && !r.scroll && r.rows === 1, JSON.stringify(r));
       await h.context().close();
     }
     // Hazır mesaj "Seri olalım lütfen 😒"

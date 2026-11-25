@@ -347,11 +347,11 @@ button.big { width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; }
   background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 14px;
   padding: 8px; display: grid; gap: 8px;
 }
-.chat-emojis { display: flex; flex-wrap: nowrap; justify-content: flex-start; gap: 4px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.chat-emojis::-webkit-scrollbar { display: none; }
-.chat-emojis { flex-shrink: 0; -webkit-mask-image: linear-gradient(to right, #000 90%, transparent); mask-image: linear-gradient(to right, #000 90%, transparent); }
-.chat-emojis button { flex: none; }
-.chat-emojis button { background: none; font-size: 1.5rem; padding: 2px 4px; }
+/* Emoji şeridi: kaydırma yok, hepsi tek satırda (aralar dar; çok dar ekranda hafif küçülür) */
+.chat-emojis { display: flex; flex-wrap: nowrap; justify-content: space-between; gap: 2px; flex-shrink: 0; }
+.chat-emojis button { flex: 0 1 auto; min-width: 0; }
+.chat-emojis button { background: none; font-size: 1.5rem; padding: 2px 1px; }
+@media (max-width: 700px) { .chat-emojis button { font-size: 1.2rem; padding: 2px 0; } }
 .chat-msgs { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .chat-msgs button { font-size: 0.82rem; padding: 7px 10px; background: #f4f1e8; }
 
