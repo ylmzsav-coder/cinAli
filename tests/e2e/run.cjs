@@ -365,9 +365,9 @@ const TABLES = [
     // Ana menüde oyun düğmeleri seviye renklerinde: Çayhane turuncu, Çarli sarı, Fifty Cent yeşil, Sosyete kırmızı
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });
-      const bg = await h.evaluate(() => Object.fromEntries([".cayhane-hub", ".carli-hub", ".ozel-hub", ".usta-hub"].map((k) => [k, getComputedStyle(document.querySelector(k)).backgroundImage])));
-      check("menü düğmeleri: Çayhane turuncu, Çarli sarı, Fifty Cent yeşil, Sosyete kırmızı",
-        bg[".cayhane-hub"].includes("rgb(239, 108, 0)") && bg[".carli-hub"].includes("rgb(245, 197, 24)") && bg[".ozel-hub"].includes("rgb(31, 168, 90)") && bg[".usta-hub"].includes("rgb(211, 47, 47)"), JSON.stringify(bg).slice(0, 200));
+      const bg = await h.evaluate(() => Object.fromEntries([".cayhane-hub", ".carli-hub", ".ozel-hub", ".usta-hub", ".close-game"].map((k) => [k, getComputedStyle(document.querySelector(k)).backgroundImage])));
+      check("menü düğmeleri: Çayhane turuncu, Çarli sarı, Fifty Cent yeşil, Sosyete kırmızı (Oyunu kapat ile aynı ton)",
+        bg[".cayhane-hub"].includes("rgb(239, 108, 0)") && bg[".carli-hub"].includes("rgb(245, 197, 24)") && bg[".ozel-hub"].includes("rgb(31, 168, 90)") && bg[".usta-hub"] === bg[".close-game"], JSON.stringify(bg).slice(0, 200));
       await h.context().close();
     }
     // Başarı oranı halkası: ana menüde ve profilde, seviyesinin renginde
