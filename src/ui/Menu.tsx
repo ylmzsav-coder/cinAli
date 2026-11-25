@@ -312,7 +312,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <span>👑 {t("vipShort")}</span>
               <span className="caylak-sub">💬 {t("vipChatGame")} · {t("twoPlayers")}</span>
             </button>
-            {onWordNum && <button type="button" className="big wordnum-hub" onClick={onWordNum}>🔢 {t("wordNumTitle")}</button>}
+            {onWordNum && <button type="button" className="big wordnum-hub" onClick={onWordNum}>{t("wordNumTitle")}</button>}
           </div>
           {invite && onJoinInvite && (
             <div className="modal-bg">
