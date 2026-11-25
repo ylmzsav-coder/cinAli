@@ -370,6 +370,17 @@ const TABLES = [
         bg[".cayhane-hub"].includes("rgb(239, 108, 0)") && bg[".carli-hub"].includes("rgb(245, 197, 24)") && bg[".ozel-hub"].includes("rgb(31, 168, 90)") && bg[".usta-hub"] === bg[".close-game"], JSON.stringify(bg).slice(0, 200));
       await h.context().close();
     }
+    // Çayhane demliği: "Oyunu kapat" ile aynı kırmızı (SVG), yazıyla birlikte ortalı
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });
+      const r = await h.evaluate(() => {
+        const stops = [...document.querySelectorAll(".cayhane-hub .teapot-icon linearGradient stop")].map((x) => x.getAttribute("stop-color"));
+        const b = document.querySelector(".cayhane-hub").getBoundingClientRect(), top = document.querySelector(".cayhane-top").getBoundingClientRect();
+        return { stops, off: Math.round(top.left + top.width / 2 - (b.left + b.width / 2)), emoji: document.querySelector(".cayhane-hub").textContent.includes("🫖") };
+      });
+      check("Çayhane demliği Oyunu kapat tonunda (#ef5350 → #b3261e), emoji yok, başlık hafif sola (simetrik)", r.stops.join() === "#ef5350,#b3261e" && !r.emoji && r.off <= 0 && r.off >= -12, JSON.stringify(r));
+      await h.context().close();
+    }
     // Başarı oranı halkası: ana menüde ve profilde, seviyesinin renginde
     for (const [won, tier, color] of [[2, "Çayhane", "#ff7a1a"], [4, "Çarli", "#f5c518"], [6, "Fifty Cent", "#2ecc71"], [8, "Sosyete", "#e53935"]]) {
       const h = await fresh(browser, "iPhone SE landscape", { played: 10, won });

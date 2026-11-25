@@ -22,6 +22,7 @@ import { DiceIcon } from "./Dice";
 import { Chips } from "./Chips";
 import { type TableConfig, isVipType, rateTier, sosyetePrivateOf, tableById, winnerPrize } from "../economy/tables";
 import { RateRing, tierName } from "./RateRing";
+import { TeapotIcon } from "./Teapot";
 import { myRate } from "../stats";
 import { VipModal } from "./Vip";
 import { CLOUD } from "../online/cloud";
@@ -310,7 +311,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           {/* Masalar: [Çayhane, Çarli] [Fifty Cent, Sosyete]; ardından [Pratik, Mağaza, Kurallar] */}
           <div className="hub-row">
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub cayhane-hub`} onClick={() => onSitTable(tableById("caylak")!)}>
-              <span>🫖 {t("playCaylak")}</span>
+              <span className="cayhane-top"><TeapotIcon /> {t("playCaylak")}</span>
               <span className="caylak-sub">{t("entry")} <Chips amount={tableById("caylak")!.entry} /> · {t("toWinner")} <Chips amount={winnerPrize(tableById("caylak")!)} /></span>
             </button>
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub carli-hub`} onClick={() => setCarliOpen(true)}>
