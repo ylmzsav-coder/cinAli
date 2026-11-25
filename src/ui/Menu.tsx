@@ -20,7 +20,9 @@ import { vipTermsAccepted } from "../terms";
 import { KumbaraIcon } from "./Kumbara";
 import { DiceIcon } from "./Dice";
 import { Chips } from "./Chips";
-import { type TableConfig, isVipType, sosyetePrivateOf, tableById, winnerPrize } from "../economy/tables";
+import { type TableConfig, isVipType, rateTier, sosyetePrivateOf, tableById, winnerPrize } from "../economy/tables";
+import { RateRing, tierName } from "./RateRing";
+import { myRate } from "../stats";
 import { VipModal } from "./Vip";
 import { CLOUD } from "../online/cloud";
 import { type TableInvite, declineInvite, friendsStatus } from "../online/social";
@@ -228,10 +230,20 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           <Logo />
           <p className="muted tagline">{t("tagline")}</p>
           <div className="hub-me">
-            <button type="button" className="profile-chip" onClick={() => setStatsOpen(true)} aria-label={t("myProfile")}>
-              <Avatar name={settings.name || t("defaultName")} seat={0} size="md" vip={wallet.isVip()} />
-              <span>{t("myProfile")}</span>
-            </button>
+            {(() => {
+              // Profil düğmesi: başarı oranı halkası ve seviye adı (seviyenin renginde)
+              const me = myRate();
+              return (
+                <button type="button" className="profile-chip hub-rate" onClick={() => setStatsOpen(true)} aria-label={t("myProfile")}>
+                  <Avatar name={settings.name || t("defaultName")} seat={0} size="md" vip={wallet.isVip()} />
+                  <span className="hub-rate-text">
+                    <span>{t("myProfile")}</span>
+                    <b style={{ color: rateTier(me.rate).tier.color }}>{tierName(me.rate)}</b>
+                  </span>
+                  <RateRing rate={me.rate} size={34} />
+                </button>
+              );
+            })()}
             <button type="button" className="balance kumbara-balance" onClick={onShop} aria-label={t("balanceAria")}>
               <KumbaraIcon size="2.4em" />
               <span className="kumbara-text">

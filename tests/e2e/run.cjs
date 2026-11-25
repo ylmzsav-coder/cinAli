@@ -362,6 +362,16 @@ const TABLES = [
       check(`Sosyete (${d}) arkadaşla: tarayıcı hatası yok`, !q.errors.length, q.errors.slice(0, 2).join(" | "));
       await q.context().close();
     }
+    // Başarı oranı halkası: ana menüde ve profilde, seviyesinin renginde
+    for (const [won, tier, color] of [[2, "Çayhane oyuncusu", "#ff7a1a"], [4, "Çarli oyuncusu", "#f5c518"], [6, "Fifty Cent oyuncusu", "#2ecc71"], [8, "Sosyete oyuncusu", "#e53935"]]) {
+      const h = await fresh(browser, "iPhone SE landscape", { played: 10, won });
+      const r = await h.evaluate(() => { const b = document.querySelector(".hub-rate"); const c = b?.querySelectorAll("circle")[1]; const x = b?.getBoundingClientRect(); return { text: b?.textContent ?? "", stroke: c?.getAttribute("stroke"), fit: x ? x.right <= innerWidth && x.bottom <= innerHeight : false }; });
+      check(`menüde (Profilim düğmesinde) başarı oranı halkası %${won * 10}: ${tier}, renk ${color}`, r.text.includes(`%${won * 10}`) && r.text.includes(tier) && r.stroke === color && r.fit, JSON.stringify(r));
+      await h.locator(".hub-rate").tap(); await W(h, 400);
+      const card = await h.locator(".rate-card").innerText().catch(() => "");
+      check(`profilde başarı oranı kartı %${won * 10} (${tier})`, card.includes(tier) && card.includes(`10 oyunda ${won} galibiyet`), card.replace(/\n/g, " · "));
+      await h.context().close();
+    }
     // Çarli'de yalnızca Otur (arkadaş düğmesi yok)
     const c = await fresh(browser, "Pixel 7 landscape", { played: 25, won: 19 });
     await c.locator(".carli-hub").tap(); await W(c, 400);

@@ -12,7 +12,8 @@ import type { GameState } from "../game/engine";
 import { handWinsOf, placedValue, totals, wordString } from "../game/engine";
 import { COLORS, type Tile } from "../game/tiles";
 import { errorText, formatNumber, t, uiLocale } from "../i18n";
-import { loadStats, winRate, type PlayerStats } from "../stats";
+import { loadStats, myRate, winRate, type PlayerStats } from "../stats";
+import { RateCard } from "./RateRing";
 import { TileView } from "./TileView";
 import { FriendsPanel } from "./Friends";
 import { MyGiftsPanel } from "./Gifts";
@@ -213,10 +214,7 @@ export function MyStatsModal({ name, onClose, onJoin, gender: genderProp, onGend
           <StatsDetail s={s} />
         ) : (
           <div className="profile-summary">
-            <div className="stat stat-rate">
-              <div className="rate-circle">%{rate}</div>
-              <div className="stat-label big-label">{t("stWinRate")}</div>
-            </div>
+            {(() => { const me = myRate(); return <RateCard rate={me.rate} won={me.won} played={me.played} />; })()}
             <div className="stats-row2">
               <Box label={t("stWins")} value={s.gamesWon} />
               <Box label={t("stLosses")} value={s.gamesLost} />

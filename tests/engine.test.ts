@@ -833,3 +833,16 @@ describe("sohbetli odada iade: hamlelerin en az yarısı elle (%50)", () => {
     expect(idleRefundDenied(0, 0)).toBe(false);
   });
 });
+
+import { rateTier } from "../src/economy/tables";
+describe("başarı oranı halkası: seviye ve renk", () => {
+  it("%0-30 turuncu Çayhane, %31-49 sarı Çarli, %50-75 yeşil Fifty Cent, %76+ kırmızı Sosyete", () => {
+    const cases: [number, string, string][] = [[0, "caylak", "#ff7a1a"], [30, "caylak", "#ff7a1a"], [31, "carli", "#f5c518"], [49, "carli", "#f5c518"], [50, "ozel2", "#2ecc71"], [75, "ozel2", "#2ecc71"], [76, "usta", "#e53935"], [100, "usta", "#e53935"]];
+    for (const [rate, table, color] of cases) {
+      expect(rateTier(rate).tier.table, `%${rate}`).toBe(table);
+      expect(rateTier(rate).tier.color, `%${rate}`).toBe(color);
+    }
+    expect(rateTier(20).next?.min).toBe(31);
+    expect(rateTier(80).next).toBeNull();
+  });
+});

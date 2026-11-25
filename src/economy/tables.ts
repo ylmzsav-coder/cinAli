@@ -30,6 +30,28 @@ export const TEKE_TEK_MIN_RATE = 50;
 /** Çarli giriş şartı: başarı oranı en az yüzde 31 (altındakiler Çayhane'de oynar). */
 export const CARLI_MIN_RATE = 31;
 
+/** Başarı oranı seviyesi: hangi masa grubunun oyuncusu olduğu ve rengi (halka göstergesi). */
+export interface RateTier {
+  /** Masa grubu: caylak (Çayhane), carli (Çarli), ozel2 (Fifty Cent), usta (Sosyete). */
+  table: "caylak" | "carli" | "ozel2" | "usta";
+  /** Bu seviyenin alt sınırı (yüzde). */
+  min: number;
+  color: string;
+}
+/** %0-30 turuncu Çayhane, %31-49 sarı Çarli, %50-75 yeşil Fifty Cent, %76+ kırmızı Sosyete. */
+export const RATE_TIERS: RateTier[] = [
+  { table: "caylak", min: 0, color: "#ff7a1a" },
+  { table: "carli", min: CARLI_MIN_RATE, color: "#f5c518" },
+  { table: "ozel2", min: TEKE_TEK_MIN_RATE, color: "#2ecc71" },
+  { table: "usta", min: SOSYETE_MIN_RATE, color: "#e53935" },
+];
+/** Oranın seviyesi ve (varsa) bir üst seviye. */
+export function rateTier(rate: number): { tier: RateTier; next: RateTier | null } {
+  let i = 0;
+  while (i + 1 < RATE_TIERS.length && rate >= RATE_TIERS[i + 1].min) i++;
+  return { tier: RATE_TIERS[i], next: RATE_TIERS[i + 1] ?? null };
+}
+
 /** Oyuncunun başarı oranı masanın şartını karşılıyor mu. */
 export function rateAllows(t: TableConfig, rate: number): boolean {
   return !t.minRate || rate >= t.minRate;
