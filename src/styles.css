@@ -1774,3 +1774,6 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .stat.total-chips .stat-value { font-size: 1.25rem; }
 /* Boş koltuk (Çayhane, Çarli: arkadaş daveti yok) */
 .invite-seat.empty-seat { cursor: default; opacity: 0.75; }
+/* Sosyete düğmesi: siyah araba ve yazı yan yana */
+.hub .usta-hub .sosyete-top { display: inline-flex; align-items: center; gap: 6px; }
+.car-icon { flex: none; display: block; filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.25)); }

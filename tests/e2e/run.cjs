@@ -483,6 +483,15 @@ const TABLES = [
       check("Mağaza ve Kurallar Pratik ile aynı sarı, yazı siyah", r[".shop-hub"][0] === r[".practice-hub"][0] && r[".rules-hub"][0] === r[".practice-hub"][0] && r[".shop-hub"][1] === "none" && r[".rules-hub"][1] === "none" && r[".shop-hub"][2] === "rgb(17, 17, 17)" && r[".rules-hub"][2] === "rgb(17, 17, 17)", JSON.stringify(r));
       await h.context().close();
     }
+    // Sosyete düğmesinde siyah araba (çizim); Sosyete lobisinde kırmızı araba kalır
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 9 });
+      const btn = await h.evaluate(() => ({ svg: !!document.querySelector(".usta-hub .car-icon"), emoji: document.querySelector(".usta-hub").textContent.includes("🚘") }));
+      await h.locator(".usta-hub").tap(); await W(h, 400);
+      const lobby = (await h.locator(".sosyete-lobby .vip-search-seat").innerText().catch(() => ""));
+      check("Sosyete düğmesinde siyah araba, lobide kırmızı araba (🚘)", btn.svg && !btn.emoji && lobby.includes("🚘"), JSON.stringify({ btn, lobby }));
+      await h.context().close();
+    }
     // Sosyete düğmesinde "PROF." (Profesyonel kısaltıldı)
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });

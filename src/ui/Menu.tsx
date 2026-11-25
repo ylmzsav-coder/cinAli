@@ -23,6 +23,7 @@ import { Chips } from "./Chips";
 import { type TableConfig, isVipType, rateTier, sosyetePrivateOf, tableById, winnerPrize } from "../economy/tables";
 import { RateRing, tierName } from "./RateRing";
 import { TeapotIcon } from "./Teapot";
+import { BlackCarIcon } from "./CarIcon";
 import { myRate } from "../stats";
 import { VipModal } from "./Vip";
 import { CLOUD } from "../online/cloud";
@@ -332,7 +333,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             </button>
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub usta-hub`} onClick={() => openSosyete()}>
               <span className="sosyete-tags"><small className="pro-tag chat-tag">💬 {t("sosyeteChatTag")}</small></span>
-              <span>🚘 {t("playUsta")}</span>
+              <span className="sosyete-top"><BlackCarIcon /> {t("playUsta")}</span>
               <span className="sosyete-tags"><small className="pro-tag">{t("proLabel")}</small></span>
               <span className="caylak-sub">{t("entry")} <Chips amount={tableById("usta")!.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
             </button>
