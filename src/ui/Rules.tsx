@@ -61,7 +61,7 @@ export function Rules({ onBack, onLicenses }: { onBack: () => void; onLicenses?:
           </thead>
           <tbody>
             {TABLES.map((tb) => {
-              const group = tb.id === "caylak" ? t("table_caylak") : tb.id.startsWith("carli") ? t("playCarli") : tb.id.startsWith("usta") ? t("table_usta") : tb.vip ? t("vipShort") : t("ozelShort");
+              const group = tb.id.startsWith("caylak") ? t("table_caylak") : tb.id.startsWith("carli") ? t("playCarli") : tb.id.startsWith("usta") ? t("table_usta") : tb.vip ? t("vipShort") : t("ozelShort");
               return (
                 <tr key={tb.id}>
                   <td>{group}</td>

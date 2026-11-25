@@ -1,5 +1,5 @@
 import type { BotLevel } from "../game/bot";
-import { CARLI_ENTRY, CARLI_PRIZE, CARLI_ORTA_ENTRY, CARLI_ORTA_PRIZE, CARLI_BUYUK_ENTRY, CARLI_BUYUK_PRIZE, TABLE_TURN_SECONDS, TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, SOSYETE_ORTA_ENTRY, SOSYETE_ORTA_PRIZE, SOSYETE_BUYUK_ENTRY, SOSYETE_BUYUK_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE, VIP_ORTA_ENTRY, VIP_ORTA_PRIZE, OZEL_ENTRY, OZEL_PRIZE, OZEL_USTA_ENTRY, OZEL_USTA_PRIZE, OZEL_BUYUK_ENTRY, OZEL_BUYUK_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
+import { CAYHANE_KUCUK_ENTRY, CAYHANE_KUCUK_PRIZE, CAYHANE_ORTA_ENTRY, CAYHANE_ORTA_PRIZE, CARLI_ENTRY, CARLI_PRIZE, CARLI_ORTA_ENTRY, CARLI_ORTA_PRIZE, CARLI_BUYUK_ENTRY, CARLI_BUYUK_PRIZE, TABLE_TURN_SECONDS, TABLE_ENTRY, TABLE_PRIZE, USTA_ENTRY, USTA_PRIZE, SOSYETE_ORTA_ENTRY, SOSYETE_ORTA_PRIZE, SOSYETE_BUYUK_ENTRY, SOSYETE_BUYUK_PRIZE, VIP_USTA_ENTRY, VIP_USTA_PRIZE, VIP_ORTA_ENTRY, VIP_ORTA_PRIZE, OZEL_ENTRY, OZEL_PRIZE, OZEL_USTA_ENTRY, OZEL_USTA_PRIZE, OZEL_BUYUK_ENTRY, OZEL_BUYUK_PRIZE, VIP_ENTRY, VIP_PRIZE } from "./config";
 
 export interface TableConfig {
   id: string;
@@ -87,6 +87,9 @@ export const PLAYERS_PER_TABLE = 4;
 
 /** Oynanabilen masalar: Çaylak 100 → 300, Usta 500 → 1.500. */
 export const TABLES: TableConfig[] = [
+  // Çayhane: dört kişilik, şart yok, iki harfli kelime geçerli (25 → 100, 50 → 200, 100 → 400)
+  { id: "caylak25", name: "Çayhane 25", entry: CAYHANE_KUCUK_ENTRY, hands: 1, level: "orta", prize: CAYHANE_KUCUK_PRIZE },
+  { id: "caylak50", name: "Çayhane 50", entry: CAYHANE_ORTA_ENTRY, hands: 1, level: "orta", prize: CAYHANE_ORTA_PRIZE },
   { id: "caylak", name: "Çayhane", entry: TABLE_ENTRY, hands: 1, level: "orta", prize: TABLE_PRIZE },
   // Çarli: dört kişilik, başarı oranı %31+; iki harfli kelime yok
   { id: "carli", name: "Çarli", entry: CARLI_ENTRY, hands: 1, level: "orta", prize: CARLI_PRIZE, minWord: 3, minRate: CARLI_MIN_RATE },

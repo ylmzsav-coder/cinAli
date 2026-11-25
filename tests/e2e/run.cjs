@@ -68,7 +68,8 @@ async function topbarOverlaps(p) {
 }
 
 const TABLES = [
-  { name: "Çayhane", entry: 100, prize: 400, n: 4, open: async (p) => { await p.locator(".caylak-hub:not(.ozel-hub):not(.vip-hub):not(.usta-hub)").first().tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } },
+  { name: "Çayhane", entry: 100, prize: 400, n: 4, open: async (p) => { await p.locator(".cayhane-hub").tap(); await W(p, 300); await p.locator(".cayhane-lobby .vip-stake button").nth(2).tap(); await p.locator(".cayhane-lobby .sosyete-sit").tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } },
+  ...[0, 1].map((i) => ({ name: `Çayhane ${[25, 50][i]}`, entry: [25, 50][i], prize: [100, 200][i], n: 4, open: async (p) => { await p.locator(".cayhane-hub").tap(); await W(p, 300); await p.locator(".cayhane-lobby .vip-stake button").nth(i).tap(); await p.locator(".cayhane-lobby .sosyete-sit").tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } })),
   ...[0, 1, 2].map((i) => ({ name: `Çarli ${[100, 200, 300][i]}`, entry: [100, 200, 300][i], prize: [400, 800, 1200][i], n: 4, open: async (p) => { await p.locator(".carli-hub").tap(); await W(p, 300); await p.locator(".carli-lobby .vip-stake button").nth(i).tap(); await p.locator(".carli-lobby .sosyete-sit").tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } })),
   ...[0, 1, 2].map((i) => ({ name: `Sosyete ${[100, 1000, 10000][i]}`, entry: [100, 1000, 10000][i], prize: [400, 4000, 40000][i], n: 4, open: async (p) => { await p.locator(".usta-hub").tap(); await W(p, 300); await p.locator(".sosyete-lobby .vip-stake button").nth(i).tap(); await p.locator(".sosyete-sit").tap(); await W(p, 300); await p.locator(".lobby-panel .primary").tap(); } })),
   ...[0, 1, 2].map((i) => ({ name: `Fifty Cent ${[100, 1000, 10000][i]}`, entry: [100, 1000, 10000][i], prize: [200, 2000, 20000][i], n: 2, open: async (p) => { await p.locator(".ozel-hub").tap(); await W(p, 300); await p.locator(".ozel-stake button").nth(i).tap(); await p.locator(".two-choices button").nth(2).tap(); } })),
@@ -315,7 +316,7 @@ const TABLES = [
     const kb = await p.evaluate(() => { const el = document.querySelector(".kumbara-balance"); return { icon: !!el?.querySelector(".kumbara-icon"), label: el?.querySelector(".kumbara-label")?.textContent ?? "" }; });
     const KB = { tr: "Kumbara", en: "Money box", de: "Spardose", fr: "Tirelire", es: "Hucha", it: "Salvadanaio", pt: "Cofrinho" };
     check(`Menü (${lang}): çipler kumbarada — resim ve "${KB[lang]}" yazısı`, kb.icon && kb.label === KB[lang], JSON.stringify(kb));
-    check(`Kurallar (${lang}): 22 madde, 12 satırlık masa tablosu, taşma yok`, r.rows === 12 && r.items === 22 && !r.hscroll && !r.raw, JSON.stringify(r));
+    check(`Kurallar (${lang}): 22 madde, 14 satırlık masa tablosu, taşma yok`, r.rows === 14 && r.items === 22 && !r.hscroll && !r.raw, JSON.stringify(r));
     await p.context().close();
   }
   }
@@ -443,11 +444,23 @@ const TABLES = [
       check("bilgisayar oyuncusunun kartında 'Toplam kazanılan çip: –'", bot.includes("Toplam kazanılan çip") && bot.includes("–"), bot);
       await h.context().close();
     }
+    // Çayhane: üç masa (25 → 100, 50 → 200, 100 → 400), menüde "Giriş 25 – 100"
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 0, won: 0 });
+      const sub = (await h.locator(".cayhane-hub .caylak-sub").innerText()).replace(/\s+/g, " ");
+      await h.locator(".cayhane-hub").tap(); await W(h, 400);
+      const opts = (await h.locator(".cayhane-lobby .vip-stake button").allInnerTexts()).map((x) => x.replace(/\s+/g, " ").trim());
+      const fit = await h.evaluate(() => { const r = document.querySelector(".cayhane-lobby .lobby-info").getBoundingClientRect(); return r.right <= innerWidth && r.bottom <= innerHeight; });
+      check("Çayhane menüde 'Giriş 25 – 100'; lobide 25→100, 50→200, 100→400 (yeni oyuncu da oturabilir)", /25.*100/.test(sub) && opts.length === 3 && /25.*100/.test(opts[0]) && /50.*200/.test(opts[1]) && /100.*400/.test(opts[2]) && fit && (await h.locator(".cayhane-lobby .sosyete-sit").count()) === 1, JSON.stringify({ sub, opts, fit }));
+      await h.context().close();
+    }
     // Arkadaşla oyna yalnızca VIP Oda, Sosyete ve Fifty Cent'te: Çayhane ve Çarli bekleme masasında davet yok
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 9 });
       const seats = async () => h.evaluate(() => ({ invite: document.querySelectorAll(".invite-seat:not(.empty-seat)").length, empty: document.querySelectorAll(".invite-seat.empty-seat").length, text: [...document.querySelectorAll(".invite-seat")].map((x) => x.textContent).join("|") }));
-      await h.locator(".cayhane-hub").tap(); await W(h, 500);
+      await h.locator(".cayhane-hub").tap(); await W(h, 400);
+      check("Çayhane lobisinde 'Arkadaşla oyna' yok", (await h.locator(".sosyete-friend, .two-choices").count()) === 0);
+      await h.locator(".cayhane-lobby .sosyete-sit").tap(); await W(h, 500);
       const cay = await seats();
       check("Çayhane bekleme masası: davet yok, 3 koltuk 'Bekleniyor'", cay.invite === 0 && cay.empty === 3 && cay.text.includes("Bekleniyor"), JSON.stringify(cay));
       await h.locator(".leave-round").tap(); await W(h, 400);

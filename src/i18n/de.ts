@@ -152,6 +152,8 @@ const de: Messages = {
   sit: "Hinsetzen",
   chipsMissing: "{n} Chips fehlen",
   table_caylak: "Teehaus",
+  table_caylak25: "Teehaus 25",
+  table_caylak50: "Teehaus 50",
   table_usta: "Schickeria",
   table_usta2: "Schickeria 1000",
   table_usta5: "Schickeria 10000",

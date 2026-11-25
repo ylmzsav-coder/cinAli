@@ -11,6 +11,7 @@ import { formatNumber, t } from "../i18n";
 import { Avatar } from "./Profile";
 import { Chips } from "./Chips";
 import { DiceIcon } from "./Dice";
+import { TeapotIcon } from "./Teapot";
 
 /** Bekleme süresi: bu sürede gelen olmazsa boş koltuklara bilgisayar oyuncuları oturur. */
 const WAIT_SECONDS = 10;
@@ -123,21 +124,22 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
  * Bilgisayara karşı oyna düğmeleri; VIP'te ayrıca Bayan / Bay oyuncu ara.
  */
 /** Sosyete: dört kişilik yüksek girişli masalar (100 → 400, 1.000 → 4.000, 10.000 → 40.000). */
-export function SosyeteLobby({ name, onClose, onPick, room = "sosyete" }: { name: string; onClose: () => void; onPick: (tb: TableConfig, mode?: "random" | "friend") => void; room?: "sosyete" | "carli" }) {
-  // Aynı lobi Sosyete (3 masa, sohbetli) ve Çarli (3 masa) için kullanılır
-  const carli = room === "carli";
-  const ids = carli ? (["carli", "carli2", "carli3"] as const) : (["usta", "usta2", "usta5"] as const);
+export function SosyeteLobby({ name, onClose, onPick, room = "sosyete" }: { name: string; onClose: () => void; onPick: (tb: TableConfig, mode?: "random" | "friend") => void; room?: "sosyete" | "carli" | "cayhane" }) {
+  // Aynı lobi Sosyete (3 masa, sohbetli), Çarli (3 masa) ve Çayhane (3 masa) için kullanılır
+  const cayhane = room === "cayhane";
+  const carli = room === "carli" || cayhane; // Çarli ve Çayhane'de yalnızca Otur (arkadaş daveti yok)
+  const ids = cayhane ? (["caylak25", "caylak50", "caylak"] as const) : room === "carli" ? (["carli", "carli2", "carli3"] as const) : (["usta", "usta2", "usta5"] as const);
   const [id, setId] = useState<string>(ids[0]);
   const tb = tableById(id)!;
   // Giriş şartı: başarı oranı en az %76 (altındaki oyuncu bu masada oynayamaz)
   const me = myRate();
   const allowed = rateAllows(tb, me.rate);
   return (
-    <div className={`lobby ozel-lobby sosyete-lobby ${carli ? "carli-lobby" : ""}`}>
+    <div className={`lobby ozel-lobby sosyete-lobby ${cayhane ? "cayhane-lobby" : carli ? "carli-lobby" : ""}`}>
       <div className="lobby-felt">
         <button type="button" className="leave-round" onClick={onClose}>{t("leaveTableShort")}</button>
         <div className="seat-top vip-search-seat">
-          {carli ? <><DiceIcon size="1.5em" /> {t("carliTitle")}</> : <><span className="vip-radar small" aria-hidden><span>🚘</span></span> {t("playUsta")}</>}
+          {cayhane ? <><TeapotIcon size="1.5em" /> {t("playCaylak")}</> : carli ? <><DiceIcon size="1.5em" /> {t("carliTitle")}</> : <><span className="vip-radar small" aria-hidden><span>🚘</span></span> {t("playUsta")}</>}
         </div>
         <div className="lobby-me">
           <Avatar name={name} seat={0} size="md" vip={wallet.isVip()} rate={myRate().rate} />

@@ -62,9 +62,11 @@ const tilesOnRack = (p) => p.locator(".okey-rack .rack-slot .tile");
   check("iki oyuncunun kumbarası sunucudan geldi (hoş geldin hediyesi)", a0 > 0 && b0 > 0, `${a0} / ${b0}`);
 
   // Ali oturur, bekleme masası açılır; Bea aynı masaya oturur
-  await A.locator(".caylak-hub:not(.ozel-hub):not(.vip-hub):not(.usta-hub)").first().tap();
+  await A.locator(".cayhane-hub").tap(); await W(A, 400);
+  await A.locator(".cayhane-lobby .vip-stake button").nth(2).tap(); await A.locator(".cayhane-lobby .sosyete-sit").tap();
   await until(async () => (await A.locator(".waiting-seats").count()) > 0);
-  await B.locator(".caylak-hub:not(.ozel-hub):not(.vip-hub):not(.usta-hub)").first().tap();
+  await B.locator(".cayhane-hub").tap(); await W(B, 400);
+  await B.locator(".cayhane-lobby .vip-stake button").nth(2).tap(); await B.locator(".cayhane-lobby .sosyete-sit").tap();
   const both = await until(async () => {
     const t = await A.locator(".waiting-seats").innerText();
     return t.includes("Ali") && t.includes("Bea");

@@ -154,6 +154,8 @@ const tr = {
   sit: "Otur",
   chipsMissing: "{n} çip eksik",
   table_caylak: "Çayhane",
+  table_caylak25: "Çayhane 25",
+  table_caylak50: "Çayhane 50",
   table_usta: "Sosyete",
   table_usta2: "Sosyete 1000",
   table_usta5: "Sosyete 10000",

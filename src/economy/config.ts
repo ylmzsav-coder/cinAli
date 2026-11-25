@@ -4,6 +4,11 @@
 export const TABLE_TURN_SECONDS = 60;
 /** VIP Oda hamle süresi: artık bütün masalar gibi 60 saniye. */
 export const VIP_TURN_SECONDS = 60;
+/** Çayhane (4 kişi, şart yok): 25 → 100, 50 → 200, 100 → 400. */
+export const CAYHANE_KUCUK_ENTRY = 25;
+export const CAYHANE_KUCUK_PRIZE = 100;
+export const CAYHANE_ORTA_ENTRY = 50;
+export const CAYHANE_ORTA_PRIZE = 200;
 export const TABLE_ENTRY = 100;
 export const TABLE_PRIZE = 400;
 /** Çarli (4 kişi, başarı oranı %31+): 100 → 400, 200 → 800, 300 → 1.200. */

@@ -152,6 +152,8 @@ const es: Messages = {
   sit: "Sentarse",
   chipsMissing: "Faltan {n} fichas",
   table_caylak: "Casa de té",
+  table_caylak25: "Casa de té 25",
+  table_caylak50: "Casa de té 50",
   table_usta: "Alta Sociedad",
   table_usta2: "Alta Sociedad 1000",
   table_usta5: "Alta Sociedad 10000",

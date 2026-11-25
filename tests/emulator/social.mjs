@@ -25,7 +25,9 @@ let ok = true;
 const check = (label, cond, extra = "") => { console.log(`${cond ? "✓" : "✗"} ${label}${extra ? " — " + extra : ""}`); if (!cond) ok = false; };
 
 const A = await client("Ali"), B = await client("Bea"), C = await client("Can"), D = await client("Dio");
-const lang = "tr", type = "caylak";
+// Arkadaşla oyun yalnızca VIP Oda, Fifty Cent ve Sosyete Özel'de (Fifty Cent: başarı oranı %50+)
+const lang = "tr", type = "ozel2";
+for (const c of [A, B]) await c.call("testSetStats", { played: 10, won: 9 });
 
 // Ali özel masa kurar, Bea katılır, Ali başlatır
 const created = await A.call("createPrivateTable", { type, lang, name: "Ali" });

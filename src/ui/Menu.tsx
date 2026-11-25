@@ -80,11 +80,13 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
   const [ozelOpen, setOzelOpen] = useState(false);
   const [sosyeteOpen, setSosyeteOpen] = useState(false);
   const [carliOpen, setCarliOpen] = useState(false);
+  const [cayhaneOpen, setCayhaneOpen] = useState(false);
   // Android geri tuşu menüde: açık oda ekranı varsa kapat, yoksa "Oyunu kapat" onayı
   useEffect(() => {
     const onBack = () => {
       if (sosyeteOpen) setSosyeteOpen(false);
       else if (carliOpen) setCarliOpen(false);
+      else if (cayhaneOpen) setCayhaneOpen(false);
       else if (ozelOpen) setOzelOpen(false);
       else if (vipLobby) setVipLobby(false);
       else setCloseAsk(true);
@@ -258,6 +260,10 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             <SosyeteLobby name={settings.name || t("defaultName")} onClose={() => setSosyeteOpen(false)}
               onPick={(tb, mode) => { setSosyeteOpen(false); if (mode === "friend") onTwo(sosyetePrivateOf(tb), "friend"); else onSitTable(tb); }} />
           )}
+          {cayhaneOpen && (
+            <SosyeteLobby room="cayhane" name={settings.name || t("defaultName")} onClose={() => setCayhaneOpen(false)}
+              onPick={(tb) => { setCayhaneOpen(false); onSitTable(tb); }} />
+          )}
           {carliOpen && (
             <SosyeteLobby room="carli" name={settings.name || t("defaultName")} onClose={() => setCarliOpen(false)}
               onPick={(tb) => { setCarliOpen(false); onSitTable(tb); }} />
@@ -310,9 +316,9 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           {canResume && <button type="button" className="primary big" onClick={onResume}>{resumeLabel}</button>}
           {/* Masalar: [Çayhane, Çarli] [Fifty Cent, Sosyete]; ardından [Pratik, Mağaza, Kurallar] */}
           <div className="hub-row">
-            <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub cayhane-hub`} onClick={() => onSitTable(tableById("caylak")!)}>
+            <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub cayhane-hub`} onClick={() => setCayhaneOpen(true)}>
               <span className="cayhane-top"><TeapotIcon /> {t("playCaylak")}</span>
-              <span className="caylak-sub">{t("entry")} <Chips amount={tableById("caylak")!.entry} /> · {t("toWinner")} <Chips amount={winnerPrize(tableById("caylak")!)} /></span>
+              <span className="caylak-sub">{t("entry")} <Chips amount={tableById("caylak25")!.entry} /> – <Chips amount={tableById("caylak")!.entry} /></span>
             </button>
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub carli-hub`} onClick={() => setCarliOpen(true)}>
               <span className="carli-top"><DiceIcon /> {t("playCarli")}</span>

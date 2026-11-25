@@ -120,7 +120,7 @@ export const adminResolve = onCall(async (req) => {
 
 /** Oda grubu: Çayhane, Sosyete (usta*), Teke Tek (ozel*), VIP (vip*). */
 function roomOf(type: string): "caylak" | "carli" | "sosyete" | "teketek" | "vip" | null {
-  if (type === "caylak") return "caylak";
+  if (type.startsWith("caylak")) return "caylak";
   if (type.startsWith("carli")) return "carli";
   if (type.startsWith("usta")) return "sosyete";
   if (type.startsWith("ozel")) return "teketek";

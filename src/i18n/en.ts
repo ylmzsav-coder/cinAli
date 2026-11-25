@@ -152,6 +152,8 @@ const en: Messages = {
   sit: "Sit down",
   chipsMissing: "{n} chips short",
   table_caylak: "Tea House",
+  table_caylak25: "Tea House 25",
+  table_caylak50: "Tea House 50",
   table_usta: "High Society",
   table_usta2: "High Society 1000",
   table_usta5: "High Society 10000",

@@ -152,6 +152,8 @@ const fr: Messages = {
   sit: "S'asseoir",
   chipsMissing: "Il manque {n} jetons",
   table_caylak: "Salon de thé",
+  table_caylak25: "Salon de thé 25",
+  table_caylak50: "Salon de thé 50",
   table_usta: "Haute Société",
   table_usta2: "Haute Société 1000",
   table_usta5: "Haute Société 10000",
