@@ -554,7 +554,7 @@ const pt: Messages = {
   idleWarnTitle: "Suas jogadas estão sendo feitas automaticamente",
   idleWarnText: "Seu turno foi jogado automaticamente {n} vezes seguidas quando o tempo acabou. Se você não fizer pelo menos metade das suas jogadas, sua entrada não será reembolsada quando ninguém terminar.",
   idleWarnOk: "Entendi, vou jogar",
-  proLabel: "Profissional",
+  proLabel: "Prof.",
   rule_nowinner: "Se ninguém terminar: numa mesa com fichas, se o monte acabar e ninguém tiver terminado as peças, não há perdedor e nenhuma ficha é descontada. Sua entrada vale para um novo jogo; se sair da mesa, é devolvida integralmente.",
   feeTitle: "Mesas e entradas",
   feeTable: "Mesa",

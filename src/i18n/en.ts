@@ -554,7 +554,7 @@ const en: Messages = {
   idleWarnTitle: "Your moves are being played automatically",
   idleWarnText: "Your turn was played automatically {n} times in a row when time ran out. If you don't make at least half of your moves yourself, your entry fee won't be refunded when nobody finishes.",
   idleWarnOk: "Got it, I'm playing",
-  proLabel: "Professional",
+  proLabel: "Prof.",
   rule_nowinner: "If nobody finishes: At a chip table, if the deck runs out and no player has finished their tiles, there is no loser and no chips are deducted. Your entry fee is used for a new game; if you leave the table it's refunded in full.",
   feeTitle: "Tables and fees",
   feeTable: "Table",

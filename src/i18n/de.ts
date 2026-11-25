@@ -554,7 +554,7 @@ const de: Messages = {
   idleWarnTitle: "Deine Züge werden automatisch gespielt",
   idleWarnText: "Dein Zug wurde {n}-mal hintereinander nach Ablauf der Zeit automatisch gespielt. Machst du nicht mindestens die Hälfte deiner Züge selbst, wird dein Einsatz nicht erstattet, wenn niemand fertig wird.",
   idleWarnOk: "Verstanden, ich spiele",
-  proLabel: "Profi",
+  proLabel: "Prof.",
   rule_nowinner: "Wenn niemand fertig wird: Ist an einem Chip-Tisch der Stapel leer und hat niemand seine Steine aufgebraucht, gibt es keinen Verlierer und es werden keine Chips abgezogen. Dein Einsatz gilt für ein neues Spiel; verlässt du den Tisch, wird er voll erstattet.",
   feeTitle: "Tische und Einsätze",
   feeTable: "Tisch",

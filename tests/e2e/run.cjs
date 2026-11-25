@@ -381,6 +381,13 @@ const TABLES = [
       check("Çayhane demliği Oyunu kapat tonunda (#ef5350 → #b3261e), emoji yok, başlık hafif sola (simetrik)", r.stops.join() === "#ef5350,#b3261e" && !r.emoji && r.off <= 0 && r.off >= -12, JSON.stringify(r));
       await h.context().close();
     }
+    // Sosyete düğmesinde "PROF." (Profesyonel kısaltıldı)
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });
+      const tag = (await h.locator(".usta-hub .pro-tag:not(.chat-tag)").innerText()).trim();
+      check("Sosyete etiketi kısaltıldı: PROF.", tag === "PROF.", tag);
+      await h.context().close();
+    }
     // Başarı oranı halkası: ana menüde ve profilde, seviyesinin renginde
     for (const [won, tier, color] of [[2, "Çayhane", "#ff7a1a"], [4, "Çarli", "#f5c518"], [6, "Fifty Cent", "#2ecc71"], [8, "Sosyete", "#e53935"]]) {
       const h = await fresh(browser, "iPhone SE landscape", { played: 10, won });

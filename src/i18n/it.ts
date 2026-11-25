@@ -554,7 +554,7 @@ const it: Messages = {
   idleWarnTitle: "Le tue mosse vengono giocate automaticamente",
   idleWarnText: "Il tuo turno è stato giocato automaticamente {n} volte di fila allo scadere del tempo. Se non fai tu stesso almeno la metà delle mosse, la quota non sarà rimborsata quando nessuno finisce.",
   idleWarnOk: "Capito, gioco",
-  proLabel: "Professionale",
+  proLabel: "Prof.",
   rule_nowinner: "Se nessuno finisce: a un tavolo con fiches, se il mazzo finisce e nessuno ha finito le tessere, non c’è perdente e non vengono tolte fiches. L’ingresso vale per una nuova partita; se lasci il tavolo ti viene rimborsato per intero.",
   feeTitle: "Tavoli e ingressi",
   feeTable: "Tavolo",

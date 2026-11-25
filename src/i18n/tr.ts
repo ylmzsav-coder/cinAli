@@ -558,7 +558,7 @@ const tr = {
   idleWarnTitle: "Hamlelerin otomatik oynanıyor",
   idleWarnText: "Sıran arka arkaya {n} kez süre dolunca otomatik oynandı. Hamlelerinin en az yarısını kendin yapmazsan, kimse bitiremediğinde giriş ücretin iade edilmez.",
   idleWarnOk: "Anladım, oynuyorum",
-  proLabel: "Profesyonel",
+  proLabel: "Prof.",
   rule_nowinner: "Kimse bitiremezse: Çipli masada deste biter ve hiçbir oyuncu taşlarını bitiremezse kaybeden olmaz, çip kesilmez. Giriş ücretin yeni oyunda kullanılır; masadan çıkarsan kesintisiz iade edilir.",
   feeTitle: "Masalar ve ücretler",
   feeTable: "Masa",

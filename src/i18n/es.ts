@@ -554,7 +554,7 @@ const es: Messages = {
   idleWarnTitle: "Tus jugadas se están haciendo automáticamente",
   idleWarnText: "Tu turno se jugó automáticamente {n} veces seguidas al agotarse el tiempo. Si no haces tú mismo al menos la mitad de tus jugadas, no recuperarás la entrada cuando nadie termine.",
   idleWarnOk: "Entendido, juego",
-  proLabel: "Profesional",
+  proLabel: "Prof.",
   rule_nowinner: "Si nadie termina: en una mesa con fichas, si se acaba el mazo y nadie ha terminado sus fichas, no hay perdedor ni se descuentan fichas. Tu entrada se usa en una nueva partida; si dejas la mesa, se devuelve íntegra.",
   feeTitle: "Mesas y entradas",
   feeTable: "Mesa",

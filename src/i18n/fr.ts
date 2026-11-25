@@ -554,7 +554,7 @@ const fr: Messages = {
   idleWarnTitle: "Tes coups sont joués automatiquement",
   idleWarnText: "Ton tour a été joué automatiquement {n} fois de suite à la fin du temps. Si tu ne joues pas toi-même au moins la moitié de tes coups, ta mise ne sera pas remboursée quand personne ne finit.",
   idleWarnOk: "Compris, je joue",
-  proLabel: "Professionnel",
+  proLabel: "Prof.",
   rule_nowinner: "Si personne ne finit : à une table à jetons, si la pioche est épuisée et que personne n’a fini ses tuiles, il n’y a pas de perdant et aucun jeton n’est retiré. Ta mise sert pour une nouvelle partie ; si tu quittes la table, elle est remboursée intégralement.",
   feeTitle: "Tables et mises",
   feeTable: "Table",
