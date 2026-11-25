@@ -8,8 +8,9 @@
  *  - aynı masada 3 küfür denemesi -> 10 dakika yazışma kapalı
  * Küfürlü mesaj masaya HİÇ gönderilmez.
  *
- * VIP odada küfür filtresi açık (masanın dili + arayüz dili), hakaret serbest:
- * küfürlü mesaj gönderilmez; aynı masada 3 küfür denemesi -> 10 dakika sohbet kapalı.
+ * Bütün sohbetli odalarda (VIP, Sosyete, Sosyete Özel) küfür VE hakaret filtresi açık
+ * (masanın dili + arayüz dili): küfürlü ya da hakaretli mesaj gönderilmez;
+ * aynı masada 3 deneme -> 10 dakika sohbet kapalı.
  *
  * VIP odada ayrıca yasa dışı içerik filtresi (illegal.ts): uyuşturucu, silah,
  * kumar, satış teklifi ve iletişim/ödeme bilgisi içeren mesaj gönderilmez,
@@ -21,7 +22,7 @@ import { onCall } from "firebase-functions/v2/https";
 import { LANGS } from "../../src/game/lang";
 import { isChatType } from "../../src/economy/tables";
 import { db, fail, uidOf } from "./common";
-import { containsLink, containsProfanity } from "./profanity";
+import { containsInsult, containsLink, containsProfanity } from "./profanity";
 import { illegalCategory } from "./illegal";
 
 export const MAX_TEXT = 120;
@@ -106,9 +107,9 @@ export const sendText = onCall(async (req) => {
       meta.windowCount = 0;
     }
     if (meta.windowCount >= PER_MINUTE) fail("tooFast", {}, "resource-exhausted");
-    // Küfür filtresi (hakaret serbest): mesaj gönderilmez, 3. denemede 10 dk susturma
+    // Küfür ve hakaret filtresi: mesaj gönderilmez, 3. denemede 10 dk susturma
     const langs = [String(table!.lang ?? "tr"), ...(uiLang in LANGS ? [uiLang] : [])];
-    if (containsProfanity(text, langs, true)) {
+    if (containsProfanity(text, langs) || containsInsult(text, langs)) {
       meta.strikes += 1;
       meta.last = now;
       if (meta.strikes >= STRIKES_TO_MUTE) {

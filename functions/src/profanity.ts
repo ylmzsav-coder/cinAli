@@ -115,6 +115,52 @@ export function containsProfanity(text: string, langs: string[], allowInsults = 
   return false;
 }
 
+/**
+ * Hakaret filtresi (bütün sohbetli odalar): küfür olmayan ama karşıdakini aşağılayan sözler.
+ * Kökler: bu harflerle başlayan her kelime yakalanır ("aptal", "aptalca", "aptallar").
+ * Masum kelimelerle karışabilecek sözler (mal, köpek, hayvan, alçak, adi …) bilerek listede yok.
+ */
+const INSULT_ROOTS = [
+  // Türkçe
+  "şerefsiz", "serefsiz", "haysiyetsiz", "namussuz", "onursuz", "soysuz", "karaktersiz",
+  "aşağılık", "asagilik", "gerizekal", "geri zekal", "salak", "aptal", "ahmak", "dangalak", "embesil",
+  "mankafa", "beyinsiz", "budala", "angut", "hödük", "hoduk", "kepaze", "pislik", "pisliğ", "çingene", "cingene",
+  "yüzsüzsün", "ezik", "mallık", "denyo", "dallama", "zibidi", "keriz", "enayi",
+  // İngilizce
+  "idiot", "stupid", "moron", "imbecile", "retarded", "loser", "dumbass", "dumb", "jerk", "bastard", "scum",
+  // Almanca
+  "dummkopf", "trottel", "vollidiot", "depp", "blöd", "bloed", "missgeburt", "spast",
+  // Fransızca
+  "imbécile", "imbecile", "crétin", "cretin", "débile", "debile", "abruti", "connard", "connasse", "batard", "bâtard",
+  // İspanyolca, İtalyanca, Portekizce
+  "idiota", "imbécil", "imbecil", "estúpid", "estupid", "gilipoll", "pendej", "tonto",
+  "imbecill", "cretino", "scemo", "stupido", "stronz", "coglion", "otário", "otario", "babaca",
+];
+/** "ezik", "tonto" gibi kısa kökler yalnızca tam kelime olarak sayılır (ezikliği değil "ezik"). */
+const INSULT_EXACT = new Set(["ezik", "eziksin", "eziksiniz", "tonto", "tonta", "depp", "dumb", "jerk", "scum", "denyo", "keriz", "enayi", "enayisin"]);
+/** Kök olarak aranırsa masum kelimeleri de yakalayacak olanlar: yalnızca tam kelime. */
+const INSULT_ROOT_SAFE = INSULT_ROOTS.filter((r) => !INSULT_EXACT.has(r) && !r.includes(" "));
+/** Çok kelimeli hakaretler. */
+const INSULT_PHRASES = ["geri zekalı", "geri zekali", "it oğlu it", "it oglu it", "beyni yok"];
+
+/** Metin herhangi bir dilde hakaret içeriyor mu (küfürden ayrı). */
+export function containsInsult(text: string, langs: string[]): boolean {
+  for (const lang of new Set([...langs, "tr"])) {
+    const toks = tokens(text, lang);
+    for (const t of toks) {
+      const base = [t, fold(t), squeeze(t), squeeze(fold(t))];
+      // Büyük harfle yazılan Türkçe (SEREFSIZ → serefsız): ı ile i eşit sayılır
+      const vs = [...new Set([...base, ...base.map((v) => v.replace(/ı/g, "i"))])];
+      if (vs.some((v) => INSULT_EXACT.has(v))) return true;
+      if (vs.some((v) => INSULT_ROOT_SAFE.some((r) => v.startsWith(r) || v.startsWith(fold(r))))) return true;
+    }
+    const joined = " " + toks.join(" ") + " ";
+    const joinedFold = " " + toks.map((t) => fold(t)).join(" ") + " ";
+    if (INSULT_PHRASES.some((ph) => joined.includes(` ${ph}`) || joinedFold.includes(` ${fold(ph)}`))) return true;
+  }
+  return false;
+}
+
 /** Bağlantı / reklam engeli. */
 export function containsLink(text: string): boolean {
   return /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|me|tr|de|ru|xyz|app|gg|ly)\b)/i.test(text);

@@ -55,6 +55,9 @@ for (const [type, entry, prize] of TYPES) {
   await sleep(2100); // art arda hızlı mesaj (flood) koruması
   const bad = await A.call("sendText", { tableId: ja.tableId, text: "siktir git", uiLang: "tr" });
   check(`Sosyete ${entry}: küfürlü mesaj gönderilmez`, bad.ok === false && bad.blocked === true, JSON.stringify(bad));
+  // Hakaret de gönderilmez (B yazar; A'nın uyarı hakkı etkilenmez)
+  const ins = await B.call("sendText", { tableId: ja.tableId, text: "salak mısın", uiLang: "tr" });
+  check(`Sosyete ${entry}: hakaretli mesaj gönderilmez`, ins.ok === false && ins.blocked === true, JSON.stringify(ins));
   if (entry === 100) check("Sosyete: art arda çok hızlı mesaj engellenir (flood koruması)", (await err(A.call("sendText", { tableId: ja.tableId, text: "a", uiLang: "tr" }))).code === "tooFast");
   await A.call("testRunTimeouts", { tableId: ja.tableId, winnerUid: A.uid });
   t = await tbl(A, ja.tableId);

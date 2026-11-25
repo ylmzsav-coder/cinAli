@@ -15,7 +15,7 @@
         "Bir hata ya da açık bulursan kullanmak yerine \"Şikayet / Öneri\" bölümünden bize bildir."
       ] },
       { "h": "3. Küfür ve müstehcenlik yok", "items": [
-        "Küfürlü mesajlar otomatik olarak engellenir; üç küfür denemesinde sohbetin 10 dakika kapanır.",
+        "Küfürlü ve hakaretli mesajlar otomatik olarak engellenir; üç denemede sohbetin 10 dakika kapanır.",
         "Cinsel içerikli, müstehcen mesajlar ve adlar yasaktır.",
         "Oyuncu adın küfür veya bağlantı içeremez; içerirse otomatik olarak \"Misafir\" adı verilir."
       ] },
@@ -76,7 +76,7 @@
         "If you find a bug or exploit, report it through the Feedback section instead of using it."
       ] },
       { "h": "3. No swearing or obscenity", "items": [
-        "Profane messages are blocked automatically; after three attempts your chat is disabled for 10 minutes.",
+        "Profane and insulting messages are blocked automatically; after three attempts your chat is disabled for 10 minutes.",
         "Sexual or obscene messages and names are forbidden.",
         "Your player name may not contain profanity or links; if it does, a \"Guest\" name is given automatically."
       ] },

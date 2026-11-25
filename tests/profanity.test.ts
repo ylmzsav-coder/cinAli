@@ -64,3 +64,33 @@ describe("VIP: küfür var, hakaret yok", () => {
     expect(containsProfanity("şerefsiz", ["tr"])).toBe(true); // diğer yerlerde (adlar) hakaret de süzülür
   });
 });
+
+import { containsInsult } from "../functions/src/profanity";
+describe("hakaret filtresi (bütün sohbetli odalar)", () => {
+  const ins = (text: string, langs = ["tr"]) => containsInsult(text, langs);
+  it("Türkçe hakaretleri yakalar", () => {
+    for (const t of ["şerefsiz hamle yaptın", "SEREFSIZ", "salak", "lan bu ne biçim hamle, salak", "aptal mısın", "aptalca oynuyorsun",
+      "gerizekalı", "geri zekalı", "ahmak", "dangalak herif", "beyinsiz", "aşağılık", "namussuz", "pislik", "pisliğin teki",
+      "ezik", "enayi", "s a l a k", "4ptal", "it oğlu it", "budala", "mankafa"]) {
+      expect(ins(t), t).toBe(true);
+    }
+  });
+  it("Türkçe masum kelimeleri engellemez", () => {
+    for (const t of ["mal varlığı", "köpeğim var", "alçak sesle konuş", "adil oyun", "salam yedim", "ezilmiş domates", "ezikliği geçti",
+      "Merhaba, iyi oyunlar!", "tebrikler usta", "harika hamle", "geri döndüm", "zekâ oyunu"]) {
+      expect(ins(t), t).toBe(false);
+    }
+  });
+  it("diğer diller", () => {
+    expect(ins("you are an idiot", ["en"])).toBe(true);
+    expect(ins("stupid move", ["en"])).toBe(true);
+    expect(ins("good game, well played", ["en"])).toBe(false);
+    expect(ins("Du Trottel", ["de"])).toBe(true);
+    expect(ins("quel crétin", ["fr"])).toBe(true);
+    expect(ins("je suis en retard", ["fr"])).toBe(false);
+    expect(ins("eres un idiota", ["es"])).toBe(true);
+    expect(ins("mi idioma es español", ["es"])).toBe(false);
+    expect(ins("sei uno scemo", ["it"])).toBe(true);
+    expect(ins("seu otário", ["pt"])).toBe(true);
+  });
+});

@@ -31,14 +31,14 @@ check("Çaylak masada serbest metin yazılamaz (kural)", (await addTo(A, caylak,
 check("Çaylak masada yazışma yok", (await errCode(A.call("sendText", { tableId: caylak, text: "selam", uiLang: "tr" }))) === "chatVipOnly");
 await A.call("leaveTable", { tableId: caylak });
 
-// VIP oda: serbest ve filtresiz
+// VIP oda: serbest yazışma; küfür ve hakaret filtresi
 await A.call("testSubscribeVip"); await B.call("testSubscribeVip");
 const vip = (await A.call("joinTable", { type: "vip2", lang: "tr", name: "A", gender: "erkek", want: "kadin" })).tableId;
 await B.call("joinTable", { type: "vip2", lang: "tr", name: "B", gender: "kadin", want: "erkek" });
 check("VIP odada hazır mesaj", (await addTo(A, vip, { uid: A.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "izin verildi");
 check("VIP odada emoji", (await addTo(B, vip, { uid: B.uid, kind: "emoji", id: "🔥", at: serverTimestamp() })) === "izin verildi");
 const r1 = await A.call("sendText", { tableId: vip, text: "lan bu ne biçim hamle, salak", uiLang: "tr" });
-check("VIP odada hakaret serbest (küfür değil)", r1.ok === true, JSON.stringify(r1));
+check("VIP odada hakaret gönderilmez", r1.ok === false && r1.blocked === true, JSON.stringify(r1));
 await new Promise((r) => setTimeout(r, 2100));
 await new Promise((r) => setTimeout(r, 1600));
 const r2 = await A.call("sendText", { tableId: vip, text: "iyi oyunlar", uiLang: "tr" });
@@ -46,7 +46,7 @@ check("VIP odada ikinci mesaj", r2.ok === true);
 await new Promise((r) => setTimeout(r, 1600));
 check("VIP odada bağlantı engellenir (iletişim)", (await errCode(A.call("sendText", { tableId: vip, text: "bak: https://ornek.com", uiLang: "tr" }))) === "illegalContent");
 const texts = (await getDocs(collection(B.db, "tables", vip, "chat"))).docs.map((d) => d.data()).filter((x) => x.kind === "text").map((x) => x.text);
-check("rakip mesajları okuyabilir", texts.length === 2, texts.join(" | "));
+check("rakip mesajları okuyabilir (hakaretli mesaj masaya gitmedi)", texts.length === 1 && texts[0] === "iyi oyunlar", texts.join(" | "));
 check("başkası adına yazılamaz", (await addTo(A, vip, { uid: B.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "permission-denied");
 check("masada olmayan yazamaz", (await addTo(C, vip, { uid: C.uid, kind: "msg", id: "hello", at: serverTimestamp() })) === "permission-denied");
 check("masada olmayan okuyamaz", (await getDocs(collection(C.db, "tables", vip, "chat")).then(() => "izin verildi", (e) => e.code)) === "permission-denied");
