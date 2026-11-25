@@ -500,7 +500,7 @@ const TABLES = [
       await TABLES[0].open(h); await W(h, 1500);
       await h.locator(".chat-room-btn").first().tap(); await W(h, 400);
       const r = await h.evaluate(() => { const c = document.querySelector(".chat-emojis"); const cr = c.getBoundingClientRect(); const bs = [...c.querySelectorAll("button")]; return { list: bs.map((x) => x.textContent).join(""), visible: bs.filter((x) => { const q = x.getBoundingClientRect(); return q.left >= cr.left - 1 && q.right <= cr.right + 1 && q.top >= cr.top - 1 && q.bottom <= cr.bottom + 1; }).length, scroll: c.scrollWidth > c.clientWidth + 1, rows: new Set(bs.map((x) => Math.round(x.getBoundingClientRect().top))).size, size: parseFloat(getComputedStyle(bs[0]).fontSize) }; });
-      check(`emoji şeridi (${d}): 13 emoji, hepsi görünüyor, kaydırma yok, tek satır`, r.list === "❤️👍👏😂😮😅😢😡🔥👋👌✌️🙏" && r.visible === 13 && !r.scroll && r.rows === 1, JSON.stringify(r));
+      check(`emoji şeridi (${d}): 13 emoji, hepsi görünüyor, kaydırma yok, tek satır`, r.list === "😂😮😅😢😡👍👏👋👌✌️🙏❤️🔥" && r.visible === 13 && !r.scroll && r.rows === 1, JSON.stringify(r));
       await h.context().close();
     }
     // Hazır mesaj "Seri olalım lütfen 😒"
