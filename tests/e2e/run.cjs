@@ -371,7 +371,7 @@ const TABLES = [
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });
       const bg = await h.evaluate(() => Object.fromEntries([".cayhane-hub", ".carli-hub", ".ozel-hub", ".usta-hub", ".close-game"].map((k) => [k, getComputedStyle(document.querySelector(k)).backgroundImage])));
       check("menü düğmeleri: Çayhane turuncu, Çarli sarı, Fifty Cent yeşil, Sosyete kırmızı (Oyunu kapat ile aynı ton)",
-        bg[".cayhane-hub"].includes("rgb(239, 108, 0)") && bg[".carli-hub"].includes("rgb(245, 197, 24)") && bg[".ozel-hub"].includes("rgb(31, 168, 90)") && bg[".usta-hub"] === bg[".close-game"], JSON.stringify(bg).slice(0, 200));
+        bg[".cayhane-hub"].includes("rgb(239, 108, 0)") && bg[".carli-hub"].includes("rgb(245, 197, 24)") && bg[".ozel-hub"].includes("rgb(19, 235, 4)") && bg[".usta-hub"] === bg[".close-game"], JSON.stringify(bg).slice(0, 200));
       await h.context().close();
     }
     // Çayhane demliği: "Oyunu kapat" ile aynı kırmızı (SVG), yazıyla birlikte ortalı
