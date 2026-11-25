@@ -145,7 +145,7 @@ export function App() {
         // Başarı oranı sunucuda tutulur (Sosyete şartı): lobi ve uyarılar bu sayıları gösterir
         onSnapshot(doc(firestore(), "users", u.uid), (snap) => {
           const d = snap.data() ?? {};
-          setServerCounts(Number(d.gamesPlayed ?? 0), Number(d.gamesWon ?? 0));
+          setServerCounts(Number(d.gamesPlayed ?? 0), Number(d.gamesWon ?? 0), Number(d.chipsWon ?? 0));
         }, () => {});
         const active = (await getDoc(doc(firestore(), "users", u.uid))).data()?.activeTable as string | undefined;
         if (!active) return;

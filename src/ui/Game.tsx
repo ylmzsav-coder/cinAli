@@ -43,7 +43,7 @@ import type { Action } from "../online/view";
 import { errorText, formatNumber, t, tk } from "../i18n";
 import { TileView } from "./TileView";
 import { Avatar, SeatStatsModal } from "./Profile";
-import { myRate } from "../stats";
+import { myChipsWon, myRate } from "../stats";
 import { GiftSendModal } from "./Gifts";
 import { type Gift } from "../economy/gifts";
 import { GiftIcon } from "./GiftIcon";
@@ -161,6 +161,8 @@ interface Props {
   vipSeats?: boolean[];
   /** Koltuklardaki oyuncuların başarı oranı (bilgisayar oyuncusunda null); verilmezse yalnızca sizinki. */
   seatRates?: (number | null)[];
+  /** Koltuklardaki oyuncuların toplam kazanılan çipi (bilgisayar oyuncusunda null). */
+  seatChips?: (number | null)[];
   /** Masanın birinciye ödülü (eşitlikte paylaşılır). */
   prize?: number;
   /** Masa kimliği: başlıkta simge (Çayhane çay, Sosyete araba) */
@@ -171,9 +173,10 @@ interface Props {
   idleStreak?: number;
 }
 
-export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, carry, tableId, vipSeats = [], seatRates, payout, prize = 0, idleStreak = 0 }: Props) {
+export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom = false, playerMenu, dict, state, level, speed, turnSeconds, sound, vibration, onChange, onExit, onNewGame, onLeave, onShop, tableName, carry, tableId, vipSeats = [], seatRates, seatChips, payout, prize = 0, idleStreak = 0 }: Props) {
   // Başarı oranı rozetleri: sizinki her zaman (güncel), çevrimiçi rakiplerinki sunucudan
   const rates = state.players.map((p, i) => (i === ME && !p.isBot ? myRate().rate : seatRates?.[i] ?? null));
+  const chipsTotals = state.players.map((p, i) => (i === ME && !p.isBot ? myChipsWon() : seatChips?.[i] ?? null));
   const me = state.players[ME];
   const [slots, setSlots] = useState<Slots>(() => initialSlots(me.rack.map((t) => t.id)));
   const [selected, setSelected] = useState<number[]>([]);
@@ -1068,7 +1071,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
         </div>
       </header>
       {profileSeat !== null && (
-        <SeatStatsModal state={state} seat={profileSeat} rate={rates[profileSeat]} vip={!!vipSeats[profileSeat]} vipRoom={!!tableId?.startsWith("vip")} onClose={() => setProfileSeat(null)}
+        <SeatStatsModal state={state} seat={profileSeat} rate={rates[profileSeat]} chipsWon={chipsTotals[profileSeat]} vip={!!vipSeats[profileSeat]} vipRoom={!!tableId?.startsWith("vip")} onClose={() => setProfileSeat(null)}
           onAddFriend={playerMenu?.addFriend && playerMenu.available(profileSeat) ? () => addFriendAt(profileSeat) : undefined}
           onGift={canGift(profileSeat) ? () => setGiftSeat(profileSeat) : undefined} />
       )}

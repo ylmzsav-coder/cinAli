@@ -1769,3 +1769,6 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .win-kumbara-plus { font-weight: 900; font-size: 1.15rem; color: #ffe27a; font-variant-numeric: tabular-nums; }
 .win-kumbara-box.win-pop { animation: win-pop 1.6s ease-out; }
 @media (max-height: 420px) { .win-kumbara-title { font-size: 1.2rem; } .win-kumbara-box .kumbara-icon { width: 3.2em; height: 3.2em; } .win-kumbara-text .chips { font-size: 1.6rem; } }
+/* Profil kartı: toplam kazanılan çip */
+.stat.total-chips { background: rgba(242, 179, 61, 0.18); }
+.stat.total-chips .stat-value { font-size: 1.25rem; }

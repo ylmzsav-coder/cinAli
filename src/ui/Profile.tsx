@@ -11,8 +11,9 @@ import type { GameState } from "../game/engine";
 import { handWinsOf, totals } from "../game/engine";
 import { COLORS, type Tile } from "../game/tiles";
 import { errorText, formatNumber, t, uiLocale } from "../i18n";
-import { loadStats, myRate, winRate, type PlayerStats } from "../stats";
+import { loadStats, myChipsWon, myRate, winRate, type PlayerStats } from "../stats";
 import { RateCard } from "./RateRing";
+import { Chips } from "./Chips";
 import { loadAccount } from "../account";
 import { rateTier } from "../economy/tables";
 import { TileView } from "./TileView";
@@ -70,6 +71,16 @@ export function Avatar({ name, seat, size = "md", onClick, photo, vip = false, r
     </button>
   ) : (
     <span className={cls} style={style} aria-hidden>{pic ? "" : letter}{crown}{badge}</span>
+  );
+}
+
+/** Toplam kazanılan çip: oyuncunun hayatı boyunca masalardan kazandığı çip. */
+function TotalChips({ value }: { value: number | null }) {
+  return (
+    <div className="stat stat-line total-chips">
+      <div className="stat-label">{t("stTotalChipsWon")}</div>
+      <div className="stat-value">{value == null ? "–" : <Chips amount={value} />}</div>
+    </div>
   );
 }
 
@@ -178,6 +189,7 @@ export function MyStatsModal({ name, onClose, onJoin, gender: genderProp, onGend
         ) : (
           <div className="profile-summary">
             {(() => { const me = myRate(); return <RateCard rate={me.rate} won={me.won} played={me.played} />; })()}
+            <TotalChips value={myChipsWon()} />
             <div className="stats-row2">
               <Box label={t("stWins")} value={s.gamesWon} />
               <Box label={t("stLosses")} value={s.gamesLost} />
@@ -349,7 +361,7 @@ function GamesBar({ s }: { s: PlayerStats }) {
 }
 
 /** Masadaki bir oyuncunun bu oyundaki istatistikleri. */
-export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip = false, vipRoom = false, rate }: { state: GameState; seat: number; onClose: () => void; onAddFriend?: () => void; onGift?: () => void; vip?: boolean; vipRoom?: boolean; rate?: number | null }) {
+export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip = false, vipRoom = false, rate, chipsWon }: { state: GameState; seat: number; onClose: () => void; onAddFriend?: () => void; onGift?: () => void; vip?: boolean; vipRoom?: boolean; rate?: number | null; chipsWon?: number | null }) {
   if (seat === 0) return <MyStatsModal name={state.players[0].name} onClose={onClose} standalone />;
   const p = state.players[seat];
   const sums = totals(state);
@@ -374,6 +386,8 @@ export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip 
             <div className="rate-circle">{formatNumber(score)}</div>
             <div className="stat-label big-label">{t("stGameTotal")} · {rank}.</div>
           </div>
+          {/* Hayatı boyunca masalardan kazandığı çip (bilgisayar oyuncusunda yok) */}
+          <TotalChips value={chipsWon ?? null} />
           <div className="stats-row2">
             <Box label={t("stHandsWon")} value={`${handWinsOf(state, seat)} / ${state.results?.length ?? 0}`} />
             <Box label={t("stHandPoints")} value={active ? p.points ?? 0 : "–"} />

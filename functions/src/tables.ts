@@ -236,9 +236,12 @@ async function persist(t: Transaction, id: string, table: TableDoc, state: GameS
     for (const uid of table.uids) {
       const seat = table.seats.findIndex((s) => s.uid === uid);
       const outcome = seat >= 0 ? gameOutcome(state, winners, seat) : null;
+      // Toplam kazanılan çip: masadan kazanılan ödül (kimse bitiremeyince yapılan iade sayılmaz)
+      const won = !noWinnerGame(state) ? next.payouts?.[uid] ?? 0 : 0;
       t.set(userRef(uid), {
         activeTable: null,
         ...(outcome ? { gamesPlayed: FieldValue.increment(1), ...(outcome === "won" ? { gamesWon: FieldValue.increment(1) } : {}) } : {}),
+        ...(won > 0 ? { chipsWon: FieldValue.increment(won) } : {}),
       }, { merge: true });
     }
   }
@@ -327,7 +330,7 @@ export const createPrivateTable = onCall(async (req) => {
       const now = Date.now();
       const table: TableDoc = {
         type: cfg.id, private: true, code, lang, status: "waiting",
-        seats: [{ uid, name, bot: false, rate: rateOfUser(me), ...vipOf(w) }], uids: [uid],
+        seats: [{ uid, name, bot: false, rate: rateOfUser(me), chipsWon: Number(me.chipsWon ?? 0), ...vipOf(w) }], uids: [uid],
         createdAt: now, startAt: now + 24 * 3600_000, deadline: null, version: 0, view: null,
       };
       t.set(tableRef(id), table);
@@ -371,7 +374,7 @@ export const joinPrivateTable = onCall(async (req) => {
     t.delete(userRef(uid).collection("invites").doc(snap.id));
     t.set(tableRef(snap.id), {
       ...table,
-      seats: [...table.seats, { uid, name, bot: false, rate: rateOfUser(me), ...(guest ? { guest: true } : {}), ...vipOf(w) }],
+      seats: [...table.seats, { uid, name, bot: false, rate: rateOfUser(me), chipsWon: Number(me.chipsWon ?? 0), ...(guest ? { guest: true } : {}), ...vipOf(w) }],
       uids: [...table.uids, uid],
       version: table.version + 1,
     });
@@ -462,7 +465,7 @@ export const joinTable = onCall(async (req) => {
     if (candidate) {
       id = candidate.id;
       const table = candidate.data() as TableDoc;
-      const seats = [...table.seats, { uid, name, bot: false, rate: rateOfUser(user), ...vipOf(w) }];
+      const seats = [...table.seats, { uid, name, bot: false, rate: rateOfUser(user), chipsWon: Number(user.chipsWon ?? 0), ...vipOf(w) }];
       const next: TableDoc = {
         ...table, seats, uids: [...table.uids, uid], version: table.version + 1,
         // Özel odadan gelen eşleşmede masa VIP masası olur (izleyici yok, sohbet açık)
@@ -478,7 +481,7 @@ export const joinTable = onCall(async (req) => {
       id = db.collection("tables").doc().id;
       const table: TableDoc = {
         type: cfg.id, private: false, code: null, lang, status: "waiting",
-        seats: [{ uid, name, bot: false, rate: rateOfUser(user), ...vipOf(w) }], uids: [uid],
+        seats: [{ uid, name, bot: false, rate: rateOfUser(user), chipsWon: Number(user.chipsWon ?? 0), ...vipOf(w) }], uids: [uid],
         createdAt: now, startAt: now + (cfg.vip || cfg.players === 2 ? VIP_WAIT_MS : WAIT_MS), deadline: null, version: 0, view: null,
         ...(byGender ? { hostGender: gender!, seekGender: want! } : {}),
       };
@@ -594,7 +597,7 @@ export const testRunTimeouts = onCall(async (req) => {
     const manualTurns = Math.max(0, Math.floor(Number(req.data?.manualFor?.turns ?? 0)));
     const manualUid = String(req.data?.manualFor?.uid ?? "");
     // İsteğe bağlı: yalnızca bu kadar sıra oynatılır (uyarı testi için oyunu bitirmeden)
-    const limit = Math.max(0, Math.floor(Number(req.data?.turns ?? 0))) || Infinity;
+    const limit = req.data?.winnerUid ? 0 : Math.max(0, Math.floor(Number(req.data?.turns ?? 0))) || Infinity;
     for (let guard = 0, n = 0; next.phase !== "gameOver" && guard < 2000 && n < limit; guard++, n++) {
       if (next.phase === "handOver") { next = dealHand(next); continue; }
       const seat = table.seats[next.current];
@@ -603,6 +606,13 @@ export const testRunTimeouts = onCall(async (req) => {
         table.seats = table.seats.map((x) => (x.uid === manualUid ? { ...x, manual: (x.manual ?? 0) + 1, autoStreak: 0 } : x));
       } else countAuto(table, next);
       next = timeoutMove(next);
+    }
+    // İsteğe bağlı: oyunu bu oyuncu ıstakasını bitirmiş gibi kazanır (ödeme ve kayıt testleri)
+    const winSeat = table.seats.findIndex((x) => x.uid === String(req.data?.winnerUid ?? "-"));
+    if (winSeat >= 0 && next.phase !== "gameOver") {
+      const scores = next.players.map((_, i) => (i === winSeat ? 100 : 0));
+      const result = { winner: winSeat, colorWin: null, scores, reason: "finished" as const };
+      next = { ...next, phase: "gameOver", lastResult: result, results: [...(next.results ?? []), result], history: [...next.history, scores] };
     }
     const wallets = await walletsOf(t, table.uids);
     await persist(t, id, table, next, wallets);

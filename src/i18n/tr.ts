@@ -250,6 +250,7 @@ const tr = {
   stGames: "Oyun",
   stGamesWon: "Kazanılan oyun",
   stWinRate: "Başarı oranı",
+  stTotalChipsWon: "Toplam kazanılan çip",
   tierGames: "{played} oyunda {won} galibiyet",
   tierNext: "{room} için %{need} gerekli: %{left} kaldı. Kazandıkça oranın yükselir.",
   tierTop: "Tebrikler, en üst seviyedesin! Bütün masalar sana açık; oranını korumaya devam et.",

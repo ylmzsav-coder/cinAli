@@ -191,9 +191,14 @@ export const avgMove = (s: PlayerStats) => (s.moves ? s.movePoints / s.moves : 0
 export const winRate = (won: number, played: number) => (played ? Math.round((won / played) * 100) : 0);
 
 /** Çevrimiçi modda sunucudaki oyun sayıları (Sosyete şartı sunucuda bunlarla denetlenir). */
-let serverCounts: { played: number; won: number } | null = null;
-export function setServerCounts(played: number, won: number) {
-  serverCounts = { played, won };
+let serverCounts: { played: number; won: number; chipsWon: number } | null = null;
+export function setServerCounts(played: number, won: number, chipsWon = 0) {
+  serverCounts = { played, won, chipsWon };
+}
+
+/** Hayatı boyunca masalardan kazandığı toplam çip (çevrimiçi: sunucu, değilse bu cihaz). */
+export function myChipsWon(): number {
+  return serverCounts ? serverCounts.chipsWon : loadStats().chipsWon ?? 0;
 }
 
 /**

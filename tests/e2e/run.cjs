@@ -429,6 +429,20 @@ const TABLES = [
       check(`çip yağmuru (${win ? "kazanınca" : "kaybedince"}): tarayıcı hatası yok`, !h.errors.length, h.errors.slice(0, 2).join(" | "));
       await h.context().close();
     }
+    // Toplam kazanılan çip: kendi profilinde (hayatı boyunca), rakip kartında; bilgisayar oyuncusunda "–"
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });
+      await h.evaluate(() => { const st = JSON.parse(localStorage.getItem("wordokey.stats")); st.chipsWon = 12345; localStorage.setItem("wordokey.stats", JSON.stringify(st)); });
+      await h.locator(".hub-rate").tap(); await W(h, 400);
+      const mine = (await h.locator(".profile-modal .total-chips").innerText().catch(() => "")).replace(/\n/g, " ");
+      check("profilde 'Toplam kazanılan çip: 12.345'", mine.includes("Toplam kazanılan çip") && mine.includes("12.345"), mine);
+      await h.locator(".profile-close").tap(); await W(h, 300);
+      await TABLES[0].open(h); await W(h, 1200);
+      await h.locator(".opp .avatar").first().tap(); await W(h, 400);
+      const bot = (await h.locator(".profile-modal .total-chips").innerText().catch(() => "")).replace(/\n/g, " ");
+      check("bilgisayar oyuncusunun kartında 'Toplam kazanılan çip: –'", bot.includes("Toplam kazanılan çip") && bot.includes("–"), bot);
+      await h.context().close();
+    }
     // Mağaza ve Kurallar: Pratik gibi sarı, yazı siyah
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });

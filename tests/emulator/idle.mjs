@@ -115,5 +115,28 @@ async function pair(type, a, b) {
   check("Fifty Cent (sohbetsiz): oynamasa da kimse bitiremeyince iade", t.payouts[A.uid] === 100 && t.payouts[B.uid] === 100 && (await A.balance()) === a0 && (await B.balance()) === b0, JSON.stringify(t.payouts));
 }
 
+// 5) Toplam kazanılan çip: kazanılan ödül sunucuda birikir; iade sayılmaz; koltukta görünür
+{
+  const A = await client("Nermin"), B = await client("Orhan");
+  const won = async (c) => Number((await getDoc(doc(c.db, "users", c.uid))).data()?.chipsWon ?? 0);
+  const play = async (type, winner) => {
+    const { tableId, code } = await A.call("createPrivateTable", { type, lang, name: A.name });
+    await B.call("joinPrivateTable", { code, name: B.name });
+    await A.call("startTable", { tableId });
+    await A.call("testRunTimeouts", { tableId, ...(winner ? { winnerUid: winner.uid } : {}) });
+    return tableId;
+  };
+  await play("ozel2", A);
+  check("Fifty Cent 100'ü kazanan Nermin: toplam kazanılan çip 200; kaybeden Orhan 0", (await won(A)) === 200 && (await won(B)) === 0, `${await won(A)} / ${await won(B)}`);
+  await play("ozel2", null);
+  check("kimse bitiremeyince yapılan iade toplam kazanılan çipe sayılmaz", (await won(A)) === 200 && (await won(B)) === 0, `${await won(A)} / ${await won(B)}`);
+  await play("ozel2", B);
+  check("Orhan kazanınca onun toplamı da artar (200)", (await won(B)) === 200 && (await won(A)) === 200);
+  const { tableId, code } = await A.call("createPrivateTable", { type: "ozel2", lang, name: A.name });
+  await B.call("joinPrivateTable", { code, name: B.name });
+  const seats = (await getDoc(doc(A.db, "tables", tableId))).data().seats;
+  check("koltuklarda oyuncuların toplam kazanılan çipi var (rakip kartında görünür)", seats.every((x) => x.chipsWon === 200), JSON.stringify(seats.map((x) => x.chipsWon)));
+}
+
 console.log(ok ? "\nHEPSİ GEÇTİ" : "\nHATA VAR");
 process.exit(ok ? 0 : 1);

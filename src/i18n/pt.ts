@@ -246,6 +246,7 @@ const pt: Messages = {
   stGames: "Partidas",
   stGamesWon: "Partidas vencidas",
   stWinRate: "Taxa de vitórias",
+  stTotalChipsWon: "Total de fichas ganhas",
   tierGames: "{won} vitórias em {played} partidas",
   tierNext: "{room} exige {need}%: faltam {left}%. Sua taxa sobe quando você vence.",
   tierTop: "Parabéns, você está no nível mais alto! Todas as mesas estão abertas para você; mantenha sua taxa.",

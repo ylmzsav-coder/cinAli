@@ -27,6 +27,8 @@ export interface SeatInfo {
   vipUntil?: number;
   /** Oturduğu andaki başarı oranı (yüzde); avatarın altında gösterilir. */
   rate?: number;
+  /** Oturduğu andaki toplam kazanılan çip (hayatı boyunca masalardan). */
+  chipsWon?: number;
   /** Oyuncunun kendi eliyle tamamladığı hamle (sıra) sayısı. */
   manual?: number;
   /** Süre dolunca otomatik oynanan hamle (sıra) sayısı. */
