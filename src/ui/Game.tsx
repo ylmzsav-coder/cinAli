@@ -32,6 +32,8 @@ import {
 import { Letter, Tile, letterValue } from "../game/tiles";
 import { buzz, pop, tick, tileSound, type TileSound } from "../feedback";
 import { playLose, playWin, stopJingle } from "../jingles";
+import { playChipRain } from "../coinSound";
+import { ChipShower } from "./ChipShower";
 import { lookupMeaning, type Meaning } from "../meaning";
 import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TEXT, type ChatEvent, type ChatMessageId, type SendTextResult } from "../online/chat";
 import type { Action } from "../online/view";
@@ -357,6 +359,32 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
     if (vibration && won) navigator.vibrate?.([80, 60, 80, 60, 200]);
   }, [state, sound, vibration]);
   useEffect(() => () => stopJingle(), []);
+
+  // ---- Kazanana çip yağmuru: çipler rakiplerden ödül yazısına uçar, metal bardağa dökülme sesi ----
+  const [shower, setShower] = useState(false);
+  const [shownPayout, setShownPayout] = useState<number | null>(null);
+  const showeredRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (state.phase !== "gameOver" || !payout || payout <= 0 || !gameWinners(state).includes(ME)) return;
+    if (showeredRef.current === state.seed) return;
+    showeredRef.current = state.seed;
+    setShower(true);
+    if (sound) playChipRain(0.25);
+    if (vibration) navigator.vibrate?.([30, 40, 30, 40, 30, 40, 30, 60, 30, 80, 60]);
+    // Ödül yazısı 0'dan kazanılan miktara kadar sayar (çipler varmaya başlayınca)
+    const total = payout;
+    const start = performance.now() + 700;
+    const dur = 1900;
+    let raf = 0;
+    const step = (now: number) => {
+      const k = Math.max(0, Math.min(1, (now - start) / dur));
+      setShownPayout(Math.round(total * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    setShownPayout(0);
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [state.phase, payout]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- Hamle süresi ----
   const active = state.phase === "draw" || state.phase === "play";
@@ -980,6 +1008,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
 
   return (
     <div className={`game okey ${draggingTile ? "dragging" : ""}`}>
+      {shower && <ChipShower target=".win-target" onDone={() => setShower(false)} />}
       {idleWarn && (
         <div className="idle-warn" role="alert">
           <b>⚠️ {t("idleWarnTitle")}</b>
@@ -1380,8 +1409,8 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                         ? <div className="banner idle-burn">{t("noWinnerIdle")}</div>
                         : <div className="banner">{t("noWinnerRefund")}</div>
                     ) : tableName && (
-                      <div className={payout ? "banner" : "muted"}>
-                        {payout ? t("chipsWon", { n: payout }) : t("noChipsWon")}
+                      <div className={payout ? "banner win-target" : "muted"}>
+                        {payout ? t("chipsWon", { n: shownPayout ?? payout }) : t("noChipsWon")}
                       </div>
                     )}
                     <button type="button" className="primary" onClick={onNewGame}>{t("backToMenu")}</button>

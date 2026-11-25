@@ -1746,3 +1746,17 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .avatar-sm .avatar-rate { font-size: 0.62em; bottom: -0.55em; }
 .avatar-lg .avatar-rate { font-size: 0.55em; bottom: -0.4em; border-width: 2px; }
 
+/* Kazanana çip yağmuru: altın çipler ödül yazısına uçar */
+.chip-shower { position: fixed; inset: 0; z-index: 300; pointer-events: none; perspective: 600px; }
+.fly-chip { position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%; will-change: transform, opacity;
+  background: radial-gradient(circle at 35% 30%, #fff6c2 0 12%, #ffd54a 30%, #f2a900 62%, #a66d00 100%);
+  border: 2px dashed #fff3b0; box-shadow: 0 0 0 2px #b07a00, 0 3px 8px rgba(0, 0, 0, 0.45), 0 0 14px rgba(255, 210, 63, 0.7); }
+.banner.win-target { transition: transform 0.2s; font-variant-numeric: tabular-nums; }
+.banner.win-pop { animation: win-pop 1.6s ease-out; }
+@keyframes win-pop {
+  0% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 210, 63, 0); }
+  15% { transform: scale(1.12); box-shadow: 0 0 28px rgba(255, 210, 63, 0.95); }
+  35% { transform: scale(1); }
+  55% { transform: scale(1.06); box-shadow: 0 0 22px rgba(255, 210, 63, 0.8); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 210, 63, 0); }
+}
