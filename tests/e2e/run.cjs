@@ -490,6 +490,9 @@ const TABLES = [
       await h.locator(".usta-hub").tap(); await W(h, 400);
       const lobby = (await h.locator(".sosyete-lobby .vip-search-seat").innerText().catch(() => ""));
       check("Sosyete düğmesinde siyah araba, lobide kırmızı araba (🚘)", btn.svg && !btn.emoji && lobby.includes("🚘"), JSON.stringify({ btn, lobby }));
+      await h.locator(".leave-round").tap(); await W(h, 300);
+      const pos = await h.evaluate(() => { const b = document.querySelector(".usta-hub").getBoundingClientRect(); const c = (q) => { const r = document.querySelector(q).getBoundingClientRect(); return Math.round(r.left + r.width / 2 - (b.left + b.width / 2)); }; return { chatText: c(".usta-hub .chat-text"), name: c(".usta-hub .sosyete-name") }; });
+      check("Sosyete düğmesi: 'Ücretsiz sohbet' yazısı tam ortada, 'Sosyete' yazısı ortaya yakın", Math.abs(pos.chatText) <= 2 && Math.abs(pos.name) <= 8, JSON.stringify(pos));
       await h.context().close();
     }
     // Sosyete düğmesinde "PROF." (Profesyonel kısaltıldı)

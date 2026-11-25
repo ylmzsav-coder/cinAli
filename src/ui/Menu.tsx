@@ -332,8 +332,9 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
               <span className="ozel-rate">{t("rateTag", { n: tableById("ozel2")!.minRate ?? 50 })}</span>
             </button>
             <button type="button" className={`${canResume ? "big" : "primary big"} caylak-hub usta-hub`} onClick={() => openSosyete()}>
-              <span className="sosyete-tags"><small className="pro-tag chat-tag">💬 {t("sosyeteChatTag")}</small></span>
-              <span className="sosyete-top"><BlackCarIcon /> {t("playUsta")}</span>
+              {/* Sohbet etiketi: yazı tam ortada (simgenin karşısında görünmez bir eş boşluk) */}
+              <span className="sosyete-tags"><small className="pro-tag chat-tag"><span className="chat-ico" aria-hidden>💬</span><span className="chat-text">{t("sosyeteChatTag")}</span><span className="chat-ico ghost" aria-hidden>💬</span></small></span>
+              <span className="sosyete-top"><BlackCarIcon /> <span className="sosyete-name">{t("playUsta")}</span></span>
               <span className="sosyete-tags"><small className="pro-tag">{t("proLabel")}</small></span>
               <span className="caylak-sub">{t("entry")} <Chips amount={tableById("usta")!.entry} /> – <Chips amount={tableById("usta5")!.entry} /></span>
             </button>
