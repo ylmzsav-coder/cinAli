@@ -44,6 +44,7 @@ interface HubProps {
   onPractice: () => void;
   onShop: () => void;
   onRules: () => void;
+  onWordNum?: () => void;
   onTerms: () => void;
   onPrivacy: () => void;
   onCommunity: () => void;
@@ -68,7 +69,7 @@ function PlayerIcon() {
   );
 }
 
-export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onTerms, onPrivacy, onCommunity, onAdmin, onJoinInvite }: HubProps) {
+export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, onTables, onSitTable, onTwo, onPractice, onShop, onRules, onWordNum, onTerms, onPrivacy, onCommunity, onAdmin, onJoinInvite }: HubProps) {
   const w = useWallet();
   const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
@@ -357,7 +358,8 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             <button type="button" className="big shop-hub" onClick={onShop}><CartIcon /> {t("shop")}</button>
             <button type="button" className="big rules-hub" onClick={onRules}>📖 {t("rules")}</button>
           </div>
-          <div className="hub-row">
+          <div className={`hub-row${onWordNum && canCloseGame() ? " hub-row3" : ""}`}>
+            {onWordNum && <button type="button" className="big wordnum-hub" onClick={onWordNum}>🔢 {t("wordNumTitle")}</button>}
             <button type="button" className="big" onClick={() => setFeedbackOpen(true)}>✉️ {t("feedback")}</button>
             {canCloseGame() && (
               <button type="button" className="big close-game" onClick={() => setCloseAsk(true)}><svg className="power-ico" viewBox="0 0 24 24" aria-hidden><path d="M12 3v8" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /><path d="M6.3 6.8a8 8 0 1 0 11.4 0" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /></svg> {t("closeGame")}</button>

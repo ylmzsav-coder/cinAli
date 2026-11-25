@@ -1787,3 +1787,22 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 /* Masaya selam hazır mesajı: el sallayan yüzle */
 .hello-face { display: inline-block; vertical-align: -0.35em; }
 .chat-msgs button.chat-hello { font-weight: 800; }
+
+/* ---- Kelimenin Sayısı ---- */
+.hub button.wordnum-hub { background: linear-gradient(180deg, #5c6bc0, #283593); color: #fff; border: 1px solid #1a237e; }
+.wordnum-input { width: 100%; box-sizing: border-box; font-size: 1.3rem; padding: 12px 14px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+.wordnum-result { margin: 14px 0 6px; text-align: center; }
+.wordnum-letters { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.wordnum-tile { display: inline-flex; flex-direction: column; align-items: center; min-width: 38px; padding: 6px 4px 4px; border-radius: 8px; background: linear-gradient(#fffdf5, #efe6cc); color: #222; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); }
+.wordnum-tile b { font-size: 1.35rem; line-height: 1; }
+.wordnum-tile small { font-size: 0.8rem; color: #c62828; font-weight: 700; margin-top: 3px; }
+.wordnum-sum { font-size: 1.1rem; font-variant-numeric: tabular-nums; margin: 12px 0 8px; }
+.wordnum-root { display: inline-flex; flex-direction: column; align-items: center; padding: 8px 22px; border-radius: 16px; background: linear-gradient(180deg, #ffd54f, #f9a825); color: #111; }
+.wordnum-root small { font-size: 0.8rem; font-weight: 600; }
+.wordnum-root b { font-size: 2.6rem; line-height: 1.05; }
+.wordnum-h { margin: 22px 0 8px; }
+.wordnum-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.wordnum-table th, .wordnum-table td { border: 1px solid rgba(128, 128, 128, 0.35); padding: 8px 6px; text-align: center; }
+.wordnum-table th { font-size: 0.9rem; }
+.wordnum-table tbody tr { cursor: pointer; }
+.wordnum-seven { font-size: 1.25rem; color: #fff; }

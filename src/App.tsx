@@ -1,4 +1,5 @@
 import { SETTINGS_EVENT } from "./ui/Profile";
+import { WordNumber } from "./ui/WordNumber";
 import { BACK_EVENT, setupBackButton } from "./backButton";
 import { useCallback, useEffect, useState } from "react";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
@@ -31,7 +32,7 @@ import { startHeartbeat } from "./online/social";
 import { Shop } from "./ui/Shop";
 import { Tables } from "./ui/Tables";
 
-type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby" | "terms" | "privacy" | "community" | "licenses" | "admin";
+type Screen = "hub" | "practice" | "tables" | "shop" | "rules" | "game" | "online" | "lobby" | "terms" | "privacy" | "community" | "licenses" | "admin" | "wordnum";
 
 const paidGames = new Set<number>();
 
@@ -403,6 +404,8 @@ export function App() {
       break;
     case "rules":
       return <Rules onBack={() => setScreen("hub")} onLicenses={() => setScreen("licenses")} />;
+    case "wordnum":
+      return <WordNumber onBack={() => setScreen("hub")} />;
     case "admin":
       return <Admin onBack={() => setScreen("hub")} />;
     case "terms":
@@ -504,6 +507,7 @@ export function App() {
       onPractice={() => setScreen("practice")}
       onShop={() => { setShopBack("hub"); setScreen("shop"); }}
       onRules={() => setScreen("rules")}
+      onWordNum={() => setScreen("wordnum")}
       onTerms={() => setScreen("terms")}
       onPrivacy={() => setScreen("privacy")}
       onCommunity={() => setScreen("community")}
