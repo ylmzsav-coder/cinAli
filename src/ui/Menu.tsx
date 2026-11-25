@@ -191,6 +191,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </label>
         </div>
         <div className="daily-slot">
+        <button type="button" className="big feedback-top" onClick={() => setFeedbackOpen(true)}>✉️ {t("feedback")}</button>
         {wallet.canClaimDaily() && (
           <button type="button" className="gift big daily-top" onClick={async () => {
             try {
@@ -358,9 +359,8 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
             <button type="button" className="big shop-hub" onClick={onShop}><CartIcon /> {t("shop")}</button>
             <button type="button" className="big rules-hub" onClick={onRules}>📖 {t("rules")}</button>
           </div>
-          <div className={`hub-row${onWordNum && canCloseGame() ? " hub-row3" : ""}`}>
+          <div className="hub-row">
             {onWordNum && <button type="button" className="big wordnum-hub" onClick={onWordNum}>🔢 {t("wordNumTitle")}</button>}
-            <button type="button" className="big" onClick={() => setFeedbackOpen(true)}>✉️ {t("feedback")}</button>
             {canCloseGame() && (
               <button type="button" className="big close-game" onClick={() => setCloseAsk(true)}><svg className="power-ico" viewBox="0 0 24 24" aria-hidden><path d="M12 3v8" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /><path d="M6.3 6.8a8 8 0 1 0 11.4 0" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" /></svg> {t("closeGame")}</button>
             )}
