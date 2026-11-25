@@ -147,10 +147,13 @@ export function SosyeteLobby({ name, onClose, onPick, room = "sosyete" }: { name
               carli ? (
                 <button type="button" className="primary big sosyete-sit" onClick={() => onPick(tb)}>{t("sit")}</button>
               ) : (
-                // Sosyete: rastgele oyuncularla otur ya da arkadaşlarla özel masa kur (davet kodu)
+                // Sosyete: rastgele oyuncularla otur ya da arkadaşla iki kişilik özel odada (davet kodu, sohbetli) oyna
                 <div className="sosyete-choices">
                   <button type="button" className="primary big sosyete-sit" onClick={() => onPick(tb, "random")}>{t("sit")}</button>
-                  <button type="button" className="big sosyete-friend" onClick={() => onPick(tb, "friend")}>👥 {t("tpFriend")}</button>
+                  <button type="button" className="big sosyete-friend" onClick={() => onPick(tb, "friend")}>
+                    <span>👥 {t("tpFriend")}</span>
+                    <small className="sosyete-friend-note">{t("sosyeteFriendNote")}</small>
+                  </button>
                 </div>
               )
             ) : (

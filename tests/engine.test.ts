@@ -799,3 +799,26 @@ describe("hamle süresi", () => {
     for (const tb of TABLES) expect(turnSecondsFor(tb), tb.id).toBe(tb.vip ? 180 : 60);
   });
 });
+
+import { SOSYETE_PRIVATE_TABLES, isChatType, privateTableById, sosyetePrivateOf, turnSecondsFor } from "../src/economy/tables";
+describe("Sosyete arkadaşla oyna: iki kişilik özel oda", () => {
+  it("her Sosyete girişinin 2 kişilik, sohbetli, %76 şartlı özel odası var", () => {
+    for (const [id, entry] of [["usta", 100], ["usta2", 1000], ["usta5", 10000]] as const) {
+      const p = sosyetePrivateOf(tableById(id)!);
+      expect(p.entry).toBe(entry);
+      expect(p.players).toBe(2);
+      expect(winnerPrize(p)).toBe(entry * 2);
+      expect(p.minRate).toBe(76);
+      expect(p.minWord).toBe(3);
+      expect(isChatType(p.id)).toBe(true);
+      expect(turnSecondsFor(p)).toBe(180);
+    }
+  });
+  it("özel odalar genel listede yok (rastgele eşleşme ve Masalar sayfası), davetle kurulabilir", () => {
+    for (const p of SOSYETE_PRIVATE_TABLES) {
+      expect(TABLES.some((t) => t.id === p.id)).toBe(false);
+      expect(privateTableById(p.id)).toBe(p);
+      expect(tableById(p.id)).toBe(p);
+    }
+  });
+});

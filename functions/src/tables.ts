@@ -37,7 +37,7 @@ import {
 import { LANGS, LangCode, setGameLang } from "../../src/game/lang";
 import { assertNotBanned } from "./admin";
 import { blockedWithAny } from "./blocks";
-import { TABLES, TableConfig, turnSecondsFor, gameOutcome, noWinnerGame, payout, rateAllows, ratePercent, tableById } from "../../src/economy/tables";
+import { TABLES, TableConfig, privateTableById, turnSecondsFor, gameOutcome, noWinnerGame, payout, rateAllows, ratePercent, tableById } from "../../src/economy/tables";
 import { WalletDoc, applyTx, db, fail, uidOf, walletRef } from "./common";
 import { cleanName } from "./profanity";
 import { publicView, type Action, type PublicView, type SeatInfo } from "../../src/online/view";
@@ -102,6 +102,12 @@ const userRef = (uid: string) => db.collection("users").doc(uid);
 /** Masa ayarı (sürmekte olan eski masa türleri dahil). */
 function configFor(type: unknown): TableConfig {
   const c = tableById(type as string);
+  if (!c) fail("badRequest", {}, "invalid-argument");
+  return c;
+}
+/** Özel masa kurma: güncel masalar ve yalnızca davetle açılan Sosyete Özel (iki kişilik). */
+function privateConfig(type: unknown): TableConfig {
+  const c = privateTableById(type as string);
   if (!c) fail("badRequest", {}, "invalid-argument");
   return c;
 }
@@ -275,7 +281,7 @@ async function activeTableOf(t: Transaction, uid: string): Promise<string | null
 export const createPrivateTable = onCall(async (req) => {
   const uid = uidOf(req);
   await assertNotBanned(uid);
-  const cfg = joinableConfig(req.data?.type);
+  const cfg = privateConfig(req.data?.type);
   const lang = langOf(req.data?.lang);
   const name = cleanName(req.data?.name, uid, lang);
   // Kod çakışmasını önlemek için birkaç deneme

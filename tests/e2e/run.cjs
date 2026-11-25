@@ -352,10 +352,13 @@ const TABLES = [
         const a = document.querySelector(".sosyete-sit")?.getBoundingClientRect(), b = document.querySelector(".sosyete-friend")?.getBoundingClientRect();
         return { has: !!a && !!b, text: document.querySelector(".sosyete-friend")?.textContent ?? "", side: a && b ? Math.abs(a.top - b.top) < 4 && a.right <= b.left + 1 : false, fit: b ? b.right <= innerWidth && b.bottom <= innerHeight : false };
       });
-      check(`Sosyete (${d}): 'Otur' ve 'Arkadaşla oyna' yan yana, ekrana sığıyor`, r.has && r.side && r.fit && r.text.includes("Arkadaşla oyna"), JSON.stringify(r));
+      check(`Sosyete (${d}): 'Otur' ve 'Arkadaşla oyna · 2 kişilik özel oda' yan yana, ekrana sığıyor`, r.has && r.side && r.fit && r.text.includes("Arkadaşla oyna") && r.text.includes("2 kişilik özel oda"), JSON.stringify(r));
       await q.locator(".sosyete-friend").tap(); await W(q, 400);
       const inv = await q.locator(".invite-seat").count();
-      check(`Sosyete (${d}): arkadaşla oyna → davet koltuklu bekleme masası (3 boş koltuk)`, inv === 3, `davet koltuğu ${inv}`);
+      check(`Sosyete (${d}): arkadaşla oyna → iki kişilik özel oda (1 davet koltuğu)`, inv === 1, `davet koltuğu ${inv}`);
+      await q.locator(".lobby-panel .primary").tap(); await W(q, 1200);
+      const g = await game(q);
+      check(`Sosyete (${d}) arkadaşla: oyun Sosyete Özel masasında, 2 oyuncu, 100 giriş`, g?.tableId === "ustaozel" && g?.state?.players?.length === 2 && (await bal(q)) === 50000 - 100, `masa ${g?.tableId}, oyuncu ${g?.state?.players?.length}`);
       check(`Sosyete (${d}) arkadaşla: tarayıcı hatası yok`, !q.errors.length, q.errors.slice(0, 2).join(" | "));
       await q.context().close();
     }

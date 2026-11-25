@@ -201,10 +201,11 @@ const tilesOnRack = (p) => p.locator(".okey-rack .rack-slot .tile");
   if (await F.locator(".splash-hit").count()) await F.locator(".splash-hit").tap();
   const met2 = await until(async () => { const t = await E.locator(".waiting-seats").innerText(); return t.includes("Ece") && t.includes("Fikret"); }, 20000);
   check("Fikret davet koduyla Ece'nin Sosyete masasına oturdu", met2, (await E.locator(".waiting-seats").innerText().catch(() => "")).replace(/\n/g, " · "));
-  check("masa adı Sosyete", /Sosyete/.test(await E.locator(".page.menu .muted").first().innerText().catch(() => "")));
+  check("masa adı Sosyete Özel, iki kişilik (boş koltuk yok)", /Sosyete Özel/.test(await E.locator(".page.menu .muted").first().innerText().catch(() => "")) && (await E.locator(".waiting-seats .invite-seat").count()) === 0);
   await E.locator(".page.menu button.big:not(.primary)").last().tap();
   const started2 = await until(async () => (await E.locator(".okey-rack").count()) > 0 && (await F.locator(".okey-rack").count()) > 0, 20000);
   check("Ece oyunu başlattı, ikisi aynı masada oynuyor", started2);
+  check("rakip Fikret (bilgisayar oyuncusu yok)", /Fikret/.test(await opp(E)) && /Ece/.test(await opp(F)), `${await opp(E)} / ${await opp(F)}`);
   check("özel Sosyete masasında sohbet var", (await E.locator(".chat-room-btn").count()) > 0);
   check("arkadaşla oyna testinde tarayıcı hatası yok", !E.errors.length && !F.errors.length, [...E.errors, ...F.errors].slice(0, 2).join(" | "));
 

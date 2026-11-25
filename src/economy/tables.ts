@@ -74,6 +74,28 @@ export const TABLES: TableConfig[] = [
   // VIP Usta: aynı oda, yüksek giriş (VIP kartındaki giriş seçiminden)
 ];
 
+/**
+ * Sosyete Özel: Sosyete'de "Arkadaşla oyna" ile açılan iki kişilik özel oda. Yalnızca davet
+ * koduyla girilir (genel listede ve rastgele eşleşmede yok). İki arkadaş sakince oynar ve
+ * ücretsiz sohbet eder: hamle süresi 3 dakika, başarı oranı şartı Sosyete ile aynı (%76).
+ * Giriş Sosyete masasındaki seçimle aynı; birinciye iki girişin toplamı ödenir.
+ */
+export const SOSYETE_PRIVATE_TABLES: TableConfig[] = [
+  { id: "ustaozel", name: "Sosyete Özel", entry: USTA_ENTRY, hands: 1, level: "zor", prize: USTA_ENTRY * 2, players: 2, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true, turnSeconds: VIP_TURN_SECONDS },
+  { id: "ustaozel2", name: "Sosyete Özel 1000", entry: SOSYETE_ORTA_ENTRY, hands: 1, level: "zor", prize: SOSYETE_ORTA_ENTRY * 2, players: 2, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true, turnSeconds: VIP_TURN_SECONDS },
+  { id: "ustaozel5", name: "Sosyete Özel 10000", entry: SOSYETE_BUYUK_ENTRY, hands: 1, level: "zor", prize: SOSYETE_BUYUK_ENTRY * 2, players: 2, minWord: 3, minRate: SOSYETE_MIN_RATE, chat: true, turnSeconds: VIP_TURN_SECONDS },
+];
+
+/** Sosyete masasının (usta, usta2, usta5) arkadaşlarla oynanan iki kişilik özel odası. */
+export function sosyetePrivateOf(t: TableConfig): TableConfig {
+  return SOSYETE_PRIVATE_TABLES.find((x) => x.entry === t.entry) ?? SOSYETE_PRIVATE_TABLES[0];
+}
+
+/** Özel masa (davet kodlu) kurulabilen türler: tüm güncel masalar ve Sosyete Özel. */
+export function privateTableById(id: string | undefined): TableConfig | undefined {
+  return TABLES.find((t) => t.id === id) ?? SOSYETE_PRIVATE_TABLES.find((t) => t.id === id);
+}
+
 /** VIP oda türü mü (serbest sohbet, izleyici yok, süre yok). */
 /** Masanın hamle süresi (saniye): VIP Oda 180, diğer çipli masalar 60. */
 export function turnSecondsFor(t: TableConfig): number {
@@ -95,7 +117,7 @@ const LEGACY_TABLES: TableConfig[] = [
 ];
 
 export function tableById(id: string | undefined): TableConfig | undefined {
-  return TABLES.find((t) => t.id === id) ?? LEGACY_TABLES.find((t) => t.id === id);
+  return TABLES.find((t) => t.id === id) ?? SOSYETE_PRIVATE_TABLES.find((t) => t.id === id) ?? LEGACY_TABLES.find((t) => t.id === id);
 }
 
 /** Birinciye ödenen tutar. */

@@ -20,7 +20,7 @@ import { vipTermsAccepted } from "../terms";
 import { KumbaraIcon } from "./Kumbara";
 import { DiceIcon } from "./Dice";
 import { Chips } from "./Chips";
-import { type TableConfig, isVipType, tableById, winnerPrize } from "../economy/tables";
+import { type TableConfig, isVipType, sosyetePrivateOf, tableById, winnerPrize } from "../economy/tables";
 import { VipModal } from "./Vip";
 import { CLOUD } from "../online/cloud";
 import { type TableInvite, declineInvite, friendsStatus } from "../online/social";
@@ -243,7 +243,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </div>
           {sosyeteOpen && (
             <SosyeteLobby name={settings.name || t("defaultName")} onClose={() => setSosyeteOpen(false)}
-              onPick={(tb, mode) => { setSosyeteOpen(false); if (mode === "friend") onTwo(tb, "friend"); else onSitTable(tb); }} />
+              onPick={(tb, mode) => { setSosyeteOpen(false); if (mode === "friend") onTwo(sosyetePrivateOf(tb), "friend"); else onSitTable(tb); }} />
           )}
           {carliOpen && (
             <SosyeteLobby room="carli" name={settings.name || t("defaultName")} onClose={() => setCarliOpen(false)}
