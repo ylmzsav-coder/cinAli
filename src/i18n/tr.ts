@@ -67,7 +67,7 @@ const tr = {
   wordNumWord: "Kelime",
   wordNumStrokes: "Hareketler",
   wordNumTotal: "Toplam",
-  wordNumNote: "Büyük harfle yazılış sayılır. Ü 5 hareket sayılır (U ve iki nokta). Bir eğlence köşesidir.",
+  wordNumNote: "Büyük harfle yazılış sayılır. U 3 hareket sayılır (sol dikey, alt çizgi, sağ dikey); Ü = U + iki nokta = 5. Bir eğlence köşesidir.",
   strokeHowTitle: "Nasıl sayılır? Örnek: ET",
   strokeHowText: "Kalemi kâğıttan kaldırmadan çizdiğin her düz çizgi ya da kavis 1 hareket sayılır. Çizgiler birbirine değse de ayrı ayrı sayılır.",
   strokeApart: "Parça parça",

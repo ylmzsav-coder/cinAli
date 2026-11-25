@@ -66,7 +66,7 @@ const en: Messages = {
   wordNumWord: "Word",
   wordNumStrokes: "Strokes",
   wordNumTotal: "Total",
-  wordNumNote: "Capital letters are counted. Ü counts as 5 strokes (U and two dots). Just for fun.",
+  wordNumNote: "Capital letters are counted. U counts as 3 strokes (left line, bottom, right line); Ü = U + two dots = 5. Just for fun.",
   strokeHowTitle: "How to count? Example: ET",
   strokeHowText: "Every line or curve you draw without lifting the pen counts as 1 stroke. Lines are counted separately even where they touch.",
   strokeApart: "Piece by piece",

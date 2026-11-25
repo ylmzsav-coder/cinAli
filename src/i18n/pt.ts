@@ -66,7 +66,7 @@ const pt: Messages = {
   wordNumWord: "Palavra",
   wordNumStrokes: "Traços",
   wordNumTotal: "Total",
-  wordNumNote: "Contam-se as maiúsculas. Ü conta 5 traços (U e dois pontos). Só por diversão.",
+  wordNumNote: "Contam-se as maiúsculas. U conta 3 traços (esquerda, baixo, direita); Ü = U + dois pontos = 5. Só por diversão.",
   strokeHowTitle: "Como se conta? Exemplo: ET",
   strokeHowText: "Cada linha ou curva traçada sem levantar a caneta conta como 1 traço. As linhas contam separadamente mesmo onde se tocam.",
   strokeApart: "Peça por peça",

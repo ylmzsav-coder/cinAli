@@ -66,7 +66,7 @@ const de: Messages = {
   wordNumWord: "Wort",
   wordNumStrokes: "Striche",
   wordNumTotal: "Summe",
-  wordNumNote: "Gezählt werden Großbuchstaben. Ü zählt 5 Striche (U und zwei Punkte). Nur zum Spaß.",
+  wordNumNote: "Gezählt werden Großbuchstaben. U zählt 3 Striche (links, unten, rechts); Ü = U + zwei Punkte = 5. Nur zum Spaß.",
   strokeHowTitle: "Wie wird gezählt? Beispiel: ET",
   strokeHowText: "Jede Linie oder Kurve, die du ohne Absetzen ziehst, zählt als 1 Strich. Linien zählen einzeln, auch wo sie sich berühren.",
   strokeApart: "Stück für Stück",

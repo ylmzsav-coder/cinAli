@@ -66,7 +66,7 @@ const fr: Messages = {
   wordNumWord: "Mot",
   wordNumStrokes: "Traits",
   wordNumTotal: "Total",
-  wordNumNote: "On compte les majuscules. Ü compte 5 traits (U et deux points). Pour le plaisir.",
+  wordNumNote: "On compte les majuscules. U compte 3 traits (gauche, bas, droite) ; Ü = U + deux points = 5. Pour le plaisir.",
   strokeHowTitle: "Comment compter ? Exemple : ET",
   strokeHowText: "Chaque trait ou courbe tracé sans lever le stylo compte pour 1. Les traits comptent séparément, même là où ils se touchent.",
   strokeApart: "Trait par trait",

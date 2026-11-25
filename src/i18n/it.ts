@@ -66,7 +66,7 @@ const it: Messages = {
   wordNumWord: "Parola",
   wordNumStrokes: "Tratti",
   wordNumTotal: "Totale",
-  wordNumNote: "Si contano le maiuscole. Ü conta 5 tratti (U e due punti). Solo per divertimento.",
+  wordNumNote: "Si contano le maiuscole. U conta 3 tratti (sinistra, sotto, destra); Ü = U + due punti = 5. Solo per divertimento.",
   strokeHowTitle: "Come si conta? Esempio: ET",
   strokeHowText: "Ogni linea o curva tracciata senza sollevare la penna conta 1 tratto. Le linee si contano separatamente anche dove si toccano.",
   strokeApart: "Pezzo per pezzo",
