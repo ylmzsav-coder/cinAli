@@ -220,7 +220,7 @@ export function MyStatsModal({ name, onClose, onJoin, gender: genderProp, onGend
   );
 }
 
-/** Profildeki ayarlar: fotoğraf, davetler, sohbet, ses ve hesabı silme. */
+/** Profildeki ayarlar: fotoğraf, davetler, ses ve hesabı silme (sohbet masada açılıp kapatılır). */
 function SettingsPanel({ settings, onSettings }: { settings: Settings; onSettings: (s: Settings) => void }) {
   const [ask, setAsk] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -228,8 +228,6 @@ function SettingsPanel({ settings, onSettings }: { settings: Settings; onSetting
   const rows: { key: keyof Settings; label: string; hint: string; on: boolean }[] = [
     { key: "showPhoto", label: t("setShowPhoto"), hint: t("setShowPhotoHint"), on: settings.showPhoto !== false },
     { key: "invites", label: t("setInvites"), hint: t("setInvitesHint"), on: settings.invites !== false },
-    { key: "chatInvite", label: t("setChatInvite"), hint: t("setChatInviteHint"), on: settings.chatInvite !== false },
-    { key: "chat", label: t("setChatRandom"), hint: t("setChatRandomHint"), on: settings.chat },
     { key: "sound", label: t("setSound"), hint: t("setSoundHint"), on: settings.sound },
   ];
   const remove = async () => {
