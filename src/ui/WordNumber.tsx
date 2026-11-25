@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatNumber, t } from "../i18n";
 import { SPACE_WORDS, digitalRoot, wordNumber } from "../strokes";
 
@@ -71,8 +71,12 @@ export function WordNumber({ onBack }: { onBack: () => void }) {
     io.observe(el);
     return () => io.disconnect();
   }, [sevens, shown]);
-  // Uzay altılısı en başta (ayrı renkte), ardından sözlükteki diğer yediler
-  const rest = sevens ? sevens.words.filter((w) => !SPACE.has(w)) : [];
+  // Uzay altılısı en başta sabit (ayrı renkte); ardından diğer yediler en uzundan en kısaya
+  // (aynı uzunluktakiler sözlük sırasında: sık kullanılan önce)
+  const rest = useMemo(() => (sevens ? sevens.words.filter((w) => !SPACE.has(w)) : [])
+    .map((w, i) => ({ w, i, n: [...w].length }))
+    .sort((a, b) => b.n - a.n || a.i - b.i)
+    .map((x) => x.w), [sevens]);
   const hasResult = wordNumber(word).letters.length > 0;
   return (
     <div className="page wordnum-page">
