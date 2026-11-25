@@ -675,7 +675,7 @@ const TABLES = [
 
   if (want("9")) {
   console.log("\n== 9. Hamle süresi: bütün masalarda (VIP dahil) 60 sn");
-  for (const [name, secs] of [["Çayhane 25", 60], ["Çayhane 50", 60], ["Çayhane", 60], ["Çarli 100", 60], ["Çarli 200", 60], ["Çarli 300", 60], ["Fifty Cent 100", 60], ["Sosyete 100", 60], ["VIP", 60]]) {
+  for (const [name, secs] of [["Çayhane 25", 60], ["Çayhane 50", 60], ["Çayhane", 60], ["Çarli 100", 60], ["Çarli 200", 60], ["Çarli 300", 60], ["Fifty Cent 100", 60], ["Fifty Cent 1000", 60], ["Fifty Cent 10000", 60], ["Sosyete 100", 60], ["VIP", 60]]) {
     const ctx = await browser.newContext({ ...devices["Pixel 7 landscape"] });
     const p = await ctx.newPage(); p.errors = []; p.on("pageerror", (e) => p.errors.push(e.message));
     await p.clock.install();
