@@ -1851,3 +1851,24 @@ button.wordnum-famous-btn { display: block; width: 100%; max-width: none !import
 /* VIP Oda ve Kelimelerin Kök Değeri yan yana, diğer düğmelerle aynı ebat */
 .hub-row > .vip-hub, .hub-row > .wordnum-hub { width: 100%; min-width: 0; }
 .hub-row > .vip-hub .caylak-sub { font-size: 0.78em; }
+/* Nasıl sayılır? ET örneği: çizgi çizgi */
+.stroke-demo { margin: 16px 0 10px; padding: 12px 14px; border-radius: 14px; background: rgba(0, 0, 0, 0.22); border: 1px solid rgba(255, 213, 79, 0.4); }
+.stroke-demo .wordnum-h { margin-top: 0; }
+.stroke-rule { margin: 0 0 10px; }
+.stroke-rows { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.stroke-row { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.stroke-row small { opacity: 0.85; font-weight: 700; }
+.stroke-pair { display: flex; gap: 8px; padding: 8px; border-radius: 12px; background: linear-gradient(#fffdf5, #efe6cc); }
+.stroke-letter { width: 74px; height: 94px; }
+.stroke-arrow { font-size: 2rem; color: #ffd54f; font-weight: 900; }
+.stroke-sum { text-align: center; font-size: 1.1rem; margin: 10px 0 6px; font-variant-numeric: tabular-nums; }
+.stroke-draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: stroke-draw 0.4s ease-out forwards; }
+.stroke-num { opacity: 0; animation: stroke-fade 0.25s ease-out forwards; }
+@keyframes stroke-draw { to { stroke-dashoffset: 0; } }
+@keyframes stroke-fade { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .stroke-draw { stroke-dashoffset: 0; animation: none; } .stroke-num { opacity: 1; animation: none; } }
+.stroke-table summary { cursor: pointer; font-weight: 700; color: #ffd54f; margin-top: 4px; }
+.stroke-groups { display: grid; gap: 6px; margin-top: 8px; }
+.stroke-group { display: flex; gap: 10px; align-items: center; }
+.stroke-group b { flex: none; width: 30px; height: 30px; border-radius: 50%; background: #ffd54f; color: #111; display: inline-flex; align-items: center; justify-content: center; }
+.stroke-group span { font-weight: 800; letter-spacing: 0.08em; font-size: 1.05rem; }

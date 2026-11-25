@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { formatNumber, t, uiLang } from "../i18n";
 import { FAMOUS_SEVENS, SEVEN_GROUPS, type SevenGroup } from "../sevens";
 import { SPACE_WORDS, digitalRoot, wordNumber } from "../strokes";
+import { StrokeDemo } from "./StrokeDemo";
 
 /** Kayıtlı liste: kök değeri 7 olan bütün sözlük kelimeleri (tools/kok7.ts üretir). */
 let sevensCache: Promise<{ total: number; words: string[] }> | null = null;
@@ -130,6 +131,7 @@ export function WordNumber({ onBack }: { onBack: () => void }) {
           )}
         </section>
       )}
+      <StrokeDemo />
       <p className="muted">{t("wordNumIntro")}</p>
       <input className="wordnum-input" value={word} maxLength={24} autoCapitalize="characters" spellCheck={false}
         placeholder={t("wordNumPlaceholder")} aria-label={t("wordNumPlaceholder")} onChange={(e) => setWord(e.target.value)} />
