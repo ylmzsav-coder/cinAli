@@ -246,7 +246,7 @@ export function App() {
     setScreen("lobby");
   };
 
-  /** İki kişilik oda (Özel Oda / VIP): rastgele oyuncu, arkadaşla ya da bilgisayara karşı. */
+  /** İki kişilik oda (Fifty Cent / VIP) ve Sosyete: rastgele oyuncu, arkadaşla (özel masa) ya da bilgisayara karşı. */
   const playTwo = (tb: TableConfig, mode: TwoMode) => {
     if (tb.vip && !wallet.isVip()) return;
     if (blockedByRate(tb)) return;

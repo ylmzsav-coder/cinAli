@@ -1410,6 +1410,9 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .sosyete-sit { width: 100%; margin-top: 8px; }
 .sosyete-lobby .lobby-info > .sosyete-sit { grid-column: 1 / -1; width: 100%; }
 .sosyete-lobby button.sosyete-sit { max-width: none; }
+.sosyete-choices { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 8px; }
+.sosyete-choices > button { flex: 1 1 0; margin-top: 0; max-width: none; min-width: 0; }
+.sosyete-lobby button.sosyete-friend { max-width: none; }
 .terms-link { display: block; margin: 6px auto 0; font-size: 0.8rem; opacity: 0.85; }
 .terms-page h2 { font-size: 1.05rem; margin: 14px 0 4px; }
 .vip-terms { max-width: 560px; text-align: left; }

@@ -344,6 +344,28 @@ const TABLES = [
     await q.context().close();
   }
   {
+    // Sosyete "Arkadaşla oyna": Otur'un yanında; davet koltuklu bekleme masasını açar
+    for (const d of ["Pixel 7 landscape", "iPhone SE landscape"]) {
+      const q = await fresh(browser, d, { played: 25, won: 19 });
+      await q.locator(".usta-hub").tap(); await W(q, 400);
+      const r = await q.evaluate(() => {
+        const a = document.querySelector(".sosyete-sit")?.getBoundingClientRect(), b = document.querySelector(".sosyete-friend")?.getBoundingClientRect();
+        return { has: !!a && !!b, text: document.querySelector(".sosyete-friend")?.textContent ?? "", side: a && b ? Math.abs(a.top - b.top) < 4 && a.right <= b.left + 1 : false, fit: b ? b.right <= innerWidth && b.bottom <= innerHeight : false };
+      });
+      check(`Sosyete (${d}): 'Otur' ve 'Arkadaşla oyna' yan yana, ekrana sığıyor`, r.has && r.side && r.fit && r.text.includes("Arkadaşla oyna"), JSON.stringify(r));
+      await q.locator(".sosyete-friend").tap(); await W(q, 400);
+      const inv = await q.locator(".invite-seat").count();
+      check(`Sosyete (${d}): arkadaşla oyna → davet koltuklu bekleme masası (3 boş koltuk)`, inv === 3, `davet koltuğu ${inv}`);
+      check(`Sosyete (${d}) arkadaşla: tarayıcı hatası yok`, !q.errors.length, q.errors.slice(0, 2).join(" | "));
+      await q.context().close();
+    }
+    // Çarli'de yalnızca Otur (arkadaş düğmesi yok)
+    const c = await fresh(browser, "Pixel 7 landscape", { played: 25, won: 19 });
+    await c.locator(".carli-hub").tap(); await W(c, 400);
+    check("Çarli'de 'Arkadaşla oyna' düğmesi yok (yalnızca Otur)", (await c.locator(".sosyete-friend").count()) === 0 && (await c.locator(".carli-lobby .sosyete-sit").count()) === 1);
+    await c.context().close();
+  }
+  {
     // Yeni oyuncu (hiç oyun yok, %0) de oturamaz; Çayhane ve Fifty Cent serbest
     const p = await fresh(browser, "Pixel 7 landscape", { played: 0, won: 0 });
     await p.locator(".usta-hub").tap(); await W(p, 400);

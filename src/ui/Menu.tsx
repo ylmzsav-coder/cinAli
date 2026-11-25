@@ -243,7 +243,7 @@ export function Hub({ settings, onSettings, canResume, resumeLabel, onResume, on
           </div>
           {sosyeteOpen && (
             <SosyeteLobby name={settings.name || t("defaultName")} onClose={() => setSosyeteOpen(false)}
-              onPick={(tb) => { setSosyeteOpen(false); onSitTable(tb); }} />
+              onPick={(tb, mode) => { setSosyeteOpen(false); if (mode === "friend") onTwo(tb, "friend"); else onSitTable(tb); }} />
           )}
           {carliOpen && (
             <SosyeteLobby room="carli" name={settings.name || t("defaultName")} onClose={() => setCarliOpen(false)}

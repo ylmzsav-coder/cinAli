@@ -109,7 +109,7 @@ export function TableLobby({ table, name, want, onStart, onLeave }: { table: Tab
  * Bilgisayara karşı oyna düğmeleri; VIP'te ayrıca Bayan / Bay oyuncu ara.
  */
 /** Sosyete: dört kişilik yüksek girişli masalar (100 → 400, 1.000 → 4.000, 10.000 → 40.000). */
-export function SosyeteLobby({ name, onClose, onPick, room = "sosyete" }: { name: string; onClose: () => void; onPick: (tb: TableConfig) => void; room?: "sosyete" | "carli" }) {
+export function SosyeteLobby({ name, onClose, onPick, room = "sosyete" }: { name: string; onClose: () => void; onPick: (tb: TableConfig, mode?: "random" | "friend") => void; room?: "sosyete" | "carli" }) {
   // Aynı lobi Sosyete (3 masa, sohbetli) ve Çarli (3 masa) için kullanılır
   const carli = room === "carli";
   const ids = carli ? (["carli", "carli2", "carli3"] as const) : (["usta", "usta2", "usta5"] as const);
@@ -144,7 +144,15 @@ export function SosyeteLobby({ name, onClose, onPick, room = "sosyete" }: { name
               })}
             </div>
             {allowed ? (
-              <button type="button" className="primary big sosyete-sit" onClick={() => onPick(tb)}>{t("sit")}</button>
+              carli ? (
+                <button type="button" className="primary big sosyete-sit" onClick={() => onPick(tb)}>{t("sit")}</button>
+              ) : (
+                // Sosyete: rastgele oyuncularla otur ya da arkadaşlarla özel masa kur (davet kodu)
+                <div className="sosyete-choices">
+                  <button type="button" className="primary big sosyete-sit" onClick={() => onPick(tb, "random")}>{t("sit")}</button>
+                  <button type="button" className="big sosyete-friend" onClick={() => onPick(tb, "friend")}>👥 {t("tpFriend")}</button>
+                </div>
+              )
             ) : (
               <div className="rate-block" role="alert">
                 <b>⛔ {rateBlockMessage(tb, me).title}</b>
