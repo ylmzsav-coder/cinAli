@@ -285,6 +285,9 @@ const TABLES = [
       const pro = !(tb.name.startsWith("Çayhane") || tb.name === "Pratik");
       for (const [word, value] of WORDS) {
         await toHub(p);
+        // Art arda açılıp bırakılan oyunlar oranı düşürür; Sosyete (%76) şartı için oran yenilenir
+        // Kumbara da her masadan önce doldurulur (onlarca giriş ücreti kumbarayı boşaltır)
+        await p.evaluate(() => { localStorage.setItem("wordokey.stats", JSON.stringify({ gamesPlayed: 10, gamesWon: 9, gamesLost: 1 })); const w = JSON.parse(localStorage.getItem("cinali.wallet")); w.balance = 50000; localStorage.setItem("cinali.wallet", JSON.stringify(w)); });
         await tb.open(p); await W(p, 1500);
         // Sırayı oyuncuya ver, ıstakaya yalnızca bu kelimeyi diz
         await p.evaluate((word) => {
