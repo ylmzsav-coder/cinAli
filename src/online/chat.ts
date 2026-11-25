@@ -14,7 +14,7 @@ export type ChatMessageId = (typeof CHAT_MESSAGES)[number];
 
 export const EMOJIS = [
   "❤️", "👍", "👏", "😂", "😮", "😅", "😢", "😡", "🔥",
-  "👋", "👌", "✌️", "🙏", "🥒", "🍌", "🥕", "🎉", "🏆", "🎷", "✏️", "✒️",
+  "👋", "👌", "✌️", "🙏", "🥒", "🍌", "🎉", "🏆", "🎷", "✏️", "✒️",
 ] as const;
 
 export interface ChatEvent {
