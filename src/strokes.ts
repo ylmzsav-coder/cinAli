@@ -31,3 +31,6 @@ export function wordNumber(word: string) {
 
 /** Uzayla ilgili altı kelime: hepsi 16 hareket, sayısı 7. */
 export const SPACE_WORDS = ["ZAMAN", "GALAKSİ", "GÜNEŞ", "DÜNYA", "EVREN", "KAİNAT"];
+
+/** Işıkla ilgili on üç kelime: hepsinin kök değeri 7 (ELEKTİRİK ve AMPÜL öğretmenin yazılışıyla). */
+export const LIGHT_WORDS = ["IŞIK", "IŞIN", "ELEKTİRİK", "AMPÜL", "GÜNEŞ", "PARLAK", "KOR", "ABAJUR", "EKRAN", "ŞALTER", "VOLT", "VAT", "AMPER"];

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatNumber, t, uiLang } from "../i18n";
 import { FAMOUS_SEVENS, SEVEN_GROUPS, type SevenGroup } from "../sevens";
-import { SPACE_WORDS, digitalRoot, wordNumber } from "../strokes";
+import { LIGHT_WORDS, SPACE_WORDS, digitalRoot, wordNumber } from "../strokes";
 import { StrokeDemo } from "./StrokeDemo";
 
 /** Kayıtlı liste: kök değeri 7 olan bütün sözlük kelimeleri (tools/kok7.ts üretir). */
@@ -43,6 +43,7 @@ function Breakdown({ word }: { word: string }) {
 
 const STEP = 600;
 const SPACE = new Set(SPACE_WORDS);
+const SPECIAL = new Set([...SPACE_WORDS, ...LIGHT_WORDS]);
 
 /** Kelimelerin Kök Değeri: harflerin kalem hareketleri toplanır, rakamları tek basamağa indirilir. */
 export function WordNumber({ onBack }: { onBack: () => void }) {
@@ -76,7 +77,7 @@ export function WordNumber({ onBack }: { onBack: () => void }) {
   }, [sevens, shown]);
   // Uzay altılısı en başta sabit (ayrı renkte); ardından diğer yediler en uzundan en kısaya
   // (aynı uzunluktakiler sözlük sırasında: sık kullanılan önce)
-  const rest = useMemo(() => (sevens ? sevens.words.filter((w) => !SPACE.has(w)) : [])
+  const rest = useMemo(() => (sevens ? sevens.words.filter((w) => !SPECIAL.has(w)) : [])
     .map((w, i) => ({ w, i, n: [...w].length }))
     .sort((a, b) => b.n - a.n || a.i - b.i)
     .map((x) => x.w), [sevens]);
@@ -87,20 +88,23 @@ export function WordNumber({ onBack }: { onBack: () => void }) {
         <button type="button" className="link" onClick={onBack}>{t("back")}</button>
       </div>
       <h1>🔢 {t("wordNumTitle")}</h1>
-      <h3 className="wordnum-h">🌌 {t("wordNumSpace")}</h3>
+      <h3 className="wordnum-h">🌌💡 {t("wordNumSpace")}</h3>
       <table className="wordnum-table">
         <thead>
           <tr><th>{t("wordNumWord")}</th><th>{t("wordNumStrokes")}</th><th>{t("wordNumTotal")}</th><th>{t("wordNumRoot")}</th></tr>
         </thead>
         <tbody>
-          {SPACE_WORDS.map((w) => {
-            const s = wordNumber(w);
-            return (
-              <tr key={w} onClick={() => { setWord(w); setPicked((n) => n + 1); }}>
-                <td><b>{w}</b></td><td>{s.parts.join("+")}</td><td>{s.total}</td><td><b className="wordnum-seven">{s.root}</b> ✅</td>
-              </tr>
-            );
-          })}
+          {([["space", SPACE_WORDS], ["light", LIGHT_WORDS]] as const).map(([g, list]) => [
+            <tr key={g} className={`wordnum-group ${g}`}><td colSpan={4}>{g === "space" ? `🌌 ${t("wordNumGroupSpace")}` : `💡 ${t("wordNumGroupLight")}`}</td></tr>,
+            ...list.map((w) => {
+              const s = wordNumber(w);
+              return (
+                <tr key={`${g}-${w}`} onClick={() => { setWord(w); setPicked((n) => n + 1); }}>
+                  <td><b>{w}</b></td><td>{s.parts.join("+")}</td><td>{s.total}</td><td><b className="wordnum-seven">{s.root}</b> ✅</td>
+                </tr>
+              );
+            }),
+          ])}
         </tbody>
       </table>
       <button type="button" className="big wordnum-all-btn" aria-expanded={allOpen} onClick={() => setAllOpen((o) => !o)}>
@@ -121,6 +125,9 @@ export function WordNumber({ onBack }: { onBack: () => void }) {
               <div className="wordnum-chips">
                 {SPACE_WORDS.map((w, i) => (
                   <button key={w} type="button" className="wordnum-chip space" onClick={() => setCard(w)}><i>{i + 1}</i>{w}</button>
+                ))}
+                {LIGHT_WORDS.map((w, i) => (
+                  <button key={`l-${w}`} type="button" className="wordnum-chip light" onClick={() => setCard(w)}><i>{SPACE_WORDS.length + i + 1}</i>{w}</button>
                 ))}
                 {rest.slice(0, shown).map((w) => (
                   <button key={w} type="button" className="wordnum-chip" onClick={() => setCard(w)}>{w}</button>

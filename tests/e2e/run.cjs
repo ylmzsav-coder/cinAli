@@ -10,7 +10,7 @@ const LANGS = ["tr", "en", "de", "fr", "es", "it", "pt"];
  * Paralel çalıştırma: E2E_PART=A|B|C|D ile yalnızca o parçanın bölümleri çalışır
  * (CI'da dört iş aynı anda). E2E_PART yoksa bütün bölümler sırayla çalışır.
  */
-const PARTS = { P: ["2p"], A: ["3"], B: ["5"], C: ["1", "1b", "2", "2b", "2p"], D: ["4", "6", "7", "7b", "7c", "8", "9"] };
+const PARTS = { P: ["2p"], K: ["7"], A: ["3"], B: ["5"], C: ["1", "1b", "2", "2b", "2p"], D: ["4", "6", "7", "7b", "7c", "8", "9"] };
 const PART = process.env.E2E_PART || "";
 const want = (id) => !PART || (PARTS[PART] || []).includes(id);
 let fails = 0;
@@ -426,18 +426,19 @@ const TABLES = [
       await h.locator(".wordnum-input").fill("kainat"); await W(h, 150);
       const root = (await h.locator(".wordnum-root b").innerText()).trim();
       const sum = await h.locator(".wordnum-sum").innerText();
-      const rows = await h.locator(".wordnum-table tbody tr").allInnerTexts();
+      const rows = await h.locator(".wordnum-table tbody tr:not(.wordnum-group)").allInnerTexts();
+      const groups = await h.locator(".wordnum-table tbody tr.wordnum-group").allInnerTexts();
       check("Kelimelerin Kök Değeri: KAİNAT = 3+3+2+3+3+2 = 16 → 7", root === "7" && sum.includes("16"), `${sum} → ${root}`);
-      check("Kelimelerin Kök Değeri: uzay tablosu 6 kelime, hepsi 16 ve 7", rows.length === 6 && rows.every((r) => /16\s+7/.test(r)), rows.join(" | "));
+      check("Kelimelerin Kök Değeri: uzay ve ışık kartı 19 kelime (6 + 13), hepsi 7", rows.length === 19 && groups.length === 2 && rows.slice(0, 6).every((r) => /16\s+7/.test(r)) && rows.every((r) => /\s7 ✅/.test(r)), rows.join(" | "));
       await h.locator(".wordnum-input").fill("ampül"); await W(h, 150);
       check("Kelimelerin Kök Değeri: Ü 5 hareket (AMPÜL = 16 → 7)", (await h.locator(".wordnum-sum").innerText()).includes("16"));
       await h.locator(".wordnum-all-btn").tap(); await W(h, 800);
-      const chips = await h.locator(".wordnum-chip").evaluateAll((es) => es.slice(0, 8).map((e) => `${e.classList.contains("space") ? "*" : ""}${e.textContent}`));
-      const lens = await h.locator(".wordnum-chip:not(.space)").evaluateAll((es) => es.map((e) => [...e.textContent].length));
+      const chips = await h.locator(".wordnum-chip").evaluateAll((es) => es.slice(0, 20).map((e) => `${e.classList.contains("space") ? "*" : ""}${e.textContent}`));
+      const lens = await h.locator(".wordnum-chip:not(.space):not(.light)").evaluateAll((es) => es.map((e) => [...e.textContent].length));
       const cnt = await h.locator(".wordnum-count").innerText();
-      check("Kelimelerin Kök Değeri: bütün yediler (sayısıyla), ilk altı uzay altılısı ayrı renkte", /84\.775 kelimeden \d\.\d{3} tanesinin/.test(cnt) && chips.slice(0, 6).every((c) => c.startsWith("*")) && !chips[6].startsWith("*") && chips[0].includes("ZAMAN") && chips[5].includes("KAİNAT"), `${cnt} | ${chips.join(" ")}`);
+      check("Kelimelerin Kök Değeri: bütün yediler (sayısıyla), ilk altı uzay altılısı ayrı renkte", /84\.775 kelimeden \d\.\d{3} tanesinin/.test(cnt) && chips.slice(0, 6).every((c) => c.startsWith("*")) && !chips[6].startsWith("*") && (await h.locator(".wordnum-chip.light").count()) === 13 && chips[0].includes("ZAMAN") && chips[5].includes("KAİNAT"), `${cnt} | ${chips.join(" ")}`);
       check("Kelimelerin Kök Değeri: yediler en uzundan en kısaya sıralı", lens.length > 100 && lens.every((n, i) => i === 0 || lens[i - 1] >= n), `ilk ${lens.slice(0, 5)} son ${lens.slice(-3)}`);
-      await h.locator(".wordnum-chip:not(.space)").first().tap(); await W(h, 200);
+      await h.locator(".wordnum-chip:not(.space):not(.light)").first().tap(); await W(h, 200);
       check("Kelimelerin Kök Değeri: listedeki kelimeye dokununca hesabı açılır (7)", (await h.locator(".wordnum-card .wordnum-root b").innerText()).trim() === "7");
       await h.locator(".wordnum-card .primary").tap();
       await h.locator(".wordnum-famous-btn").tap(); await W(h, 200);
