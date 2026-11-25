@@ -1760,3 +1760,12 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
   55% { transform: scale(1.06); box-shadow: 0 0 22px rgba(255, 210, 63, 0.8); }
   100% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 210, 63, 0); }
 }
+/* Kazanınca oyun sonu: kart yerine Kumbara, çipler içine akar */
+.win-kumbara { display: grid; justify-items: center; gap: 8px; margin-bottom: 10px; text-align: center; }
+.win-kumbara-title { font-size: 1.5rem; font-weight: 900; color: var(--accent); }
+.win-kumbara-box { display: inline-flex; align-items: center; gap: 14px; padding: 10px 26px 10px 14px; border-radius: 999px; background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(242, 179, 61, 0.6); }
+.win-kumbara-text { display: grid; text-align: left; line-height: 1.1; }
+.win-kumbara-text .chips { font-size: 2rem; font-weight: 900; font-variant-numeric: tabular-nums; }
+.win-kumbara-plus { font-weight: 900; font-size: 1.15rem; color: #ffe27a; font-variant-numeric: tabular-nums; }
+.win-kumbara-box.win-pop { animation: win-pop 1.6s ease-out; }
+@media (max-height: 420px) { .win-kumbara-title { font-size: 1.2rem; } .win-kumbara-box .kumbara-icon { width: 3.2em; height: 3.2em; } .win-kumbara-text .chips { font-size: 1.6rem; } }

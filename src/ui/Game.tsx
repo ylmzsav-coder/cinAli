@@ -34,6 +34,9 @@ import { buzz, pop, tick, tileSound, type TileSound } from "../feedback";
 import { playLose, playWin, stopJingle } from "../jingles";
 import { playChipRain } from "../coinSound";
 import { ChipShower } from "./ChipShower";
+import { KumbaraIcon } from "./Kumbara";
+import { Chips } from "./Chips";
+import { useWallet } from "../economy/useWallet";
 import { lookupMeaning, type Meaning } from "../meaning";
 import { BOT_REPLIES, BUBBLE_MS, CHAT_COOLDOWN_MS, CHAT_MESSAGES, EMOJIS, MAX_TEXT, type ChatEvent, type ChatMessageId, type SendTextResult } from "../online/chat";
 import type { Action } from "../online/view";
@@ -359,6 +362,13 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
     if (vibration && won) navigator.vibrate?.([80, 60, 80, 60, 200]);
   }, [state, sound, vibration]);
   useEffect(() => () => stopJingle(), []);
+
+  // ---- Kumbara (kazanınca oyun sonunda gösterilir): oyun sırasındaki bakiye, ödül eklenmeden önceki hâl ----
+  const w = useWallet();
+  const playBalanceRef = useRef<number | null>(null);
+  if (state.phase === "draw" || state.phase === "play") playBalanceRef.current = w.balance;
+  const winKumbara = state.phase === "gameOver" && !carry && !!tableName && !!payout && payout > 0 && gameWinners(state).includes(ME);
+  const kumbaraBase = playBalanceRef.current ?? Math.max(0, w.balance - (payout ?? 0));
 
   // ---- Kazanana çip yağmuru: çipler rakiplerden ödül yazısına uçar, metal bardağa dökülme sesi ----
   const [shower, setShower] = useState(false);
@@ -1008,7 +1018,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
 
   return (
     <div className={`game okey ${draggingTile ? "dragging" : ""}`}>
-      {shower && <ChipShower target=".win-target" onDone={() => setShower(false)} />}
+      {shower && <ChipShower target={winKumbara ? ".win-target .kumbara-icon" : ".win-target"} onDone={() => setShower(false)} />}
       {idleWarn && (
         <div className="idle-warn" role="alert">
           <b>⚠️ {t("idleWarnTitle")}</b>
@@ -1363,7 +1373,23 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
       {(showScores || handOver) && (
         <div className="modal-bg">
           <div className="modal">
-            {handOver && result && (
+            {winKumbara && (
+              // Kazandın: kart yerine Kumbara; çipler içine akar, bakiye sayarak artar
+              <div className="win-kumbara">
+                <div className="win-kumbara-title">🏆 {t("youWon")}</div>
+                <div className="win-kumbara-box win-target">
+                  <KumbaraIcon size="4.2em" />
+                  <span className="win-kumbara-text">
+                    <span className="kumbara-label">{t("kumbara")}</span>
+                    <Chips amount={kumbaraBase + (shownPayout ?? payout ?? 0)} big icon={null} />
+                  </span>
+                </div>
+                <div className="win-kumbara-plus">{t("chipsWon", { n: shownPayout ?? payout ?? 0 })}</div>
+                {result?.colorWin && <div className="banner">{t("colorBanner", { color: t(`color_${result.colorWin}`) })}</div>}
+                {result?.pairWin && <div className="banner">{t("pairBanner")}</div>}
+              </div>
+            )}
+            {!winKumbara && handOver && result && (
               <>
                 <h3>
                   {result.winner === null
@@ -1379,7 +1405,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                 {result.laidPoints && <HandBreakdown state={state} />}
               </>
             )}
-            {state.phase === "gameOver" && state.lastResult?.reason === "deckEmpty" ? (
+            {winKumbara ? null : state.phase === "gameOver" && state.lastResult?.reason === "deckEmpty" ? (
               <p className="winner">🤝 {t("noWinnerTitle")}</p>
             ) : state.phase === "gameOver" && (gameWinners(state).length > 1 ? (
               <>
@@ -1390,7 +1416,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
               <p className="winner">🏆 {t("winnerIs", { names: winnerName(state) })}</p>
             ))}
             {/* Tek elli oyunda el dökümü yeterli; çok elli (eski) oyunlarda toplam tablosu da gösterilir */}
-            {!(handOver && state.totalHands === 1 && result?.laidPoints) && <ScoreTable state={state} />}
+            {!winKumbara && !(handOver && state.totalHands === 1 && result?.laidPoints) && <ScoreTable state={state} />}
             {state.phase === "gameOver" ? (
               <>
                 {carry ? (
@@ -1408,7 +1434,7 @@ export function Game({ remote, chat, chatEnabled = true, onChatEnabled, chatRoom
                       remote && payout === 0
                         ? <div className="banner idle-burn">{t("noWinnerIdle")}</div>
                         : <div className="banner">{t("noWinnerRefund")}</div>
-                    ) : tableName && (
+                    ) : tableName && !winKumbara && (
                       <div className={payout ? "banner win-target" : "muted"}>
                         {payout ? t("chipsWon", { n: shownPayout ?? payout }) : t("noChipsWon")}
                       </div>

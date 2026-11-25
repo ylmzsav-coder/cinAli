@@ -237,6 +237,7 @@ const tr = {
   bdRack: "Elde kalan",
   bdTotal: "El puanı",
   winnerIs: "Kazanan: {names}",
+  youWon: "Tebrikler, kazandın!",
   tieIs: "Berabere: {names}",
   tieSplit: "{prize} çiplik ödül {n} oyuncu arasında bölüşüldü: kişi başı {each} çip.",
   chipsWon: "+{n} çip kazandınız!",

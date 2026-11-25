@@ -233,6 +233,7 @@ const de: Messages = {
   bdRack: "Auf der Hand",
   bdTotal: "Rundenpunkte",
   winnerIs: "Sieger: {names}",
+  youWon: "Glückwunsch, du hast gewonnen!",
   tieIs: "Unentschieden: {names}",
   tieSplit: "Der Preis von {prize} Chips wird unter {n} Spielern geteilt: je {each} Chips.",
   chipsWon: "Du hast +{n} Chips gewonnen!",

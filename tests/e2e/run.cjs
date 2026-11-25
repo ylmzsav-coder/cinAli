@@ -421,10 +421,10 @@ const TABLES = [
       await h.evaluate((w) => { const g = JSON.parse(localStorage.getItem("cinali.game")); g.state.history = [g.state.players.map((_, i) => (i === (w ? 0 : 1) ? 150 : 20))]; g.state.results = [{ winner: w ? 0 : 1, colorWin: null }]; g.state.phase = "gameOver"; g.state.handNo = g.state.totalHands; localStorage.setItem("cinali.game", JSON.stringify(g)); const _set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k !== "cinali.game") _set.call(this, k, v); }; }, win);
       await h.reload(); await W(h, 700); if (await h.locator(".splash-hit").count()) await h.locator(".splash-hit").tap(); await W(h, 400);
       await h.locator(".hub-right .primary.big").first().tap(); await W(h, 700);
-      const mid = await h.evaluate(() => ({ chips: document.querySelectorAll(".fly-chip").length, banner: document.querySelector(".win-target")?.textContent ?? "" }));
+      const mid = await h.evaluate(() => ({ chips: document.querySelectorAll(".fly-chip").length, banner: document.querySelector(".win-kumbara")?.textContent ?? "" }));
       await W(h, 2800);
-      const end = await h.evaluate(() => ({ chips: document.querySelectorAll(".fly-chip").length, banner: document.querySelector(".win-target")?.textContent ?? "", pop: !!document.querySelector(".win-pop") }));
-      if (win) check("kazanınca çip yağmuru: çipler uçuyor, yazı sayarak +400'e çıkıyor, sonra temizleniyor", mid.chips > 10 && !mid.banner.includes("400") && end.banner.includes("+400") && end.pop && end.chips === 0, JSON.stringify({ mid, end }));
+      const end = await h.evaluate(() => ({ chips: document.querySelectorAll(".fly-chip").length, banner: document.querySelector(".win-kumbara")?.textContent ?? "", pop: !!document.querySelector(".win-pop"), table: !!document.querySelector(".modal .score-table, .modal table"), winnerLine: !!document.querySelector(".modal p.winner") }));
+      if (win) check("kazanınca kart yerine Kumbara: çipler Kumbara'ya akıyor, bakiye 49.900 → 50.300 sayarak artıyor, sonra temizleniyor", mid.chips > 10 && !mid.banner.includes("+400") && end.banner.includes("Tebrikler") && end.banner.includes("50.300") && end.banner.includes("+400") && end.pop && end.chips === 0 && !end.table && !end.winnerLine, JSON.stringify({ mid, end }));
       else check("kaybedince çip yağmuru yok", mid.chips === 0 && end.chips === 0 && !end.pop, JSON.stringify({ mid, end }));
       check(`çip yağmuru (${win ? "kazanınca" : "kaybedince"}): tarayıcı hatası yok`, !h.errors.length, h.errors.slice(0, 2).join(" | "));
       await h.context().close();

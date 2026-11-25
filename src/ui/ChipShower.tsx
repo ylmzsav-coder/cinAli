@@ -21,7 +21,8 @@ export function ChipShower({ target, onDone }: { target: string; onDone?: () => 
       const center = (r: DOMRect) => ({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
       const tEl = document.querySelector(target) ?? document.querySelector(".topbar-me");
       const tr = tEl?.getBoundingClientRect();
-      const to = tr ? center(tr) : { x: innerWidth / 2, y: innerHeight / 2 };
+      // Hedef Kumbara simgesiyse çipler üstteki para deliğine düşer
+      const to = tr ? (tEl?.classList.contains("kumbara-icon") ? { x: tr.left + tr.width / 2, y: tr.top + tr.height * 0.32 } : center(tr)) : { x: innerWidth / 2, y: innerHeight / 2 };
       const srcEls = [...document.querySelectorAll(".opp, .topbar-center .name-btn")];
       const sources = srcEls.length ? srcEls.map((e) => center(e.getBoundingClientRect())) : [{ x: innerWidth / 2, y: 0 }];
       const PER = Math.max(8, Math.round(30 / sources.length));
@@ -52,7 +53,8 @@ export function ChipShower({ target, onDone }: { target: string; onDone?: () => 
         }
       });
       // Çipler hedefe varınca ödül yazısı parlar
-      if (tEl) timers.push(window.setTimeout(() => tEl.classList.add("win-pop"), 600));
+      const popEl = tEl?.closest(".win-target") ?? tEl;
+      if (popEl) timers.push(window.setTimeout(() => popEl.classList.add("win-pop"), 600));
       timers.push(window.setTimeout(() => {
         finished = true;
         onDone?.();
