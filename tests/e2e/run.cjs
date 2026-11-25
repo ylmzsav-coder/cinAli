@@ -483,6 +483,14 @@ const TABLES = [
       check("Mağaza ve Kurallar Pratik ile aynı sarı, yazı siyah", r[".shop-hub"][0] === r[".practice-hub"][0] && r[".rules-hub"][0] === r[".practice-hub"][0] && r[".shop-hub"][1] === "none" && r[".rules-hub"][1] === "none" && r[".shop-hub"][2] === "rgb(17, 17, 17)" && r[".rules-hub"][2] === "rgb(17, 17, 17)", JSON.stringify(r));
       await h.context().close();
     }
+    // VIP üyelik fiyatı: haftalık 399 ₺ (mağaza kartı ve otomatik yenileme notu)
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 9 });
+      await h.locator(".kumbara-balance").tap(); await W(h, 600);
+      const txt = await h.evaluate(() => document.body.innerText);
+      check("VIP üyelik haftalık ₺ 399 (eski ₺ 299 yok)", /₺ 399/.test(txt) && !/₺ 299(?![,.]\d)/.test(txt) && /399 \/ hafta/.test(txt), (txt.match(/[^\n]*399[^\n]*/g) || []).slice(0, 2).join(" | "));
+      await h.context().close();
+    }
     // Sosyete düğmesinde siyah araba (çizim); Sosyete lobisinde kırmızı araba kalır
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 9 });
