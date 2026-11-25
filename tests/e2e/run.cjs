@@ -395,6 +395,9 @@ const TABLES = [
       await h.locator(".wordnum-chip:not(.space)").first().tap(); await W(h, 200);
       check("Kelimelerin Kök Değeri: listedeki kelimeye dokununca hesabı açılır (7)", (await h.locator(".wordnum-card .wordnum-root b").innerText()).trim() === "7");
       await h.locator(".wordnum-card .primary").tap();
+      await h.locator(".wordnum-famous-btn").tap(); await W(h, 200);
+      const f7 = await h.locator(".famous7-card b").allInnerTexts();
+      check("Ünlü 7'liler: 6 konu, kıta / harika / İstanbul tepesi / yüzdeki delik / gökkuşağı / yedi göbek kartları", (await h.locator(".famous7-group").count()) === 6 && ["7 kıta", "Dünyanın 7 harikası", "İstanbul'un 7 tepesi", "Yüzdeki 7 delik", "Gökkuşağının 7 rengi", "Yedi göbek"].every((k) => f7.some((x) => x.startsWith(k))), f7.slice(0, 8).join(" | "));
       check("Kelimelerin Kök Değeri: tarayıcı hatası yok", !h.errors.length, h.errors.slice(0, 2).join(" | "));
       await h.context().close();
     }

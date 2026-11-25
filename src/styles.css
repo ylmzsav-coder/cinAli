@@ -1836,3 +1836,12 @@ button.wordnum-chip.space i { font-style: normal; font-size: 0.75rem; background
 .wordnum-card { text-align: center; }
 .wordnum-card.space { border: 2px solid #ffd54f; background: linear-gradient(180deg, #4527a0, #1a0f4f); color: #fff; }
 .wordnum-card .wordnum-result { margin: 4px 0 10px; }
+/* Ünlü 7'liler */
+button.wordnum-famous-btn { display: block; width: 100%; max-width: none !important; margin: 8px 0 4px; background: linear-gradient(180deg, #7e57c2, #311b92); color: #fff; border: 2px solid #ffd54f; font-weight: 700; }
+.famous7 { margin: 6px 0 12px; }
+.famous7-group h4 { margin: 14px 0 6px; color: #ffd54f; font-size: 1rem; }
+.famous7-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+.famous7-card { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 213, 79, 0.35); }
+.famous7-icon { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+.famous7-card b { display: block; margin-bottom: 3px; }
+.famous7-card p { margin: 0; font-size: 0.88rem; line-height: 1.4; opacity: 0.92; }

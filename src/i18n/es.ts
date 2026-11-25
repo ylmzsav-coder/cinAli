@@ -67,6 +67,7 @@ const es: Messages = {
   wordNumStrokes: "Trazos",
   wordNumTotal: "Total",
   wordNumNote: "Se cuentan las mayúsculas. Ü cuenta 5 trazos (U y dos puntos). Solo por diversión.",
+  famousSevens: "Sietes famosos",
   wordNumAll: "Mostrar todos los sietes",
   wordNumHide: "Cerrar la lista",
   wordNumAllTitle: "Todas las palabras con valor raíz 7",

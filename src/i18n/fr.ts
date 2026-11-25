@@ -67,6 +67,7 @@ const fr: Messages = {
   wordNumStrokes: "Traits",
   wordNumTotal: "Total",
   wordNumNote: "On compte les majuscules. Ü compte 5 traits (U et deux points). Pour le plaisir.",
+  famousSevens: "Les sept célèbres",
   wordNumAll: "Afficher tous les sept",
   wordNumHide: "Fermer la liste",
   wordNumAllTitle: "Tous les mots de valeur racine 7",

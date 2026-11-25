@@ -68,6 +68,7 @@ const tr = {
   wordNumStrokes: "Hareketler",
   wordNumTotal: "Toplam",
   wordNumNote: "Büyük harfle yazılış sayılır. Ü 5 hareket sayılır (U ve iki nokta). Bir eğlence köşesidir.",
+  famousSevens: "Ünlü 7'liler",
   wordNumAll: "Bütün yedileri göster",
   wordNumHide: "Listeyi kapat",
   wordNumAllTitle: "Kök değeri 7 olan bütün kelimeler",

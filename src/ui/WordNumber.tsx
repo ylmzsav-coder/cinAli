@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { formatNumber, t } from "../i18n";
+import { formatNumber, t, uiLang } from "../i18n";
+import { FAMOUS_SEVENS, SEVEN_GROUPS, type SevenGroup } from "../sevens";
 import { SPACE_WORDS, digitalRoot, wordNumber } from "../strokes";
 
 /** Kayıtlı liste: kök değeri 7 olan bütün sözlük kelimeleri (tools/kok7.ts üretir). */
@@ -49,6 +50,7 @@ export function WordNumber({ onBack }: { onBack: () => void }) {
   const [picked, setPicked] = useState(0);
   // Bütün yediler listesi
   const [allOpen, setAllOpen] = useState(false);
+  const [famousOpen, setFamousOpen] = useState(false);
   const [sevens, setSevens] = useState<{ total: number; words: string[] } | null>(null);
   const [failed, setFailed] = useState(false);
   const [shown, setShown] = useState(STEP);
@@ -103,6 +105,10 @@ export function WordNumber({ onBack }: { onBack: () => void }) {
       <button type="button" className="big wordnum-all-btn" aria-expanded={allOpen} onClick={() => setAllOpen((o) => !o)}>
         {allOpen ? `✖ ${t("wordNumHide")}` : `7️⃣ ${t("wordNumAll")}`}
       </button>
+      <button type="button" className="big wordnum-famous-btn" aria-expanded={famousOpen} onClick={() => setFamousOpen((o) => !o)}>
+        {famousOpen ? `✖ ${t("wordNumHide")}` : `⭐ ${t("famousSevens")}`}
+      </button>
+      {famousOpen && <FamousSevens />}
       {allOpen && (
         <section className="wordnum-all" aria-label={t("wordNumAllTitle")}>
           <h3 className="wordnum-h">{t("wordNumAllTitle")}</h3>
@@ -142,5 +148,29 @@ export function WordNumber({ onBack }: { onBack: () => void }) {
         </div>
       )}
     </div>
+  );
+}
+
+/** Ünlü 7'liler: konularına göre gruplu kartlar. */
+function FamousSevens() {
+  const lang = uiLang() === "tr" ? "tr" : "en";
+  const groups = Object.keys(SEVEN_GROUPS) as SevenGroup[];
+  return (
+    <section className="famous7" aria-label={t("famousSevens")}>
+      <h3 className="wordnum-h">⭐ {t("famousSevens")} <small className="muted">({FAMOUS_SEVENS.length})</small></h3>
+      {groups.map((g) => (
+        <div key={g} className="famous7-group">
+          <h4>{SEVEN_GROUPS[g][lang]}</h4>
+          <div className="famous7-cards">
+            {FAMOUS_SEVENS.filter((s) => s.group === g).map((s) => (
+              <article key={s.en.title} className="famous7-card">
+                <span className="famous7-icon" aria-hidden>{s.icon}</span>
+                <div><b>{s[lang].title}</b><p>{s[lang].items}</p></div>
+              </article>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
   );
 }

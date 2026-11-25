@@ -67,6 +67,7 @@ const en: Messages = {
   wordNumStrokes: "Strokes",
   wordNumTotal: "Total",
   wordNumNote: "Capital letters are counted. Ü counts as 5 strokes (U and two dots). Just for fun.",
+  famousSevens: "Famous Sevens",
   wordNumAll: "Show all the sevens",
   wordNumHide: "Close the list",
   wordNumAllTitle: "All words with root value 7",

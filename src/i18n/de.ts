@@ -67,6 +67,7 @@ const de: Messages = {
   wordNumStrokes: "Striche",
   wordNumTotal: "Summe",
   wordNumNote: "Gezählt werden Großbuchstaben. Ü zählt 5 Striche (U und zwei Punkte). Nur zum Spaß.",
+  famousSevens: "Berühmte Siebener",
   wordNumAll: "Alle Siebenen zeigen",
   wordNumHide: "Liste schließen",
   wordNumAllTitle: "Alle Wörter mit Wurzelwert 7",
