@@ -1789,7 +1789,7 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .chat-msgs button.chat-hello { font-weight: 800; }
 
 /* ---- Kelimenin Sayısı ---- */
-.hub button.wordnum-hub { background: linear-gradient(#ef5350, #b3261e); color: #fff; border: 2px solid rgba(0, 0, 0, 0.35); font-weight: 900; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.35); }
+.hub button.wordnum-hub { background: linear-gradient(#ef5350, #b3261e); color: #111; border: 2px solid rgba(0, 0, 0, 0.35); font-weight: 900; text-shadow: none; box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.35); }
 .wordnum-input { width: 100%; box-sizing: border-box; font-size: 1.3rem; padding: 12px 14px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
 .wordnum-result { margin: 14px 0 6px; text-align: center; }
 .wordnum-letters { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
