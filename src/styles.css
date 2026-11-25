@@ -1740,3 +1740,5 @@ button.daily-top { background: linear-gradient(180deg, #42a5f5, #1565c0) !import
 .teapot-icon { flex: none; display: block; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.25)); }
 /* Mağaza ve Kurallar: Pratik gibi sarı, yazı siyah */
 .hub button.shop-hub, .hub button.rules-hub { background: var(--accent) !important; color: #111 !important; border: 1px solid rgba(0, 0, 0, 0.15) !important; }
+/* Profildeki en uzun kelime: taşların altında puan yazmaz */
+.word-tiles.no-values .tile-value { display: none; }

@@ -381,6 +381,16 @@ const TABLES = [
       check("Çayhane demliği Oyunu kapat tonunda (#ef5350 → #b3261e), emoji yok, başlık hafif sola (simetrik)", r.stops.join() === "#ef5350,#b3261e" && !r.emoji && r.off <= 0 && r.off >= -12, JSON.stringify(r));
       await h.context().close();
     }
+    // Profil istatistikleri: en yüksek puanlı kelime yok; en uzun kelime var, taşların altında puan yazmıyor
+    {
+      const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });
+      await h.evaluate(() => { const st = JSON.parse(localStorage.getItem("wordokey.stats")); st.longestWord = "KALEMLİK"; st.bestWord = { word: "ZAM", value: 99 }; localStorage.setItem("wordokey.stats", JSON.stringify(st)); });
+      await h.locator(".hub-rate").tap(); await W(h, 400);
+      await h.getByRole("button", { name: /İstatistik/ }).tap(); await W(h, 400);
+      const r = await h.evaluate(() => { const d = document.querySelector(".stats-detail"); const vals = [...d.querySelectorAll(".word-tiles .tile-value")].filter((x) => getComputedStyle(x).display !== "none").length; return { text: d.innerText, tiles: d.querySelectorAll(".word-tiles .tile").length, vals }; });
+      check("profilde 'en yüksek puanlı kelime' yok, en uzun kelime (KALEMLİK) var, altında puan yok", !/puanlı/i.test(r.text) && !r.text.includes("99") && r.tiles === 8 && r.vals === 0 && /En uzun kelime/i.test(r.text), JSON.stringify(r).slice(0, 220));
+      await h.context().close();
+    }
     // Mağaza ve Kurallar: Pratik gibi sarı, yazı siyah
     {
       const h = await fresh(browser, "Pixel 7 landscape", { played: 10, won: 6 });

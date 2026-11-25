@@ -9,7 +9,7 @@ import { CLOUD } from "../online/cloud";
 import { wallet } from "../economy/wallet";
 import { useEffect, useState } from "react";
 import type { GameState } from "../game/engine";
-import { handWinsOf, placedValue, totals, wordString } from "../game/engine";
+import { handWinsOf, totals } from "../game/engine";
 import { COLORS, type Tile } from "../game/tiles";
 import { errorText, formatNumber, t, uiLocale } from "../i18n";
 import { loadStats, myRate, winRate, type PlayerStats } from "../stats";
@@ -108,13 +108,14 @@ function Pie({ part, total, color }: { part: number; total: number; color: strin
 }
 
 /** Kelimeyi renkli harf taşlarıyla gösterir. */
+/** Kelime taşları (profilde): harflerin altında puan yazmaz. */
 function WordTiles({ word }: { word: string }) {
   const tiles: Tile[] = [...word].map((letter, i) => ({ id: -1 - i, letter, color: COLORS[i % COLORS.length] }) as Tile);
-  return <div className="word-tiles">{tiles.map((tl) => <TileView key={tl.id} tile={tl} size="sm" />)}</div>;
+  return <div className="word-tiles no-values">{tiles.map((tl) => <TileView key={tl.id} tile={tl} size="sm" />)}</div>;
 }
 
 
-/** Ayrıntılı istatistikler: galibiyet/yenilgi, kelime sayısı, kazanılan çip, en uzun kelime (oyun puanları karta işlenmez). */
+/** Ayrıntılı istatistikler: galibiyet/yenilgi, oynanan oyun, en uzun kelime (puanlar karta işlenmez). */
 function StatsDetail({ s }: { s: PlayerStats }) {
   const finished = s.gamesPlayed;
   return (
@@ -124,12 +125,8 @@ function StatsDetail({ s }: { s: PlayerStats }) {
         <div className="stat"><div className="stat-label">{t("stLosses")}</div><Pie part={s.gamesLost} total={finished} color="#E53935" /><div className="stat-value">{formatNumber(s.gamesLost)}</div></div>
       </div>
       <Box cls="stat-line" label={t("stFinished")} value={finished} />
-      {/* Rekor kelimeler: kalıcıdır, yalnızca daha iyisi bulununca değişir */}
+      {/* Rekor kelime: en uzun kelime kalıcıdır (puan gösterilmez) */}
       <div className="stat stat-hl">
-        <div className="stat-label">{t("stBestWord")}</div>
-        {s.bestWord ? <><WordTiles word={s.bestWord.word} /><div className="stat-value">{t("pointsN", { n: s.bestWord.value })}</div></> : <div className="stat-value">–</div>}
-      </div>
-      <div className="stat">
         <div className="stat-label">{t("stLongestWord")}</div>
         {s.longestWord ? <WordTiles word={s.longestWord} /> : <div className="stat-value">–</div>}
       </div>
@@ -395,10 +392,6 @@ export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip 
   const live = sums.map((v, i) => v + (active ? state.players[i].points ?? 0 : 0));
   const rank = [...live].sort((a, b) => b - a).indexOf(score) + 1;
   const words = state.table.filter((w) => w.owner === seat && !w.pair);
-  const best = words.reduce<{ word: string; value: number } | null>((b, w) => {
-    const v = placedValue(w.tiles);
-    return !b || v > b.value ? { word: wordString(w.tiles), value: v } : b;
-  }, null);
   return (
     <div className="modal-bg" onClick={onClose}>
       <div className="modal profile-modal" onClick={(e) => e.stopPropagation()}>
@@ -423,9 +416,6 @@ export function SeatStatsModal({ state, seat, onClose, onAddFriend, onGift, vip 
             <Box label={t("stWordsNow")} value={words.length} />
             <Box label={t("stBestMove")} value={active ? p.bestPlay ?? 0 : "–"} />
           </div>
-          {best && (
-            <div className="stat"><div className="stat-label">{t("stBestWordNow")} ({best.value})</div><WordTiles word={best.word} /></div>
-          )}
         </div>
         {onGift && (
           <button type="button" className="gift-btn add-friend-btn" onClick={() => { onClose(); onGift(); }}>🎁 {t("giftSendShort")}</button>
