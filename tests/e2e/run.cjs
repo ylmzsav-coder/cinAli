@@ -390,7 +390,7 @@ const TABLES = [
       const chips = await h.locator(".wordnum-chip").evaluateAll((es) => es.slice(0, 8).map((e) => `${e.classList.contains("space") ? "*" : ""}${e.textContent}`));
       const lens = await h.locator(".wordnum-chip:not(.space)").evaluateAll((es) => es.map((e) => [...e.textContent].length));
       const cnt = await h.locator(".wordnum-count").innerText();
-      check("Kelimelerin Kök Değeri: bütün yediler (9.434), ilk altı uzay altılısı ayrı renkte", cnt.includes("9.434") && chips.slice(0, 6).every((c) => c.startsWith("*")) && !chips[6].startsWith("*") && chips[0].includes("ZAMAN") && chips[5].includes("KAİNAT"), `${cnt} | ${chips.join(" ")}`);
+      check("Kelimelerin Kök Değeri: bütün yediler (sayısıyla), ilk altı uzay altılısı ayrı renkte", /84\.775 kelimeden \d\.\d{3} tanesinin/.test(cnt) && chips.slice(0, 6).every((c) => c.startsWith("*")) && !chips[6].startsWith("*") && chips[0].includes("ZAMAN") && chips[5].includes("KAİNAT"), `${cnt} | ${chips.join(" ")}`);
       check("Kelimelerin Kök Değeri: yediler en uzundan en kısaya sıralı", lens.length > 100 && lens.every((n, i) => i === 0 || lens[i - 1] >= n), `ilk ${lens.slice(0, 5)} son ${lens.slice(-3)}`);
       await h.locator(".wordnum-chip:not(.space)").first().tap(); await W(h, 200);
       check("Kelimelerin Kök Değeri: listedeki kelimeye dokununca hesabı açılır (7)", (await h.locator(".wordnum-card .wordnum-root b").innerText()).trim() === "7");
