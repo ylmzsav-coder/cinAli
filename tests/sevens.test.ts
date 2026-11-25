@@ -9,10 +9,10 @@ describe("Ünlü 7'liler", () => {
     }
   });
   it("sayılan listeler gerçekten yedi öğe", () => {
-    const seven = ["7 kıta", "Gökkuşağının 7 rengi", "Haftanın 7 günü", "7 nota", "Türkiye'nin 7 coğrafi bölgesi", "Dünyanın yeni 7 harikası (2007)", "Yedi ölümcül günah"];
+    const seven = ["7 kıta", "Gökkuşağının 7 rengi", "Haftanın 7 günü", "7 nota", "Türkiye'nin 7 coğrafi bölgesi", "Dünyanın yeni 7 harikası (2007)", "Yedi ölümcül günah", "Anadolu'nun 7 kilisesi", "Yedi Ulu Ozan", "Yedi özgür sanat", "7 temel ölçü birimi (SI)", "7 Zirve", "Dünyanın 7 harikası (Antik Çağ)"];
     for (const title of seven) {
       const s = FAMOUS_SEVENS.find((x) => x.tr.title === title)!;
-      const list = s.tr.items.replace(/^[^:]*: /, "").replace(/\.$/, "");
+      const list = s.tr.items.replace(/^[^:]*: /, "").replace(/\..*$/, "");
       expect([title, list.split(",").length]).toEqual([title, 7]);
     }
   });
