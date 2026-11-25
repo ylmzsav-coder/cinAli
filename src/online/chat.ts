@@ -12,7 +12,10 @@ export const CHAT_MESSAGES = [
 ] as const;
 export type ChatMessageId = (typeof CHAT_MESSAGES)[number];
 
-export const EMOJIS = ["❤️", "👍", "👏", "😂", "😮", "😅", "😢", "😡", "🔥"] as const;
+export const EMOJIS = [
+  "❤️", "👍", "👏", "😂", "😮", "😅", "😢", "😡", "🔥",
+  "👋", "👌", "✌️", "🙏", "🥒", "🍌", "🥕", "🎉", "🏆", "🎷", "✏️", "✒️",
+] as const;
 
 export interface ChatEvent {
   /** Görünümdeki oyuncu sırası (0 = siz). */
